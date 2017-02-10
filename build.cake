@@ -132,7 +132,7 @@ Task("CreatePackages")
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
-            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
+//            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
 
@@ -283,12 +283,12 @@ private void PublishPackages(string feedApiKey, string codeFeedUrl, string symbo
                 Source = codeFeedUrl
             });
 
-        NuGetPush(
-            symbolsPackage,
-            new NuGetPushSettings {
-                ApiKey = feedApiKey,
-                Source = symbolFeedUrl
-            });
+//        NuGetPush(
+//            symbolsPackage,
+//            new NuGetPushSettings {
+//                ApiKey = feedApiKey,
+//                Source = symbolFeedUrl
+//            });
 
 }
 
