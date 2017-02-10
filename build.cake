@@ -131,8 +131,8 @@ Task("CreatePackages")
 		GenerateReleaseNotes();
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:BinaryMash.Evelyn.Agent." + buildVersion + ".nupkg",
-            "nugetSymbols:BinaryMash.Evelyn.Agent." + buildVersion + ".symbols.nupkg",
+            "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
+            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
 
