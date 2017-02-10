@@ -7,7 +7,7 @@
 
 // compile
 var compileConfig = Argument("configuration", "Release");
-var projectJson = "./src/BinaryMash.Evelyn.Agent/project.json";
+var slnFile = "./src/Evelyn.sln";
 
 // build artifacts
 var artifactsDir = Directory("artifacts");
@@ -89,34 +89,36 @@ Task("Restore")
 	.IsDependentOn("Version")
 	.Does(() =>
 	{	
-		DotNetCoreRestore("./src");
+		DotNetCoreRestore(slnFile);
 	});
 
 Task("Compile")
 	.IsDependentOn("Restore")
 	.Does(() =>
 	{	
-		DotNetCoreBuild("./src/Evelyn.sln");
+		var settings = new DotNetCoreBuildSettings
+		{
+			Configuration = compileConfig,
+		};
+		
+		DotNetCoreBuild(slnFile, settings);
 	});
 
 Task("RunUnitTests")
 	.IsDependentOn("Compile")
 	.Does(() =>
 	{
-		var buildSettings = new DotNetCoreTestSettings
+		var settings = new DotNetCoreTestSettings
 		{
 			Configuration = compileConfig,
 		};
 
 		EnsureDirectoryExists(artifactsForUnitTestsDir);
-		DotNetCoreTest(unitTestAssemblies, buildSettings);
+		DotNetCoreTest(unitTestAssemblies, settings);
 	});
 
 Task("RunTests")
-	.IsDependentOn("RunUnitTests")
-	.Does(() =>
-	{
-	});
+	.IsDependentOn("RunUnitTests");
 
 Task("CreatePackages")
 	.IsDependentOn("Compile")
@@ -226,7 +228,7 @@ private GitVersion GetNuGetVersionForCommit()
 /// Updates project version in all of our projects
 private void PersistVersion(string version)
 {
-	Information(string.Format("We'll search all project.json files for {0} and replace with {1}...", committedVersion, version));
+	Information(string.Format("We'll search all csproj files for {0} and replace with {1}...", committedVersion, version));
 
 	var projectFiles = GetFiles("./**/*.csproj");
 
