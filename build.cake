@@ -274,7 +274,7 @@ private void PublishPackages(string feedApiKey, string codeFeedUrl, string symbo
             .ToDictionary(v => v[0], v => v[1]);
 
 		var codePackage = packagesDir + File(artifacts["nuget"]);
-		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
+//		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
 
         NuGetPush(
             codePackage,
