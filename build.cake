@@ -222,18 +222,18 @@ private void PersistVersion(string version)
 {
 	Information(string.Format("We'll search all project.json files for {0} and replace with {1}...", committedVersion, version));
 
-	var projectJsonFiles = GetFiles("./**/project.json");
+	var projectFiles = GetFiles("./**/*.csproj");
 
-	foreach(var projectJsonFile in projectJsonFiles)
+	foreach(var projectFile in projectFiles)
 	{
-		var file = projectJsonFile.ToString();
+		var file = projectFile.ToString();
  
 		Information(string.Format("Updating {0}...", file));
 
-		var updatedProjectJson = System.IO.File.ReadAllText(file)
+		var updatedProjectFile = System.IO.File.ReadAllText(file)
 			.Replace(committedVersion, version);
 
-		System.IO.File.WriteAllText(file, updatedProjectJson);
+		System.IO.File.WriteAllText(file, updatedProjectFile);
 	}
 }
 
