@@ -131,8 +131,8 @@ Task("CreatePackages")
 		GenerateReleaseNotes();
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:BinaryMash.Evelyn.Agent." + buildVersion + ".nupkg",
-            "nugetSymbols:BinaryMash.Evelyn.Agent." + buildVersion + ".symbols.nupkg",
+            "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
+//            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
 
@@ -274,7 +274,7 @@ private void PublishPackages(string feedApiKey, string codeFeedUrl, string symbo
             .ToDictionary(v => v[0], v => v[1]);
 
 		var codePackage = packagesDir + File(artifacts["nuget"]);
-		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
+//		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
 
         NuGetPush(
             codePackage,
@@ -283,12 +283,12 @@ private void PublishPackages(string feedApiKey, string codeFeedUrl, string symbo
                 Source = codeFeedUrl
             });
 
-        NuGetPush(
-            symbolsPackage,
-            new NuGetPushSettings {
-                ApiKey = feedApiKey,
-                Source = symbolFeedUrl
-            });
+//        NuGetPush(
+//            symbolsPackage,
+//            new NuGetPushSettings {
+//                ApiKey = feedApiKey,
+//                Source = symbolFeedUrl
+//            });
 
 }
 
