@@ -1,1 +1,1 @@
-./build.ps1 -target ReleasePackagesToUnstableFeed
+./build.ps1 -target BuildAndReleaseUnstable

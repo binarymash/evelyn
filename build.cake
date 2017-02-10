@@ -25,6 +25,7 @@ var artifactsFile = packagesDir + File("artifacts.txt");
 var nugetFeedUnstableKey = EnvironmentVariable("nuget-apikey-unstable");
 var nugetFeedUnstableUploadUrl = "https://www.myget.org/F/binarymash-unstable/api/v2/package";
 var nugetFeedUnstableSymbolsUploadUrl = "https://www.myget.org/F/binarymash-unstable/symbols/api/v2/package";
+var nugetFeedUnstableBranchFilter = "^(develop)$|^(PullRequest/)";
 
 // stable releases
 var tagsUrl = "https://api.github.com/repos/binarymash/evelyn/releases/tags/";
@@ -34,6 +35,7 @@ var nugetFeedStableSymbolsUploadUrl = "https://www.myget.org/F/binarymash-stable
 
 // internal build variables - don't change these.
 var releaseTag = "";
+GitVersion versioning = null;
 var buildVersion = committedVersion;
 var committedVersion = "0.0.0-dev";
 
@@ -66,7 +68,8 @@ Task("Clean")
 Task("Version")
 	.Does(() =>
 	{
-		var nugetVersion = GetNuGetVersionForCommit();
+		versioning = GetNuGetVersionForCommit();
+		var nugetVersion = versioning.NuGetVersion;
 		Information("SemVer version number: " + nugetVersion);
 
 		if (AppVeyor.IsRunningOnAppVeyor)
@@ -116,6 +119,7 @@ Task("RunTests")
 	});
 
 Task("CreatePackages")
+	.IsDependentOn("Compile")
 	.Does(() => 
 	{
 		EnsureDirectoryExists(packagesDir);
@@ -145,7 +149,10 @@ Task("ReleasePackagesToUnstableFeed")
 	.IsDependentOn("CreatePackages")
 	.Does(() =>
 	{
-		PublishPackages(nugetFeedUnstableKey, nugetFeedUnstableUploadUrl, nugetFeedUnstableSymbolsUploadUrl);
+		if (ShouldPublishToUnstableFeed())
+		{
+			PublishPackages(nugetFeedUnstableKey, nugetFeedUnstableUploadUrl, nugetFeedUnstableSymbolsUploadUrl);
+		}
 	});
 
 Task("EnsureStableReleaseRequirements")
@@ -206,15 +213,14 @@ Task("Release")
 RunTarget(target);
 
 /// Gets nuique nuget version for this commit
-private string GetNuGetVersionForCommit()
+private GitVersion GetNuGetVersionForCommit()
 {
     GitVersion(new GitVersionSettings{
         UpdateAssemblyInfo = false,
         OutputType = GitVersionOutput.BuildServer
     });
 
-    var versionInfo = GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
-	return versionInfo.NuGetVersion;
+    return GitVersion(new GitVersionSettings{ OutputType = GitVersionOutput.Json });
 }
 
 /// Updates project version in all of our projects
@@ -300,4 +306,19 @@ private string GetResource(string url)
         var assetsReader = new StreamReader(assetsStream);
         return assetsReader.ReadToEnd();
     }
+}
+
+private bool ShouldPublishToUnstableFeed()
+{
+	var regex = new System.Text.RegularExpressions.Regex(nugetFeedUnstableBranchFilter);
+	var publish = regex.IsMatch(versioning.BranchName);
+	if (publish)
+	{
+		Information("Branch " + versioning.BranchName + " will be published to the unstable feed");
+	}
+	else
+	{
+		Information("Branch " + versioning.BranchName + " will not be published to the unstable feed");
+	}
+	return publish;	
 }
