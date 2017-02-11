@@ -6,4 +6,12 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Locations\Get\Validation\" />
+  </ItemGroup>
+
 </Project>
