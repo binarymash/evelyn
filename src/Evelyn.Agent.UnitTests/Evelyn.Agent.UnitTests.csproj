@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BinaryMash.Responses" Version="0.4.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170125-04" />
     <PackageReference Include="Shouldly" Version="2.8.2" />
     <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />

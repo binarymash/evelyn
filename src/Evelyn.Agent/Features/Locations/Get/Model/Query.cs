@@ -3,7 +3,7 @@
     using MediatR;
     using Model;
 
-    public class Query : IRequest<Response>
+    public class Query : IRequest<BinaryMash.Responses.Response<Locations>>
     {
     }
 }

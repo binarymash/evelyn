@@ -1,8 +1,8 @@
 ﻿namespace Evelyn.Agent.UnitTests.Features.Locations.Get
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using BinaryMash.Responses;
     using Evelyn.Agent.Features.Locations;
     using Shouldly;
     using TestStack.BDDfy;
@@ -18,12 +18,22 @@
 
         List<TestDirectory> testDirectoryStructure;
 
-        Evelyn.Agent.Features.Locations.Get.Model.Response response;
+        Response<Evelyn.Agent.Features.Locations.Get.Model.Locations> response;
 
         public HandlerSpecs()
         {
             testDirectoryStructure = new List<TestDirectory>();
             query = new Agent.Features.Locations.Get.Query();
+        }
+
+        [Fact]
+        public void NullRequest()
+        {
+            this.Given(_ => GivenTheQueryIsNull())
+                .When(_ => WhenWeGetLocations())
+                .Then(_ => ThenAnErrorIsReturned())
+                .And(_ => ThenNoLocationsAreReturned())
+                .BDDfy();
         }
 
         [Fact]
@@ -41,6 +51,7 @@
             this.Given(_ => GivenAWatchedDirectoryHasNoLocations())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenNoLocationsAreReturned())
+                .And(_ => ThenNoErrorsAreReturned())
                 .BDDfy();
         }
 
@@ -51,6 +62,11 @@
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenAllLocationsAreReturned())
                 .BDDfy();
+        }
+
+        private void GivenTheQueryIsNull()
+        {
+            this.query = null;
         }
 
         private void GivenNoDirectoriesAreBeingWatched()
@@ -88,18 +104,28 @@
             response = handler.Handle(query);
         }
 
+        private void ThenNoErrorsAreReturned()
+        {
+            response.Errors.Count().ShouldBe(0);
+        }
+
+        private void ThenAnErrorIsReturned()
+        {
+            response.Errors.Count().ShouldBe(1);
+        }
+
         private void ThenNoLocationsAreReturned()
         {
-            response.Count.ShouldBe(0);
+            response.Payload.Count.ShouldBe(0);
         }
 
         private void ThenAllLocationsAreReturned()
         {
             var expectedDirectoriesWithLocationFiles = DirectoriesWithLocations(testDirectoryStructure);
-            response.Count.ShouldBe(expectedDirectoriesWithLocationFiles.Count);
+            response.Payload.Count.ShouldBe(expectedDirectoriesWithLocationFiles.Count);
             foreach (var expectedDirectory in expectedDirectoriesWithLocationFiles)
             {
-                response.Exists(r => r.Path == expectedDirectory.FullPath).ShouldBeFalse();
+                response.Payload.Any(location => location.Path == expectedDirectory.FullPath).ShouldBeFalse();
             }
         }
 

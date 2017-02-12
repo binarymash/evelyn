@@ -1,11 +1,12 @@
 ﻿namespace Evelyn.Agent.Features.Locations.Get
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using BinaryMash.Responses;
     using MediatR;
     using Model;
-    using System.Linq;
 
-    public class Handler : IRequestHandler<Query, Response>
+    public class Handler : IRequestHandler<Query, Response<Locations>>
     {
         private IWatchedDirectoriesConfig config;
 
@@ -14,16 +15,26 @@
             config = watchedDirectoriesConfig;
         }
 
-        public Response Handle(Query message)
+        public Response<Locations> Handle(Query message)
         {
-            var response = new Response();
+            if (message == null)
+            {
+                return BuildResponse
+                    .WithPayload(Locations.None)
+                    .AndWithErrors(new Error("InvalidArgument", ""))
+                    .Create();
+            }
+
+            var locations = new List<Location>();
 
             foreach(var directory in config.WatchedDirectories)
             {
-                response.AddRange(GetLocationsFrom(directory));
+                locations.AddRange(GetLocationsFrom(directory));
             }
 
-            return response;
+            return BuildResponse
+                .WithPayload(new Locations(locations))
+                .Create();
         }
 
         private IReadOnlyCollection<Location> GetLocationsFrom(string directory)
