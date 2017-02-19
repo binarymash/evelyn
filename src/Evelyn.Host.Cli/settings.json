@@ -1,0 +1,8 @@
+﻿{
+  "LocationDiscovery": {
+    "WatchedDirectories": [
+      "c:\\dev"
+    ],
+    "LocationFileSearchPattern": "evelyn.json"
+  }
+}
