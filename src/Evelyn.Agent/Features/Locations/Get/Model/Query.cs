@@ -1,7 +1,6 @@
-﻿namespace Evelyn.Agent.Features.Locations.Get
+﻿namespace Evelyn.Agent.Features.Locations.Get.Model
 {
     using MediatR;
-    using Model;
 
     public class Query : IRequest<BinaryMash.Responses.Response<Locations>>
     {

@@ -7,29 +7,42 @@
     using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
+    using FluentValidation;
+    using Moq;
+    using FluentValidation.Results;
+    using Evelyn.Agent.Features.Locations.Get.Model;
+    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Logging;
+    using Evelyn.Agent.Features.Locations.Get;
 
     public class HandlerSpecs
     {
-        Evelyn.Agent.Features.Locations.Get.Handler handler;
+        Agent.Features.Locations.Get.Handler handler;
 
-        Evelyn.Agent.Features.Locations.IWatchedDirectoriesConfig config;
+        LocationDiscoveryConfig config;
 
-        Evelyn.Agent.Features.Locations.Get.Query query;
+        Query query;
+
+        Mock<IValidator<Query>> validator;
+
+        Mock<ILogger<Handler>> logger;
 
         List<TestDirectory> testDirectoryStructure;
 
-        Response<Evelyn.Agent.Features.Locations.Get.Model.Locations> response;
+        Response<Locations> response;
 
         public HandlerSpecs()
         {
             testDirectoryStructure = new List<TestDirectory>();
-            query = new Agent.Features.Locations.Get.Query();
+            query = new Query();
+            validator = new Mock<IValidator<Query>>();
+            logger = new Mock<ILogger<Handler>>();
         }
 
         [Fact]
-        public void NullRequest()
+        public void InvalidRequest()
         {
-            this.Given(_ => GivenTheQueryIsNull())
+            this.Given(_ => GivenTheQueryIsInvalid())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenAnErrorIsReturned())
                 .And(_ => ThenNoLocationsAreReturned())
@@ -39,7 +52,8 @@
         [Fact]
         public void NoWatchedDirectories()
         {
-            this.Given(_ => GivenNoDirectoriesAreBeingWatched())
+            this.Given(_ => GivenTheQueryIsValid())
+                .And(_ => GivenNoDirectoriesAreBeingWatched())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenNoLocationsAreReturned())
                 .BDDfy();
@@ -48,7 +62,8 @@
         [Fact]
         public void WatchedDirectoryWithNoLocations()
         {
-            this.Given(_ => GivenAWatchedDirectoryHasNoLocations())
+            this.Given(_ => GivenTheQueryIsValid())
+                .And(_ => GivenAWatchedDirectoryHasNoLocations())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenNoLocationsAreReturned())
                 .And(_ => ThenNoErrorsAreReturned())
@@ -58,20 +73,30 @@
         [Fact]
         public void WatchedDirectoryWithLocations()
         {
-            this.Given(_ => GivenAWatchedDirectoryHasLocations())
+            this.Given(_ => GivenTheQueryIsValid())
+                .And(_ => GivenAWatchedDirectoryHasLocations())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenAllLocationsAreReturned())
                 .BDDfy();
         }
 
-        private void GivenTheQueryIsNull()
+        private void GivenTheQueryIsInvalid()
         {
-            this.query = null;
+            validator
+                .Setup(v => v.ValidateAsync(It.IsAny<Query>(), It.IsAny<System.Threading.CancellationToken>()))
+                .ReturnsAsync(new ValidationResult(new[] { new ValidationFailure("", "") }));
+        }
+
+        private void GivenTheQueryIsValid()
+        {
+            validator
+                .Setup(v => v.ValidateAsync(It.IsAny<Query>(), It.IsAny<System.Threading.CancellationToken>()))
+                .ReturnsAsync(new ValidationResult());
         }
 
         private void GivenNoDirectoriesAreBeingWatched()
         {
-            config = new StubbedConfig();
+            config = new LocationDiscoveryConfig();
         }
 
         private void GivenAWatchedDirectoryHasNoLocations()
@@ -83,7 +108,12 @@
                 testDirectory.Create();
             }
 
-            config = new StubbedConfig(testDirectoryStructure.Select(testDirectoryStructure => testDirectoryStructure.FullPath));
+            config = new LocationDiscoveryConfig
+            {
+                WatchedDirectories = testDirectoryStructure
+                    .Select(testDirectoryStructure => testDirectoryStructure.FullPath)
+                    .ToList()
+            };
         }
 
         private void GivenAWatchedDirectoryHasLocations()
@@ -95,13 +125,18 @@
                 testDirectory.Create();
             }
 
-            config = new StubbedConfig(testDirectoryStructure.Select(testDirectoryStructure => testDirectoryStructure.FullPath));
+            config = new LocationDiscoveryConfig
+            {
+                WatchedDirectories = testDirectoryStructure
+                    .Select(testDirectoryStructure => testDirectoryStructure.FullPath)
+                    .ToList()
+            };
         }
 
         private void WhenWeGetLocations()
         {
-            handler = new Agent.Features.Locations.Get.Handler(config);
-            response = handler.Handle(query);
+            handler = new Handler(Options.Create(config), validator.Object, logger.Object);
+            response = handler.Handle(query).GetAwaiter().GetResult();
         }
 
         private void ThenNoErrorsAreReturned()
@@ -144,23 +179,5 @@
 
             return directoriesWithLocationFiles;
         }
-    }
-
-    class StubbedConfig : IWatchedDirectoriesConfig
-    {
-        List<string> watchedDirectories = new List<string>();
-
-        public StubbedConfig() : this(new List<string>())
-        {
-        }
-
-        public StubbedConfig(IEnumerable<string> watchedDirectories)
-        {
-            this.watchedDirectories = new List<string>(watchedDirectories);
-        }
-
-        public IReadOnlyCollection<string> WatchedDirectories => watchedDirectories;
-
-        public string LocationFileSearchPattern => "evelyn.json";
     }
 }

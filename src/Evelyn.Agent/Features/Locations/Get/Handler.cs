@@ -5,30 +5,43 @@
     using BinaryMash.Responses;
     using MediatR;
     using Model;
+    using System.Threading.Tasks;
+    using FluentValidation;
+    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Logging;
 
-    public class Handler : IRequestHandler<Query, Response<Locations>>
+    public class Handler : IAsyncRequestHandler<Query, Response<Locations>>
     {
-        private IWatchedDirectoriesConfig config;
+        private LocationDiscoveryConfig config;
 
-        public Handler(IWatchedDirectoriesConfig watchedDirectoriesConfig)
+        private IValidator<Query> validator;
+
+        private ILogger<Handler> logger;
+
+        public Handler(IOptions<LocationDiscoveryConfig> watchedDirectoriesConfig, IValidator<Query> validator, ILogger<Handler> logger)
         {
-            config = watchedDirectoriesConfig;
+            config = watchedDirectoriesConfig.Value;
+            this.validator = validator;
+            this.logger = logger;
         }
 
-        public Response<Locations> Handle(Query message)
+        public async Task<Response<Locations>> Handle(Query message)
         {
-            if (message == null)
+            var validationResult = await validator.ValidateAsync(message, default(System.Threading.CancellationToken)).ConfigureAwait(false);
+
+            if (!validationResult.IsValid)
             {
                 return BuildResponse
                     .WithPayload(Locations.None)
-                    .AndWithErrors(new Error("InvalidArgument", ""))
+                    .AndWithErrors(new Error("InvalidRequest", ""))
                     .Create();
             }
 
             var locations = new List<Location>();
 
-            foreach(var directory in config.WatchedDirectories)
+            foreach (var directory in config?.WatchedDirectories ?? new List<string>())
             {
+                logger.LogInformation($"Looking for locations in {directory}");
                 locations.AddRange(GetLocationsFrom(directory));
             }
 
