@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Agent.Features.Locations.Get.Validation
 {
-    using FluentValidation;
     using System;
+    using FluentValidation;
 
     public class Validator : AbstractValidator<Model.Query>, IValidator<Model.Query>
     {

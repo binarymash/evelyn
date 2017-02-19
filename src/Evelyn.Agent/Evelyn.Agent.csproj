@@ -4,6 +4,7 @@
     <TargetFramework>netstandard1.4</TargetFramework>
     <Version>0.0.0-dev</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <CodeAnalysisRuleSet>..\..\global.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

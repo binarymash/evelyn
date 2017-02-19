@@ -4,32 +4,33 @@
     using System.Linq;
     using BinaryMash.Responses;
     using Evelyn.Agent.Features.Locations;
+    using Evelyn.Agent.Features.Locations.Get;
+    using Evelyn.Agent.Features.Locations.Get.Model;
+    using Evelyn.Agent.UnitTests.SetUp;
+    using FluentValidation;
+    using FluentValidation.Results;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Moq;
     using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
-    using FluentValidation;
-    using Moq;
-    using FluentValidation.Results;
-    using Evelyn.Agent.Features.Locations.Get.Model;
-    using Microsoft.Extensions.Options;
-    using Microsoft.Extensions.Logging;
-    using Evelyn.Agent.Features.Locations.Get;
 
     public class HandlerSpecs
     {
-        Agent.Features.Locations.Get.Handler handler;
+        private Handler handler;
 
-        LocationDiscoveryConfig config;
+        private LocationDiscoveryConfig config;
 
-        Query query;
+        private Query query;
 
-        Mock<IValidator<Query>> validator;
+        private Mock<IValidator<Query>> validator;
 
-        Mock<ILogger<Handler>> logger;
+        private Mock<ILogger<Handler>> logger;
 
-        List<TestDirectory> testDirectoryStructure;
+        private List<TestDirectory> testDirectoryStructure;
 
-        Response<Locations> response;
+        private Response<Locations> response;
 
         public HandlerSpecs()
         {
@@ -84,7 +85,7 @@
         {
             validator
                 .Setup(v => v.ValidateAsync(It.IsAny<Query>(), It.IsAny<System.Threading.CancellationToken>()))
-                .ReturnsAsync(new ValidationResult(new[] { new ValidationFailure("", "") }));
+                .ReturnsAsync(new ValidationResult(new[] { new ValidationFailure("SomeError", "SomeMessage") }));
         }
 
         private void GivenTheQueryIsValid()
@@ -168,7 +169,7 @@
         {
             var directoriesWithLocationFiles = new List<TestDirectory>();
 
-            foreach(var directory in directories)
+            foreach (var directory in directories)
             {
                 directoriesWithLocationFiles.AddRange(DirectoriesWithLocations(directory.SubDirectories));
                 if (directory.HasLocationFile)

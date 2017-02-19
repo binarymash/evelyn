@@ -1,12 +1,12 @@
-﻿using MediatR;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-
-namespace Evelyn.Host.Cli
+﻿namespace Evelyn.Host.Cli
 {
+    using System.Threading.Tasks;
+    using MediatR;
+    using Newtonsoft.Json;
+
     public class Application
     {
-        IMediator mediator;
+        private IMediator mediator;
 
         public Application(IMediator mediator)
         {

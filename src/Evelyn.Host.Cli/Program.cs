@@ -1,23 +1,23 @@
-﻿using BinaryMash.Responses;
-using Evelyn.Agent.Features.Locations;
-using Evelyn.Agent.Features.Locations.Get.Model;
-using Evelyn.Agent.Features.Locations.Get.Validation;
-using Evelyn.Agent.Mediatr;
-using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
-
-namespace Evelyn.Host.Cli
+﻿namespace Evelyn.Host.Cli
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using BinaryMash.Responses;
+    using Evelyn.Agent.Features.Locations;
+    using Evelyn.Agent.Features.Locations.Get.Model;
+    using Evelyn.Agent.Features.Locations.Get.Validation;
+    using Evelyn.Agent.Mediatr;
+    using FluentValidation;
+    using MediatR;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+
     public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             IServiceCollection serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
@@ -47,7 +47,7 @@ namespace Evelyn.Host.Cli
                 .AddDebug();
 
             services.AddSingleton(loggerFactory);
-            services.AddLogging(); 
+            services.AddLogging();
         }
 
         private static void AddConfiguration(IServiceCollection services)

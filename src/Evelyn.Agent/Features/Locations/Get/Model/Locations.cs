@@ -5,7 +5,8 @@
 
     public class Locations : ReadOnlyCollection<Location>
     {
-        public Locations(IList<Location> list) : base(list)
+        public Locations(IList<Location> list)
+            : base(list)
         {
         }
 

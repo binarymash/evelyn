@@ -1,19 +1,19 @@
-﻿using Evelyn.Agent.Features.Locations.Get.Model;
-using Evelyn.Agent.Features.Locations.Get.Validation;
-using FluentValidation.Results;
-using Shouldly;
-using TestStack.BDDfy;
-using Xunit;
-
-namespace Evelyn.Agent.UnitTests.Features.Locations.Get.Validation
+﻿namespace Evelyn.Agent.UnitTests.Features.Locations.Get.Validation
 {
+    using Evelyn.Agent.Features.Locations.Get.Model;
+    using Evelyn.Agent.Features.Locations.Get.Validation;
+    using FluentValidation.Results;
+    using Shouldly;
+    using TestStack.BDDfy;
+    using Xunit;
+
     public class ValidatorSpecs
     {
-        Query query;
+        private Query query;
 
-        Validator validator;
+        private Validator validator;
 
-        ValidationResult result;
+        private ValidationResult result;
 
         public ValidatorSpecs()
         {

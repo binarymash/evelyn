@@ -2,13 +2,13 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using BinaryMash.Responses;
-    using MediatR;
-    using Model;
     using System.Threading.Tasks;
+    using BinaryMash.Responses;
     using FluentValidation;
-    using Microsoft.Extensions.Options;
+    using MediatR;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Model;
 
     public class Handler : IAsyncRequestHandler<Query, Response<Locations>>
     {
@@ -33,7 +33,7 @@
             {
                 return BuildResponse
                     .WithPayload(Locations.None)
-                    .AndWithErrors(new Error("InvalidRequest", ""))
+                    .AndWithErrors(new Error("InvalidRequest", "The request was invalid"))
                     .Create();
             }
 
