@@ -36,8 +36,8 @@ var nugetFeedStableSymbolsUploadUrl = "https://www.myget.org/F/binarymash-stable
 // internal build variables - don't change these.
 var releaseTag = "";
 GitVersion versioning = null;
-var buildVersion = committedVersion;
 var committedVersion = "0.0.0-dev";
+var buildVersion = committedVersion;
 
 var target = Argument("target", "Default");
 
@@ -75,7 +75,7 @@ Task("Version")
 		if (AppVeyor.IsRunningOnAppVeyor)
 		{
 			Information("Persisting version number...");
-			PersistVersion(nugetVersion);
+			PersistVersion(committedVersion, nugetVersion);
 			buildVersion = nugetVersion;
 		}
 		else
@@ -128,7 +128,7 @@ Task("CreatePackages")
         
 		CopyFiles("./src/**/Evelyn.*.nupkg", packagesDir);
 
-		GenerateReleaseNotes();
+		GenerateReleaseNotes(releaseNotesFile);
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
@@ -151,9 +151,9 @@ Task("ReleasePackagesToUnstableFeed")
 	.IsDependentOn("CreatePackages")
 	.Does(() =>
 	{
-		if (ShouldPublishToUnstableFeed())
+		if (ShouldPublishToUnstableFeed(nugetFeedUnstableBranchFilter, versioning.BranchName))
 		{
-			PublishPackages(nugetFeedUnstableKey, nugetFeedUnstableUploadUrl, nugetFeedUnstableSymbolsUploadUrl);
+			PublishPackages(packagesDir, artifactsFile, nugetFeedUnstableKey, nugetFeedUnstableUploadUrl, nugetFeedUnstableSymbolsUploadUrl);
 		}
 	});
 
@@ -206,7 +206,7 @@ Task("ReleasePackagesToStableFeed")
     .IsDependentOn("DownloadGitHubReleaseArtifacts")
     .Does(() =>
     {
-		PublishPackages(nugetFeedStableKey, nugetFeedStableUploadUrl, nugetFeedStableSymbolsUploadUrl);
+		PublishPackages(packagesDir, artifactsFile, nugetFeedStableKey, nugetFeedStableUploadUrl, nugetFeedStableSymbolsUploadUrl);
     });
 
 Task("Release")
@@ -226,9 +226,9 @@ private GitVersion GetNuGetVersionForCommit()
 }
 
 /// Updates project version in all of our projects
-private void PersistVersion(string version)
+private void PersistVersion(string committedVersion, string newVersion)
 {
-	Information(string.Format("We'll search all csproj files for {0} and replace with {1}...", committedVersion, version));
+	Information(string.Format("We'll search all csproj files for {0} and replace with {1}...", committedVersion, newVersion));
 
 	var projectFiles = GetFiles("./**/*.csproj");
 
@@ -239,15 +239,21 @@ private void PersistVersion(string version)
 		Information(string.Format("Updating {0}...", file));
 
 		var updatedProjectFile = System.IO.File.ReadAllText(file)
-			.Replace(committedVersion, version);
+			.Replace(committedVersion, newVersion);
 
 		System.IO.File.WriteAllText(file, updatedProjectFile);
 	}
 }
 
 /// generates release notes based on issues closed in GitHub since the last release
-private void GenerateReleaseNotes()
+private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 {
+	if(!IsRunningOnWindows())
+	{
+		Warning("We are not running on Windows so we cannot generate release notes.");
+		return;
+	}
+
 	Information("Generating release notes at " + releaseNotesFile);
 
     var releaseNotesExitCode = StartProcess(
@@ -266,7 +272,7 @@ private void GenerateReleaseNotes()
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
-private void PublishPackages(string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
+private void PublishPackages(ConvertableDirectoryPath packagesDir, ConvertableFilePath artifactsFile, string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
 {
         var artifacts = System.IO.File
             .ReadAllLines(artifactsFile)
@@ -310,17 +316,17 @@ private string GetResource(string url)
     }
 }
 
-private bool ShouldPublishToUnstableFeed()
+private bool ShouldPublishToUnstableFeed(string filter, string branchName)
 {
-	var regex = new System.Text.RegularExpressions.Regex(nugetFeedUnstableBranchFilter);
-	var publish = regex.IsMatch(versioning.BranchName);
+	var regex = new System.Text.RegularExpressions.Regex(filter);
+	var publish = regex.IsMatch(branchName);
 	if (publish)
 	{
-		Information("Branch " + versioning.BranchName + " will be published to the unstable feed");
+		Information("Branch " + branchName + " will be published to the unstable feed");
 	}
 	else
 	{
-		Information("Branch " + versioning.BranchName + " will not be published to the unstable feed");
+		Information("Branch " + branchName + " will not be published to the unstable feed");
 	}
 	return publish;	
 }
