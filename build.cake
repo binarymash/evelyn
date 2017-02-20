@@ -246,7 +246,7 @@ private void PersistVersion(string committedVersion, string newVersion)
 }
 
 /// generates release notes based on issues closed in GitHub since the last release
-private void GenerateReleaseNotes(string releaseNotesFile)
+private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 {
 	if(!IsRunningOnWindows())
 	{
@@ -272,7 +272,7 @@ private void GenerateReleaseNotes(string releaseNotesFile)
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
-private void PublishPackages(string packagesDir, string artifactsFile, string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
+private void PublishPackages(ConvertableDirectoryPath packagesDir, ConvertableFilePath artifactsFile, string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
 {
         var artifacts = System.IO.File
             .ReadAllLines(artifactsFile)
