@@ -5,6 +5,7 @@
     <Version>0.0.0-dev</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion> 
   </PropertyGroup>
 
   <ItemGroup>
