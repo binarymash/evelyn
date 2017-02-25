@@ -7,16 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BinaryMash.Responses" Version="0.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170217-05" />
-    <PackageReference Include="Moq" Version="4.6.38-alpha" />
+    <PackageReference Include="BinaryMash.Responses" Version="0.6.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="Moq" Version="4.7.0" />
     <PackageReference Include="Shouldly" Version="2.8.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />
-    <PackageReference Include="xunit" Version="2.2.0-rc4-build3536" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-rc4-build1270" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
