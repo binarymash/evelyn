@@ -27,16 +27,6 @@
 
         public async Task<Response<Locations>> Handle(Query message)
         {
-            var validationResult = await validator.ValidateAsync(message, default(System.Threading.CancellationToken)).ConfigureAwait(false);
-
-            if (!validationResult.IsValid)
-            {
-                return BuildResponse
-                    .WithPayload(Locations.None)
-                    .AndWithErrors(new Error("InvalidRequest", "The request was invalid"))
-                    .Create();
-            }
-
             var locations = new List<Location>();
 
             foreach (var directory in config?.WatchedDirectories ?? new List<string>())
@@ -45,9 +35,9 @@
                 locations.AddRange(GetLocationsFrom(directory));
             }
 
-            return BuildResponse
+            return await Task.FromResult(BuildResponse
                 .WithPayload(new Locations(locations))
-                .Create();
+                .Create());
         }
 
         private IReadOnlyCollection<Location> GetLocationsFrom(string directory)

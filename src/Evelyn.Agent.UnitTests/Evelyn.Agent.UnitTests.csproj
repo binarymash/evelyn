@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BinaryMash.Responses" Version="0.6.3" />
+    <PackageReference Include="BinaryMash.Responses" Version="0.7.0-unstable0022" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="Moq" Version="4.7.0" />
     <PackageReference Include="Shouldly" Version="2.8.2" />

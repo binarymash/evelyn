@@ -41,16 +41,6 @@
         }
 
         [Fact]
-        public void InvalidRequest()
-        {
-            this.Given(_ => GivenTheQueryIsInvalid())
-                .When(_ => WhenWeGetLocations())
-                .Then(_ => ThenAnErrorIsReturned())
-                .And(_ => ThenNoLocationsAreReturned())
-                .BDDfy();
-        }
-
-        [Fact]
         public void NoWatchedDirectories()
         {
             this.Given(_ => GivenTheQueryIsValid())
