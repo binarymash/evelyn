@@ -14,14 +14,11 @@
     {
         private LocationDiscoveryConfig config;
 
-        private IValidator<Query> validator;
-
         private ILogger<Handler> logger;
 
-        public Handler(IOptions<LocationDiscoveryConfig> watchedDirectoriesConfig, IValidator<Query> validator, ILogger<Handler> logger)
+        public Handler(IOptions<LocationDiscoveryConfig> watchedDirectoriesConfig, ILogger<Handler> logger)
         {
             config = watchedDirectoriesConfig.Value;
-            this.validator = validator;
             this.logger = logger;
         }
 
