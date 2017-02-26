@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BinaryMash.Responses" Version="0.7.0-unstable0022" />
+    <PackageReference Include="BinaryMash.Responses" Version="0.7.0" />
     <PackageReference Include="FluentValidation" Version="6.4.0-rc4" />
     <PackageReference Include="MediatR" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.0" />
