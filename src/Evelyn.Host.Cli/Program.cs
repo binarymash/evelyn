@@ -70,6 +70,8 @@
         private static void AddMediatR(IServiceCollection services)
         {
             services.AddMediatR(typeof(MediatorHandlers).GetTypeInfo().Assembly);
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandling<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Logging<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Validation<,>));
         }

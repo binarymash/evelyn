@@ -17,6 +17,8 @@
         {
             var response = await mediator.Send(new Agent.Features.Locations.Get.Model.Query());
             System.Console.WriteLine(JsonConvert.SerializeObject(response));
+
+            System.Console.ReadLine();
         }
     }
 }
