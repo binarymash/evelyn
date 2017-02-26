@@ -1,10 +1,9 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs
 {
-    using System.Threading.Tasks;
     using BinaryMash.Responses;
+    using Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs.Support;
     using TestStack.BDDfy;
     using Xunit;
-    using static Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs.ResponseSpecs;
 
     public class ResponseSpecs : LoggingBehaviourSpecs<MyRequest, Response>
     {
@@ -78,11 +77,6 @@
         private void ThenTheResponseIsNotLogged()
         {
             ThenInformationIsNotLogged("Handled Response");
-        }
-
-        public class MyRequest
-        {
-            public string MyProperty { get; set; }
         }
     }
 }

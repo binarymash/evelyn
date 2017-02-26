@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using BinaryMash.Responses;
+    using Evelyn.Agent.UnitTests.Mediatr.Behaviors.ValidationSpecs.Support;
     using FluentValidation;
     using TestStack.BDDfy;
     using Xunit;
-    using static Evelyn.Agent.UnitTests.Mediatr.Behaviors.ValidationSpecs.ResponseSpecs;
 
     public class ResponseSpecs : ValidationBehaviourSpecs<SomeRequest, Response>
     {
@@ -108,35 +108,6 @@
         private void GivenTheNextHandlerWillReturnAResponse()
         {
             GivenTheNextHandlerWillReturnAResponse(BuildResponse.WithNoPayload().Create());
-        }
-
-        public class SomeRequest
-        {
-            public SomeRequest(bool mustBeTrue, int mustBeGreaterThan5)
-            {
-                MustBeTrue = mustBeTrue;
-                MustBeGreaterThan5 = mustBeGreaterThan5;
-            }
-
-            public bool MustBeTrue { get; private set; }
-
-            public int MustBeGreaterThan5 { get; private set; }
-        }
-
-        public class IsTrueValidator : AbstractValidator<SomeRequest>
-        {
-            public IsTrueValidator()
-            {
-                this.RuleFor(sr => sr.MustBeTrue).Equal(true);
-            }
-        }
-
-        public class IsGreaterThan5Validator : AbstractValidator<SomeRequest>
-        {
-            public IsGreaterThan5Validator()
-            {
-                this.RuleFor(sr => sr.MustBeGreaterThan5).GreaterThan(5);
-            }
         }
     }
 }
