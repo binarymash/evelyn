@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using BinaryMash.Responses;
-    using FluentValidation;
     using MediatR;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;

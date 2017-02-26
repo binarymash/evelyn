@@ -15,7 +15,7 @@
 
         public async Task Run()
         {
-            var response = await mediator.Send(new Agent.Features.Locations.Get.Model.Query());
+            var response = await mediator.Send(new Agent.Features.Locations.Get.Query());
             System.Console.WriteLine(JsonConvert.SerializeObject(response));
 
             System.Console.ReadLine();

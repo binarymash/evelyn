@@ -6,8 +6,8 @@
     using System.Threading.Tasks;
     using BinaryMash.Responses;
     using Evelyn.Agent.Features.Locations;
+    using Evelyn.Agent.Features.Locations.Get;
     using Evelyn.Agent.Features.Locations.Get.Model;
-    using Evelyn.Agent.Features.Locations.Get.Validation;
     using Evelyn.Agent.Mediatr;
     using FluentValidation;
     using MediatR;
