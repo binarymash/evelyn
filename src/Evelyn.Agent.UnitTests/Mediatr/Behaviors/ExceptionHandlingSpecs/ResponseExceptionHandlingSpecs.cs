@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandling
+﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandlingSpecs
 {
     using BinaryMash.Responses;
     using Moq;

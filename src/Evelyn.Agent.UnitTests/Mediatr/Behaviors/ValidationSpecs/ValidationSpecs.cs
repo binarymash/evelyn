@@ -8,7 +8,7 @@
     using FluentValidation;
     using Shouldly;
 
-    public abstract class ValidationBehaviourSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
+    public abstract class ValidationSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
         where TResponse : Response
     {
         protected IEnumerable<IValidator<TRequest>> Validators { get; set; }

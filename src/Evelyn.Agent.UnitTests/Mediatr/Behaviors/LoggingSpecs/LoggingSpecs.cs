@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors
+﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs
 {
     using System;
     using BinaryMash.Responses;
@@ -6,10 +6,10 @@
     using Microsoft.Extensions.Logging;
     using Moq;
 
-    public class LoggingBehaviourSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
+    public class LoggingSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
         where TResponse : Response
     {
-        public LoggingBehaviourSpecs()
+        public LoggingSpecs()
         {
             Logger = new Mock<ILogger<Logging<TRequest, TResponse>>>();
             Behavior = new Logging<TRequest, TResponse>(Logger.Object);

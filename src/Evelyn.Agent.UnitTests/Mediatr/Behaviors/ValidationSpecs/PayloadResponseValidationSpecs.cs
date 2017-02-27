@@ -7,7 +7,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class PayloadResponseSpecs : ValidationBehaviourSpecs<SomeRequest, Response<SomeResponse>>
+    public class PayloadResponseValidationSpecs : ValidationSpecs<SomeRequest, Response<SomeResponse>>
     {
         [Fact]
         public void NullRequest()

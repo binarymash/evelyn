@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandling
+﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandlingSpecs
 {
     using BinaryMash.Responses;
     using Moq;
@@ -32,7 +32,7 @@
         private void GivenTheNextHandlerDoesNotThrowAnException()
         {
             ResponseFromNext = BuildResponse
-                .WithPayload(new Support.MyResponse{MyProperty = "test" })
+                .WithPayload(new Support.MyResponse { MyProperty = "test" })
                 .Create();
             Next.Setup(n => n()).ReturnsAsync(ResponseFromNext);
         }

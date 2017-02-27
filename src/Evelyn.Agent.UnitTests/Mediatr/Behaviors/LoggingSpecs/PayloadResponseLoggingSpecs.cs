@@ -5,7 +5,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class PayloadResponseSpecs : LoggingBehaviourSpecs<MyRequest, Response<MyResponse>>
+    public class PayloadResponseLoggingSpecs : LoggingSpecs<MyRequest, Response<MyResponse>>
     {
         [Fact]
         public void NullRequest()

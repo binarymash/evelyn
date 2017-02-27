@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandling.Support
+﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandlingSpecs.Support
 {
     public class MyResponse
     {

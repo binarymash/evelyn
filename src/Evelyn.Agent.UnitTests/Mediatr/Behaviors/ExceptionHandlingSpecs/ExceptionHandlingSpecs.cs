@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors
+﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandlingSpecs
 {
     using System;
     using System.Linq;
