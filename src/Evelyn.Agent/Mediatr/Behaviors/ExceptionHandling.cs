@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.Mediatr
+﻿namespace Evelyn.Agent.Mediatr.Behaviors
 {
     using System;
     using System.Threading.Tasks;
@@ -7,7 +7,7 @@
     using Microsoft.Extensions.Logging;
 
     public class ExceptionHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TResponse : class
+        where TResponse : Response
     {
         private ILogger logger;
 
@@ -24,6 +24,7 @@
             }
             catch (Exception ex)
             {
+                // TODO: what event id?
                 logger.LogError(new EventId(0), ex, $"An internal exception occurred");
             }
 

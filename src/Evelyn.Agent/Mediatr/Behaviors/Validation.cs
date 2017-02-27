@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Agent.Mediatr
+﻿namespace Evelyn.Agent.Mediatr.Behaviors
 {
     using System.Collections.Generic;
     using System.Linq;

@@ -1,10 +1,12 @@
-﻿namespace Evelyn.Agent.Mediatr
+﻿namespace Evelyn.Agent.Mediatr.Behaviors
 {
     using System.Threading.Tasks;
+    using BinaryMash.Responses;
     using MediatR;
     using Microsoft.Extensions.Logging;
 
     public class Logging<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TResponse : Response
     {
         private ILogger logger;
 

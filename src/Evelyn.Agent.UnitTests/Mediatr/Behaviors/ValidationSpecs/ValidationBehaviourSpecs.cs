@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using BinaryMash.Responses;
-    using Evelyn.Agent.Mediatr;
+    using Evelyn.Agent.Mediatr.Behaviors;
     using FluentValidation;
     using Shouldly;
 

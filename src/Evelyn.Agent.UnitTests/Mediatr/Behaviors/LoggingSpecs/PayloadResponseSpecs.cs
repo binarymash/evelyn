@@ -16,7 +16,7 @@
                 .Then(_ => ThenTheRequestIsLogged())
                 .And(_ => ThenTheNextHandlerIsCalled())
                 .And(_ => ThenTheResponseIsLogged())
-                .And(_ => ThenTheResponseIsReturned())
+                .And(_ => ThenTheResponseFromTheNextHandlerIsReturned())
                 .BDDfy();
         }
 
@@ -29,7 +29,7 @@
                 .Then(_ => ThenTheRequestIsLogged())
                 .And(_ => ThenTheNextHandlerIsCalled())
                 .And(_ => ThenTheResponseIsLogged())
-                .And(_ => ThenTheResponseIsReturned())
+                .And(_ => ThenTheResponseFromTheNextHandlerIsReturned())
                 .BDDfy();
         }
 

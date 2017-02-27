@@ -22,7 +22,7 @@
 
         protected Mock<RequestHandlerDelegate<TResponse>> Next { get; set; }
 
-        protected Task<TResponse> ResponseFromNext { get; set; }
+        protected TResponse ResponseFromNext { get; set; }
 
         protected TResponse Response { get; set; }
 
@@ -37,9 +37,9 @@
 
         protected void GivenTheNextHandlerWillReturnAResponse(TResponse response)
         {
-            ResponseFromNext = Task.FromResult(response);
+            ResponseFromNext = response;
             Next.Setup(n => n())
-                .Returns(ResponseFromNext);
+                .ReturnsAsync(ResponseFromNext);
         }
 
         protected void GivenTheNextHandlerWillThrowAnException()
@@ -71,9 +71,9 @@
             Next.Verify(n => n(), Times.Never);
         }
 
-        protected void ThenTheResponseIsReturned()
+        protected void ThenTheResponseFromTheNextHandlerIsReturned()
         {
-            Response.ShouldBe(ResponseFromNext.Result);
+            Response.ShouldBe(ResponseFromNext);
         }
 
         protected void ThenTheResponseContainsNoErrors()
@@ -84,6 +84,11 @@
         protected void ThenTheExceptionIsRethrown()
         {
             ThrownException.ShouldBe(ExceptionThrownFromNextHandler);
+        }
+
+        private void NoErrorIsLogged()
+        {
+            throw new NotImplementedException();
         }
     }
 }

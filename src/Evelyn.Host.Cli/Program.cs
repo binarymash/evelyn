@@ -9,6 +9,7 @@
     using Evelyn.Agent.Features.Locations.Get;
     using Evelyn.Agent.Features.Locations.Get.Model;
     using Evelyn.Agent.Mediatr;
+    using Evelyn.Agent.Mediatr.Behaviors;
     using FluentValidation;
     using MediatR;
     using Microsoft.Extensions.Configuration;

@@ -2,7 +2,7 @@
 {
     using System;
     using BinaryMash.Responses;
-    using Evelyn.Agent.Mediatr;
+    using Evelyn.Agent.Mediatr.Behaviors;
     using Microsoft.Extensions.Logging;
     using Moq;
 
