@@ -6,9 +6,10 @@
     using System.Threading.Tasks;
     using BinaryMash.Responses;
     using Evelyn.Agent.Features.Locations;
+    using Evelyn.Agent.Features.Locations.Get;
     using Evelyn.Agent.Features.Locations.Get.Model;
-    using Evelyn.Agent.Features.Locations.Get.Validation;
     using Evelyn.Agent.Mediatr;
+    using Evelyn.Agent.Mediatr.Behaviors;
     using FluentValidation;
     using MediatR;
     using Microsoft.Extensions.Configuration;
@@ -35,8 +36,7 @@
             AddLogging(services);
             AddConfiguration(services);
             AddValidation(services);
-
-            services.AddMediatR(typeof(MediatorHandlers).GetTypeInfo().Assembly);
+            AddMediatR(services);
             services.AddTransient<Application>();
         }
 
@@ -66,6 +66,15 @@
         private static void AddValidation(IServiceCollection services)
         {
             services.AddTransient<IValidator<Query>>((a) => { return new Validator(); });
+        }
+
+        private static void AddMediatR(IServiceCollection services)
+        {
+            services.AddMediatR(typeof(MediatorHandlers).GetTypeInfo().Assembly);
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandling<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Logging<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Validation<,>));
         }
     }
 }

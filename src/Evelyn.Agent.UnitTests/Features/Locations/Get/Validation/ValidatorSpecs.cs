@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Agent.UnitTests.Features.Locations.Get.Validation
 {
-    using Evelyn.Agent.Features.Locations.Get.Model;
-    using Evelyn.Agent.Features.Locations.Get.Validation;
+    using Evelyn.Agent.Features.Locations.Get;
     using FluentValidation.Results;
     using Shouldly;
     using TestStack.BDDfy;

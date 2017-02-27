@@ -7,8 +7,6 @@
     using Evelyn.Agent.Features.Locations.Get;
     using Evelyn.Agent.Features.Locations.Get.Model;
     using Evelyn.Agent.UnitTests.SetUp;
-    using FluentValidation;
-    using FluentValidation.Results;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Moq;
@@ -24,8 +22,6 @@
 
         private Query query;
 
-        private Mock<IValidator<Query>> validator;
-
         private Mock<ILogger<Handler>> logger;
 
         private List<TestDirectory> testDirectoryStructure;
@@ -36,25 +32,13 @@
         {
             testDirectoryStructure = new List<TestDirectory>();
             query = new Query();
-            validator = new Mock<IValidator<Query>>();
             logger = new Mock<ILogger<Handler>>();
-        }
-
-        [Fact]
-        public void InvalidRequest()
-        {
-            this.Given(_ => GivenTheQueryIsInvalid())
-                .When(_ => WhenWeGetLocations())
-                .Then(_ => ThenAnErrorIsReturned())
-                .And(_ => ThenNoLocationsAreReturned())
-                .BDDfy();
         }
 
         [Fact]
         public void NoWatchedDirectories()
         {
-            this.Given(_ => GivenTheQueryIsValid())
-                .And(_ => GivenNoDirectoriesAreBeingWatched())
+            this.Given(_ => GivenNoDirectoriesAreBeingWatched())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenNoLocationsAreReturned())
                 .BDDfy();
@@ -63,8 +47,7 @@
         [Fact]
         public void WatchedDirectoryWithNoLocations()
         {
-            this.Given(_ => GivenTheQueryIsValid())
-                .And(_ => GivenAWatchedDirectoryHasNoLocations())
+            this.Given(_ => GivenAWatchedDirectoryHasNoLocations())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenNoLocationsAreReturned())
                 .And(_ => ThenNoErrorsAreReturned())
@@ -74,25 +57,10 @@
         [Fact]
         public void WatchedDirectoryWithLocations()
         {
-            this.Given(_ => GivenTheQueryIsValid())
-                .And(_ => GivenAWatchedDirectoryHasLocations())
+            this.Given(_ => GivenAWatchedDirectoryHasLocations())
                 .When(_ => WhenWeGetLocations())
                 .Then(_ => ThenAllLocationsAreReturned())
                 .BDDfy();
-        }
-
-        private void GivenTheQueryIsInvalid()
-        {
-            validator
-                .Setup(v => v.ValidateAsync(It.IsAny<Query>(), It.IsAny<System.Threading.CancellationToken>()))
-                .ReturnsAsync(new ValidationResult(new[] { new ValidationFailure("SomeError", "SomeMessage") }));
-        }
-
-        private void GivenTheQueryIsValid()
-        {
-            validator
-                .Setup(v => v.ValidateAsync(It.IsAny<Query>(), It.IsAny<System.Threading.CancellationToken>()))
-                .ReturnsAsync(new ValidationResult());
         }
 
         private void GivenNoDirectoriesAreBeingWatched()
@@ -136,7 +104,7 @@
 
         private void WhenWeGetLocations()
         {
-            handler = new Handler(Options.Create(config), validator.Object, logger.Object);
+            handler = new Handler(Options.Create(config), logger.Object);
             response = handler.Handle(query).GetAwaiter().GetResult();
         }
 

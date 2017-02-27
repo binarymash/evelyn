@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using BinaryMash.Responses;
-    using FluentValidation;
     using MediatR;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -14,29 +13,16 @@
     {
         private LocationDiscoveryConfig config;
 
-        private IValidator<Query> validator;
-
         private ILogger<Handler> logger;
 
-        public Handler(IOptions<LocationDiscoveryConfig> watchedDirectoriesConfig, IValidator<Query> validator, ILogger<Handler> logger)
+        public Handler(IOptions<LocationDiscoveryConfig> watchedDirectoriesConfig, ILogger<Handler> logger)
         {
             config = watchedDirectoriesConfig.Value;
-            this.validator = validator;
             this.logger = logger;
         }
 
         public async Task<Response<Locations>> Handle(Query message)
         {
-            var validationResult = await validator.ValidateAsync(message, default(System.Threading.CancellationToken)).ConfigureAwait(false);
-
-            if (!validationResult.IsValid)
-            {
-                return BuildResponse
-                    .WithPayload(Locations.None)
-                    .AndWithErrors(new Error("InvalidRequest", "The request was invalid"))
-                    .Create();
-            }
-
             var locations = new List<Location>();
 
             foreach (var directory in config?.WatchedDirectories ?? new List<string>())
@@ -45,9 +31,9 @@
                 locations.AddRange(GetLocationsFrom(directory));
             }
 
-            return BuildResponse
+            return await Task.FromResult(BuildResponse
                 .WithPayload(new Locations(locations))
-                .Create();
+                .Create());
         }
 
         private IReadOnlyCollection<Location> GetLocationsFrom(string directory)
