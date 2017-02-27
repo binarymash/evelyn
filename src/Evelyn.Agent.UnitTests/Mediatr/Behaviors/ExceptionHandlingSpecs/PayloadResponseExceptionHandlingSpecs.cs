@@ -5,7 +5,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class PayloadResponseExceptionHandlingSpecs : ExceptionHandlingSpecs<object, Response<Support.MyResponse>>
+    public class PayloadResponseExceptionHandlingSpecs : ExceptionHandlingSpecs<Support.MyRequest, Response<Support.MyPayload>>
     {
         [Fact]
         public void ExceptionNotThrownByNextHandler()
@@ -32,7 +32,7 @@
         private void GivenTheNextHandlerDoesNotThrowAnException()
         {
             ResponseFromNext = BuildResponse
-                .WithPayload(new Support.MyResponse { MyProperty = "test" })
+                .WithPayload(new Support.MyPayload { MyProperty = "test" })
                 .Create();
             Next.Setup(n => n()).ReturnsAsync(ResponseFromNext);
         }

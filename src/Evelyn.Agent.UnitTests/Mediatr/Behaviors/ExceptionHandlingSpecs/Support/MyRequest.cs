@@ -1,6 +1,8 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ExceptionHandlingSpecs.Support
 {
-    public class MyResponse
+    using MediatR;
+
+    public class MyRequest : IRequest
     {
         public string MyProperty { get; set; }
     }

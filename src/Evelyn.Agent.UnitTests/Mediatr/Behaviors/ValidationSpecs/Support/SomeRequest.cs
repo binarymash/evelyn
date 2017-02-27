@@ -1,10 +1,8 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ValidationSpecs.Support
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using MediatR;
 
-    public class SomeRequest
+    public class SomeRequest : IRequest
     {
         public SomeRequest(bool mustBeTrue, int mustBeGreaterThan5)
         {

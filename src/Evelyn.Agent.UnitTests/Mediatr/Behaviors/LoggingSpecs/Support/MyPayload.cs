@@ -1,6 +1,6 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs.Support
 {
-    public class MyResponse
+    public class MyPayload
     {
         public string MyProperty { get; set; }
     }

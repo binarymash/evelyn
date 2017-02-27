@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Logging;
 
     public class ExceptionHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IRequest
         where TResponse : Response
     {
         private ILogger logger;

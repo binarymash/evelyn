@@ -7,7 +7,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class PayloadResponseValidationSpecs : ValidationSpecs<SomeRequest, Response<SomeResponse>>
+    public class PayloadResponseValidationSpecs : ValidationSpecs<SomeRequest, Response<SomePayload>>
     {
         [Fact]
         public void NullRequest()
@@ -95,7 +95,7 @@
 
         private void GivenTheNextHandlerWillReturnAResponse()
         {
-            GivenTheNextHandlerWillReturnAResponse(BuildResponse.WithPayload(new SomeResponse("My Response!")).Create());
+            GivenTheNextHandlerWillReturnAResponse(BuildResponse.WithPayload(new SomePayload("My Response!")).Create());
         }
     }
 }

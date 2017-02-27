@@ -3,10 +3,12 @@
     using System;
     using BinaryMash.Responses;
     using Evelyn.Agent.Mediatr.Behaviors;
+    using MediatR;
     using Microsoft.Extensions.Logging;
     using Moq;
 
     public class LoggingSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
+        where TRequest : IRequest
         where TResponse : Response
     {
         public LoggingSpecs()

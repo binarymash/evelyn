@@ -1,11 +1,10 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs
 {
     using BinaryMash.Responses;
-    using Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs.Support;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ResponseLoggingSpecs : LoggingSpecs<MyRequest, Response>
+    public class ResponseLoggingSpecs : LoggingSpecs<Support.MyRequest, Response>
     {
         [Fact]
         public void NullRequest()
@@ -53,7 +52,7 @@
 
         private void GivenARequest()
         {
-            GivenARequest(new MyRequest { MyProperty = "test" });
+            GivenARequest(new Support.MyRequest { MyProperty = "test" });
         }
 
         private void GivenTheNextHandlerWillReturnAResponse()

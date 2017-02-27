@@ -5,7 +5,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ResponseExceptionHandlingSpecs : ExceptionHandlingSpecs<object, Response>
+    public class ResponseExceptionHandlingSpecs : ExceptionHandlingSpecs<Support.MyRequest, Response>
     {
         [Fact]
         public void ExceptionNotThrownByNextHandler()

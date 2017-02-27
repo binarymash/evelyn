@@ -6,9 +6,11 @@
     using BinaryMash.Responses;
     using Evelyn.Agent.Mediatr.Behaviors;
     using FluentValidation;
+    using MediatR;
     using Shouldly;
 
     public abstract class ValidationSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
+        where TRequest : IRequest
         where TResponse : Response
     {
         protected IEnumerable<IValidator<TRequest>> Validators { get; set; }

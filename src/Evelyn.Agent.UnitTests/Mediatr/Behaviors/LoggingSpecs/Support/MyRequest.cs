@@ -1,6 +1,8 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.LoggingSpecs.Support
 {
-    public class MyRequest
+    using MediatR;
+
+    public class MyRequest : IRequest
     {
         public string MyProperty { get; set; }
     }

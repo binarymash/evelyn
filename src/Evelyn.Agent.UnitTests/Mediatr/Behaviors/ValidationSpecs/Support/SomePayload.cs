@@ -1,8 +1,8 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ValidationSpecs.Support
 {
-    public class SomeResponse
+    public class SomePayload
     {
-        public SomeResponse(string someValue)
+        public SomePayload(string someValue)
         {
             SomeValue = someValue;
         }

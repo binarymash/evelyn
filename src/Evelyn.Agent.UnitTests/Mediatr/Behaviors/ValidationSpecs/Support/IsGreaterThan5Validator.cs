@@ -1,8 +1,5 @@
 ﻿namespace Evelyn.Agent.UnitTests.Mediatr.Behaviors.ValidationSpecs.Support
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using FluentValidation;
 
     public class IsGreaterThan5Validator : AbstractValidator<SomeRequest>

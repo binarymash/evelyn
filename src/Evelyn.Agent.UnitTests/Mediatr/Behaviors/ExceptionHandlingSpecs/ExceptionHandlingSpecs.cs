@@ -4,11 +4,13 @@
     using System.Linq;
     using BinaryMash.Responses;
     using Evelyn.Agent.Mediatr.Behaviors;
+    using MediatR;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Shouldly;
 
     public abstract class ExceptionHandlingSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
+        where TRequest : IRequest
         where TResponse : Response
     {
         public ExceptionHandlingSpecs()
