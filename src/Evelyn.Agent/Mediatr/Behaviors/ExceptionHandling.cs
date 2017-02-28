@@ -7,12 +7,12 @@
     using Microsoft.Extensions.Logging;
 
     public class ExceptionHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest
+        where TRequest : class
         where TResponse : Response
     {
         private ILogger logger;
 
-        public ExceptionHandling(ILogger<Logging<TRequest, TResponse>> logger)
+        public ExceptionHandling(ILogger<ExceptionHandling<TRequest, TResponse>> logger)
         {
             this.logger = logger;
         }

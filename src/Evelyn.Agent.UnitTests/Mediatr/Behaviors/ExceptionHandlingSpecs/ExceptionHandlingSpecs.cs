@@ -4,22 +4,21 @@
     using System.Linq;
     using BinaryMash.Responses;
     using Evelyn.Agent.Mediatr.Behaviors;
-    using MediatR;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Shouldly;
 
     public abstract class ExceptionHandlingSpecs<TRequest, TResponse> : BehaviourSpecs<TRequest, TResponse>
-        where TRequest : IRequest
+        where TRequest : class
         where TResponse : Response
     {
         public ExceptionHandlingSpecs()
         {
-            Logger = new Mock<ILogger<Logging<TRequest, TResponse>>>();
+            Logger = new Mock<ILogger<ExceptionHandling<TRequest, TResponse>>>();
             Behavior = new ExceptionHandling<TRequest, TResponse>(Logger.Object);
         }
 
-        protected Mock<ILogger<Logging<TRequest, TResponse>>> Logger { get; set; }
+        protected Mock<ILogger<ExceptionHandling<TRequest, TResponse>>> Logger { get; set; }
 
         protected void GivenTheNextHandlerThrowsAnException()
         {

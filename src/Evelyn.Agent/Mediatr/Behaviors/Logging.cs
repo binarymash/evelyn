@@ -6,7 +6,7 @@
     using Microsoft.Extensions.Logging;
 
     public class Logging<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest
+        where TRequest : class
         where TResponse : Response
     {
         private ILogger logger;

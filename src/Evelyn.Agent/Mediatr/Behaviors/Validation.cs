@@ -9,7 +9,7 @@
     using MediatR;
 
     public class Validation<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest
+        where TRequest : class
         where TResponse : Response
     {
         private IEnumerable<IValidator<TRequest>> validators;

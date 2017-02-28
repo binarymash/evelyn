@@ -10,12 +10,9 @@
         public static void Main(string[] args)
         {
             Task.Run(() =>
-            {
                 BootstrapServices()
                     .GetService<Application>()
-                    .Run()
-                    .Wait();
-            });
+                    .Run()).Wait();
         }
 
         private static IServiceProvider BootstrapServices()

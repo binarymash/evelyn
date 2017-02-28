@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Host.Cli.Services
 {
     using System.Reflection;
-    using Evelyn.Agent.Mediatr;
+    using Evelyn.Agent;
     using Evelyn.Agent.Mediatr.Behaviors;
     using MediatR;
     using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,7 @@
     {
         public static void AddMediatRPipeline(this IServiceCollection services)
         {
-            services.AddMediatR(typeof(MediatorHandlers).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(AgentMarker).GetTypeInfo().Assembly);
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandling<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Logging<,>));
