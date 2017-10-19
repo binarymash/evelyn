@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Evelyn.Core.WriteModel.Domain
+﻿namespace Evelyn.Core.WriteModel.Domain
 {
+    using System;
+    using System.Collections.Generic;
+
     public class Environment
     {
-        public IList<Guid> ToggleStates { get; }
-
         public Environment()
         {
             ToggleStates = new List<Guid>();
         }
 
-        public Environment(Guid id, string name, string key) : this()
+        public Environment(Guid id, string name, string key)
+            : this()
         {
             Id = id;
             Name = name;
             Key = key;
         }
+
+        public IList<Guid> ToggleStates { get; }
 
         public Guid Id { get; }
 

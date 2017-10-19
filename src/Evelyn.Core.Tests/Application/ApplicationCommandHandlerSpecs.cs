@@ -1,10 +1,10 @@
 ﻿namespace Evelyn.Core.Tests.Application
 {
+    using System;
     using CQRSlite.Commands;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Domain;
     using Evelyn.Core.WriteModel.Handlers;
-    using System;
 
     public abstract class ApplicationCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Application, ApplicationCommandHandler, TCommand>
         where TCommand : ICommand

@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Evelyn.Core.WriteModel.Domain
+﻿namespace Evelyn.Core.WriteModel.Domain
 {
+    using System;
+
     public class Toggle
     {
         public Toggle()

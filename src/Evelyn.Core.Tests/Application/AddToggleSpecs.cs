@@ -1,15 +1,12 @@
 namespace Evelyn.Core.Tests.Application
 {
     using System;
-
-    using Evelyn.Core.WriteModel.Commands;
-    using TestStack.BDDfy;
-    using Xunit;
     using System.Linq;
     using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.WriteModel.Handlers;
-    using Evelyn.Core.WriteModel.Domain;
+    using Evelyn.Core.WriteModel.Commands;
     using Shouldly;
+    using TestStack.BDDfy;
+    using Xunit;
 
     public class AddToggleSpecs : ApplicationCommandHandlerSpecs<AddToggle>
     {
@@ -110,7 +107,7 @@ namespace Evelyn.Core.Tests.Application
         private void WhenWeAddAnotherToggleWithTheSameName()
         {
             _newToggleId = Guid.NewGuid();
-            _newToggleName =_existingToggleName;
+            _newToggleName = _existingToggleName;
             _newToggleKey = "some other name";
             var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
@@ -145,6 +142,5 @@ namespace Evelyn.Core.Tests.Application
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already a toggle with the name {_newToggleName}");
         }
-
     }
 }

@@ -1,14 +1,12 @@
 namespace Evelyn.Core.Tests.Application
 {
     using System;
-
-    using Evelyn.Core.WriteModel.Commands;
-    using TestStack.BDDfy;
-    using Xunit;
     using System.Linq;
     using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.WriteModel.Handlers;
+    using Evelyn.Core.WriteModel.Commands;
     using Shouldly;
+    using TestStack.BDDfy;
+    using Xunit;
 
     public class CreateApplicationSpecs : ApplicationCommandHandlerSpecs<CreateApplication>
     {
@@ -21,7 +19,7 @@ namespace Evelyn.Core.Tests.Application
         public CreateApplicationSpecs()
         {
             _id = Guid.NewGuid();
-            _name = "some name"; //autofixture
+            _name = "some name"; // autofixture
             _expectedName = _name;
         }
 
@@ -35,15 +33,15 @@ namespace Evelyn.Core.Tests.Application
                 .BDDfy();
         }
 
-        //[Fact]
-        //public void ApplicationAlreadyExists()
-        //{
-        //    this.Given(_ => GivenWeHaveAlreadyCreateAnApplication())
-        //        .And(_ => GivenACreateApplicationCommand())
-        //        .When(_ => WhenTheCommandIsHandled())
-        //        .Then(_ => ThenNoEventIsPublished())
-        //        .BDDfy();
-        //}
+        ////[Fact]
+        ////public void ApplicationAlreadyExists()
+        ////{
+        ////    this.Given(_ => GivenWeHaveAlreadyCreateAnApplication())
+        ////        .And(_ => GivenACreateApplicationCommand())
+        ////        .When(_ => WhenTheCommandIsHandled())
+        ////        .Then(_ => ThenNoEventIsPublished())
+        ////        .BDDfy();
+        ////}
 
         private void GivenWeHaveAlreadyCreateAnApplication()
         {

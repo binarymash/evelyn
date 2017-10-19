@@ -1,10 +1,10 @@
 ﻿namespace Evelyn.Core.WriteModel.Domain
 {
-    using CQRSlite.Domain;
-    using Evelyn.Core.ReadModel.Events;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using CQRSlite.Domain;
+    using Evelyn.Core.ReadModel.Events;
 
     public class Application : AggregateRoot
     {

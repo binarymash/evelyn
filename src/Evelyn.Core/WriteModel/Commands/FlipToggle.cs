@@ -1,10 +1,17 @@
-﻿using CQRSlite.Commands;
-using System;
-
-namespace Evelyn.Core.WriteModel.Commands
+﻿namespace Evelyn.Core.WriteModel.Commands
 {
+    using System;
+    using CQRSlite.Commands;
+
     public class FlipToggle : ICommand
     {
+        public FlipToggle(Guid applicationId, Guid environmentId, Guid toggleId)
+        {
+            ApplicationId = applicationId;
+            EnvironmentId = environmentId;
+            ToggleId = toggleId;
+        }
+
         public Guid ApplicationId { get; set; }
 
         public int ExpectedVersion { get; set; }
@@ -12,12 +19,5 @@ namespace Evelyn.Core.WriteModel.Commands
         public Guid EnvironmentId { get; set; }
 
         public Guid ToggleId { get; set; }
-
-        public FlipToggle(Guid applicationId, Guid environmentId, Guid toggleId)
-        {
-            ApplicationId = applicationId;
-            EnvironmentId = environmentId;
-            ToggleId = toggleId;
-        }
     }
 }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using CQRSlite.Events;
-
-namespace Evelyn.Core
+﻿namespace Evelyn.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using CQRSlite.Events;
+
     public class InMemoryEventStore : IEventStore
     {
         private readonly IEventPublisher _publisher;
@@ -27,6 +27,7 @@ namespace Evelyn.Core
                     list = new List<IEvent>();
                     _inMemoryDb.Add(@event.Id, list);
                 }
+
                 list.Add(@event);
                 await _publisher.Publish(@event, cancellationToken);
             }

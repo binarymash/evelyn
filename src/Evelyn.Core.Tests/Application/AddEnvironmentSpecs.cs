@@ -2,7 +2,6 @@ namespace Evelyn.Core.Tests.Application
 {
     using System;
     using System.Linq;
-
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
     using Shouldly;
@@ -92,7 +91,7 @@ namespace Evelyn.Core.Tests.Application
             _newEnvironmentId = _existingEnvironmentId;
             _newEnvironmentName = "some other name";
             _newEnvironmentKey = "some other key";
-            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count};
+            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
@@ -109,7 +108,7 @@ namespace Evelyn.Core.Tests.Application
         {
             _newEnvironmentId = Guid.NewGuid();
             _newEnvironmentName = _existingEnvironmentName;
-            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count};
+            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 

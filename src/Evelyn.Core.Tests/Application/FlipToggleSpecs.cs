@@ -1,13 +1,12 @@
 namespace Evelyn.Core.Tests.Application
 {
     using System;
-
-    using Evelyn.Core.WriteModel.Commands;
-    using TestStack.BDDfy;
-    using Xunit;
     using System.Linq;
     using Evelyn.Core.ReadModel.Events;
+    using Evelyn.Core.WriteModel.Commands;
     using Shouldly;
+    using TestStack.BDDfy;
+    using Xunit;
 
     public class FlipToggleSpecs : ApplicationCommandHandlerSpecs<FlipToggle>
     {

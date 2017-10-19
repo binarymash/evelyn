@@ -1,9 +1,9 @@
 ﻿namespace Evelyn.Core.Tests
 {
-    using CQRSlite.Snapshotting;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using CQRSlite.Snapshotting;
 
     public class SpecSnapShotStorage : ISnapshotStore
     {

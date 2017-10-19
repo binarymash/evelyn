@@ -1,11 +1,11 @@
-﻿using CQRSlite.Events;
-using System;
-using System.Collections.Generic;
-namespace Evelyn.Core.Tests
+﻿namespace Evelyn.Core.Tests
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using CQRSlite.Events;
 
     public class SpecEventStorage : IEventStore
     {
@@ -27,7 +27,6 @@ namespace Evelyn.Core.Tests
             }
 
             return Task.WhenAll(events.Select(evt => _publisher.Publish(evt, cancellationToken)));
-
         }
 
         public Task<IEnumerable<IEvent>> Get(Guid aggregateId, int fromVersion, CancellationToken cancellationToken = default(CancellationToken))
@@ -36,5 +35,4 @@ namespace Evelyn.Core.Tests
             return Task.FromResult(events);
         }
     }
-
 }

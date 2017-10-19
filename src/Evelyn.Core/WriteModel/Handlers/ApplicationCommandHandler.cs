@@ -2,12 +2,12 @@
 {
     using System.Threading.Tasks;
     using CQRSlite.Commands;
-    using Evelyn.Core.WriteModel.Commands;
     using CQRSlite.Domain;
+    using Evelyn.Core.WriteModel.Commands;
     using Evelyn.Core.WriteModel.Domain;
 
-    public class ApplicationCommandHandler : 
-        ICommandHandler<CreateApplication>, 
+    public class ApplicationCommandHandler :
+        ICommandHandler<CreateApplication>,
         ICommandHandler<AddEnvironment>,
         ICommandHandler<AddToggle>,
         ICommandHandler<FlipToggle>

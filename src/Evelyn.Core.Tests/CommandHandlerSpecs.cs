@@ -1,39 +1,45 @@
 ﻿namespace Evelyn.Core.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
     using CQRSlite.Snapshotting;
     using Shouldly;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
         where TAggregate : AggregateRoot
         where THandler : class
         where TCommand : ICommand
     {
-        protected TAggregate Aggregate { get; set; }
-        //protected TCommand Command { get; set; }
-        protected ISession Session { get; set; }
-        protected IList<IEvent> HistoricalEvents { get; set; }
-        protected IList<IEvent> PublishedEvents { get; set; }
-        protected IList<IEvent> EventDescriptors { get; set; }
         private dynamic _handler;
         private Snapshot _snapshot;
         private SpecSnapShotStorage _snapshotStore;
         private SpecEventPublisher _eventPublisher;
         private SpecEventStorage _eventStorage;
-        protected abstract THandler BuildHandler();
-        protected Exception ThrownException { get; private set; }
 
         public CommandHandlerSpecs()
         {
             HistoricalEvents = new List<IEvent>();
         }
+
+        protected TAggregate Aggregate { get; set; }
+
+        protected ISession Session { get; set; }
+
+        protected IList<IEvent> HistoricalEvents { get; set; }
+
+        protected IList<IEvent> PublishedEvents { get; set; }
+
+        protected IList<IEvent> EventDescriptors { get; set; }
+
+        protected Exception ThrownException { get; private set; }
+
+        protected abstract THandler BuildHandler();
 
         protected void WhenWeHandle(TCommand command)
         {
@@ -52,7 +58,9 @@
             {
                 if (_handler is ICancellableCommandHandler<TCommand>)
                 {
+#pragma warning disable SA1129 // Do not use default value type constructor
                     ((ICancellableCommandHandler<TCommand>)_handler).Handle(command, new CancellationToken()).GetAwaiter().GetResult();
+#pragma warning restore SA1129 // Do not use default value type constructor
                 }
                 else if (_handler is ICommandHandler<TCommand>)
                 {

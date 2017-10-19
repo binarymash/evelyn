@@ -4,11 +4,12 @@
 
     public class ApplicationCreated : ApplicationEvent
     {
-        public string Name { get; set; }
-
-        public ApplicationCreated(Guid id, string name) : base(id)
+        public ApplicationCreated(Guid id, string name)
+            : base(id)
         {
             Name = name;
         }
+
+        public string Name { get; set; }
     }
 }
