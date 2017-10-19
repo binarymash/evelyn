@@ -128,7 +128,7 @@ Task("CreatePackages")
         
 		CopyFiles("./src/**/Evelyn.*.nupkg", packagesDir);
 
-		GenerateReleaseNotes(releaseNotesFile);
+//		GenerateReleaseNotes(releaseNotesFile);
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Core." + buildVersion + ".nupkg",
