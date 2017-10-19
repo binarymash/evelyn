@@ -14,7 +14,7 @@ var artifactsDir = Directory("artifacts");
 
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
-var unitTestAssemblies = @"./src/Evelyn.Agent.UnitTests/Evelyn.Agent.UnitTests.csproj";
+var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
 
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
@@ -131,8 +131,8 @@ Task("CreatePackages")
 		GenerateReleaseNotes(releaseNotesFile);
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
-//            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
+            "nuget:Evelyn.Core." + buildVersion + ".nupkg",
+//            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
 
