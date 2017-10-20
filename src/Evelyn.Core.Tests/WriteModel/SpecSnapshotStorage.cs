@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests
+﻿namespace Evelyn.Core.Tests.WriteModel
 {
     using System;
     using System.Threading;

@@ -1,4 +1,4 @@
-namespace Evelyn.Core.Tests.Application
+namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
     using System.Linq;
