@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
@@ -16,6 +17,7 @@
 
     public class ApplicationCreatedSpecs
     {
+        private readonly Fixture _fixture;
         private readonly IEventPublisher _publisher;
         private readonly IReadModelFacade _readModelFacade;
         private Guid _application1Id;
@@ -30,6 +32,8 @@
 
         public ApplicationCreatedSpecs()
         {
+            _fixture = new Fixture();
+
             _eventsApplication1 = new List<IEvent>();
             _eventsApplication2 = new List<IEvent>();
             _events = new List<IEvent>();
@@ -68,8 +72,9 @@
 
         private void GivenAnApplicationIsCreated()
         {
-            _application1Id = Guid.NewGuid();
-            _application1Name = "Whatever";
+            _application1Id = _fixture.Create<Guid>();
+            _application1Name = _fixture.Create<string>();
+
             var ev = new ApplicationCreated(_application1Id, _application1Name) { Version = _eventsApplication1.Count + 1 };
             _eventsApplication1.Add(ev);
             _events.Add(ev);
@@ -77,8 +82,9 @@
 
         private void GivenAnotherApplicationIsCreated()
         {
-            _application2Id = Guid.NewGuid();
-            _application2Name = "Another application";
+            _application2Id = _fixture.Create<Guid>();
+            _application2Name = _fixture.Create<string>();
+
             var ev = new ApplicationCreated(_application2Id, _application2Name) { Version = _eventsApplication2.Count + 1 };
             _eventsApplication2.Add(ev);
             _events.Add(ev);
