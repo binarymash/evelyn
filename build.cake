@@ -4,6 +4,7 @@
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
 #addin "nuget:?package=Cake.Json"
+#addin nuget:?package=Newtonsoft.Json&version=9.0.1
 
 // compile
 var compileConfig = Argument("configuration", "Release");
