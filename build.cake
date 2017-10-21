@@ -129,7 +129,7 @@ Task("CreatePackages")
         
 		CopyFiles("./src/**/Evelyn.*.nupkg", packagesDir);
 
-//		GenerateReleaseNotes(releaseNotesFile);
+		GenerateReleaseNotes(releaseNotesFile);
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Core." + buildVersion + ".nupkg",
@@ -257,19 +257,15 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 
 	Information("Generating release notes at " + releaseNotesFile);
 
-    var releaseNotesExitCode = StartProcess(
-        @"tools/GitReleaseNotes/tools/gitreleasenotes.exe", 
-        new ProcessSettings { Arguments = ". /o " + releaseNotesFile });
+	GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings {
+		WorkingDirectory = "."
+	});
 
     if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
 	{
         System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
 	}
 
-    if (releaseNotesExitCode != 0) 
-	{
-		throw new Exception("Failed to generate release notes");
-	}
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
