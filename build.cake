@@ -4,6 +4,7 @@
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
 #addin "nuget:?package=Cake.Json"
+#addin nuget:?package=Newtonsoft.Json&version=9.0.1
 
 // compile
 var compileConfig = Argument("configuration", "Release");
@@ -14,7 +15,7 @@ var artifactsDir = Directory("artifacts");
 
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
-var unitTestAssemblies = @"./src/Evelyn.Agent.UnitTests/Evelyn.Agent.UnitTests.csproj";
+var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
 
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
@@ -131,8 +132,8 @@ Task("CreatePackages")
 		GenerateReleaseNotes(releaseNotesFile);
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:Evelyn.Agent." + buildVersion + ".nupkg",
-//            "nugetSymbols:Evelyn.Agent." + buildVersion + ".symbols.nupkg",
+            "nuget:Evelyn.Core." + buildVersion + ".nupkg",
+//            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
 
@@ -256,19 +257,15 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 
 	Information("Generating release notes at " + releaseNotesFile);
 
-    var releaseNotesExitCode = StartProcess(
-        @"tools/GitReleaseNotes/tools/gitreleasenotes.exe", 
-        new ProcessSettings { Arguments = ". /o " + releaseNotesFile });
+	GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings {
+		WorkingDirectory = "."
+	});
 
     if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
 	{
         System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
 	}
 
-    if (releaseNotesExitCode != 0) 
-	{
-		throw new Exception("Failed to generate release notes");
-	}
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
