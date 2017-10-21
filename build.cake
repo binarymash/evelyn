@@ -191,11 +191,11 @@ Task("DownloadGitHubReleaseArtifacts")
         EnsureDirectoryExists(packagesDir);
 
 		var releaseUrl = tagsUrl + releaseTag;
-        var assets_url = ParseJson(GetResource(releaseUrl))
+        var assets_url = Newtonsoft.Json.Linq.JObject.Parse(GetResource(releaseUrl))
             .GetValue("assets_url")
 			.Value<string>();
 
-        foreach(var asset in DeserializeJson<JArray>(GetResource(assets_url)))
+        foreach(var asset in Newtonsoft.Json.JsonConvert.DeserializeObject<JArray>(GetResource(assets_url)))
         {
 			var file = packagesDir + File(asset.Value<string>("name"));
 			Information("Downloading " + file);
@@ -265,7 +265,6 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 	{
         System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
 	}
-
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
