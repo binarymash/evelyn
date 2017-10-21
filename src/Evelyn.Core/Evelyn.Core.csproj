@@ -7,9 +7,16 @@
     <Version>0.0.0-dev</Version>    
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="CqrsLite" Version="0.17.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

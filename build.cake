@@ -5,6 +5,8 @@
 #addin "nuget:?package=Cake.DoInDirectory"
 #addin "nuget:?package=Cake.Json"
 #addin nuget:?package=Newtonsoft.Json&version=9.0.1
+#tool coveralls.net
+#addin Cake.Coveralls
 
 // compile
 var compileConfig = Argument("configuration", "Release");
@@ -16,6 +18,9 @@ var artifactsDir = Directory("artifacts");
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
 var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
+var openCoverSettings = new OpenCoverSettings();
+var minCodeCoverage = 90d;
+var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
@@ -105,21 +110,64 @@ Task("Compile")
 		DotNetCoreBuild(slnFile, settings);
 	});
 
-Task("RunUnitTests")
+Task("RunUnitTestsCoverageReport")
 	.IsDependentOn("Compile")
-	.Does(() =>
+	.Does(context =>
 	{
-		var settings = new DotNetCoreTestSettings
+        var coverageSummaryFile = artifactsForUnitTestsDir + File("coverage.xml");
+        
+        EnsureDirectoryExists(artifactsForUnitTestsDir);
+        
+        OpenCover(tool => 
+            {
+                tool.DotNetCoreTest(unitTestAssemblies);
+            },
+            new FilePath(coverageSummaryFile),
+            new OpenCoverSettings()
+            {
+                Register="user",
+                ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode")
+            }
+            .WithFilter("+[Evelyn.*]*")
+            .WithFilter("-[xunit*]*")
+            .WithFilter("-[Evelyn.*.Tests]*")
+        );
+        
+		Information($"writing to {artifactsForUnitTestsDir}"); 
+        ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);
+		
+		if (AppVeyor.IsRunningOnAppVeyor)
 		{
-			Configuration = compileConfig,
-		};
+			var repoToken = EnvironmentVariable(coverallsRepoToken);
+			if (string.IsNullOrEmpty(repoToken))
+			{
+				throw new Exception(string.Format("Coveralls repo token not found. Set environment variable '{0}'", coverallsRepoToken));
+			}
 
-		EnsureDirectoryExists(artifactsForUnitTestsDir);
-		DotNetCoreTest(unitTestAssemblies, settings);
+			Information("Uploading test coverage to coveralls.io");
+			CoverallsNet(coverageSummaryFile, CoverallsNetReportType.OpenCover, new CoverallsNetSettings()
+			{
+				RepoToken = repoToken
+			});
+		}
+		else
+		{
+			Information("We are not running on the build server so we won't publish the coverage report to coveralls.io");
+		}
+
+		var sequenceCoverage = XmlPeek(coverageSummaryFile, "//CoverageSession/Summary/@sequenceCoverage");
+		var branchCoverage = XmlPeek(coverageSummaryFile, "//CoverageSession/Summary/@branchCoverage");
+
+		Information("Sequence Coverage: " + sequenceCoverage);
+		
+		if(double.Parse(sequenceCoverage) < minCodeCoverage)
+		{
+			throw new Exception(string.Format("Code coverage fell below the threshold of {0}%", minCodeCoverage));
+		};
 	});
 
 Task("RunTests")
-	.IsDependentOn("RunUnitTests");
+	.IsDependentOn("RunUnitTestsCoverageReport");
 
 Task("CreatePackages")
 	.IsDependentOn("Compile")
