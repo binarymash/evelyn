@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
@@ -16,6 +17,7 @@
 
     public class EnvironmentAddedSpecs
     {
+        private readonly Fixture _fixture;
         private readonly IEventPublisher _publisher;
         private readonly IReadModelFacade _readModelFacade;
 
@@ -38,6 +40,8 @@
 
         public EnvironmentAddedSpecs()
         {
+            _fixture = new Fixture();
+
             _eventsApplication1 = new List<IEvent>();
             _eventsApplication2 = new List<IEvent>();
             _events = new List<IEvent>();
@@ -77,8 +81,8 @@
 
         private void GivenAnApplicationIsCreated()
         {
-            _application1Id = Guid.NewGuid();
-            _application1Name = "Whatever";
+            _application1Id = _fixture.Create<Guid>();
+            _application1Name = _fixture.Create<string>();
 
             var ev = new ApplicationCreated(_application1Id, _application1Name) { Version = _eventsApplication1.Count + 1 };
             _eventsApplication1.Add(ev);
@@ -87,8 +91,8 @@
 
         private void GivenAnotherApplicationIsCreated()
         {
-            _application2Id = Guid.NewGuid();
-            _application2Name = "Another application";
+            _application2Id = _fixture.Create<Guid>();
+            _application2Name = _fixture.Create<string>();
 
             var ev = new ApplicationCreated(_application2Id, _application2Name) { Version = _eventsApplication2.Count + 1 };
             _eventsApplication2.Add(ev);
@@ -97,9 +101,9 @@
 
         private void GivenAnEnvironmentIsAdded()
         {
-            _environment1Id = Guid.NewGuid();
-            _environment1Name = "My name";
-            _environment1Key = "my key";
+            _environment1Id = _fixture.Create<Guid>();
+            _environment1Name = _fixture.Create<string>();
+            _environment1Key = _fixture.Create<string>();
 
             var ev = new EnvironmentAdded(_application1Id, _environment1Id, _environment1Name, _environment1Key) { Version = _eventsApplication1.Count + 1 };
             _eventsApplication1.Add(ev);

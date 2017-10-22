@@ -2,6 +2,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
     using System.Linq;
+    using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
     using Shouldly;
@@ -10,13 +11,22 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
     public class AddEnvironmentSpecs : ApplicationCommandHandlerSpecs<AddEnvironment>
     {
+        private readonly Fixture _fixture;
+
         private Guid _applicationId;
+
         private Guid _newEnvironmentId;
         private string _newEnvironmentName;
         private string _newEnvironmentKey;
+
         private Guid _existingEnvironmentId;
         private string _existingEnvironmentName;
         private string _existingEnvironmentKey;
+
+        public AddEnvironmentSpecs()
+        {
+            _fixture = new Fixture();
+        }
 
         [Fact]
         public void EnvironmentDoesntExist()
@@ -65,23 +75,25 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void GivenWeHaveCreatedAnApplication()
         {
-            _applicationId = Guid.NewGuid();
+            _applicationId = _fixture.Create<Guid>();
             GivenWeHaveCreatedAnApplicationWith(_applicationId);
         }
 
         private void GivenWeHaveAddedAnEnvironment()
         {
-            _existingEnvironmentId = Guid.NewGuid();
-            _existingEnvironmentName = "some name";
-            _existingEnvironmentKey = "some key";
+            _existingEnvironmentId = _fixture.Create<Guid>();
+            _existingEnvironmentName = _fixture.Create<string>();
+            _existingEnvironmentKey = _fixture.Create<string>();
+
             HistoricalEvents.Add(new EnvironmentAdded(_applicationId, _existingEnvironmentId, _existingEnvironmentName, _existingEnvironmentKey) { Version = HistoricalEvents.Count + 1 });
         }
 
         private void WhenWeAddAnEnvironment()
         {
-            _newEnvironmentId = Guid.NewGuid();
-            _newEnvironmentName = "some name";
-            _newEnvironmentKey = "some key";
+            _newEnvironmentId = _fixture.Create<Guid>();
+            _newEnvironmentName = _fixture.Create<string>();
+            _newEnvironmentKey = _fixture.Create<string>();
+
             var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
@@ -89,25 +101,29 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void WhenWeAddAnotherEnvironmentWithTheSameId()
         {
             _newEnvironmentId = _existingEnvironmentId;
-            _newEnvironmentName = "some other name";
-            _newEnvironmentKey = "some other key";
+            _newEnvironmentName = _fixture.Create<string>();
+            _newEnvironmentKey = _fixture.Create<string>();
+
             var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherEnvironmentWithTheSameKey()
         {
-            _newEnvironmentId = Guid.NewGuid();
-            _newEnvironmentName = "some other name";
+            _newEnvironmentId = _fixture.Create<Guid>();
+            _newEnvironmentName = _fixture.Create<string>();
             _newEnvironmentKey = _existingEnvironmentKey;
+
             var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherEnvironmentWithTheSameName()
         {
-            _newEnvironmentId = Guid.NewGuid();
+            _newEnvironmentId = _fixture.Create<Guid>();
             _newEnvironmentName = _existingEnvironmentName;
+            _newEnvironmentKey = _fixture.Create<string>();
+
             var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }

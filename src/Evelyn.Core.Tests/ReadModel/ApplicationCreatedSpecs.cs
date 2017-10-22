@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
@@ -16,20 +17,24 @@
 
     public class ApplicationCreatedSpecs
     {
+        private readonly Fixture _fixture;
+
         private readonly IEventPublisher _publisher;
         private readonly IReadModelFacade _readModelFacade;
-        private Guid _application1Id;
-        private string _application1Name;
-        private Guid _application2Id;
-        private string _application2Name;
-        private List<IEvent> _eventsApplication1;
-        private List<IEvent> _eventsApplication2;
-        private List<IEvent> _events;
         private IDatabase<ApplicationListDto> _applicationsStore;
         private IDatabase<ApplicationDetailsDto> _applicationDetailsStore;
 
+        private List<IEvent> _eventsApplication1;
+        private List<IEvent> _eventsApplication2;
+        private List<IEvent> _events;
+
+        private ApplicationCreated _event1;
+        private ApplicationCreated _event2;
+
         public ApplicationCreatedSpecs()
         {
+            _fixture = new Fixture();
+
             _eventsApplication1 = new List<IEvent>();
             _eventsApplication2 = new List<IEvent>();
             _events = new List<IEvent>();
@@ -68,20 +73,20 @@
 
         private void GivenAnApplicationIsCreated()
         {
-            _application1Id = Guid.NewGuid();
-            _application1Name = "Whatever";
-            var ev = new ApplicationCreated(_application1Id, _application1Name) { Version = _eventsApplication1.Count + 1 };
-            _eventsApplication1.Add(ev);
-            _events.Add(ev);
+            _event1 = _fixture.Create<ApplicationCreated>();
+            _event1.Version = _eventsApplication1.Count + 1;
+
+            _eventsApplication1.Add(_event1);
+            _events.Add(_event1);
         }
 
         private void GivenAnotherApplicationIsCreated()
         {
-            _application2Id = Guid.NewGuid();
-            _application2Name = "Another application";
-            var ev = new ApplicationCreated(_application2Id, _application2Name) { Version = _eventsApplication2.Count + 1 };
-            _eventsApplication2.Add(ev);
-            _events.Add(ev);
+            _event2 = _fixture.Create<ApplicationCreated>();
+            _event2.Version = _eventsApplication2.Count + 1;
+
+            _eventsApplication2.Add(_event2);
+            _events.Add(_event2);
         }
 
         private void WhenTheEventsArePublished()
@@ -96,33 +101,46 @@
         {
             var applications = _readModelFacade.GetApplications().ToList();
             applications.Count.ShouldBe(1);
-            applications[0].Id.ShouldBe(_application1Id);
-            applications[0].Name.ShouldBe(_application1Name);
+            applications[0].Id.ShouldBe(_event1.Id);
+            applications[0].Name.ShouldBe(_event1.Name);
         }
 
         private void ThenTheApplicationDetailsCanBeRetrieved()
         {
-            var application = _readModelFacade.GetApplicationDetails(_application1Id);
-            application.Name.ShouldBe(_application1Name);
+            var application = _readModelFacade.GetApplicationDetails(_event1.Id);
+            application.Name.ShouldBe(_event1.Name);
+            application.Version.ShouldBe(1);
+            application.Created.ShouldBe(_event1.TimeStamp);
         }
 
         private void ThenBothApplicationsAreInTheApplicationList()
         {
-            var applications = _readModelFacade.GetApplications().ToList();
-            applications.Count.ShouldBe(2);
-            applications[0].Id.ShouldBe(_application1Id);
-            applications[0].Name.ShouldBe(_application1Name);
-            applications[1].Id.ShouldBe(_application2Id);
-            applications[1].Name.ShouldBe(_application2Name);
+            _readModelFacade.GetApplications().Count().ShouldBe(2);
+
+            ThenThereIsAnApplicationInTheListFor(_event1);
+            ThenThereIsAnApplicationInTheListFor(_event2);
         }
 
         private void ThenBothApplicationDetailsCanBeRetrieved()
         {
-            var application = _readModelFacade.GetApplicationDetails(_application1Id);
-            application.Name.ShouldBe(_application1Name);
+            ThenApplicationDetailsCanBeRetrievedFor(_event1);
+            ThenApplicationDetailsCanBeRetrievedFor(_event2);
+        }
 
-            application = _readModelFacade.GetApplicationDetails(_application2Id);
-            application.Name.ShouldBe(_application2Name);
+        private void ThenThereIsAnApplicationInTheListFor(ApplicationCreated ev)
+        {
+            this._applicationsStore.Get().ShouldContain(application =>
+                    application.Id == ev.Id &&
+                    application.Name == ev.Name);
+        }
+
+        private void ThenApplicationDetailsCanBeRetrievedFor(ApplicationCreated ev)
+        {
+            var applicationDetails = _readModelFacade.GetApplicationDetails(ev.Id);
+            applicationDetails.Id.ShouldBe(ev.Id);
+            applicationDetails.Name.ShouldBe(ev.Name);
+            applicationDetails.Version.ShouldBe(ev.Version);
+            applicationDetails.Created.ShouldBe(ev.TimeStamp);
         }
     }
 }
