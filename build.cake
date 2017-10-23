@@ -66,9 +66,14 @@ Task("Clean")
 	{
         if (DirectoryExists(artifactsDir))
         {
-            DeleteDirectory(artifactsDir, recursive:true);
+			Information($"Cleaning {artifactsDir}");
+            CleanDirectory(artifactsDir);
         }
-        CreateDirectory(artifactsDir);
+		else
+		{
+			Information($"Creating {artifactsDir}");
+            CreateDirectory(artifactsDir);
+		}
 	});
 	
 Task("Version")
