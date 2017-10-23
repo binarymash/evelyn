@@ -27,7 +27,7 @@
         public Task Handle(EnvironmentAdded message, CancellationToken token)
         {
             var applicationDetails = _applicationDetails.Get(message.Id);
-            applicationDetails.AddEnvironment(new EnvironmentListDto(message.EnvironmentId, message.Name));
+            applicationDetails.AddEnvironment(new EnvironmentListDto(message.EnvironmentId, message.Name), message.TimeStamp, message.Version);
             return Task.CompletedTask;
         }
     }
