@@ -1,6 +1,5 @@
-﻿namespace Evelyn.Core.Tests.ReadModel
+﻿namespace Evelyn.Core.Tests.ReadModel.Handlers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
@@ -15,7 +14,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ApplicationCreatedSpecs
+    public class ApplicationListViewSpecs
     {
         private readonly Fixture _fixture;
 
@@ -31,7 +30,7 @@
         private ApplicationCreated _event1;
         private ApplicationCreated _event2;
 
-        public ApplicationCreatedSpecs()
+        public ApplicationListViewSpecs()
         {
             _fixture = new Fixture();
 
@@ -40,13 +39,12 @@
             _events = new List<IEvent>();
 
             _applicationsStore = new InMemoryDatabase<ApplicationListDto>();
-            _applicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
+            _applicationDetailsStore = null;
 
             _readModelFacade = new InMemoryReadModelFacade(_applicationsStore, _applicationDetailsStore);
 
             var router = new Router();
             router.RegisterHandler<ApplicationCreated>(new ApplicationListView(_applicationsStore).Handle);
-            router.RegisterHandler<ApplicationCreated>(new ApplicationDetailsView(_applicationDetailsStore).Handle);
             _publisher = router;
         }
 
@@ -56,7 +54,6 @@
             this.Given(_ => GivenAnApplicationIsCreated())
                 .When(_ => WhenTheEventsArePublished())
                 .Then(_ => ThenTheApplicationIsAddedToTheApplicationList())
-                .And(_ => ThenTheApplicationDetailsCanBeRetrieved())
                 .BDDfy();
         }
 
@@ -67,7 +64,6 @@
                 .And(_ => GivenAnotherApplicationIsCreated())
                 .When(_ => WhenTheEventsArePublished())
                 .Then(_ => ThenBothApplicationsAreInTheApplicationList())
-                .And(_ => ThenBothApplicationDetailsCanBeRetrieved())
                 .BDDfy();
         }
 
@@ -105,14 +101,6 @@
             applications[0].Name.ShouldBe(_event1.Name);
         }
 
-        private void ThenTheApplicationDetailsCanBeRetrieved()
-        {
-            var application = _readModelFacade.GetApplicationDetails(_event1.Id);
-            application.Name.ShouldBe(_event1.Name);
-            application.Version.ShouldBe(1);
-            application.Created.ShouldBe(_event1.TimeStamp);
-        }
-
         private void ThenBothApplicationsAreInTheApplicationList()
         {
             _readModelFacade.GetApplications().Count().ShouldBe(2);
@@ -121,26 +109,11 @@
             ThenThereIsAnApplicationInTheListFor(_event2);
         }
 
-        private void ThenBothApplicationDetailsCanBeRetrieved()
-        {
-            ThenApplicationDetailsCanBeRetrievedFor(_event1);
-            ThenApplicationDetailsCanBeRetrievedFor(_event2);
-        }
-
         private void ThenThereIsAnApplicationInTheListFor(ApplicationCreated ev)
         {
             this._applicationsStore.Get().ShouldContain(application =>
                     application.Id == ev.Id &&
                     application.Name == ev.Name);
-        }
-
-        private void ThenApplicationDetailsCanBeRetrievedFor(ApplicationCreated ev)
-        {
-            var applicationDetails = _readModelFacade.GetApplicationDetails(ev.Id);
-            applicationDetails.Id.ShouldBe(ev.Id);
-            applicationDetails.Name.ShouldBe(ev.Name);
-            applicationDetails.Version.ShouldBe(ev.Version);
-            applicationDetails.Created.ShouldBe(ev.TimeStamp);
         }
     }
 }
