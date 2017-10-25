@@ -1,27 +1,13 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.ApplicationDetails
 {
-    using AutoFixture;
-    using CQRSlite.Events;
     using CQRSlite.Routing;
-    using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.ReadModel.Infrastructure;
 
     public class EnvironmentDetailsHandlerSpecs : HandlerSpecs
     {
-        private readonly Fixture _fixture;
-
-        private readonly IEventPublisher _publisher;
-        private readonly IReadModelFacade _readModelFacade;
-        private IDatabase<ApplicationListDto> _applicationsStore;
-        private IDatabase<ApplicationDetailsDto> _applicationDetailsStore;
-
         public EnvironmentDetailsHandlerSpecs()
         {
-            _fixture = new Fixture();
         }
 
         protected override void RegisterHandlers(Router router)

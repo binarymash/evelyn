@@ -13,8 +13,6 @@
 
     public class ApplicationListHandlerSpecs : HandlerSpecs
     {
-        private readonly Fixture _fixture;
-
         private List<IEvent> _eventsApplication1;
         private List<IEvent> _eventsApplication2;
 
@@ -23,8 +21,6 @@
 
         public ApplicationListHandlerSpecs()
         {
-            _fixture = new Fixture();
-
             _eventsApplication1 = new List<IEvent>();
             _eventsApplication2 = new List<IEvent>();
         }
@@ -56,7 +52,7 @@
 
         private void GivenAnApplicationIsCreated()
         {
-            _event1 = _fixture.Create<ApplicationCreated>();
+            _event1 = DataFixture.Create<ApplicationCreated>();
             _event1.Version = _eventsApplication1.Count + 1;
 
             _eventsApplication1.Add(_event1);
@@ -65,7 +61,7 @@
 
         private void GivenAnotherApplicationIsCreated()
         {
-            _event2 = _fixture.Create<ApplicationCreated>();
+            _event2 = DataFixture.Create<ApplicationCreated>();
             _event2.Version = _eventsApplication2.Count + 1;
 
             _eventsApplication2.Add(_event2);

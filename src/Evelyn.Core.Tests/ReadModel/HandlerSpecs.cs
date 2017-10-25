@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
@@ -16,6 +17,7 @@
 
         public HandlerSpecs()
         {
+            DataFixture = new Fixture();
             Events = new List<IEvent>();
 
             ApplicationsStore = new InMemoryDatabase<ApplicationListDto>();
@@ -28,6 +30,8 @@
             RegisterHandlers(router);
             _publisher = router;
         }
+
+        protected Fixture DataFixture { get; }
 
         protected IReadModelFacade ReadModelFacade { get; }
 

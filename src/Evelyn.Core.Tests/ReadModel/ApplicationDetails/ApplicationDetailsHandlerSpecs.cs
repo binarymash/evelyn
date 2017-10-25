@@ -14,8 +14,6 @@
 
     public class ApplicationDetailsHandlerSpecs : HandlerSpecs
     {
-        private readonly Fixture _fixture;
-
         private List<IEvent> _eventsApplication1;
         private List<IEvent> _eventsApplication2;
 
@@ -31,8 +29,6 @@
 
         public ApplicationDetailsHandlerSpecs()
         {
-            _fixture = new Fixture();
-
             _eventsApplication1 = new List<IEvent>();
             _eventsApplication2 = new List<IEvent>();
         }
@@ -83,7 +79,7 @@
 
         private void GivenAnApplicationIsCreated()
         {
-            _event1 = _fixture.Create<ApplicationCreated>();
+            _event1 = DataFixture.Create<ApplicationCreated>();
             _event1.Version = _eventsApplication1.Count + 1;
             _event1.TimeStamp = DateTimeOffset.UtcNow;
 
@@ -94,7 +90,7 @@
 
         private void GivenAnotherApplicationIsCreated()
         {
-            _event2 = _fixture.Create<ApplicationCreated>();
+            _event2 = DataFixture.Create<ApplicationCreated>();
             _event2.Version = _eventsApplication2.Count + 1;
             _event2.TimeStamp = DateTimeOffset.UtcNow;
 
@@ -105,7 +101,7 @@
 
         private void GivenWeAddAnEnvironmentToTheFirstApplication()
         {
-            _environmentAdded1 = _fixture.Create<EnvironmentAdded>();
+            _environmentAdded1 = DataFixture.Create<EnvironmentAdded>();
             _environmentAdded1.Id = _application1Id;
             _environmentAdded1.Version = _eventsApplication1.Count() + 1;
             _environmentAdded1.TimeStamp = DateTimeOffset.UtcNow;
@@ -116,7 +112,7 @@
 
         private void GivenWeAddAnEnvironmentToTheSecondApplication()
         {
-            _environmentAdded2 = _fixture.Create<EnvironmentAdded>();
+            _environmentAdded2 = DataFixture.Create<EnvironmentAdded>();
             _environmentAdded2.Id = _application2Id;
             _environmentAdded2.Version = _eventsApplication2.Count() + 1;
             _environmentAdded2.TimeStamp = DateTimeOffset.UtcNow;
@@ -127,7 +123,7 @@
 
         private void GivenWeAddAnotherEnvironmentToTheFirstApplication()
         {
-            _environmentAdded3 = _fixture.Create<EnvironmentAdded>();
+            _environmentAdded3 = DataFixture.Create<EnvironmentAdded>();
             _environmentAdded3.Id = _application1Id;
             _environmentAdded3.Version = _eventsApplication1.Count() + 1;
             _environmentAdded3.TimeStamp = DateTimeOffset.UtcNow;
