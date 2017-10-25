@@ -1,26 +1,25 @@
-﻿namespace Evelyn.Core.ReadModel.Handlers
+﻿namespace Evelyn.Core.ReadModel.ApplicationDetails
 {
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel.Dtos;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.ReadModel.Infrastructure;
 
-    public class ApplicationDetailsView :
+    public class ApplicationDetailsHandler :
         ICancellableEventHandler<ApplicationCreated>,
         ICancellableEventHandler<EnvironmentAdded>
     {
         private IDatabase<ApplicationDetailsDto> _applicationDetails;
 
-        public ApplicationDetailsView(IDatabase<ApplicationDetailsDto> applicationDetails)
+        public ApplicationDetailsHandler(IDatabase<ApplicationDetailsDto> applicationDetails)
         {
             _applicationDetails = applicationDetails;
         }
 
         public Task Handle(ApplicationCreated message, CancellationToken token)
         {
-            _applicationDetails.Add(message.Id, new Dtos.ApplicationDetailsDto(message.Id, message.Name, message.Version, message.TimeStamp));
+            _applicationDetails.Add(message.Id, new ApplicationDetailsDto(message.Id, message.Name, message.Version, message.TimeStamp));
             return Task.CompletedTask;
         }
 
