@@ -1,19 +1,55 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.ApplicationDetails
 {
+    using System;
+    using AutoFixture;
     using CQRSlite.Routing;
+    using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Events;
+    using Evelyn.Core.ReadModel.Infrastructure;
+    using Shouldly;
+    using TestStack.BDDfy;
+    using Xunit;
 
     public class EnvironmentDetailsHandlerSpecs : HandlerSpecs
     {
-        public EnvironmentDetailsHandlerSpecs()
+        private Guid _environment1Id;
+
+        [Fact]
+        public void Environment1DoesNotExist()
         {
+            this.Given(_ => GivenThatWeDontCreateEnvironment1())
+                .When(_ => WhenWeGetEnvironment1Details())
+                .Then(_ => ThenGettingEnvironment1ThrownsNotFoundException())
+                .BDDfy();
         }
 
         protected override void RegisterHandlers(Router router)
         {
             var handler = new EnvironmentDetailsHandler(EnvironmentDetailsStore);
             router.RegisterHandler<EnvironmentAdded>(handler.Handle);
+        }
+
+        private void GivenThatWeDontCreateEnvironment1()
+        {
+            _environment1Id = DataFixture.Create<Guid>();
+        }
+
+        private void WhenWeGetEnvironment1Details()
+        {
+            try
+            {
+                ReadModelFacade.GetEnvironmentDetails(_environment1Id).ShouldBeNull();
+            }
+            catch (Exception ex)
+            {
+                ThrownException = ex;
+            }
+        }
+
+        private void ThenGettingEnvironment1ThrownsNotFoundException()
+        {
+            ThrownException.ShouldBeOfType<NotFoundException>();
         }
 
         ////[Fact]

@@ -29,7 +29,7 @@
         public void ApplicationCreated()
         {
             this.Given(_ => GivenAnApplicationIsCreated())
-                .When(_ => WhenTheEventsArePublished())
+                .When(_ => GivenAllEventsArePublished())
                 .Then(_ => ThenTheApplicationIsAddedToTheApplicationList())
                 .BDDfy();
         }
@@ -39,7 +39,7 @@
         {
             this.Given(_ => GivenAnApplicationIsCreated())
                 .And(_ => GivenAnotherApplicationIsCreated())
-                .When(_ => WhenTheEventsArePublished())
+                .When(_ => GivenAllEventsArePublished())
                 .Then(_ => ThenBothApplicationsAreInTheApplicationList())
                 .BDDfy();
         }

@@ -24,7 +24,10 @@
             ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
             EnvironmentDetailsStore = new InMemoryDatabase<EnvironmentDetailsDto>();
 
-            ReadModelFacade = new InMemoryReadModelFacade(ApplicationsStore, ApplicationDetailsStore);
+            ReadModelFacade = new InMemoryReadModelFacade(
+                ApplicationsStore,
+                ApplicationDetailsStore,
+                EnvironmentDetailsStore);
 
             var router = new Router();
             RegisterHandlers(router);
@@ -43,9 +46,11 @@
 
         protected IDatabase<EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
 
+        protected Exception ThrownException { get; set; }
+
         protected abstract void RegisterHandlers(Router router);
 
-        protected void WhenTheEventsArePublished()
+        protected void GivenAllEventsArePublished()
         {
             foreach (var ev in Events)
             {

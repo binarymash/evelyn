@@ -15,7 +15,13 @@
 
         public T Get(Guid id)
         {
-            return _items[id];
+            T value;
+            if (!_items.TryGetValue(id, out value))
+            {
+                throw new NotFoundException();
+            }
+
+            return value;
         }
 
         public List<T> Get()
