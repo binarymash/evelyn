@@ -18,7 +18,6 @@
         public HandlerSpecs()
         {
             DataFixture = new Fixture();
-            Events = new List<IEvent>();
 
             ApplicationsStore = new InMemoryDatabase<ApplicationListDto>();
             ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
@@ -38,8 +37,6 @@
 
         protected IReadModelFacade ReadModelFacade { get; }
 
-        protected List<IEvent> Events { get; }
-
         protected IDatabase<ApplicationListDto> ApplicationsStore { get; }
 
         protected IDatabase<ApplicationDetailsDto> ApplicationDetailsStore { get; }
@@ -50,12 +47,9 @@
 
         protected abstract void RegisterHandlers(Router router);
 
-        protected void GivenAllEventsArePublished()
+        protected void GivenWePublish(IEvent @event)
         {
-            foreach (var ev in Events)
-            {
-                _publisher.Publish(ev).GetAwaiter().GetResult();
-            }
+            _publisher.Publish(@event).GetAwaiter().GetResult();
         }
     }
 }

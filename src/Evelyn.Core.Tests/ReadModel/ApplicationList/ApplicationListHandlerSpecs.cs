@@ -19,6 +19,8 @@
         private ApplicationCreated _event1;
         private ApplicationCreated _event2;
 
+        private List<ApplicationListDto> _retrievedApplicationList;
+
         public ApplicationListHandlerSpecs()
         {
             _eventsApplication1 = new List<IEvent>();
@@ -29,7 +31,7 @@
         public void ApplicationCreated()
         {
             this.Given(_ => GivenAnApplicationIsCreated())
-                .When(_ => GivenAllEventsArePublished())
+                .When(_ => WhenWeGetTheApplicationList())
                 .Then(_ => ThenTheApplicationIsAddedToTheApplicationList())
                 .BDDfy();
         }
@@ -39,7 +41,7 @@
         {
             this.Given(_ => GivenAnApplicationIsCreated())
                 .And(_ => GivenAnotherApplicationIsCreated())
-                .When(_ => GivenAllEventsArePublished())
+                .When(_ => WhenWeGetTheApplicationList())
                 .Then(_ => ThenBothApplicationsAreInTheApplicationList())
                 .BDDfy();
         }
@@ -56,7 +58,7 @@
             _event1.Version = _eventsApplication1.Count + 1;
 
             _eventsApplication1.Add(_event1);
-            Events.Add(_event1);
+            GivenWePublish(_event1);
         }
 
         private void GivenAnotherApplicationIsCreated()
@@ -65,20 +67,23 @@
             _event2.Version = _eventsApplication2.Count + 1;
 
             _eventsApplication2.Add(_event2);
-            Events.Add(_event2);
+            GivenWePublish(_event2);
+        }
+
+        private void WhenWeGetTheApplicationList()
+        {
+            _retrievedApplicationList = ReadModelFacade.GetApplications().ToList();
         }
 
         private void ThenTheApplicationIsAddedToTheApplicationList()
         {
-            var applications = ReadModelFacade.GetApplications().ToList();
-            applications.Count.ShouldBe(1);
-            applications[0].Id.ShouldBe(_event1.Id);
-            applications[0].Name.ShouldBe(_event1.Name);
+            _retrievedApplicationList.Count.ShouldBe(1);
+            ThenThereIsAnApplicationInTheListFor(_event1);
         }
 
         private void ThenBothApplicationsAreInTheApplicationList()
         {
-            ReadModelFacade.GetApplications().Count().ShouldBe(2);
+            _retrievedApplicationList.Count().ShouldBe(2);
 
             ThenThereIsAnApplicationInTheListFor(_event1);
             ThenThereIsAnApplicationInTheListFor(_event2);

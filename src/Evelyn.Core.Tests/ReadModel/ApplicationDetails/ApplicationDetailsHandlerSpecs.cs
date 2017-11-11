@@ -18,15 +18,16 @@
         private List<IEvent> _eventsApplication1;
         private List<IEvent> _eventsApplication2;
 
-        private ApplicationCreated _event1;
-        private ApplicationCreated _event2;
+        private ApplicationCreated _application1Created;
+        private ApplicationCreated _application2Created;
 
-        private EnvironmentAdded _environmentAdded1;
-        private EnvironmentAdded _environmentAdded2;
-        private EnvironmentAdded _environmentAdded3;
+        private EnvironmentAdded _environment1Added;
+        private EnvironmentAdded _environment2Added;
+        private EnvironmentAdded _environment3Added;
 
         private Guid _application1Id;
         private Guid _application2Id;
+
         private ApplicationDetailsDto _retrievedApplicationDetails;
 
         public ApplicationDetailsHandlerSpecs()
@@ -48,8 +49,9 @@
         public void OneApplicationCreated()
         {
             this.Given(_ => GivenApplication1IsCreated())
-                .When(_ => GivenAllEventsArePublished())
-                .And(_ => ThenTheApplicationDetailsCanBeRetrieved())
+                .When(_ => WhenWeGetTheDetailsForApplication1())
+                .Then(_ => ThenTheDetailsAreSetForApplication1())
+                .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
                 .BDDfy();
         }
 
@@ -58,8 +60,12 @@
         {
             this.Given(_ => GivenApplication1IsCreated())
                 .And(_ => GivenApplication2IsCreated())
-                .When(_ => GivenAllEventsArePublished())
-                .And(_ => ThenBothApplicationDetailsCanBeRetrieved())
+                .When(_ => WhenWeGetTheDetailsForApplication1())
+                .Then(_ => ThenTheDetailsAreSetForApplication1())
+                .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
+                .When(_ => WhenWeGetTheDetailsForApplication2())
+                .Then(_ => ThenTheDetailsAreSetForForApplication2())
+                .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
                 .BDDfy();
         }
 
@@ -71,7 +77,6 @@
                 .And(_ => GivenWeAddEnvironment1ToApplication1())
                 .And(_ => GivenWeAddEnvironment2ToApplication2())
                 .And(_ => GivenWeAddEnvironment3ToApplication1())
-                .And(_ => GivenAllEventsArePublished())
                 .When(_ => WhenWeGetTheDetailsForApplication1())
                 .Then(_ => ThenThereAreTwoEnvironmentsOnTheApplication())
                 .And(_ => ThenEnvrionment1IsOnTheApplication())
@@ -100,57 +105,62 @@
 
         private void GivenApplication1IsCreated()
         {
-            _event1 = DataFixture.Create<ApplicationCreated>();
-            _event1.Version = _eventsApplication1.Count + 1;
-            _event1.TimeStamp = DateTimeOffset.UtcNow;
+            _application1Created = DataFixture.Create<ApplicationCreated>();
+            _application1Created.Version = _eventsApplication1.Count + 1;
+            _application1Created.TimeStamp = DateTimeOffset.UtcNow;
 
-            _application1Id = _event1.Id;
-            _eventsApplication1.Add(_event1);
-            Events.Add(_event1);
+            _application1Id = _application1Created.Id;
+            _eventsApplication1.Add(_application1Created);
+
+            GivenWePublish(_application1Created);
         }
 
         private void GivenApplication2IsCreated()
         {
-            _event2 = DataFixture.Create<ApplicationCreated>();
-            _event2.Version = _eventsApplication2.Count + 1;
-            _event2.TimeStamp = DateTimeOffset.UtcNow;
+            _application2Created = DataFixture.Create<ApplicationCreated>();
+            _application2Created.Version = _eventsApplication2.Count + 1;
+            _application2Created.TimeStamp = DateTimeOffset.UtcNow;
 
-            _application2Id = _event2.Id;
-            _eventsApplication2.Add(_event2);
-            Events.Add(_event2);
+            _application2Id = _application2Created.Id;
+            _eventsApplication2.Add(_application2Created);
+
+            GivenWePublish(_application2Created);
         }
 
         private void GivenWeAddEnvironment1ToApplication1()
         {
-            _environmentAdded1 = DataFixture.Create<EnvironmentAdded>();
-            _environmentAdded1.Id = _application1Id;
-            _environmentAdded1.Version = _eventsApplication1.Count() + 1;
-            _environmentAdded1.TimeStamp = DateTimeOffset.UtcNow;
+            _environment1Added = DataFixture.Create<EnvironmentAdded>();
+            _environment1Added.Id = _application1Id;
+            _environment1Added.Version = _eventsApplication1.Count() + 1;
+            _environment1Added.TimeStamp = DateTimeOffset.UtcNow;
 
-            _eventsApplication1.Add(_environmentAdded1);
-            Events.Add(_environmentAdded1);
+            _eventsApplication1.Add(_environment1Added);
+
+            GivenWePublish(_environment1Added);
         }
 
         private void GivenWeAddEnvironment2ToApplication2()
         {
-            _environmentAdded2 = DataFixture.Create<EnvironmentAdded>();
-            _environmentAdded2.Id = _application2Id;
-            _environmentAdded2.Version = _eventsApplication2.Count() + 1;
-            _environmentAdded2.TimeStamp = DateTimeOffset.UtcNow;
+            _environment2Added = DataFixture.Create<EnvironmentAdded>();
+            _environment2Added.Id = _application2Id;
+            _environment2Added.Version = _eventsApplication2.Count() + 1;
+            _environment2Added.TimeStamp = DateTimeOffset.UtcNow;
 
-            _eventsApplication2.Add(_environmentAdded2);
-            Events.Add(_environmentAdded2);
+            _eventsApplication2.Add(_environment2Added);
+
+            GivenWePublish(_environment2Added);
         }
 
         private void GivenWeAddEnvironment3ToApplication1()
         {
-            _environmentAdded3 = DataFixture.Create<EnvironmentAdded>();
-            _environmentAdded3.Id = _application1Id;
-            _environmentAdded3.Version = _eventsApplication1.Count() + 1;
-            _environmentAdded3.TimeStamp = DateTimeOffset.UtcNow;
+            _environment3Added = DataFixture.Create<EnvironmentAdded>();
+            _environment3Added.Id = _application1Id;
+            _environment3Added.Version = _eventsApplication1.Count() + 1;
+            _environment3Added.TimeStamp = DateTimeOffset.UtcNow;
 
-            _eventsApplication1.Add(_environmentAdded3);
-            Events.Add(_environmentAdded3);
+            _eventsApplication1.Add(_environment3Added);
+
+            GivenWePublish(_environment3Added);
         }
 
         private void WhenWeGetTheDetailsForApplication1()
@@ -167,7 +177,7 @@
         {
             try
             {
-                _retrievedApplicationDetails = ReadModelFacade.GetApplicationDetails(_application1Id);
+                _retrievedApplicationDetails = ReadModelFacade.GetApplicationDetails(applicationId);
             }
             catch (Exception ex)
             {
@@ -178,6 +188,11 @@
         private void ThenANotFoundExceptionIsThrown()
         {
             ThrownException.ShouldBeOfType<NotFoundException>();
+        }
+
+        private void ThenThereAreNoEnvironmentsOnTheApplication()
+        {
+            _retrievedApplicationDetails.Environments.Count().ShouldBe(0);
         }
 
         private void ThenThereAreTwoEnvironmentsOnTheApplication()
@@ -192,39 +207,36 @@
 
         private void ThenEnvrionment1IsOnTheApplication()
         {
-            ThenTheEnvironmentIsOnTheApplication(_environmentAdded1);
+            ThenTheEnvironmentIsOnTheApplication(_environment1Added);
         }
 
         private void ThenEnvironment2IsOnTheApplication()
         {
-            ThenTheEnvironmentIsOnTheApplication(_environmentAdded2);
+            ThenTheEnvironmentIsOnTheApplication(_environment2Added);
         }
 
         private void ThenEnvrionment3IsOnTheApplication()
         {
-            ThenTheEnvironmentIsOnTheApplication(_environmentAdded3);
+            ThenTheEnvironmentIsOnTheApplication(_environment3Added);
         }
 
-        private void ThenTheApplicationDetailsCanBeRetrieved()
+        private void ThenTheDetailsAreSetForApplication1()
         {
-            ThenApplicationDetailsCanBeRetrievedFor(_event1);
+            ThenTheDetailsAreSetFor(_application1Created);
         }
 
-        private void ThenBothApplicationDetailsCanBeRetrieved()
+        private void ThenTheDetailsAreSetForForApplication2()
         {
-            ThenApplicationDetailsCanBeRetrievedFor(_event1);
-            ThenApplicationDetailsCanBeRetrievedFor(_event2);
+            ThenTheDetailsAreSetFor(_application2Created);
         }
 
-        private void ThenApplicationDetailsCanBeRetrievedFor(ApplicationCreated ev)
+        private void ThenTheDetailsAreSetFor(ApplicationCreated ev)
         {
-            var applicationDetails = ReadModelFacade.GetApplicationDetails(ev.Id);
-            applicationDetails.Id.ShouldBe(ev.Id);
-            applicationDetails.Name.ShouldBe(ev.Name);
-            applicationDetails.Version.ShouldBe(ev.Version);
-            applicationDetails.Environments.Count().ShouldBe(0);
-            applicationDetails.Created.ShouldBe(ev.TimeStamp);
-            applicationDetails.LastModified.ShouldBe(ev.TimeStamp);
+            _retrievedApplicationDetails.Id.ShouldBe(ev.Id);
+            _retrievedApplicationDetails.Name.ShouldBe(ev.Name);
+            _retrievedApplicationDetails.Version.ShouldBe(ev.Version);
+            _retrievedApplicationDetails.Created.ShouldBe(ev.TimeStamp);
+            _retrievedApplicationDetails.LastModified.ShouldBe(ev.TimeStamp);
         }
 
         private void ThenTheEnvironmentIsOnTheApplication(EnvironmentAdded environmentAdded)
@@ -236,12 +248,12 @@
 
         private void ThenTheVersionOfTheApplicationHasBeenUpdatedForEnvironment3()
         {
-            ThenTheVersionOfTheApplicationHasBeenUpdated(_environmentAdded3);
+            ThenTheVersionOfTheApplicationHasBeenUpdated(_environment3Added);
         }
 
         private void ThenTheVersionOfTheApplicationHasBeenUpdatedForEnvironment2()
         {
-            ThenTheVersionOfTheApplicationHasBeenUpdated(_environmentAdded2);
+            ThenTheVersionOfTheApplicationHasBeenUpdated(_environment2Added);
         }
 
         private void ThenTheVersionOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
@@ -251,12 +263,12 @@
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForEnvironment3()
         {
-            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environmentAdded3);
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environment3Added);
         }
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForEnvironment2()
         {
-            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environmentAdded2);
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environment2Added);
         }
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
