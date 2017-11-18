@@ -19,7 +19,7 @@ var artifactsDir = Directory("artifacts");
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
 var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage = 95d;
+var minCodeCoverage = 93d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // packaging
