@@ -1,18 +1,17 @@
-﻿namespace Evelyn.Core.ReadModel.Handlers
+﻿namespace Evelyn.Core.ReadModel.ApplicationList
 {
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel.Dtos;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.ReadModel.Infrastructure;
 
-    public class ApplicationListView
+    public class ApplicationListHandler
         : ICancellableEventHandler<ApplicationCreated>
     {
         private readonly IDatabase<ApplicationListDto> _applications;
 
-        public ApplicationListView(IDatabase<ApplicationListDto> applications)
+        public ApplicationListHandler(IDatabase<ApplicationListDto> applications)
         {
             _applications = applications;
         }

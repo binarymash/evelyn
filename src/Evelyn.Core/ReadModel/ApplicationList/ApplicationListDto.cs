@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.Dtos
+﻿namespace Evelyn.Core.ReadModel.ApplicationList
 {
     using System;
 
