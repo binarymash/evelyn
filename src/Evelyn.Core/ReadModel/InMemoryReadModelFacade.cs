@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
@@ -25,19 +26,19 @@
             _environmentDetails = environmentDetails;
         }
 
-        public IEnumerable<ApplicationListDto> GetApplications()
+        public async Task<IEnumerable<ApplicationListDto>> GetApplications()
         {
-            return _applications.Get();
+            return await _applications.Get();
         }
 
-        public ApplicationDetailsDto GetApplicationDetails(Guid applicationId)
+        public async Task<ApplicationDetailsDto> GetApplicationDetails(Guid applicationId)
         {
-            return _applicationDetails.Get(applicationId);
+            return await _applicationDetails.Get(applicationId);
         }
 
-        public EnvironmentDetailsDto GetEnvironmentDetails(Guid environmentId)
+        public async Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId)
         {
-            return _environmentDetails.Get(environmentId);
+            return await _environmentDetails.Get(environmentId);
         }
     }
 }

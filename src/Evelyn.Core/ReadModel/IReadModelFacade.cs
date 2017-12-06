@@ -2,16 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
 
     public interface IReadModelFacade
     {
-        IEnumerable<ApplicationListDto> GetApplications();
+        Task<IEnumerable<ApplicationListDto>> GetApplications();
 
-        ApplicationDetailsDto GetApplicationDetails(Guid applicationId);
+        Task<ApplicationDetailsDto> GetApplicationDetails(Guid applicationId);
 
-        EnvironmentDetailsDto GetEnvironmentDetails(Guid environmentId);
+        Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId);
     }
 }

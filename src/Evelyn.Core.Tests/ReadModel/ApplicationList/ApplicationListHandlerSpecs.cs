@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
@@ -70,9 +71,9 @@
             GivenWePublish(_event2);
         }
 
-        private void WhenWeGetTheApplicationList()
+        private async Task WhenWeGetTheApplicationList()
         {
-            _retrievedApplicationList = ReadModelFacade.GetApplications().ToList();
+            _retrievedApplicationList = (await ReadModelFacade.GetApplications()).ToList();
         }
 
         private void ThenTheApplicationIsAddedToTheApplicationList()
@@ -91,7 +92,7 @@
 
         private void ThenThereIsAnApplicationInTheListFor(ApplicationCreated ev)
         {
-            ApplicationsStore.Get().ShouldContain(application =>
+            ApplicationsStore.Get().GetAwaiter().GetResult().ShouldContain(application =>
                 application.Id == ev.Id &&
                 application.Name == ev.Name);
         }

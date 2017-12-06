@@ -1,22 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{01DEC9E0-EDE3-470D-B395-9CB29BE212E3}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\build.cake = ..\build.cake
 		..\build.ps1 = ..\build.ps1
+		..\codeanalysis.ruleset = ..\codeanalysis.ruleset
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 		..\release.ps1 = ..\release.ps1
 		..\version.ps1 = ..\version.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Core", "Evelyn.Core\Evelyn.Core.csproj", "{F177D3F9-8709-43A2-96C9-57C05CA490C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Core", "Evelyn.Core\Evelyn.Core.csproj", "{F177D3F9-8709-43A2-96C9-57C05CA490C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Core.Tests", "Evelyn.Core.Tests\Evelyn.Core.Tests.csproj", "{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Core.Tests", "Evelyn.Core.Tests\Evelyn.Core.Tests.csproj", "{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Api.Rest", "Evelyn.Api.Rest\Evelyn.Api.Rest.csproj", "{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Api.Rest.Tests", "Evelyn.Api.Rest.Tests\Evelyn.Api.Rest.Tests.csproj", "{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +57,30 @@ Global
 		{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}.Release|x64.Build.0 = Release|Any CPU
 		{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}.Release|x86.ActiveCfg = Release|Any CPU
 		{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}.Release|x86.Build.0 = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|x64.Build.0 = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}.Release|x86.Build.0 = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|x64.Build.0 = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

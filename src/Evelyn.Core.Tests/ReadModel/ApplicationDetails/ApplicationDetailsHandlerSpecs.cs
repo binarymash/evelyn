@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
@@ -163,21 +164,21 @@
             GivenWePublish(_environment3Added);
         }
 
-        private void WhenWeGetTheDetailsForApplication1()
+        private async Task WhenWeGetTheDetailsForApplication1()
         {
-            WhenWeGetTheDetailsFor(_application1Id);
+            await WhenWeGetTheDetailsFor(_application1Id);
         }
 
-        private void WhenWeGetTheDetailsForApplication2()
+        private async Task WhenWeGetTheDetailsForApplication2()
         {
-            WhenWeGetTheDetailsFor(_application2Id);
+            await WhenWeGetTheDetailsFor(_application2Id);
         }
 
-        private void WhenWeGetTheDetailsFor(Guid applicationId)
+        private async Task WhenWeGetTheDetailsFor(Guid applicationId)
         {
             try
             {
-                _retrievedApplicationDetails = ReadModelFacade.GetApplicationDetails(applicationId);
+                _retrievedApplicationDetails = await ReadModelFacade.GetApplicationDetails(applicationId);
             }
             catch (Exception ex)
             {

@@ -17,7 +17,11 @@ var artifactsDir = Directory("artifacts");
 
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
-var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
+var unitTestAssemblies = new []
+{
+	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
+	@"./src/Evelyn.Api.Rest.Tests/Evelyn.Api.Rest.Tests.csproj",
+};
 var openCoverSettings = new OpenCoverSettings();
 var minCodeCoverage = 93d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
@@ -123,20 +127,23 @@ Task("RunUnitTestsCoverageReport")
         
         EnsureDirectoryExists(artifactsForUnitTestsDir);
         
-        OpenCover(tool => 
-            {
-                tool.DotNetCoreTest(unitTestAssemblies);
-            },
-            new FilePath(coverageSummaryFile),
-            new OpenCoverSettings()
-            {
-                Register="user",
-                ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode")
-            }
-            .WithFilter("+[Evelyn.*]*")
-            .WithFilter("-[xunit*]*")
-            .WithFilter("-[Evelyn.*.Tests]*")
-        );
+		foreach(var testAssembly in unitTestAssemblies)
+		{
+			OpenCover(tool => 
+				{
+					tool.DotNetCoreTest(testAssembly);
+				},
+				new FilePath(coverageSummaryFile),
+				new OpenCoverSettings()
+				{
+					Register="user",
+					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput")
+				}
+				.WithFilter("+[Evelyn.*]*")
+				.WithFilter("-[xunit*]*")
+				.WithFilter("-[Evelyn.*.Tests]*")
+			);
+		}
         
 		Information($"writing to {artifactsForUnitTestsDir}"); 
         ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);

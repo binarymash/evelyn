@@ -39,7 +39,7 @@
         {
             try
             {
-                ReadModelFacade.GetEnvironmentDetails(_environment1Id).ShouldBeNull();
+                ReadModelFacade.GetEnvironmentDetails(_environment1Id).GetAwaiter().GetResult().ShouldBeNull();
             }
             catch (Exception ex)
             {
