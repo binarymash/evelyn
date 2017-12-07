@@ -1,20 +1,24 @@
 namespace Evelyn.Api.Rest.Tests.Write
 {
+    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using CQRSlite.Commands;
+    using CQRSlite.Domain.Exception;
     using Evelyn.Api.Rest.Write;
     using Evelyn.Core.WriteModel.Commands;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
     public class ApplicationsControllerSpecs
     {
-        private Fixture _fixture;
-        private ApplicationsController _controller;
-        private ICommandHandler<CreateApplication> _createApplicationHandler;
+        private readonly Fixture _fixture;
+        private readonly ApplicationsController _controller;
+        private readonly ICommandHandler<CreateApplication> _createApplicationHandler;
         private CreateApplication _command;
         private IActionResult _result;
 
@@ -36,6 +40,17 @@ namespace Evelyn.Api.Rest.Tests.Write
         }
 
         [Fact]
+        public void ConcurrencyExceptionThrownByCommandHandler()
+        {
+            this.Given(_ => GivenAValidCreateApplicationCommand())
+                .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
+                .When(_ => WhenTheCommandIsPosted())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
+                .And(_ => ThenA400BadRequestStatusIsReturned())
+                .BDDfy();
+        }
+
+        [Fact]
         public void ExceptionThrownByCommandHandler()
         {
             this.Given(_ => GivenAValidCreateApplicationCommand())
@@ -51,11 +66,18 @@ namespace Evelyn.Api.Rest.Tests.Write
             _command = _fixture.Create<CreateApplication>();
         }
 
+        private void GivenTheCommandHandlerWillThrowAConcurrencyException()
+        {
+            _createApplicationHandler
+                .Handle(Arg.Any<CreateApplication>())
+                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+        }
+
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _createApplicationHandler
                 .Handle(Arg.Any<CreateApplication>())
-                .Returns(cah => { throw new System.Exception("boom!"); });
+                .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheCommandIsPosted()
@@ -70,10 +92,17 @@ namespace Evelyn.Api.Rest.Tests.Write
 
         private void ThenA202AcceptedStatusIsReturned()
         {
+            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status202Accepted);
+        }
+
+        private void ThenA400BadRequestStatusIsReturned()
+        {
+            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()
         {
+            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
     }
 }

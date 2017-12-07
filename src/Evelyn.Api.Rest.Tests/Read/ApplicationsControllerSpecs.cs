@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Api.Rest.Tests.Read
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -10,17 +11,18 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
     public class ApplicationsControllerSpecs
     {
-        private Fixture _fixture;
-        private ApplicationsController _controller;
-        private IReadModelFacade _readModelFacade;
+        private readonly Fixture _fixture;
+        private readonly ApplicationsController _controller;
+        private readonly IReadModelFacade _readModelFacade;
         private IEnumerable<ApplicationListDto> _applicationsReturnedByFacade;
-        private ObjectResult _result;
+        private IActionResult _result;
 
         public ApplicationsControllerSpecs()
         {
@@ -30,12 +32,21 @@
         }
 
         [Fact]
-        public void DoesSomething()
+        public void GetsAllApplications()
         {
             this.Given(_ => GivenThatThereAreApplications())
                 .When(_ => WhenWeGetAllTheApplications())
                 .Then(_ => ThenStatusCode200IsReturned())
                 .And(_ => ThenAllApplicationsAreReturned())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ExceptionWhenGettingApplications()
+        {
+            this.Given(_ => GivenThatAnExceptionIsThrownByHandlerWhenGettingApplications())
+                .When(_ => WhenWeGetAllTheApplications())
+                .Then(_ => ThenStatusCode500IsReturned())
                 .BDDfy();
         }
 
@@ -46,19 +57,29 @@
             _readModelFacade.GetApplications().Returns(_applicationsReturnedByFacade);
         }
 
+        private void GivenThatAnExceptionIsThrownByHandlerWhenGettingApplications()
+        {
+            _readModelFacade.GetApplications().Throws(new Exception("boom"));
+        }
+
         private async Task WhenWeGetAllTheApplications()
         {
-            _result = (await _controller.Get()) as ObjectResult;
+            _result = await _controller.Get();
         }
 
         private void ThenStatusCode200IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status200OK);
+            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status200OK);
+        }
+
+        private void ThenStatusCode500IsReturned()
+        {
+            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
 
         private void ThenAllApplicationsAreReturned()
         {
-            var returnedApplications = (_result.Value as IEnumerable<ApplicationListDto>).ToList();
+            var returnedApplications = (((ObjectResult)_result).Value as IEnumerable<ApplicationListDto>).ToList();
 
             returnedApplications.ShouldBe(_applicationsReturnedByFacade);
         }
