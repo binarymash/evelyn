@@ -23,7 +23,7 @@
             ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
             EnvironmentDetailsStore = new InMemoryDatabase<EnvironmentDetailsDto>();
 
-            ReadModelFacade = new InMemoryReadModelFacade(
+            ReadModelFacade = new DatabaseReadModelFacade(
                 ApplicationsStore,
                 ApplicationDetailsStore,
                 EnvironmentDetailsStore);

@@ -21,10 +21,5 @@
         public DateTimeOffset Created { get; }
 
         public DateTimeOffset LastModified { get; private set; }
-
-        public void ShouldBe()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

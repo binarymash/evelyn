@@ -8,7 +8,7 @@
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
 
-    public class InMemoryReadModelFacade : IReadModelFacade
+    public class DatabaseReadModelFacade : IReadModelFacade
     {
         private IDatabase<ApplicationListDto> _applications;
 
@@ -16,7 +16,7 @@
 
         private IDatabase<EnvironmentDetailsDto> _environmentDetails;
 
-        public InMemoryReadModelFacade(
+        public DatabaseReadModelFacade(
             IDatabase<ApplicationListDto> applications,
             IDatabase<ApplicationDetailsDto> applicationDetails,
             IDatabase<EnvironmentDetailsDto> environmentDetails)

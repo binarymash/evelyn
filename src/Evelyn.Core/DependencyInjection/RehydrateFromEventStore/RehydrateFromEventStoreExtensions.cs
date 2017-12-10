@@ -7,7 +7,7 @@
     {
         public static void RehydrateFromEventStore(this ReadStrategyRegistration parentRegistration, Action<RehydrateFromEventStoreRegistration> action)
         {
-            parentRegistration.Services.AddScoped<IReadModelFacade, EventStoreReadModelFacade>();
+            parentRegistration.Services.AddScoped<IReadModelFacade, DatabaseReadModelFacade>();
 
             action.Invoke(new RehydrateFromEventStoreRegistration(parentRegistration.Services));
         }
