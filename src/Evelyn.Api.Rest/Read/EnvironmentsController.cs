@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest.Write
+﻿namespace Evelyn.Api.Rest.Read
 {
     using System;
     using System.Collections.Generic;
