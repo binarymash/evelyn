@@ -99,16 +99,8 @@ Task("Version")
 		}
 	});
 
-Task("Restore")
-	.IsDependentOn("Clean")
-	.IsDependentOn("Version")
-	.Does(() =>
-	{	
-		DotNetCoreRestore(slnFile);
-	});
-
 Task("Compile")
-	.IsDependentOn("Restore")
+	.IsDependentOn("Clean")
 	.Does(() =>
 	{	
 		var settings = new DotNetCoreBuildSettings
