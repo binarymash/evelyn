@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest
+﻿namespace Evelyn.Host
 {
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;

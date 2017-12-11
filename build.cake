@@ -131,13 +131,18 @@ Task("RunUnitTestsCoverageReport")
 		{
 			OpenCover(tool => 
 				{
-					tool.DotNetCoreTest(testAssembly);
+					tool.DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
+					{
+						ArgumentCustomization = args => args
+							.Append("--no-build")
+							.Append("--no-restore")
+					});
 				},
 				new FilePath(coverageSummaryFile),
 				new OpenCoverSettings()
 				{
 					Register="user",
-					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput")
+					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput -mergebyhash")
 				}
 				.WithFilter("+[Evelyn.*]Evelyn.*")
 				.WithFilter("-[Evelyn.*]Evelyn.Api.Rest.Program")
@@ -176,7 +181,7 @@ Task("RunUnitTestsCoverageReport")
 		
 		if(double.Parse(sequenceCoverage) < minCodeCoverage)
 		{
-//			throw new Exception(string.Format("Code coverage fell below the threshold of {0}%", minCodeCoverage));
+			throw new Exception(string.Format("Code coverage fell below the threshold of {0}%", minCodeCoverage));
 		};
 	});
 
@@ -195,6 +200,7 @@ Task("CreatePackages")
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Core." + buildVersion + ".nupkg",
+			"nuget:Evelyn.Api.Rest" + buildVersion + ".nupkg",
 //            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
@@ -277,7 +283,7 @@ Task("Release")
 
 RunTarget(target);
 
-/// Gets nuique nuget version for this commit
+/// Gets unique nuget version for this commit
 private GitVersion GetNuGetVersionForCommit()
 {
     GitVersion(new GitVersionSettings{
@@ -317,15 +323,23 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 		return;
 	}
 
-	Information("Generating release notes at " + releaseNotesFile);
-
-	GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings {
-		WorkingDirectory = "."
-	});
-
-    if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+	try
 	{
-        System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		Information("Generating release notes at " + releaseNotesFile);
+
+		GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings 
+		{
+			WorkingDirectory = "."
+		});
+
+		if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+		{
+			System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		}
+	} 
+	catch(Exception ex)
+	{
+		Warning("Couldn't create release notes: " + ex);
 	}
 }
 

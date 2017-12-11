@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest
+﻿namespace Evelyn.Host
 {
     using System;
     using CQRSlite.Routing;
@@ -19,30 +19,23 @@
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
-            var swaggerInfo = new Swashbuckle.AspNetCore.Swagger.Info()
+            services.AddEvelynApi(api =>
             {
-                Version = "v0.1",
-                Title = "Evelyn Management API",
-                Description = "Management API for Evelyn",
-            };
-
-            services.AddSwaggerGen(c => c.SwaggerDoc("v0.1", swaggerInfo));
-
-            services.AddEvelynWriteModel(wm =>
-            {
-                wm.WithEventStore.InMemory(es =>
+                api.WithWriteModel(wm =>
                 {
-                    es.WithEventPublisher.DoNotPublishEvents();
+                    wm.WithEventStore.InMemory(es =>
+                    {
+                        es.WithEventPublisher.DoNotPublishEvents();
+                    });
                 });
-            });
-
-            services.AddEvelynReadModel(rm =>
-            {
-                rm.WithReadStrategy.ReadFromCache(c => c.InMemoryCache());
+                api.WithReadModel(rm =>
+                {
+                    rm.WithReadStrategy.ReadFromCache(c => c.InMemoryCache());
+                });
             });
 
             // Register routes
