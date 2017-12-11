@@ -137,8 +137,6 @@ Task("RunUnitTestsCoverageReport")
 					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput -mergebyhash")
 				}
 				.WithFilter("+[Evelyn.*]Evelyn.*")
-				.WithFilter("-[Evelyn.*]Evelyn.Api.Rest.Program")
-				.WithFilter("-[Evelyn.*]Evelyn.Api.Rest.Startup")
 				.WithFilter("-[xunit*]*")
 				.WithFilter("-[Evelyn.*.Tests]*")
 			);
