@@ -5,7 +5,6 @@ namespace Evelyn.Api.Rest.Tests.Write
     using AutoFixture;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Api.Rest.Write;
     using Evelyn.Core.WriteModel.Commands;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -17,23 +16,23 @@ namespace Evelyn.Api.Rest.Tests.Write
     public class ApplicationsControllerSpecs
     {
         private readonly Fixture _fixture;
-        private readonly ApplicationsController _controller;
+        private readonly Rest.Write.Applications.Controller _controller;
         private readonly ICommandHandler<CreateApplication> _createApplicationHandler;
-        private CreateApplication _command;
+        private Rest.Write.Applications.CreateApplication _message;
         private IActionResult _result;
 
         public ApplicationsControllerSpecs()
         {
             _fixture = new Fixture();
             _createApplicationHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateApplication>>();
-            _controller = new ApplicationsController(_createApplicationHandler);
+            _controller = new Rest.Write.Applications.Controller(_createApplicationHandler);
         }
 
         [Fact]
         public void SuccessfulCreateApplication()
         {
             this.Given(_ => GivenAValidCreateApplicationCommand())
-                .When(_ => WhenTheCommandIsPosted())
+                .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
                 .BDDfy();
@@ -44,7 +43,7 @@ namespace Evelyn.Api.Rest.Tests.Write
         {
             this.Given(_ => GivenAValidCreateApplicationCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
-                .When(_ => WhenTheCommandIsPosted())
+                .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA400BadRequestStatusIsReturned())
                 .BDDfy();
@@ -55,7 +54,7 @@ namespace Evelyn.Api.Rest.Tests.Write
         {
             this.Given(_ => GivenAValidCreateApplicationCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
-                .When(_ => WhenTheCommandIsPosted())
+                .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA500InternalServerErrorStatusIsReturned())
                 .BDDfy();
@@ -63,7 +62,7 @@ namespace Evelyn.Api.Rest.Tests.Write
 
         private void GivenAValidCreateApplicationCommand()
         {
-            _command = _fixture.Create<CreateApplication>();
+            _message = _fixture.Create<Rest.Write.Applications.CreateApplication>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
@@ -80,14 +79,19 @@ namespace Evelyn.Api.Rest.Tests.Write
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
-        private async Task WhenTheCommandIsPosted()
+        private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_command);
+            _result = await _controller.Post(_message);
         }
 
         private void ThenTheCommandIsPassedToTheCommandHandler()
         {
-            _createApplicationHandler.Received(1).Handle(_command);
+            _createApplicationHandler
+                .Received(1)
+                .Handle(Arg.Is<CreateApplication>(command => 
+                    command.Id == _message.Id &&
+                    command.Name == _message.Name &&
+                    command.ExpectedVersion == 0));
         }
 
         private void ThenA202AcceptedStatusIsReturned()
