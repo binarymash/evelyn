@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest.Write.Applications
+﻿namespace Evelyn.Api.Rest.Write.Environments
 {
     using System;
     using System.Collections.Generic;
@@ -8,26 +8,27 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications")]
+    [Route("api/applications/{applicationId}/environments")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.CreateApplication> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Commands.AddEnvironment> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.CreateApplication> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Commands.AddEnvironment> handler)
         {
             _handler = handler;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Messages.CreateApplication message)
+        public async Task<IActionResult> Post(Guid applicationId, [FromBody]Messages.AddEnvironment message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.CreateApplication(message.Id, message.Name);
+                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name, message.Key);
+                command.ExpectedVersion = message.ExpectedVersion;
                 await _handler.Handle(command);
                 return Accepted();
             }

@@ -3,7 +3,8 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Api.Rest.Write.Applications.Messages;
+    using Evelyn.Api.Rest.Write.Environments.Messages;
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
     using Shouldly;
@@ -25,8 +26,8 @@
                 .And(_ => ThenTheResponseContentIsAnEmptyCollection())
                 .When(_ => WhenAddAnApplication())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
-                ////.When(_ => WhenAddAnEnvironment())
-                ////.Then(_ => ThenTheResponseHasStatusCode202Accepted())
+                .When(_ => WhenAddAnEnvironment())
+                .Then(_ => ThenTheResponseHasStatusCode202Accepted())
                 .BDDfy();
         }
 
@@ -51,10 +52,10 @@
         private async Task WhenAddAnEnvironment()
         {
             _addEnvironmentCommand = DataFixture.Create<AddEnvironment>();
-            _addEnvironmentCommand.ApplicationId = _createApplicationCommand.Id;
+            _addEnvironmentCommand.ExpectedVersion = 1;
 
             _response = await Client
-                .Request("/api/environments")
+                .Request($"/api/applications/{_createApplicationCommand.Id}/environments")
                 .PostJsonAsync(_addEnvironmentCommand);
         }
 
