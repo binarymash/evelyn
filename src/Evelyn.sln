@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Api.Rest.Tests", "Ev
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Host", "Evelyn.Host\Evelyn.Host.csproj", "{19427F61-8B50-4F77-ABDE-896BD240F0AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Api.Rest.IntegrationTests", "Evelyn.Api.Rest.IntegrationTests\Evelyn.Api.Rest.IntegrationTests.csproj", "{A0844A49-2AAA-4D38-831C-86FD2CB810DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,18 @@ Global
 		{19427F61-8B50-4F77-ABDE-896BD240F0AB}.Release|x64.Build.0 = Release|Any CPU
 		{19427F61-8B50-4F77-ABDE-896BD240F0AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{19427F61-8B50-4F77-ABDE-896BD240F0AB}.Release|x86.Build.0 = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Debug|x86.Build.0 = Debug|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|x64.Build.0 = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{A0844A49-2AAA-4D38-831C-86FD2CB810DB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

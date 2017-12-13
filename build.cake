@@ -26,6 +26,13 @@ var openCoverSettings = new OpenCoverSettings();
 var minCodeCoverage = 93d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
+// integration testing
+var artifactsForIntegrationTestsDir = artifactsDir + Directory("IntegrationTests");
+var integrationTestAssemblies = new []
+{
+	@"./src/Evelyn.Api.Rest.IntegrationTests/Evelyn.Api.Rest.IntegrationTests.csproj",
+};
+
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
 var releaseNotesFile = packagesDir + File("releasenotes.md");
@@ -125,9 +132,9 @@ Task("RunUnitTestsCoverageReport")
 				{
 					tool.DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
 					{
-						ArgumentCustomization = args => args
-							.Append("--no-build")
-							.Append("--no-restore")
+//						ArgumentCustomization = args => args
+//							.Append("--no-build")
+//							.Append("--no-restore")
 					});
 				},
 				new FilePath(coverageSummaryFile),
@@ -175,8 +182,27 @@ Task("RunUnitTestsCoverageReport")
 		};
 	});
 
+Task("RunIntegrationTests")
+	.IsDependentOn("Compile")
+	.Does(() => 
+	{
+        EnsureDirectoryExists(artifactsForIntegrationTestsDir);
+        
+		foreach(var testAssembly in integrationTestAssemblies)
+		{
+			DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
+			{
+				Configuration = compileConfig,
+				ArgumentCustomization = args => args
+					.Append("--no-build")
+					.Append("--no-restore")
+			});
+		}        
+	});
+
 Task("RunTests")
-	.IsDependentOn("RunUnitTestsCoverageReport");
+	.IsDependentOn("RunUnitTestsCoverageReport")
+	.IsDependentOn("RunIntegrationTests");
 
 Task("CreatePackages")
 	.IsDependentOn("Compile")
