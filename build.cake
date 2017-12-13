@@ -108,6 +108,7 @@ Task("Version")
 
 Task("Compile")
 	.IsDependentOn("Clean")
+	.IsDependentOn("Version")
 	.Does(() =>
 	{	
 		var settings = new DotNetCoreBuildSettings
@@ -130,12 +131,7 @@ Task("RunUnitTestsCoverageReport")
 		{
 			OpenCover(tool => 
 				{
-					tool.DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
-					{
-//						ArgumentCustomization = args => args
-//							.Append("--no-build")
-//							.Append("--no-restore")
-					});
+					tool.DotNetCoreTest(testAssembly);
 				},
 				new FilePath(coverageSummaryFile),
 				new OpenCoverSettings()
@@ -196,6 +192,7 @@ Task("RunIntegrationTests")
 				ArgumentCustomization = args => args
 					.Append("--no-build")
 					.Append("--no-restore")
+					.Append("--results-directory " + artifactsForIntegrationTestsDir)
 			});
 		}        
 	});
