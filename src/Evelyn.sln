@@ -19,13 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Core", "Evelyn.Core\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Core.Tests", "Evelyn.Core.Tests\Evelyn.Core.Tests.csproj", "{3584F45E-AE66-4260-A1D4-0FF8F0848D6A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Api.Rest", "Evelyn.Api.Rest\Evelyn.Api.Rest.csproj", "{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Management.Api.Rest", "Evelyn.Management.Api.Rest\Evelyn.Management.Api.Rest.csproj", "{A6293FF9-DA3A-48C6-AA84-C2D165229C5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Api.Rest.Tests", "Evelyn.Api.Rest.Tests\Evelyn.Api.Rest.Tests.csproj", "{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Management.Api.Rest.Tests", "Evelyn.Management.Api.Rest.Tests\Evelyn.Management.Api.Rest.Tests.csproj", "{EFB2EB74-F16A-4751-9980-1ACA3212AFE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Host", "Evelyn.Host\Evelyn.Host.csproj", "{19427F61-8B50-4F77-ABDE-896BD240F0AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Host", "Evelyn.Host\Evelyn.Host.csproj", "{19427F61-8B50-4F77-ABDE-896BD240F0AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Api.Rest.IntegrationTests", "Evelyn.Api.Rest.IntegrationTests\Evelyn.Api.Rest.IntegrationTests.csproj", "{A0844A49-2AAA-4D38-831C-86FD2CB810DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Management.Api.Rest.IntegrationTests", "Evelyn.Management.Api.Rest.IntegrationTests\Evelyn.Management.Api.Rest.IntegrationTests.csproj", "{A0844A49-2AAA-4D38-831C-86FD2CB810DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

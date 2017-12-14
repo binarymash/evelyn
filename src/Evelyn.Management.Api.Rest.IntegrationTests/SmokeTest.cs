@@ -1,10 +1,10 @@
-﻿namespace Evelyn.Api.Rest.IntegrationTests
+﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Api.Rest.Write.Applications.Messages;
-    using Evelyn.Api.Rest.Write.Environments.Messages;
+    using Evelyn.Management.Api.Rest.Write.Applications.Messages;
+    using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
     using Shouldly;

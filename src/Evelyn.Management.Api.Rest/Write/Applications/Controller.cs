@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest.Write.Applications
+﻿namespace Evelyn.Management.Api.Rest.Write.Applications
 {
     using System;
     using System.Collections.Generic;

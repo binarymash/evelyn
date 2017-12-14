@@ -20,7 +20,7 @@ var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
 var unitTestAssemblies = new []
 {
 	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
-	@"./src/Evelyn.Api.Rest.Tests/Evelyn.Api.Rest.Tests.csproj",
+	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
 };
 var openCoverSettings = new OpenCoverSettings();
 var minCodeCoverage = 93d;
@@ -30,7 +30,7 @@ var coverallsRepoToken = "coveralls-repo-token-evelyn";
 var artifactsForIntegrationTestsDir = artifactsDir + Directory("IntegrationTests");
 var integrationTestAssemblies = new []
 {
-	@"./src/Evelyn.Api.Rest.IntegrationTests/Evelyn.Api.Rest.IntegrationTests.csproj",
+	@"./src/Evelyn.Management.Api.Rest.IntegrationTests/Evelyn.Management.Api.Rest.IntegrationTests.csproj",
 };
 
 // packaging

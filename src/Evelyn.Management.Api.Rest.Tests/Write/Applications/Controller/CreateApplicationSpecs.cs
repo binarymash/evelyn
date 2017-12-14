@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest.Tests.Write.Environments.Controller
+namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
 {
     using System;
     using System.Threading.Tasks;
@@ -13,29 +13,27 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AddEnvironmentSpecs
+    public class CreateApplicationSpecs
     {
         private readonly Fixture _fixture;
-        private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
-        private Guid _applicationId;
-        private Rest.Write.Environments.Messages.AddEnvironment _message;
+        private readonly Rest.Write.Applications.Controller _controller;
+        private readonly ICommandHandler<CreateApplication> _createApplicationHandler;
+        private Rest.Write.Applications.Messages.CreateApplication _message;
         private IActionResult _result;
 
-        public AddEnvironmentSpecs()
+        public CreateApplicationSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
-            _controller = new Rest.Write.Environments.Controller(_handler);
-            _applicationId = _fixture.Create<Guid>();
+            _createApplicationHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateApplication>>();
+            _controller = new Rest.Write.Applications.Controller(_createApplicationHandler);
         }
 
         [Fact]
-        public void SuccessfulAddEnvironment()
+        public void SuccessfulCreateApplication()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateApplicationCommand())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
                 .BDDfy();
         }
@@ -43,10 +41,10 @@
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateApplicationCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA400BadRequestStatusIsReturned())
                 .BDDfy();
         }
@@ -54,48 +52,46 @@
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateApplicationCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA500InternalServerErrorStatusIsReturned())
                 .BDDfy();
         }
 
-        private void GivenAValidAddEnvironmentCommand()
+        private void GivenAValidCreateApplicationCommand()
         {
-            _message = _fixture.Create<Rest.Write.Environments.Messages.AddEnvironment>();
+            _message = _fixture.Create<Rest.Write.Applications.Messages.CreateApplication>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
-            _handler
-                .Handle(Arg.Any<AddEnvironment>())
+            _createApplicationHandler
+                .Handle(Arg.Any<CreateApplication>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
-            _handler
-                .Handle(Arg.Any<AddEnvironment>())
+            _createApplicationHandler
+                .Handle(Arg.Any<CreateApplication>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message);
+            _result = await _controller.Post(_message);
         }
 
-        private void ThenACommandIsPassedToTheCommandHandler()
+        private void ThenTheCommandIsPassedToTheCommandHandler()
         {
-            _handler
+            _createApplicationHandler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
-                    command.ApplicationId == _applicationId &&
+                .Handle(Arg.Is<CreateApplication>(command =>
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
-                    command.Key == _message.Key &&
-                    command.ExpectedVersion == _message.ExpectedVersion));
+                    command.ExpectedVersion == 0));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

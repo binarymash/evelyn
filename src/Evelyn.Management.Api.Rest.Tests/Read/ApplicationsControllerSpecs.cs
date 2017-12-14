@@ -1,14 +1,14 @@
-﻿namespace Evelyn.Api.Rest.Tests.Read
+﻿namespace Evelyn.Management.Api.Rest.Tests.Read
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Api.Rest.Read;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
+    using Evelyn.Management.Api.Rest.Read;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;

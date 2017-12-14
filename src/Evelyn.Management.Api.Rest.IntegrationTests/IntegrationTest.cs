@@ -1,4 +1,4 @@
-namespace Evelyn.Api.Rest.IntegrationTests
+namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
     using System;
     using System.Net.Http;

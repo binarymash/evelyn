@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Evelyn.Api.Rest\Evelyn.Api.Rest.csproj" />
+    <ProjectReference Include="..\Evelyn.Management.Api.Rest\Evelyn.Management.Api.Rest.csproj" />
   </ItemGroup>
 
 </Project>

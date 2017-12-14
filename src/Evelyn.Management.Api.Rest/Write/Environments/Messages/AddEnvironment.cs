@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Api.Rest.Write.Environments.Messages
+﻿namespace Evelyn.Management.Api.Rest.Write.Environments.Messages
 {
     using System;
 
