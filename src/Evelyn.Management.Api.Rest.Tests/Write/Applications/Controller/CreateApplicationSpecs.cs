@@ -19,7 +19,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
         private readonly Rest.Write.Applications.Controller _controller;
         private readonly ICommandHandler<CreateApplication> _createApplicationHandler;
         private Rest.Write.Applications.Messages.CreateApplication _message;
-        private IActionResult _result;
+        private ObjectResult _result;
 
         public CreateApplicationSpecs()
         {
@@ -81,7 +81,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_message);
+            _result = await _controller.Post(_message) as ObjectResult;
         }
 
         private void ThenTheCommandIsPassedToTheCommandHandler()
@@ -96,17 +96,17 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
 
         private void ThenA202AcceptedStatusIsReturned()
         {
-            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status202Accepted);
+            _result.StatusCode.ShouldBe(StatusCodes.Status202Accepted);
         }
 
         private void ThenA400BadRequestStatusIsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
+            _result.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -20,7 +20,7 @@
         private readonly ICommandHandler<AddEnvironment> _handler;
         private Guid _applicationId;
         private Rest.Write.Environments.Messages.AddEnvironment _message;
-        private IActionResult _result;
+        private ObjectResult _result;
 
         public AddEnvironmentSpecs()
         {
@@ -83,7 +83,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message);
+            _result = await _controller.Post(_applicationId, _message) as ObjectResult;
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
@@ -100,17 +100,17 @@
 
         private void ThenA202AcceptedStatusIsReturned()
         {
-            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status202Accepted);
+            _result.StatusCode.ShouldBe(StatusCodes.Status202Accepted);
         }
 
         private void ThenA400BadRequestStatusIsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
+            _result.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
     }
 }

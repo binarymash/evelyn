@@ -1,4 +1,5 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using CQRSlite.Caching;
@@ -7,6 +8,7 @@
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.WriteModel;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class WriteModelExtensions
     {
@@ -15,6 +17,7 @@
             services
                 .AddCoreWriteInfrastructure()
                 .AddCommandHandlers();
+                ////.AddRouting();
 
             action.Invoke(new WriteModelRegistration(services));
 
@@ -23,16 +26,17 @@
 
         private static IServiceCollection AddCoreWriteInfrastructure(this IServiceCollection services)
         {
-            return services
-                .AddSingleton<Router>(new Router())
-                .AddSingleton<ICommandSender>(serviceProvider => serviceProvider.GetService<Router>())
-                .AddSingleton<IEventPublisher>(serviceProvider => serviceProvider.GetService<Router>())
-                .AddSingleton<IHandlerRegistrar>(serviceProvider => serviceProvider.GetService<Router>())
+            services.TryAddSingleton<Router>(new Router());
+            services.TryAddSingleton<ICommandSender>(serviceProvider => serviceProvider.GetService<Router>());
+            services.TryAddSingleton<IEventPublisher>(serviceProvider => serviceProvider.GetService<Router>());
+            services.TryAddSingleton<IHandlerRegistrar>(serviceProvider => serviceProvider.GetService<Router>());
 
-                // session
-                .AddScoped<ISession, Session>()
-                .AddScoped<IRepository>(CacheRepositoryFactory)
-                .AddSingleton<ICache, MemoryCache>();
+            // session
+            services.TryAddScoped<ISession, Session>();
+            services.TryAddScoped<IRepository>(CacheRepositoryFactory);
+            services.TryAddSingleton<ICache, MemoryCache>();
+
+            return services;
         }
 
         private static IRepository CacheRepositoryFactory(IServiceProvider serviceProvider)

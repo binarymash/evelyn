@@ -10,11 +10,11 @@
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private IDatabase<ApplicationListDto> _applications;
+        private readonly IDatabase<ApplicationListDto> _applications;
 
-        private IDatabase<ApplicationDetailsDto> _applicationDetails;
+        private readonly IDatabase<ApplicationDetailsDto> _applicationDetails;
 
-        private IDatabase<EnvironmentDetailsDto> _environmentDetails;
+        private readonly IDatabase<EnvironmentDetailsDto> _environmentDetails;
 
         public DatabaseReadModelFacade(
             IDatabase<ApplicationListDto> applications,

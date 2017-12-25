@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/environments")]
+    [Route("api/application/{applicationId}/environments")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class EnvironmentsController : Controller
     {
@@ -19,10 +19,10 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{environmentId}")]
         [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(Guid environmentId)
+        public async Task<ObjectResult> Get(Guid environmentId)
         {
             try
             {
@@ -31,11 +31,11 @@
             }
             catch (NotFoundException)
             {
-                return NotFound();
+                return NotFound(null);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
             }
         }
     }

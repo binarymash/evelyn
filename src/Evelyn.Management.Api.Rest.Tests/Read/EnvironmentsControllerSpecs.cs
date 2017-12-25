@@ -21,7 +21,7 @@
         private readonly EnvironmentsController _controller;
         private EnvironmentDetailsDto _environmentReturnedByFacade;
         private Guid _idOfEnvironmentToGet;
-        private IActionResult _result;
+        private ObjectResult _result;
 
         public EnvironmentsControllerSpecs()
         {
@@ -90,17 +90,17 @@
 
         private void ThenStatusCode200IsReturned()
         {
-            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status200OK);
+            _result.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
 
         private void ThenStatusCode404IsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status404NotFound);
+            _result.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
         }
 
         private void ThenStatusCode500IsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
 
         private void ThenTheExpectedEnvironmentIsReturned()

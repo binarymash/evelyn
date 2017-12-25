@@ -25,7 +25,7 @@
         private Guid _idOfApplicationToGet;
         private IEnumerable<ApplicationListDto> _applicationsReturnedByFacade;
         private ApplicationDetailsDto _applicationReturnedByFacade;
-        private IActionResult _result;
+        private ObjectResult _result;
 
         public ApplicationsControllerSpecs()
         {
@@ -122,39 +122,39 @@
 
         private async Task WhenWeGetAllTheApplications()
         {
-            _result = await _controller.Get();
+            _result = await _controller.Get() as ObjectResult;
         }
 
         private async Task WhenWeGetTheApplication()
         {
-            _result = await _controller.Get(_idOfApplicationToGet);
+            _result = await _controller.Get(_idOfApplicationToGet) as ObjectResult;
         }
 
         private void ThenStatusCode200IsReturned()
         {
-            ((ObjectResult)_result).StatusCode.ShouldBe(StatusCodes.Status200OK);
+            _result.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
 
         private void ThenStatusCode404IsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status404NotFound);
+            _result.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
         }
 
         private void ThenStatusCode500IsReturned()
         {
-            ((StatusCodeResult)_result).StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
         }
 
         private void ThenAllApplicationsAreReturned()
         {
-            var returnedApplications = (((ObjectResult)_result).Value as IEnumerable<ApplicationListDto>).ToList();
+            var returnedApplications = (_result.Value as IEnumerable<ApplicationListDto>).ToList();
 
             returnedApplications.ShouldBe(_applicationsReturnedByFacade);
         }
 
         private void ThenTheExpectedApplicationIsReturned()
         {
-            var returnedApplication = ((ObjectResult)_result).Value as ApplicationDetailsDto;
+            var returnedApplication = _result.Value as ApplicationDetailsDto;
 
             returnedApplication.ShouldBe(_applicationReturnedByFacade);
         }

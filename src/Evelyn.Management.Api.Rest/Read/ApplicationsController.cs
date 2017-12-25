@@ -21,7 +21,7 @@
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ApplicationDetailsDto>), 200)]
-        public async Task<IActionResult> Get()
+        public async Task<ObjectResult> Get()
         {
             try
             {
@@ -30,14 +30,14 @@
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
             }
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApplicationDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ObjectResult> Get(Guid id)
         {
             try
             {
@@ -46,11 +46,11 @@
             }
             catch (NotFoundException)
             {
-                return NotFound();
+                return NotFound(null);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
             }
         }
     }

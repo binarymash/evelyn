@@ -1,14 +1,14 @@
 namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
-    using System;
     using System.Net.Http;
     using AutoFixture;
-    using CQRSlite.Routing;
+    using Evelyn.Core.ReadModel.ApplicationDetails;
+    using Evelyn.Core.ReadModel.ApplicationList;
+    using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.WriteModel.Handlers;
     using Flurl.Http;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +54,7 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
                     {
                         wm.WithEventStore.InMemory(es =>
                         {
-                            es.WithEventPublisher.DoNotPublishEvents();
+                            es.WithEventPublisher.SynchronouslyInProcess();
                         });
                     });
                     api.WithReadModel(rm =>
@@ -63,11 +63,13 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
                     });
                 });
 
-                // Register routes
-                var serviceProvider = services.BuildServiceProvider();
-
-                var registrar = new RouteRegistrar(new Provider(serviceProvider));
-                registrar.Register(typeof(ApplicationCommandHandler));
+                // Register Evelyn event routes
+                var registrar = new Core.EvelynRouteRegistrar(new Provider(services.BuildServiceProvider()));
+                registrar.RegisterHandlers(
+                    typeof(ApplicationCommandHandler),
+                    typeof(ApplicationDetailsHandler),
+                    typeof(ApplicationListHandler),
+                    typeof(EnvironmentDetailsHandler));
             }
 
             // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,26 +81,6 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
                 }
 
                 app.UseMvc();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "Evelyn Management API"));
-            }
-
-            public class Provider : IServiceProvider
-            {
-                private readonly ServiceProvider _serviceProvider;
-                private readonly IHttpContextAccessor _contextAccessor;
-
-                public Provider(ServiceProvider serviceProvider)
-                {
-                    _serviceProvider = serviceProvider;
-                    _contextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-                }
-
-                public object GetService(Type serviceType)
-                {
-                    return _contextAccessor?.HttpContext?.RequestServices.GetService(serviceType) ??
-                           _serviceProvider.GetService(serviceType);
-                }
             }
         }
 

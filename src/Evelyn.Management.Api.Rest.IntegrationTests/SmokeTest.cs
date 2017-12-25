@@ -1,12 +1,15 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Management.Api.Rest.Write.Applications.Messages;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
+    using Newtonsoft.Json;
     using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
@@ -24,10 +27,17 @@
             this.When(_ => WhenGetApplications())
                 .Then(_ => ThenTheResponseHasStatusCode200OK())
                 .And(_ => ThenTheResponseContentIsAnEmptyCollection())
+
+            // writing...
                 .When(_ => WhenAddAnApplication())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
                 .When(_ => WhenAddAnEnvironment())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
+
+            // reading...
+                .When(_ => WhenGetApplications())
+                .Then(_ => ThenTheResponseHasStatusCode200OK())
+                .And(_ => ThenTheResponseContentIsACollectionWithOneApplication())
                 .BDDfy();
         }
 
@@ -82,6 +92,12 @@
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
             _responseContent.ShouldBe("[]");
+        }
+
+        private void ThenTheResponseContentIsACollectionWithOneApplication()
+        {
+            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent);
+            response.Count.ShouldBe(1);
         }
     }
 }

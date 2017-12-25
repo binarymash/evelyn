@@ -1,4 +1,5 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection
 {
     public class InMemoryEventStoreRegistration : EvelynComponentRegistration
     {

@@ -22,7 +22,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Guid applicationId, [FromBody]Messages.AddEnvironment message)
+        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.AddEnvironment message)
         {
             // TODO: validation
             try
@@ -35,11 +35,13 @@
             catch (ConcurrencyException)
             {
                 // TODO: error handling
-                return BadRequest();
+                var value = new Dictionary<string, string>();
+                return new BadRequestObjectResult(value);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                // TODO: error handling
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
             }
         }
     }

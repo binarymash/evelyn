@@ -22,7 +22,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Messages.CreateApplication message)
+        public async Task<ObjectResult> Post([FromBody]Messages.CreateApplication message)
         {
             // TODO: validation
             try
@@ -31,14 +31,15 @@
                 await _handler.Handle(command);
                 return Accepted();
             }
-            catch (ConcurrencyException)
+            catch (ConcurrencyException ex)
             {
                 // TODO: error handling
-                return BadRequest();
+                return new BadRequestObjectResult(ex.Message);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                // TODO: error handling
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
             }
         }
     }
