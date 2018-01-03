@@ -1,19 +1,18 @@
-﻿namespace Evelyn.Host
+﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
     using System;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.WriteModel.Handlers;
-    using Evelyn.Management.Api.Rest;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class Startup
+    public class InProcessStartUp
     {
-        public Startup(IConfiguration configuration)
+        public InProcessStartUp(IConfiguration configuration)
         {
             Configuration = configuration;
         }

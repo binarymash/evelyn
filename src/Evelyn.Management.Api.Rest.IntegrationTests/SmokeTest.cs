@@ -38,6 +38,7 @@
                 .When(_ => WhenGetApplications())
                 .Then(_ => ThenTheResponseHasStatusCode200OK())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneApplication())
+
                 .BDDfy();
         }
 
@@ -91,7 +92,8 @@
 
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
-            _responseContent.ShouldBe("[]");
+            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent);
+            response.Count.ShouldBe(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneApplication()
