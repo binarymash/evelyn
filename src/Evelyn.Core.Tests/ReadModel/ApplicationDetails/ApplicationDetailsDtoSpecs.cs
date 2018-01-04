@@ -1,33 +1,20 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.ApplicationDetails
 {
-    using System.Linq;
+    using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.ApplicationDetails;
-    using FluentAssertions;
-    using Newtonsoft.Json;
     using Xunit;
 
-    public class ApplicationDetailsDtoSpecs
+    public class ApplicationDetailsDtoSpecs : DtoSpecs<ApplicationDetailsDto>
     {
-        private readonly Fixture _fixture;
-        private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
-
-        public ApplicationDetailsDtoSpecs()
-        {
-            _fixture = new Fixture();
-            _deserializeWithPrivateSetters = new JsonSerializerSettings
-            {
-                ContractResolver = new JsonPrivateResolver()
-            };
-        }
-
         [Fact]
         public void Serialization()
         {
-            var applicationDetails = _fixture.Create<ApplicationDetailsDto>();
-            var serializedApplicationDetails = JsonConvert.SerializeObject(applicationDetails);
-            var deserializedApplicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(serializedApplicationDetails, _deserializeWithPrivateSetters);
-            deserializedApplicationDetails.Should().BeEquivalentTo(applicationDetails);
+            var applicationDetails = DataFixture.Create<ApplicationDetailsDto>();
+            applicationDetails.AddEnvironment(DataFixture.Create<EnvironmentListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
+            applicationDetails.AddEnvironment(DataFixture.Create<EnvironmentListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
+
+            AssertSerializationOf(applicationDetails);
         }
     }
 }
