@@ -7,6 +7,7 @@
     using AutoFixture;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
+    using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Management.Api.Rest.Write.Applications.Messages;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Flurl.Http;
@@ -44,6 +45,8 @@
                 .When(_ => WhenWeGetTheDetailsForTheApplicationWeAdded())
                 .Then(_ => ThenTheApplicationContainsOneEnvironment())
                 .And(_ => ThenTheEnvironmentWeAddedIsOnTheApplication())
+                .When(_ => WhenWeGetTheDetailsForTheEnvironmentWeAdded())
+                .Then(_ => ThenTheEnvironmentWeAddedIsReturned())
 
                 .BDDfy();
         }
@@ -89,6 +92,15 @@
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
+        private async Task WhenWeGetTheDetailsForTheEnvironmentWeAdded()
+        {
+            _response = await Client
+                .Request($"/api/applications/{_createApplicationCommand.Id}/environments/{_addEnvironmentCommand.Id}")
+                .GetAsync();
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
+        }
+
         private void ThenTheResponseHasStatusCode200OK()
         {
             ThenTheResponseHasStatusCode(StatusCodes.Status200OK);
@@ -124,7 +136,9 @@
         private void ThenTheApplicationWeAddedIsInTheCollection()
         {
             var applicationList = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters).ToList();
-            applicationList.ShouldContain(application => application.Id == _createApplicationCommand.Id);
+            applicationList.ShouldContain(application =>
+                application.Id == _createApplicationCommand.Id &&
+                application.Name == _createApplicationCommand.Name);
         }
 
         private void ThenTheApplicationContainsOneEnvironment()
@@ -136,7 +150,17 @@
         private void ThenTheEnvironmentWeAddedIsOnTheApplication()
         {
             var applicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            applicationDetails.Environments.ShouldContain(environment => environment.Id == _addEnvironmentCommand.Id);
+            applicationDetails.Environments.ShouldContain(environment =>
+                environment.Id == _addEnvironmentCommand.Id &&
+                environment.Name == _addEnvironmentCommand.Name);
+        }
+
+        private void ThenTheEnvironmentWeAddedIsReturned()
+        {
+            var environmentDetails = JsonConvert.DeserializeObject<EnvironmentDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            environmentDetails.Id.ShouldBe(_addEnvironmentCommand.Id);
+            environmentDetails.Name.ShouldBe(_addEnvironmentCommand.Name);
+            environmentDetails.ApplicationId.ShouldBe(_createApplicationCommand.Id);
         }
     }
 }

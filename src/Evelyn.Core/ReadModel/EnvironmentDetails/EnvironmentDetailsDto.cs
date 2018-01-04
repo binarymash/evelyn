@@ -10,11 +10,12 @@
             Name = name;
             Created = created;
             LastModified = created;
+            ApplicationId = applicationId;
         }
 
-        public Guid ApplicationId { get; }
+        public Guid ApplicationId { get; private set; }
 
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
         public string Name { get; private set; }
 
