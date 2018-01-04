@@ -8,7 +8,7 @@
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.Events;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -78,13 +78,13 @@
 
         private void ThenTheApplicationIsAddedToTheApplicationList()
         {
-            _retrievedApplicationList.Count.ShouldBe(1);
+            _retrievedApplicationList.Count.Should().Be(1);
             ThenThereIsAnApplicationInTheListFor(_event1);
         }
 
         private void ThenBothApplicationsAreInTheApplicationList()
         {
-            _retrievedApplicationList.Count().ShouldBe(2);
+            _retrievedApplicationList.Count().Should().Be(2);
 
             ThenThereIsAnApplicationInTheListFor(_event1);
             ThenThereIsAnApplicationInTheListFor(_event2);
@@ -92,7 +92,7 @@
 
         private void ThenThereIsAnApplicationInTheListFor(ApplicationCreated ev)
         {
-            ApplicationsStore.Get().GetAwaiter().GetResult().ShouldContain(application =>
+            ApplicationsStore.Get().GetAwaiter().GetResult().Should().Contain(application =>
                 application.Id == ev.Id &&
                 application.Name == ev.Name);
         }

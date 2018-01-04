@@ -6,11 +6,11 @@
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Management.Api.Rest.Read;
+    using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -90,23 +90,23 @@
 
         private void ThenStatusCode200IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status200OK);
+            _result.StatusCode.Should().Be(StatusCodes.Status200OK);
         }
 
         private void ThenStatusCode404IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
+            _result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         }
 
         private void ThenStatusCode500IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         private void ThenTheExpectedEnvironmentIsReturned()
         {
             var returnedEnvironment = ((ObjectResult)_result).Value as EnvironmentDetailsDto;
-            returnedEnvironment.ShouldBe(_environmentReturnedByFacade);
+            returnedEnvironment.Should().Be(_environmentReturnedByFacade);
         }
     }
 }

@@ -6,8 +6,8 @@
     using System.Threading;
     using AutoFixture;
     using CQRSlite.Events;
+    using FluentAssertions;
     using NSubstitute;
-    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -180,20 +180,20 @@
 
         private void ThenNoEventsAreReturned()
         {
-            _retrievedEvents.Count().ShouldBe(0);
+            _retrievedEvents.Count().Should().Be(0);
         }
 
         private void ThenAllTheEventsAreReturned()
         {
-            _retrievedEvents.Count().ShouldBe(2);
-            _retrievedEvents.ShouldContain(_eventToSave1);
-            _retrievedEvents.ShouldContain(_eventToSave2);
+            _retrievedEvents.Count().Should().Be(2);
+            _retrievedEvents.Should().Contain(_eventToSave1);
+            _retrievedEvents.Should().Contain(_eventToSave2);
         }
 
         private void ThenAllEventsAfterVersion1AreReturned()
         {
-            _retrievedEvents.Count().ShouldBe(1);
-            _retrievedEvents.ShouldContain(_eventToSave2);
+            _retrievedEvents.Count().Should().Be(1);
+            _retrievedEvents.Should().Contain(_eventToSave2);
         }
 
         private class MyEvent : IEvent

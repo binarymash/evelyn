@@ -17,13 +17,13 @@
             _environments = new Dictionary<Guid, EnvironmentListDto>();
         }
 
-        public Guid Id { get; private set; }
+        public Guid Id { get; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         public int Version { get; private set; }
 
-        public DateTimeOffset Created { get; private set; }
+        public DateTimeOffset Created { get; }
 
         public DateTimeOffset LastModified { get; private set; }
 

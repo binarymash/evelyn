@@ -7,7 +7,7 @@
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.ReadModel.Infrastructure;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -39,7 +39,7 @@
         {
             try
             {
-                ReadModelFacade.GetEnvironmentDetails(_environment1Id).GetAwaiter().GetResult().ShouldBeNull();
+                ReadModelFacade.GetEnvironmentDetails(_environment1Id).GetAwaiter().GetResult().Should().BeNull();
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@
 
         private void ThenGettingEnvironment1ThrownsNotFoundException()
         {
-            ThrownException.ShouldBeOfType<NotFoundException>();
+            ThrownException.Should().BeOfType<NotFoundException>();
         }
 
         ////[Fact]
@@ -166,18 +166,18 @@
         ////private void ThenApplicationDetailsCanBeRetrievedFor(ApplicationCreated ev)
         ////{
         ////    var applicationDetails = _readModelFacade.GetApplicationDetails(ev.Id);
-        ////    applicationDetails.Id.ShouldBe(ev.Id);
-        ////    applicationDetails.Name.ShouldBe(ev.Name);
-        ////    applicationDetails.Version.ShouldBe(ev.Version);
-        ////    applicationDetails.Environments.Count().ShouldBe(0);
-        ////    applicationDetails.Created.ShouldBe(ev.TimeStamp);
-        ////    applicationDetails.LastModified.ShouldBe(ev.TimeStamp);
+        ////    applicationDetails.Id.Should().Be(ev.Id);
+        ////    applicationDetails.Name.Should().Be(ev.Name);
+        ////    applicationDetails.Version.Should().Be(ev.Version);
+        ////    applicationDetails.Environments.Count().Should().Be(0);
+        ////    applicationDetails.Created.Should().Be(ev.TimeStamp);
+        ////    applicationDetails.LastModified.Should().Be(ev.TimeStamp);
         ////}
 
         ////private void ThenTheFirstAndThirdEnvironmentsAreAddedToTheFirstApplication()
         ////{
         ////    var applicationDetails = _readModelFacade.GetApplicationDetails(_application1Id);
-        ////    applicationDetails.Environments.Count().ShouldBe(2);
+        ////    applicationDetails.Environments.Count().Should().Be(2);
         ////    ThenTheEnvironmentIsAdded(_application1Id, _environmentAdded1);
         ////    ThenTheEnvironmentIsAdded(_application1Id, _environmentAdded3);
         ////}
@@ -219,13 +219,13 @@
         ////private void ThenTheVersionOfTheApplicationHasBeenUpdated(Guid applicationId, EnvironmentAdded environmentAdded)
         ////{
         ////    var applicationDetails = _readModelFacade.GetApplicationDetails(applicationId);
-        ////    applicationDetails.Version.ShouldBe(environmentAdded.Version);
+        ////    applicationDetails.Version.Should().Be(environmentAdded.Version);
         ////}
 
         ////private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(Guid applicationId, EnvironmentAdded environmentAdded)
         ////{
         ////    var applicationDetails = _readModelFacade.GetApplicationDetails(applicationId);
-        ////    applicationDetails.LastModified.ShouldBe(environmentAdded.TimeStamp);
+        ////    applicationDetails.LastModified.Should().Be(environmentAdded.TimeStamp);
         ////}
     }
 }

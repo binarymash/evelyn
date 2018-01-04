@@ -6,10 +6,10 @@
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
     using Evelyn.Core.WriteModel.Commands;
+    using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
-    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -100,17 +100,17 @@
 
         private void ThenA202AcceptedStatusIsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status202Accepted);
+            _result.StatusCode.Should().Be(StatusCodes.Status202Accepted);
         }
 
         private void ThenA400BadRequestStatusIsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
+            _result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -9,11 +9,11 @@
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Management.Api.Rest.Read;
+    using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -132,31 +132,31 @@
 
         private void ThenStatusCode200IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status200OK);
+            _result.StatusCode.Should().Be(StatusCodes.Status200OK);
         }
 
         private void ThenStatusCode404IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
+            _result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         }
 
         private void ThenStatusCode500IsReturned()
         {
-            _result.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
+            _result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         private void ThenAllApplicationsAreReturned()
         {
             var returnedApplications = (_result.Value as IEnumerable<ApplicationListDto>).ToList();
 
-            returnedApplications.ShouldBe(_applicationsReturnedByFacade);
+            returnedApplications.Should().Equal(_applicationsReturnedByFacade);
         }
 
         private void ThenTheExpectedApplicationIsReturned()
         {
             var returnedApplication = _result.Value as ApplicationDetailsDto;
 
-            returnedApplication.ShouldBe(_applicationReturnedByFacade);
+            returnedApplication.Should().Be(_applicationReturnedByFacade);
         }
     }
 }

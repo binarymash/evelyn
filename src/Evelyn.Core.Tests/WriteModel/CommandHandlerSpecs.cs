@@ -9,7 +9,7 @@
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
     using CQRSlite.Snapshotting;
-    using Shouldly;
+    using FluentAssertions;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
         where TAggregate : AggregateRoot
@@ -83,18 +83,18 @@
 
         protected void ThenNoEventIsPublished()
         {
-            PublishedEvents.Count.ShouldBe(0);
+            PublishedEvents.Count.Should().Be(0);
         }
 
         protected void ThenOneEventIsPublished()
         {
-            PublishedEvents.Count.ShouldBe(1);
+            PublishedEvents.Count.Should().Be(1);
         }
 
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)
         {
-            ThrownException.ShouldBeOfType<InvalidOperationException>();
-            ThrownException.Message.ShouldBe(expectedMessage);
+            ThrownException.Should().BeOfType<InvalidOperationException>();
+            ThrownException.Message.Should().Be(expectedMessage);
         }
 
         private async Task<TAggregate> GetAggregate()

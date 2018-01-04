@@ -5,7 +5,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
     using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -137,32 +137,32 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void ThenThePublishedEventIsToggledFlipped()
         {
-            PublishedEvents.First().ShouldBeOfType<ToggleFlipped>();
+            PublishedEvents.First().Should().BeOfType<ToggleFlipped>();
         }
 
         private void ThenTheApplicationIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Id.ShouldBe(_applicationId);
+            ((ToggleFlipped)PublishedEvents.First()).Id.Should().Be(_applicationId);
         }
 
         private void ThenTheEnvironmentIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).EnvironmentId.ShouldBe(_environmentId);
+            ((ToggleFlipped)PublishedEvents.First()).EnvironmentId.Should().Be(_environmentId);
         }
 
         private void ThenTheToggleIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).ToggleId.ShouldBe(_toggleId);
+            ((ToggleFlipped)PublishedEvents.First()).ToggleId.Should().Be(_toggleId);
         }
 
         private void ThenTheToggleValueIdIsSavedAsTrue()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Value.ShouldBeTrue();
+            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeTrue();
         }
 
         private void ThenTheToggleValueIdIsSavedAsFalse()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Value.ShouldBeFalse();
+            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeFalse();
         }
     }
 }

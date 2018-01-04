@@ -5,7 +5,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
     using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -57,12 +57,12 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void ThenThePublishedEventIsApplicationCreated()
         {
-            PublishedEvents.First().ShouldBeOfType<ApplicationCreated>();
+            PublishedEvents.First().Should().BeOfType<ApplicationCreated>();
         }
 
         private void ThenTheNameIsSaved()
         {
-            ((ApplicationCreated)PublishedEvents.First()).Name.ShouldBe(_applicationName);
+            ((ApplicationCreated)PublishedEvents.First()).Name.Should().Be(_applicationName);
         }
     }
 }

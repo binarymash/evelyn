@@ -10,10 +10,10 @@
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Management.Api.Rest.Write.Applications.Messages;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
+    using FluentAssertions;
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
-    using Shouldly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -118,25 +118,25 @@
 
         private void ThenTheResponseHasStatusCode(int expectedStatusCode)
         {
-            ((int)_response.StatusCode).ShouldBe(expectedStatusCode);
+            ((int)_response.StatusCode).Should().Be(expectedStatusCode);
         }
 
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
             var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters);
-            response.Count.ShouldBe(0);
+            response.Count.Should().Be(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneApplication()
         {
             var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters);
-            response.Count.ShouldBe(1);
+            response.Count.Should().Be(1);
         }
 
         private void ThenTheApplicationWeAddedIsInTheCollection()
         {
             var applicationList = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters).ToList();
-            applicationList.ShouldContain(application =>
+            applicationList.Should().Contain(application =>
                 application.Id == _createApplicationCommand.Id &&
                 application.Name == _createApplicationCommand.Name);
         }
@@ -144,13 +144,13 @@
         private void ThenTheApplicationContainsOneEnvironment()
         {
             var applicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            applicationDetails.Environments.Count().ShouldBe(1);
+            applicationDetails.Environments.Count().Should().Be(1);
         }
 
         private void ThenTheEnvironmentWeAddedIsOnTheApplication()
         {
             var applicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            applicationDetails.Environments.ShouldContain(environment =>
+            applicationDetails.Environments.Should().Contain(environment =>
                 environment.Id == _addEnvironmentCommand.Id &&
                 environment.Name == _addEnvironmentCommand.Name);
         }
@@ -158,9 +158,9 @@
         private void ThenTheEnvironmentWeAddedIsReturned()
         {
             var environmentDetails = JsonConvert.DeserializeObject<EnvironmentDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            environmentDetails.Id.ShouldBe(_addEnvironmentCommand.Id);
-            environmentDetails.Name.ShouldBe(_addEnvironmentCommand.Name);
-            environmentDetails.ApplicationId.ShouldBe(_createApplicationCommand.Id);
+            environmentDetails.Id.Should().Be(_addEnvironmentCommand.Id);
+            environmentDetails.Name.Should().Be(_addEnvironmentCommand.Name);
+            environmentDetails.ApplicationId.Should().Be(_createApplicationCommand.Id);
         }
     }
 }
