@@ -17,10 +17,21 @@ var artifactsDir = Directory("artifacts");
 
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
-var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
+var unitTestAssemblies = new []
+{
+	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
+	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
+};
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage = 93d;
+var minCodeCoverage = 90d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
+
+// integration testing
+var artifactsForIntegrationTestsDir = artifactsDir + Directory("IntegrationTests");
+var integrationTestAssemblies = new []
+{
+	@"./src/Evelyn.Management.Api.Rest.IntegrationTests/Evelyn.Management.Api.Rest.IntegrationTests.csproj",
+};
 
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
@@ -95,16 +106,9 @@ Task("Version")
 		}
 	});
 
-Task("Restore")
+Task("Compile")
 	.IsDependentOn("Clean")
 	.IsDependentOn("Version")
-	.Does(() =>
-	{	
-		DotNetCoreRestore(slnFile);
-	});
-
-Task("Compile")
-	.IsDependentOn("Restore")
 	.Does(() =>
 	{	
 		var settings = new DotNetCoreBuildSettings
@@ -123,20 +127,23 @@ Task("RunUnitTestsCoverageReport")
         
         EnsureDirectoryExists(artifactsForUnitTestsDir);
         
-        OpenCover(tool => 
-            {
-                tool.DotNetCoreTest(unitTestAssemblies);
-            },
-            new FilePath(coverageSummaryFile),
-            new OpenCoverSettings()
-            {
-                Register="user",
-                ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode")
-            }
-            .WithFilter("+[Evelyn.*]*")
-            .WithFilter("-[xunit*]*")
-            .WithFilter("-[Evelyn.*.Tests]*")
-        );
+		foreach(var testAssembly in unitTestAssemblies)
+		{
+			OpenCover(tool => 
+				{
+					tool.DotNetCoreTest(testAssembly);
+				},
+				new FilePath(coverageSummaryFile),
+				new OpenCoverSettings()
+				{
+					Register="user",
+					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput -mergebyhash")
+				}
+				.WithFilter("+[Evelyn.*]Evelyn.*")
+				.WithFilter("-[xunit*]*")
+				.WithFilter("-[Evelyn.*.Tests]*")
+			);
+		}
         
 		Information($"writing to {artifactsForUnitTestsDir}"); 
         ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);
@@ -171,8 +178,28 @@ Task("RunUnitTestsCoverageReport")
 		};
 	});
 
+Task("RunIntegrationTests")
+	.IsDependentOn("Compile")
+	.Does(() => 
+	{
+        EnsureDirectoryExists(artifactsForIntegrationTestsDir);
+        
+		foreach(var testAssembly in integrationTestAssemblies)
+		{
+			DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
+			{
+				Configuration = compileConfig,
+				ArgumentCustomization = args => args
+					.Append("--no-build")
+					.Append("--no-restore")
+					.Append("--results-directory " + artifactsForIntegrationTestsDir)
+			});
+		}        
+	});
+
 Task("RunTests")
-	.IsDependentOn("RunUnitTestsCoverageReport");
+	.IsDependentOn("RunUnitTestsCoverageReport")
+	.IsDependentOn("RunIntegrationTests");
 
 Task("CreatePackages")
 	.IsDependentOn("Compile")
@@ -186,6 +213,7 @@ Task("CreatePackages")
 
         System.IO.File.WriteAllLines(artifactsFile, new[]{
             "nuget:Evelyn.Core." + buildVersion + ".nupkg",
+			"nuget:Evelyn.Api.Rest" + buildVersion + ".nupkg",
 //            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
             "releaseNotes:releasenotes.md"
         });
@@ -268,7 +296,7 @@ Task("Release")
 
 RunTarget(target);
 
-/// Gets nuique nuget version for this commit
+/// Gets unique nuget version for this commit
 private GitVersion GetNuGetVersionForCommit()
 {
     GitVersion(new GitVersionSettings{
@@ -308,15 +336,23 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 		return;
 	}
 
-	Information("Generating release notes at " + releaseNotesFile);
-
-	GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings {
-		WorkingDirectory = "."
-	});
-
-    if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+	try
 	{
-        System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		Information("Generating release notes at " + releaseNotesFile);
+
+		GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings 
+		{
+			WorkingDirectory = "."
+		});
+
+		if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+		{
+			System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		}
+	} 
+	catch(Exception ex)
+	{
+		Warning("Couldn't create release notes: " + ex);
 	}
 }
 

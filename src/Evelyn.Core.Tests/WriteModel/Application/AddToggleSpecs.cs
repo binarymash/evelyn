@@ -5,7 +5,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
     using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -131,17 +131,17 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void ThenThePublishedEventIsToggleAdded()
         {
-            PublishedEvents.First().ShouldBeOfType<ToggleAdded>();
+            PublishedEvents.First().Should().BeOfType<ToggleAdded>();
         }
 
         private void ThenTheNameIsSaved()
         {
-            ((ToggleAdded)PublishedEvents.First()).Name.ShouldBe(_newToggleName);
+            ((ToggleAdded)PublishedEvents.First()).Name.Should().Be(_newToggleName);
         }
 
         private void ThenTheKeyIsSaved()
         {
-            ((ToggleAdded)PublishedEvents.First()).Key.ShouldBe(_newToggleKey);
+            ((ToggleAdded)PublishedEvents.First()).Key.Should().Be(_newToggleKey);
         }
 
         private void ThenADuplicateToggleIdExceptionIsThrown()

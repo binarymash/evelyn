@@ -2,13 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IDatabase<T>
     {
-        List<T> Get();
+        Task<List<T>> Get();
 
-        T Get(Guid id);
+        Task<T> Get(Guid id);
 
-        void Add(Guid id, T aggregate);
+        Task Add(Guid id, T aggregate);
     }
 }

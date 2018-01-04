@@ -17,17 +17,15 @@
             _applicationDetails = applicationDetails;
         }
 
-        public Task Handle(ApplicationCreated message, CancellationToken token)
+        public async Task Handle(ApplicationCreated message, CancellationToken token)
         {
-            _applicationDetails.Add(message.Id, new ApplicationDetailsDto(message.Id, message.Name, message.Version, message.TimeStamp));
-            return Task.CompletedTask;
+            await _applicationDetails.Add(message.Id, new ApplicationDetailsDto(message.Id, message.Name, message.Version, message.TimeStamp));
         }
 
-        public Task Handle(EnvironmentAdded message, CancellationToken token)
+        public async Task Handle(EnvironmentAdded message, CancellationToken token)
         {
-            var applicationDetails = _applicationDetails.Get(message.Id);
+            var applicationDetails = await _applicationDetails.Get(message.Id);
             applicationDetails.AddEnvironment(new EnvironmentListDto(message.EnvironmentId, message.Name), message.TimeStamp, message.Version);
-            return Task.CompletedTask;
         }
     }
 }

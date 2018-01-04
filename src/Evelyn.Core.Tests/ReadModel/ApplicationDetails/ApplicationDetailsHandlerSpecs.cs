@@ -3,20 +3,21 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using AutoFixture;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.Events;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
     public class ApplicationDetailsHandlerSpecs : HandlerSpecs
     {
-        private List<IEvent> _eventsApplication1;
-        private List<IEvent> _eventsApplication2;
+        private readonly List<IEvent> _eventsApplication1;
+        private readonly List<IEvent> _eventsApplication2;
 
         private ApplicationCreated _application1Created;
         private ApplicationCreated _application2Created;
@@ -163,21 +164,21 @@
             GivenWePublish(_environment3Added);
         }
 
-        private void WhenWeGetTheDetailsForApplication1()
+        private async Task WhenWeGetTheDetailsForApplication1()
         {
-            WhenWeGetTheDetailsFor(_application1Id);
+            await WhenWeGetTheDetailsFor(_application1Id);
         }
 
-        private void WhenWeGetTheDetailsForApplication2()
+        private async Task WhenWeGetTheDetailsForApplication2()
         {
-            WhenWeGetTheDetailsFor(_application2Id);
+            await WhenWeGetTheDetailsFor(_application2Id);
         }
 
-        private void WhenWeGetTheDetailsFor(Guid applicationId)
+        private async Task WhenWeGetTheDetailsFor(Guid applicationId)
         {
             try
             {
-                _retrievedApplicationDetails = ReadModelFacade.GetApplicationDetails(applicationId);
+                _retrievedApplicationDetails = await ReadModelFacade.GetApplicationDetails(applicationId);
             }
             catch (Exception ex)
             {
@@ -187,22 +188,22 @@
 
         private void ThenANotFoundExceptionIsThrown()
         {
-            ThrownException.ShouldBeOfType<NotFoundException>();
+            ThrownException.Should().BeOfType<NotFoundException>();
         }
 
         private void ThenThereAreNoEnvironmentsOnTheApplication()
         {
-            _retrievedApplicationDetails.Environments.Count().ShouldBe(0);
+            _retrievedApplicationDetails.Environments.Count().Should().Be(0);
         }
 
         private void ThenThereAreTwoEnvironmentsOnTheApplication()
         {
-            _retrievedApplicationDetails.Environments.Count().ShouldBe(2);
+            _retrievedApplicationDetails.Environments.Count().Should().Be(2);
         }
 
         private void ThenThereIsOneEnvironmentOnTheApplication()
         {
-            _retrievedApplicationDetails.Environments.Count().ShouldBe(1);
+            _retrievedApplicationDetails.Environments.Count().Should().Be(1);
         }
 
         private void ThenEnvrionment1IsOnTheApplication()
@@ -232,16 +233,16 @@
 
         private void ThenTheDetailsAreSetFor(ApplicationCreated ev)
         {
-            _retrievedApplicationDetails.Id.ShouldBe(ev.Id);
-            _retrievedApplicationDetails.Name.ShouldBe(ev.Name);
-            _retrievedApplicationDetails.Version.ShouldBe(ev.Version);
-            _retrievedApplicationDetails.Created.ShouldBe(ev.TimeStamp);
-            _retrievedApplicationDetails.LastModified.ShouldBe(ev.TimeStamp);
+            _retrievedApplicationDetails.Id.Should().Be(ev.Id);
+            _retrievedApplicationDetails.Name.Should().Be(ev.Name);
+            _retrievedApplicationDetails.Version.Should().Be(ev.Version);
+            _retrievedApplicationDetails.Created.Should().Be(ev.TimeStamp);
+            _retrievedApplicationDetails.LastModified.Should().Be(ev.TimeStamp);
         }
 
         private void ThenTheEnvironmentIsOnTheApplication(EnvironmentAdded environmentAdded)
         {
-            _retrievedApplicationDetails.Environments.ShouldContain(environment =>
+            _retrievedApplicationDetails.Environments.Should().Contain(environment =>
                 environment.Id == environmentAdded.EnvironmentId &&
                 environment.Name == environmentAdded.Name);
         }
@@ -258,7 +259,7 @@
 
         private void ThenTheVersionOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
         {
-            _retrievedApplicationDetails.Version.ShouldBe(environmentAdded.Version);
+            _retrievedApplicationDetails.Version.Should().Be(environmentAdded.Version);
         }
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForEnvironment3()
@@ -273,7 +274,7 @@
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
         {
-            _retrievedApplicationDetails.LastModified.ShouldBe(environmentAdded.TimeStamp);
+            _retrievedApplicationDetails.LastModified.Should().Be(environmentAdded.TimeStamp);
         }
     }
 }

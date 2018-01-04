@@ -5,7 +5,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
     using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -130,17 +130,17 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void ThenThePublishedEventIsEnvironmentAdded()
         {
-            PublishedEvents.First().ShouldBeOfType<EnvironmentAdded>();
+            PublishedEvents.First().Should().BeOfType<EnvironmentAdded>();
         }
 
         private void ThenTheNameIsSaved()
         {
-            ((EnvironmentAdded)PublishedEvents.First()).Name.ShouldBe(_newEnvironmentName);
+            ((EnvironmentAdded)PublishedEvents.First()).Name.Should().Be(_newEnvironmentName);
         }
 
         private void ThenTheKeyIsSaved()
         {
-            ((EnvironmentAdded)PublishedEvents.First()).Key.ShouldBe(_newEnvironmentKey);
+            ((EnvironmentAdded)PublishedEvents.First()).Key.Should().Be(_newEnvironmentKey);
         }
 
         private void ThenADuplicateEnvironmentIdExceptionIsThrown()
