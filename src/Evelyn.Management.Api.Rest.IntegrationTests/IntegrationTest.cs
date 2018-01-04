@@ -5,6 +5,7 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
     using Flurl.Http;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.TestHost;
+    using Newtonsoft.Json;
 
     public abstract class IntegrationTest
     {
@@ -19,6 +20,11 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
             });
 
             Client = new FlurlClient(Server.BaseAddress.AbsoluteUri);
+
+            DeserializeWithPrivateSetters = new JsonSerializerSettings
+            {
+                ContractResolver = new JsonPrivateResolver()
+            };
         }
 
         protected TestServer Server { get; }
@@ -26,6 +32,8 @@ namespace Evelyn.Management.Api.Rest.IntegrationTests
         protected FlurlClient Client { get; }
 
         protected Fixture DataFixture { get; }
+
+        protected JsonSerializerSettings DeserializeWithPrivateSetters { get; }
 
         private class HttpClientFactory : Flurl.Http.Configuration.DefaultHttpClientFactory
         {

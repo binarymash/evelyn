@@ -17,21 +17,27 @@
             _environments = new Dictionary<Guid, EnvironmentListDto>();
         }
 
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
         public string Name { get; private set; }
 
         public int Version { get; private set; }
 
-        public DateTimeOffset Created { get; }
+        public DateTimeOffset Created { get; private set; }
 
         public DateTimeOffset LastModified { get; private set; }
 
         public IEnumerable<EnvironmentListDto> Environments
         {
-            get
+            get => _environments.Values;
+
+            // ReSharper disable once UnusedMember.Local
+            private set
             {
-                return _environments.Values;
+                foreach (var environment in value)
+                {
+                    _environments.Add(environment.Id, environment);
+                }
             }
         }
 

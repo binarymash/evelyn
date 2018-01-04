@@ -1,9 +1,11 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Management.Api.Rest.Write.Applications.Messages;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
@@ -38,6 +40,10 @@
                 .When(_ => WhenGetApplications())
                 .Then(_ => ThenTheResponseHasStatusCode200OK())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneApplication())
+                .And(_ => ThenTheApplicationWeAddedIsInTheCollection())
+                .When(_ => WhenWeGetTheDetailsForTheApplicationWeAdded())
+                .Then(_ => ThenTheApplicationContainsOneEnvironment())
+                .And(_ => ThenTheEnvironmentWeAddedIsOnTheApplication())
 
                 .BDDfy();
         }
@@ -58,6 +64,8 @@
             _response = await Client
                 .Request("/api/applications")
                 .PostJsonAsync(_createApplicationCommand);
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
         private async Task WhenAddAnEnvironment()
@@ -68,6 +76,17 @@
             _response = await Client
                 .Request($"/api/applications/{_createApplicationCommand.Id}/environments")
                 .PostJsonAsync(_addEnvironmentCommand);
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
+        }
+
+        private async Task WhenWeGetTheDetailsForTheApplicationWeAdded()
+        {
+            _response = await Client
+                .Request($"/api/applications/{_createApplicationCommand.Id}")
+                .GetAsync();
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
         private void ThenTheResponseHasStatusCode200OK()
@@ -92,14 +111,32 @@
 
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
-            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent);
+            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters);
             response.Count.ShouldBe(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneApplication()
         {
-            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent);
+            var response = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters);
             response.Count.ShouldBe(1);
+        }
+
+        private void ThenTheApplicationWeAddedIsInTheCollection()
+        {
+            var applicationList = JsonConvert.DeserializeObject<List<ApplicationListDto>>(_responseContent, DeserializeWithPrivateSetters).ToList();
+            applicationList.ShouldContain(application => application.Id == _createApplicationCommand.Id);
+        }
+
+        private void ThenTheApplicationContainsOneEnvironment()
+        {
+            var applicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            applicationDetails.Environments.Count().ShouldBe(1);
+        }
+
+        private void ThenTheEnvironmentWeAddedIsOnTheApplication()
+        {
+            var applicationDetails = JsonConvert.DeserializeObject<ApplicationDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            applicationDetails.Environments.ShouldContain(environment => environment.Id == _addEnvironmentCommand.Id);
         }
     }
 }
