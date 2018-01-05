@@ -5,6 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Options;
 
     public static class SynchronouslyInProcessExtensions
     {
@@ -13,6 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
             parentRegistration.Services.TryAddSingleton<ApplicationDetailsHandler>();
             parentRegistration.Services.TryAddSingleton<ApplicationListHandler>();
             parentRegistration.Services.TryAddSingleton<EnvironmentDetailsHandler>();
+
+            parentRegistration.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
         }
     }
 }
