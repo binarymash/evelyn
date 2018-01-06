@@ -37,6 +37,11 @@ var integrationTestAssemblies = new []
 var packagesDir = artifactsDir + Directory("Packages");
 var releaseNotesFile = packagesDir + File("releasenotes.md");
 var artifactsFile = packagesDir + File("artifacts.txt");
+var packageNames = new []
+{
+	"Evelyn.Core",
+	"Evelyn.Management.Api.Rest"
+};
 
 // unstable releases
 var nugetFeedUnstableKey = EnvironmentVariable("nuget-apikey-unstable");
@@ -211,12 +216,11 @@ Task("CreatePackages")
 
 		GenerateReleaseNotes(releaseNotesFile);
 
-        System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:Evelyn.Core." + buildVersion + ".nupkg",
-			"nuget:Evelyn.Api.Rest" + buildVersion + ".nupkg",
-//            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
-            "releaseNotes:releasenotes.md"
-        });
+		foreach(var packageName in packageNames)
+		{
+	        System.IO.File.AppendAllLines(artifactsFile, new[]{$"nuget:{packageName}.{buildVersion}.nupkg"});
+		}
+	    System.IO.File.AppendAllLines(artifactsFile, new[]{"releaseNotes:releasenotes.md"});
 
 		if (AppVeyor.IsRunningOnAppVeyor)
 		{
@@ -359,28 +363,23 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
 private void PublishPackages(ConvertableDirectoryPath packagesDir, ConvertableFilePath artifactsFile, string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
 {
-        var artifacts = System.IO.File
+        var packages = System.IO.File
             .ReadAllLines(artifactsFile)
-            .Select(l => l.Split(':'))
-            .ToDictionary(v => v[0], v => v[1]);
+            .Select(line => line.Split(':'))
+			.Where(splitLine => splitLine[0] == "nuget") 
+            .Select(splitLine => splitLine[1]);
 
-		var codePackage = packagesDir + File(artifacts["nuget"]);
-//		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
+		foreach(var package in packages)
+		{
+			var codePackage = packagesDir + File(package);
 
-        NuGetPush(
-            codePackage,
-            new NuGetPushSettings {
-                ApiKey = feedApiKey,
-                Source = codeFeedUrl
-            });
-
-//        NuGetPush(
-//            symbolsPackage,
-//            new NuGetPushSettings {
-//                ApiKey = feedApiKey,
-//                Source = symbolFeedUrl
-//            });
-
+			NuGetPush(
+				codePackage,
+				new NuGetPushSettings {
+					ApiKey = feedApiKey,
+					Source = codeFeedUrl
+				});
+		}
 }
 
 /// gets the resource from the specified url
@@ -403,6 +402,9 @@ private string GetResource(string url)
 
 private bool ShouldPublishToUnstableFeed(string filter, string branchName)
 {
+	//temporary hack to test if this works
+	return true;
+
 	var regex = new System.Text.RegularExpressions.Regex(filter);
 	var publish = regex.IsMatch(branchName);
 	if (publish)
