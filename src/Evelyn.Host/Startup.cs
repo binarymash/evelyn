@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Host
 {
-    using System;
     using Evelyn.Management.Api.Rest;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -18,7 +17,7 @@
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
@@ -36,8 +35,6 @@
                     rm.WithReadStrategy.ReadFromCache(c => c.InMemoryCache());
                 });
             });
-
-            return new Provider(services.BuildServiceProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
