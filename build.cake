@@ -5,6 +5,8 @@
 #addin "nuget:?package=Cake.DoInDirectory"
 #addin "nuget:?package=Cake.Json"
 #addin nuget:?package=Newtonsoft.Json&version=9.0.1
+#tool coveralls.net
+#addin Cake.Coveralls
 
 // compile
 var compileConfig = Argument("configuration", "Release");
@@ -15,12 +17,31 @@ var artifactsDir = Directory("artifacts");
 
 // unit testing
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
-var unitTestAssemblies = @"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj";
+var unitTestAssemblies = new []
+{
+	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
+	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
+};
+var openCoverSettings = new OpenCoverSettings();
+var minCodeCoverage = 88d;
+var coverallsRepoToken = "coveralls-repo-token-evelyn";
+
+// integration testing
+var artifactsForIntegrationTestsDir = artifactsDir + Directory("IntegrationTests");
+var integrationTestAssemblies = new []
+{
+	@"./src/Evelyn.Management.Api.Rest.IntegrationTests/Evelyn.Management.Api.Rest.IntegrationTests.csproj",
+};
 
 // packaging
 var packagesDir = artifactsDir + Directory("Packages");
 var releaseNotesFile = packagesDir + File("releasenotes.md");
 var artifactsFile = packagesDir + File("artifacts.txt");
+var packageNames = new []
+{
+	"Evelyn.Core",
+	"Evelyn.Management.Api.Rest"
+};
 
 // unstable releases
 var nugetFeedUnstableKey = EnvironmentVariable("nuget-apikey-unstable");
@@ -61,9 +82,14 @@ Task("Clean")
 	{
         if (DirectoryExists(artifactsDir))
         {
-            DeleteDirectory(artifactsDir, recursive:true);
+			Information($"Cleaning {artifactsDir}");
+            CleanDirectory(artifactsDir);
         }
-        CreateDirectory(artifactsDir);
+		else
+		{
+			Information($"Creating {artifactsDir}");
+            CreateDirectory(artifactsDir);
+		}
 	});
 	
 Task("Version")
@@ -85,16 +111,9 @@ Task("Version")
 		}
 	});
 
-Task("Restore")
+Task("Compile")
 	.IsDependentOn("Clean")
 	.IsDependentOn("Version")
-	.Does(() =>
-	{	
-		DotNetCoreRestore(slnFile);
-	});
-
-Task("Compile")
-	.IsDependentOn("Restore")
 	.Does(() =>
 	{	
 		var settings = new DotNetCoreBuildSettings
@@ -105,21 +124,87 @@ Task("Compile")
 		DotNetCoreBuild(slnFile, settings);
 	});
 
-Task("RunUnitTests")
+Task("RunUnitTestsCoverageReport")
 	.IsDependentOn("Compile")
-	.Does(() =>
+	.Does(context =>
 	{
-		var settings = new DotNetCoreTestSettings
+        var coverageSummaryFile = artifactsForUnitTestsDir + File("coverage.xml");
+        
+        EnsureDirectoryExists(artifactsForUnitTestsDir);
+        
+		foreach(var testAssembly in unitTestAssemblies)
 		{
-			Configuration = compileConfig,
-		};
+			OpenCover(tool => 
+				{
+					tool.DotNetCoreTest(testAssembly);
+				},
+				new FilePath(coverageSummaryFile),
+				new OpenCoverSettings()
+				{
+					Register="user",
+					ArgumentCustomization=args=>args.Append(@"-oldstyle -returntargetcode -mergeoutput -mergebyhash")
+				}
+				.WithFilter("+[Evelyn.*]Evelyn.*")
+				.WithFilter("-[xunit*]*")
+				.WithFilter("-[Evelyn.*.Tests]*")
+			);
+		}
+        
+		Information($"writing to {artifactsForUnitTestsDir}"); 
+        ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);
+		
+		if (AppVeyor.IsRunningOnAppVeyor)
+		{
+			var repoToken = EnvironmentVariable(coverallsRepoToken);
+			if (string.IsNullOrEmpty(repoToken))
+			{
+				throw new Exception(string.Format("Coveralls repo token not found. Set environment variable '{0}'", coverallsRepoToken));
+			}
 
-		EnsureDirectoryExists(artifactsForUnitTestsDir);
-		DotNetCoreTest(unitTestAssemblies, settings);
+			Information("Uploading test coverage to coveralls.io");
+			CoverallsNet(coverageSummaryFile, CoverallsNetReportType.OpenCover, new CoverallsNetSettings()
+			{
+				RepoToken = repoToken
+			});
+		}
+		else
+		{
+			Information("We are not running on the build server so we won't publish the coverage report to coveralls.io");
+		}
+
+		var sequenceCoverage = XmlPeek(coverageSummaryFile, "//CoverageSession/Summary/@sequenceCoverage");
+		var branchCoverage = XmlPeek(coverageSummaryFile, "//CoverageSession/Summary/@branchCoverage");
+
+		Information("Sequence Coverage: " + sequenceCoverage);
+		
+		if(double.Parse(sequenceCoverage) < minCodeCoverage)
+		{
+			throw new Exception(string.Format("Code coverage fell below the threshold of {0}%", minCodeCoverage));
+		};
+	});
+
+Task("RunIntegrationTests")
+	.IsDependentOn("Compile")
+	.Does(() => 
+	{
+        EnsureDirectoryExists(artifactsForIntegrationTestsDir);
+        
+		foreach(var testAssembly in integrationTestAssemblies)
+		{
+			DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
+			{
+				Configuration = compileConfig,
+				ArgumentCustomization = args => args
+					.Append("--no-build")
+					.Append("--no-restore")
+					.Append("--results-directory " + artifactsForIntegrationTestsDir)
+			});
+		}        
 	});
 
 Task("RunTests")
-	.IsDependentOn("RunUnitTests");
+	.IsDependentOn("RunUnitTestsCoverageReport")
+	.IsDependentOn("RunIntegrationTests");
 
 Task("CreatePackages")
 	.IsDependentOn("Compile")
@@ -131,11 +216,11 @@ Task("CreatePackages")
 
 		GenerateReleaseNotes(releaseNotesFile);
 
-        System.IO.File.WriteAllLines(artifactsFile, new[]{
-            "nuget:Evelyn.Core." + buildVersion + ".nupkg",
-//            "nugetSymbols:Evelyn.Core." + buildVersion + ".symbols.nupkg",
-            "releaseNotes:releasenotes.md"
-        });
+		foreach(var packageName in packageNames)
+		{
+	        System.IO.File.AppendAllLines(artifactsFile, new[]{$"nuget:{packageName}.{buildVersion}.nupkg"});
+		}
+	    System.IO.File.AppendAllLines(artifactsFile, new[]{"releaseNotes:releasenotes.md"});
 
 		if (AppVeyor.IsRunningOnAppVeyor)
 		{
@@ -215,7 +300,7 @@ Task("Release")
 
 RunTarget(target);
 
-/// Gets nuique nuget version for this commit
+/// Gets unique nuget version for this commit
 private GitVersion GetNuGetVersionForCommit()
 {
     GitVersion(new GitVersionSettings{
@@ -255,43 +340,46 @@ private void GenerateReleaseNotes(ConvertableFilePath releaseNotesFile)
 		return;
 	}
 
-	Information("Generating release notes at " + releaseNotesFile);
-
-	GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings {
-		WorkingDirectory = "."
-	});
-
-    if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+	try
 	{
-        System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		Information("Generating release notes at " + releaseNotesFile);
+
+		GitReleaseNotes(releaseNotesFile, new GitReleaseNotesSettings 
+		{
+			WorkingDirectory = "."
+		});
+
+		if (string.IsNullOrEmpty(System.IO.File.ReadAllText(releaseNotesFile)))
+		{
+			System.IO.File.WriteAllText(releaseNotesFile, "No issues closed since last release");
+		}
+	} 
+	catch(Exception ex)
+	{
+		Warning("Couldn't create release notes: " + ex);
 	}
 }
 
 /// Publishes code and symbols packages to nuget feed, based on contents of artifacts file
 private void PublishPackages(ConvertableDirectoryPath packagesDir, ConvertableFilePath artifactsFile, string feedApiKey, string codeFeedUrl, string symbolFeedUrl)
 {
-        var artifacts = System.IO.File
+        var packages = System.IO.File
             .ReadAllLines(artifactsFile)
-            .Select(l => l.Split(':'))
-            .ToDictionary(v => v[0], v => v[1]);
+            .Select(line => line.Split(':'))
+			.Where(splitLine => splitLine[0] == "nuget") 
+            .Select(splitLine => splitLine[1]);
 
-		var codePackage = packagesDir + File(artifacts["nuget"]);
-//		var symbolsPackage = packagesDir + File(artifacts["nugetSymbols"]);
+		foreach(var package in packages)
+		{
+			var codePackage = packagesDir + File(package);
 
-        NuGetPush(
-            codePackage,
-            new NuGetPushSettings {
-                ApiKey = feedApiKey,
-                Source = codeFeedUrl
-            });
-
-//        NuGetPush(
-//            symbolsPackage,
-//            new NuGetPushSettings {
-//                ApiKey = feedApiKey,
-//                Source = symbolFeedUrl
-//            });
-
+			NuGetPush(
+				codePackage,
+				new NuGetPushSettings {
+					ApiKey = feedApiKey,
+					Source = codeFeedUrl
+				});
+		}
 }
 
 /// gets the resource from the specified url

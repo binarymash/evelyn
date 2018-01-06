@@ -2,25 +2,23 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
     using System.Linq;
+    using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
     public class CreateApplicationSpecs : ApplicationCommandHandlerSpecs<CreateApplication>
     {
-        private Guid _id;
+        private readonly Fixture _fixture;
 
-        private string _name;
-
-        private string _expectedName;
+        private Guid _applicationId;
+        private string _applicationName;
 
         public CreateApplicationSpecs()
         {
-            _id = Guid.NewGuid();
-            _name = "some name"; // autofixture
-            _expectedName = _name;
+            _fixture = new Fixture();
         }
 
         [Fact]
@@ -43,25 +41,28 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         ////        .BDDfy();
         ////}
 
-        private void GivenWeHaveAlreadyCreateAnApplication()
-        {
-            GivenWeHaveCreatedAnApplicationWith(_id);
-        }
+        ////private void GivenWeHaveAlreadyCreatedAnApplication()
+        ////{
+        ////    GivenWeHaveCreatedAnApplicationWith(_applicationId);
+        ////}
 
         private void WhenACreateApplicationCommand()
         {
-            var command = new CreateApplication(_id, _name) { ExpectedVersion = HistoricalEvents.Count };
+            _applicationId = _fixture.Create<Guid>();
+            _applicationName = _fixture.Create<string>();
+
+            var command = new CreateApplication(_applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void ThenThePublishedEventIsApplicationCreated()
         {
-            PublishedEvents.First().ShouldBeOfType<ApplicationCreated>();
+            PublishedEvents.First().Should().BeOfType<ApplicationCreated>();
         }
 
         private void ThenTheNameIsSaved()
         {
-            ((ApplicationCreated)PublishedEvents.First()).Name.ShouldBe(_expectedName);
+            ((ApplicationCreated)PublishedEvents.First()).Name.Should().Be(_applicationName);
         }
     }
 }

@@ -2,21 +2,31 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
     using System.Linq;
+    using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
     public class AddToggleSpecs : ApplicationCommandHandlerSpecs<AddToggle>
     {
+        private readonly Fixture _fixture;
+
         private Guid _applicationId;
+
         private Guid _newToggleId;
         private string _newToggleName;
         private string _newToggleKey;
+
         private Guid _existingToggleId;
         private string _existingToggleName;
         private string _existingToggleKey;
+
+        public AddToggleSpecs()
+        {
+            _fixture = new Fixture();
+        }
 
         [Fact]
         public void ToggleDoesntExist()
@@ -65,23 +75,26 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void GivenWeHaveCreatedAnApplication()
         {
-            _applicationId = Guid.NewGuid();
+            _applicationId = _fixture.Create<Guid>();
+
             GivenWeHaveCreatedAnApplicationWith(_applicationId);
         }
 
         private void GivenWeHaveAddedAToggle()
         {
-            _existingToggleId = Guid.NewGuid();
-            _existingToggleName = "some name";
-            _existingToggleKey = "some key";
+            _existingToggleId = _fixture.Create<Guid>();
+            _existingToggleName = _fixture.Create<string>();
+            _existingToggleKey = _fixture.Create<string>();
+
             HistoricalEvents.Add(new ToggleAdded(_applicationId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count + 1 });
         }
 
         private void WhenWeAddAToggle()
         {
-            _newToggleId = Guid.NewGuid();
-            _newToggleName = "some name";
-            _newToggleKey = "some key";
+            _newToggleId = _fixture.Create<Guid>();
+            _newToggleName = _fixture.Create<string>();
+            _newToggleKey = _fixture.Create<string>();
+
             var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
@@ -89,43 +102,46 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void WhenWeAddAnotherToggleWithTheSameId()
         {
             _newToggleId = _existingToggleId;
-            _newToggleName = "some other name";
-            _newToggleKey = "some other key";
+            _newToggleName = _fixture.Create<string>();
+            _newToggleKey = _fixture.Create<string>();
+
             var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherToggleWithTheSameKey()
         {
-            _newToggleId = Guid.NewGuid();
-            _newToggleName = "some other name";
+            _newToggleId = _fixture.Create<Guid>();
+            _newToggleName = _fixture.Create<string>();
             _newToggleKey = _existingToggleKey;
+
             var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherToggleWithTheSameName()
         {
-            _newToggleId = Guid.NewGuid();
+            _newToggleId = _fixture.Create<Guid>();
             _newToggleName = _existingToggleName;
-            _newToggleKey = "some other name";
+            _newToggleKey = _fixture.Create<string>();
+
             var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void ThenThePublishedEventIsToggleAdded()
         {
-            PublishedEvents.First().ShouldBeOfType<ToggleAdded>();
+            PublishedEvents.First().Should().BeOfType<ToggleAdded>();
         }
 
         private void ThenTheNameIsSaved()
         {
-            ((ToggleAdded)PublishedEvents.First()).Name.ShouldBe(_newToggleName);
+            ((ToggleAdded)PublishedEvents.First()).Name.Should().Be(_newToggleName);
         }
 
         private void ThenTheKeyIsSaved()
         {
-            ((ToggleAdded)PublishedEvents.First()).Key.ShouldBe(_newToggleKey);
+            ((ToggleAdded)PublishedEvents.First()).Key.Should().Be(_newToggleKey);
         }
 
         private void ThenADuplicateToggleIdExceptionIsThrown()

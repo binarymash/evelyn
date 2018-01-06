@@ -2,19 +2,29 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
     using System.Linq;
+    using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Commands;
-    using Shouldly;
+    using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
     public class FlipToggleSpecs : ApplicationCommandHandlerSpecs<FlipToggle>
     {
+        private readonly Fixture _fixture;
+
         private Guid _applicationId;
+
         private Guid _environmentId;
+
         private Guid _toggleId;
         private string _toggleName;
         private string _toggleKey;
+
+        public FlipToggleSpecs()
+        {
+            _fixture = new Fixture();
+        }
 
         [Fact]
         public void EnvironmentDoesntExist()
@@ -70,21 +80,24 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void GivenWeHaveCreatedAnApplication()
         {
-            _applicationId = Guid.NewGuid();
+            _applicationId = _fixture.Create<Guid>();
+
             GivenWeHaveCreatedAnApplicationWith(_applicationId);
         }
 
         private void GivenWeHaveCreatedAnEnvironment()
         {
-            _environmentId = Guid.NewGuid();
+            _environmentId = _fixture.Create<Guid>();
+
             GivenWeHaveAddedAnEnvironmentWith(_applicationId, _environmentId);
         }
 
         private void GivenWeHaveAddedAToggle()
         {
-            _toggleId = Guid.NewGuid();
-            _toggleName = "some name";
-            _toggleKey = "some key";
+            _toggleId = _fixture.Create<Guid>();
+            _toggleName = _fixture.Create<string>();
+            _toggleKey = _fixture.Create<string>();
+
             HistoricalEvents.Add(new ToggleAdded(_applicationId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count + 1 });
         }
 
@@ -95,7 +108,8 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void WhenWeFlipAToggleThatDoesntExist()
         {
-            _toggleId = Guid.NewGuid();
+            _toggleId = _fixture.Create<Guid>();
+
             var command = new FlipToggle(_applicationId, _environmentId, _toggleId) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
@@ -123,32 +137,32 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void ThenThePublishedEventIsToggledFlipped()
         {
-            PublishedEvents.First().ShouldBeOfType<ToggleFlipped>();
+            PublishedEvents.First().Should().BeOfType<ToggleFlipped>();
         }
 
         private void ThenTheApplicationIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Id.ShouldBe(_applicationId);
+            ((ToggleFlipped)PublishedEvents.First()).Id.Should().Be(_applicationId);
         }
 
         private void ThenTheEnvironmentIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).EnvironmentId.ShouldBe(_environmentId);
+            ((ToggleFlipped)PublishedEvents.First()).EnvironmentId.Should().Be(_environmentId);
         }
 
         private void ThenTheToggleIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).ToggleId.ShouldBe(_toggleId);
+            ((ToggleFlipped)PublishedEvents.First()).ToggleId.Should().Be(_toggleId);
         }
 
         private void ThenTheToggleValueIdIsSavedAsTrue()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Value.ShouldBeTrue();
+            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeTrue();
         }
 
         private void ThenTheToggleValueIdIsSavedAsFalse()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Value.ShouldBeFalse();
+            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeFalse();
         }
     }
 }

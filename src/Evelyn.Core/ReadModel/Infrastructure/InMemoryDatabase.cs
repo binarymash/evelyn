@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class InMemoryDatabase<T> : IDatabase<T>
     {
@@ -13,19 +14,26 @@
             _items = new Dictionary<Guid, T>();
         }
 
-        public T Get(Guid id)
+        public async Task<T> Get(Guid id)
         {
-            return _items[id];
+            T value;
+            if (!_items.TryGetValue(id, out value))
+            {
+                throw new NotFoundException();
+            }
+
+            return await Task.FromResult(value);
         }
 
-        public List<T> Get()
+        public async Task<List<T>> Get()
         {
-            return _items.Values.ToList();
+            return await Task.FromResult(_items.Values.ToList());
         }
 
-        public void Add(Guid id, T item)
+        public async Task Add(Guid id, T item)
         {
             _items.Add(id, item);
+            await Task.CompletedTask;
         }
     }
 }
