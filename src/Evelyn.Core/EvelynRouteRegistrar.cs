@@ -19,7 +19,7 @@
 
         protected IServiceProvider ServiceLocator => typeof(RouteRegistrar).GetField("_serviceLocator", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this) as IServiceProvider;
 
-        public void RegisterHandlers(params Type[] handlerTypes)
+        public void RegisterHandlers(IEnumerable<Type> handlerTypes)
         {
             var registrar = (IHandlerRegistrar)ServiceLocator.GetService(typeof(IHandlerRegistrar));
 
@@ -34,6 +34,11 @@
                     InvokeHandler(@interface, registrar, executorType.Type);
                 }
             }
+        }
+
+        public void RegisterHandlers(params Type[] handlerTypes)
+        {
+            RegisterHandlers(handlerTypes.ToList());
         }
 
         protected IEnumerable<Type> ResolveMessageHandlerInterface(Type type)

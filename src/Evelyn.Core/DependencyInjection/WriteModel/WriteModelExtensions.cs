@@ -1,4 +1,5 @@
 ﻿// ReSharper disable CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
@@ -7,6 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using CQRSlite.Domain;
     using CQRSlite.Events;
     using CQRSlite.Routing;
+    using Evelyn.Core;
     using Evelyn.Core.WriteModel;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -16,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services
                 .AddCoreWriteInfrastructure()
-                .AddCommandHandlers();
-                ////.AddRouting();
+                .AddCommandHandlers()
+                .AddRouting();
 
             action.Invoke(new WriteModelRegistration(services));
 
@@ -54,6 +56,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
                     .AsImplementedInterfaces()
                     .WithScopedLifetime());
+        }
+
+        private static IServiceCollection AddRouting(this IServiceCollection services)
+        {
+            services.TryAddSingleton<IRouteRegistrarBootstrapper, RouteRegistrarBootstrapper>();
+            return services;
         }
     }
 }

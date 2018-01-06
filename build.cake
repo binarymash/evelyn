@@ -23,7 +23,7 @@ var unitTestAssemblies = new []
 	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
 };
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage = 90d;
+var minCodeCoverage = 88d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // integration testing
