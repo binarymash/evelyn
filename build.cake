@@ -402,9 +402,6 @@ private string GetResource(string url)
 
 private bool ShouldPublishToUnstableFeed(string filter, string branchName)
 {
-	//temporary hack to test if this works
-	return true;
-
 	var regex = new System.Text.RegularExpressions.Regex(filter);
 	var publish = regex.IsMatch(branchName);
 	if (publish)
