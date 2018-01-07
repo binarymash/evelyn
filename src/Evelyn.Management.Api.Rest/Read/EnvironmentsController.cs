@@ -12,7 +12,7 @@
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class EnvironmentsController : Controller
     {
-        private IReadModelFacade _readModelFacade;
+        private readonly IReadModelFacade _readModelFacade;
 
         public EnvironmentsController(IReadModelFacade readModelFacade)
         {
