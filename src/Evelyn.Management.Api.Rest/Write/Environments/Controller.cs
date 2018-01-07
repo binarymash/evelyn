@@ -27,7 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name, message.Key)
+                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name)
                 {
                     ExpectedVersion = message.ExpectedVersion
                 };
