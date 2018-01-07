@@ -18,7 +18,7 @@
         private readonly Fixture _fixture;
         private readonly Rest.Write.Environments.Controller _controller;
         private readonly ICommandHandler<AddEnvironment> _handler;
-        private Guid _applicationId;
+        private readonly Guid _applicationId;
         private Rest.Write.Environments.Messages.AddEnvironment _message;
         private ObjectResult _result;
 
@@ -94,7 +94,6 @@
                     command.ApplicationId == _applicationId &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
-                    command.Key == _message.Key &&
                     command.ExpectedVersion == _message.ExpectedVersion));
         }
 

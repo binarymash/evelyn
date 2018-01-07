@@ -29,7 +29,7 @@
         public async Task Handle(AddEnvironment message)
         {
             var application = await _session.Get<Application>(message.ApplicationId, message.ExpectedVersion);
-            application.AddEnvironment(message.Id, message.Name, message.Key);
+            application.AddEnvironment(message.Id, message.Name);
             await _session.Commit();
         }
 

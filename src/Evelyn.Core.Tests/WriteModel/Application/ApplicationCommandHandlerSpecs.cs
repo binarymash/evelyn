@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.WriteModel.Application
 {
     using System;
+    using AutoFixture;
     using CQRSlite.Commands;
     using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.WriteModel.Domain;
@@ -9,10 +10,6 @@
     public abstract class ApplicationCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Application, ApplicationCommandHandler, TCommand>
         where TCommand : ICommand
     {
-        public ApplicationCommandHandlerSpecs()
-        {
-        }
-
         protected override ApplicationCommandHandler BuildHandler()
         {
             return new ApplicationCommandHandler(Session);
@@ -20,15 +17,21 @@
 
         protected void GivenWeHaveCreatedAnApplicationWith(Guid id)
         {
-            var name = "my application name";
-            HistoricalEvents.Add(new ApplicationCreated(id, name) { Version = HistoricalEvents.Count + 1 });
+            var applicationCreated = DataFixture.Create<ApplicationCreated>();
+            applicationCreated.Id = id;
+            applicationCreated.Version = HistoricalEvents.Count + 1;
+
+            HistoricalEvents.Add(applicationCreated);
         }
 
         protected void GivenWeHaveAddedAnEnvironmentWith(Guid applicationId, Guid environmentId)
         {
-            var name = "my environment name";
-            var key = "my environment key";
-            HistoricalEvents.Add(new EnvironmentAdded(applicationId, environmentId, name, key) { Version = HistoricalEvents.Count + 1 });
+            var environmentAdded = DataFixture.Create<EnvironmentAdded>();
+            environmentAdded.Id = applicationId;
+            environmentAdded.EnvironmentId = environmentId;
+            environmentAdded.Version = HistoricalEvents.Count + 1;
+
+            HistoricalEvents.Add(environmentAdded);
         }
     }
 }

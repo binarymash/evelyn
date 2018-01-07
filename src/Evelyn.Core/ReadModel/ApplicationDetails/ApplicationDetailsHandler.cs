@@ -10,7 +10,6 @@
         ICancellableEventHandler<ApplicationCreated>,
         ICancellableEventHandler<EnvironmentAdded>,
         ICancellableEventHandler<ToggleAdded>
-
     {
         private readonly IDatabase<ApplicationDetailsDto> _applicationDetails;
 

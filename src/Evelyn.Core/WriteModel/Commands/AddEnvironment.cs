@@ -5,11 +5,10 @@
 
     public class AddEnvironment : ICommand
     {
-        public AddEnvironment(Guid applicationId, Guid id, string name, string key)
+        public AddEnvironment(Guid applicationId, Guid id, string name)
         {
             Id = id;
             Name = name;
-            Key = key;
             ApplicationId = applicationId;
         }
 
@@ -20,7 +19,5 @@
         public Guid Id { get; set; }
 
         public string Name { get; set; }
-
-        public string Key { get; set; }
     }
 }

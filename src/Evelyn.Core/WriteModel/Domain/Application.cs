@@ -21,16 +21,11 @@
             ApplyChange(new ApplicationCreated(id, name));
         }
 
-        public void AddEnvironment(Guid environmentId, string name, string key)
+        public void AddEnvironment(Guid environmentId, string name)
         {
             if (_environments.Any(e => e.Id == environmentId))
             {
                 throw new InvalidOperationException($"There is already an environment with the ID {environmentId}");
-            }
-
-            if (_environments.Any(e => e.Key == key))
-            {
-                throw new InvalidOperationException($"There is already an environment with the key {key}");
             }
 
             if (_environments.Any(e => e.Name == name))
@@ -38,7 +33,7 @@
                 throw new InvalidOperationException($"There is already an environment with the name {name}");
             }
 
-            ApplyChange(new EnvironmentAdded(Id, environmentId, name, key));
+            ApplyChange(new EnvironmentAdded(Id, environmentId, name));
         }
 
         public void AddToggle(Guid toggleId, string name, string key)
@@ -85,7 +80,7 @@
 
         private void Apply(EnvironmentAdded e)
         {
-            _environments.Add(new Environment(e.EnvironmentId, e.Name, e.Key));
+            _environments.Add(new Environment(e.EnvironmentId, e.Name));
         }
 
         private void Apply(ToggleAdded e)

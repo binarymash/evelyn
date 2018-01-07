@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoFixture;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
@@ -25,7 +26,10 @@
         public CommandHandlerSpecs()
         {
             HistoricalEvents = new List<IEvent>();
+            DataFixture = new Fixture();
         }
+
+        protected Fixture DataFixture { get; }
 
         protected TAggregate Aggregate { get; set; }
 

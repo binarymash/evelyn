@@ -11,15 +11,8 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
     public class CreateApplicationSpecs : ApplicationCommandHandlerSpecs<CreateApplication>
     {
-        private readonly Fixture _fixture;
-
         private Guid _applicationId;
         private string _applicationName;
-
-        public CreateApplicationSpecs()
-        {
-            _fixture = new Fixture();
-        }
 
         [Fact]
         public void ApplicationDoesNotExist()
@@ -48,8 +41,8 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
         private void WhenACreateApplicationCommand()
         {
-            _applicationId = _fixture.Create<Guid>();
-            _applicationName = _fixture.Create<string>();
+            _applicationId = DataFixture.Create<Guid>();
+            _applicationName = DataFixture.Create<string>();
 
             var command = new CreateApplication(_applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
