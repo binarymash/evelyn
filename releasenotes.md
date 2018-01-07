@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.6.0 (2018-01-07)
+
+ - [#48](https://github.com/binarymash/evelyn/pull/48) - [#46](https://github.com/binarymash/evelyn/issues/46) - get toggle details via api +enhancement contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#47](https://github.com/binarymash/evelyn/pull/47) - [#44](https://github.com/binarymash/evelyn/issues/44) - Remove key from environment +enhancement contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#45](https://github.com/binarymash/evelyn/pull/45) - [#42](https://github.com/binarymash/evelyn/issues/42) - Add toggle via management api +enhancement contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 62a9372fa8...bcd38ea7c5
+
 ## Version 0.5.0 (2018-01-06)
 
  - [#38](https://github.com/binarymash/evelyn/pull/38) - #33 Fix package publishing contributed by Philip Wood ([binarymash](https://github.com/binarymash))
