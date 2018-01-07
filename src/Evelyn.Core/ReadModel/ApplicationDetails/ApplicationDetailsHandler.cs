@@ -8,9 +8,11 @@
 
     public class ApplicationDetailsHandler :
         ICancellableEventHandler<ApplicationCreated>,
-        ICancellableEventHandler<EnvironmentAdded>
+        ICancellableEventHandler<EnvironmentAdded>,
+        ICancellableEventHandler<ToggleAdded>
+
     {
-        private IDatabase<ApplicationDetailsDto> _applicationDetails;
+        private readonly IDatabase<ApplicationDetailsDto> _applicationDetails;
 
         public ApplicationDetailsHandler(IDatabase<ApplicationDetailsDto> applicationDetails)
         {
@@ -26,6 +28,12 @@
         {
             var applicationDetails = await _applicationDetails.Get(message.Id);
             applicationDetails.AddEnvironment(new EnvironmentListDto(message.EnvironmentId, message.Name), message.TimeStamp, message.Version);
+        }
+
+        public async Task Handle(ToggleAdded message, CancellationToken token)
+        {
+            var applicationDetails = await _applicationDetails.Get(message.Id);
+            applicationDetails.AddToggle(new ToggleListDto(message.ToggleId, message.Name), message.TimeStamp, message.Version);
         }
     }
 }
