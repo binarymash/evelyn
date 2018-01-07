@@ -13,6 +13,8 @@
             var applicationDetails = DataFixture.Create<ApplicationDetailsDto>();
             applicationDetails.AddEnvironment(DataFixture.Create<EnvironmentListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
             applicationDetails.AddEnvironment(DataFixture.Create<EnvironmentListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
+            applicationDetails.AddToggle(DataFixture.Create<ToggleListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
+            applicationDetails.AddToggle(DataFixture.Create<ToggleListDto>(), DataFixture.Create<DateTimeOffset>(), DataFixture.Create<int>());
 
             AssertSerializationOf(applicationDetails);
         }

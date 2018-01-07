@@ -10,12 +10,11 @@
             ToggleStates = new List<Guid>();
         }
 
-        public Environment(Guid id, string name, string key)
+        public Environment(Guid id, string name)
             : this()
         {
             Id = id;
             Name = name;
-            Key = key;
         }
 
         public IList<Guid> ToggleStates { get; }
@@ -23,8 +22,6 @@
         public Guid Id { get; }
 
         public string Name { get; }
-
-        public string Key { get; }
 
         public void Toggle(Guid toggleId)
         {

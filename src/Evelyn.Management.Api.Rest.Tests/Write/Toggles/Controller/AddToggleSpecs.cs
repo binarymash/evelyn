@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Write.Environments.Controller
+﻿namespace Evelyn.Management.Api.Rest.Tests.Write.Toggles.Controller
 {
     using System;
     using System.Threading.Tasks;
@@ -13,27 +13,27 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AddEnvironmentSpecs
+    public class AddToggleSpecs
     {
         private readonly Fixture _fixture;
-        private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
+        private readonly Rest.Write.Toggles.Controller _controller;
+        private readonly ICommandHandler<AddToggle> _handler;
         private readonly Guid _applicationId;
-        private Rest.Write.Environments.Messages.AddEnvironment _message;
+        private Rest.Write.Toggles.Messages.AddToggle _message;
         private ObjectResult _result;
 
-        public AddEnvironmentSpecs()
+        public AddToggleSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
-            _controller = new Rest.Write.Environments.Controller(_handler);
+            _handler = Substitute.For<ICommandHandler<AddToggle>>();
+            _controller = new Rest.Write.Toggles.Controller(_handler);
             _applicationId = _fixture.Create<Guid>();
         }
 
         [Fact]
-        public void SuccessfulAddEnvironment()
+        public void SuccessfulAddToggle()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
@@ -43,7 +43,7 @@
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -54,7 +54,7 @@
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -62,22 +62,22 @@
                 .BDDfy();
         }
 
-        private void GivenAValidAddEnvironmentCommand()
+        private void GivenAValidAddToggleMessage()
         {
-            _message = _fixture.Create<Rest.Write.Environments.Messages.AddEnvironment>();
+            _message = _fixture.Create<Rest.Write.Toggles.Messages.AddToggle>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<AddToggle>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<AddToggle>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -90,10 +90,11 @@
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
+                .Handle(Arg.Is<AddToggle>(command =>
                     command.ApplicationId == _applicationId &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
+                    command.Key == _message.Key &&
                     command.ExpectedVersion == _message.ExpectedVersion));
         }
 

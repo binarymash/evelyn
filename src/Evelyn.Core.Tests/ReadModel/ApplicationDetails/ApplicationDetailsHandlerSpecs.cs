@@ -26,6 +26,10 @@
         private EnvironmentAdded _environment2Added;
         private EnvironmentAdded _environment3Added;
 
+        private ToggleAdded _toggle1Added;
+        private ToggleAdded _toggle2Added;
+        private ToggleAdded _toggle3Added;
+
         private Guid _application1Id;
         private Guid _application2Id;
 
@@ -53,6 +57,7 @@
                 .When(_ => WhenWeGetTheDetailsForApplication1())
                 .Then(_ => ThenTheDetailsAreSetForApplication1())
                 .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
+                .And(_ => ThenThereAreNoTogglesOnTheApplication())
                 .BDDfy();
         }
 
@@ -64,9 +69,11 @@
                 .When(_ => WhenWeGetTheDetailsForApplication1())
                 .Then(_ => ThenTheDetailsAreSetForApplication1())
                 .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
+                .And(_ => ThenThereAreNoTogglesOnTheApplication())
                 .When(_ => WhenWeGetTheDetailsForApplication2())
                 .Then(_ => ThenTheDetailsAreSetForForApplication2())
                 .And(_ => ThenThereAreNoEnvironmentsOnTheApplication())
+                .And(_ => ThenThereAreNoTogglesOnTheApplication())
                 .BDDfy();
         }
 
@@ -92,11 +99,34 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void AddingTogglesToApplication()
+        {
+            this.Given(_ => GivenApplication1IsCreated())
+                .And(_ => GivenApplication2IsCreated())
+                .And(_ => GivenWeAddToggle1ToApplication1())
+                .And(_ => GivenWeAddToggle2ToApplication2())
+                .And(_ => GivenWeAddToggle3ToApplication1())
+                .When(_ => WhenWeGetTheDetailsForApplication1())
+                .Then(_ => ThenThereAreTwoTogglesOnTheApplication())
+                .And(_ => ThenToggle1IsOnTheApplication())
+                .And(_ => ThenToggle3IsOnTheApplication())
+                .And(_ => ThenTheVersionOfTheApplicationHasBeenUpdatedForToggle3())
+                .And(_ => ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForToggle3())
+                .When(_ => WhenWeGetTheDetailsForApplication2())
+                .Then(_ => ThenThereIsOneToggleOnTheApplication())
+                .And(_ => ThenToggle2IsOnTheApplication())
+                .And(_ => ThenTheVersionOfTheApplicationHasBeenUpdatedForToggle2())
+                .And(_ => ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForToggle2())
+                .BDDfy();
+        }
+
         protected override void RegisterHandlers(Router router)
         {
             var handler = new ApplicationDetailsHandler(ApplicationDetailsStore);
             router.RegisterHandler<ApplicationCreated>(handler.Handle);
             router.RegisterHandler<EnvironmentAdded>(handler.Handle);
+            router.RegisterHandler<ToggleAdded>(handler.Handle);
         }
 
         private void GivenThatWeDontCreateApplication1()
@@ -132,7 +162,7 @@
         {
             _environment1Added = DataFixture.Create<EnvironmentAdded>();
             _environment1Added.Id = _application1Id;
-            _environment1Added.Version = _eventsApplication1.Count() + 1;
+            _environment1Added.Version = _eventsApplication1.Count + 1;
             _environment1Added.TimeStamp = DateTimeOffset.UtcNow;
 
             _eventsApplication1.Add(_environment1Added);
@@ -144,7 +174,7 @@
         {
             _environment2Added = DataFixture.Create<EnvironmentAdded>();
             _environment2Added.Id = _application2Id;
-            _environment2Added.Version = _eventsApplication2.Count() + 1;
+            _environment2Added.Version = _eventsApplication2.Count + 1;
             _environment2Added.TimeStamp = DateTimeOffset.UtcNow;
 
             _eventsApplication2.Add(_environment2Added);
@@ -156,12 +186,48 @@
         {
             _environment3Added = DataFixture.Create<EnvironmentAdded>();
             _environment3Added.Id = _application1Id;
-            _environment3Added.Version = _eventsApplication1.Count() + 1;
+            _environment3Added.Version = _eventsApplication1.Count + 1;
             _environment3Added.TimeStamp = DateTimeOffset.UtcNow;
 
             _eventsApplication1.Add(_environment3Added);
 
             GivenWePublish(_environment3Added);
+        }
+
+        private void GivenWeAddToggle1ToApplication1()
+        {
+            _toggle1Added = DataFixture.Create<ToggleAdded>();
+            _toggle1Added.Id = _application1Id;
+            _toggle1Added.Version = _eventsApplication1.Count + 1;
+            _toggle1Added.TimeStamp = DateTimeOffset.UtcNow;
+
+            _eventsApplication1.Add(_toggle1Added);
+
+            GivenWePublish(_toggle1Added);
+        }
+
+        private void GivenWeAddToggle2ToApplication2()
+        {
+            _toggle2Added = DataFixture.Create<ToggleAdded>();
+            _toggle2Added.Id = _application2Id;
+            _toggle2Added.Version = _eventsApplication2.Count + 1;
+            _toggle2Added.TimeStamp = DateTimeOffset.UtcNow;
+
+            _eventsApplication2.Add(_toggle2Added);
+
+            GivenWePublish(_toggle2Added);
+        }
+
+        private void GivenWeAddToggle3ToApplication1()
+        {
+            _toggle3Added = DataFixture.Create<ToggleAdded>();
+            _toggle3Added.Id = _application1Id;
+            _toggle3Added.Version = _eventsApplication1.Count + 1;
+            _toggle3Added.TimeStamp = DateTimeOffset.UtcNow;
+
+            _eventsApplication1.Add(_toggle3Added);
+
+            GivenWePublish(_toggle3Added);
         }
 
         private async Task WhenWeGetTheDetailsForApplication1()
@@ -221,6 +287,36 @@
             ThenTheEnvironmentIsOnTheApplication(_environment3Added);
         }
 
+        private void ThenThereAreNoTogglesOnTheApplication()
+        {
+            _retrievedApplicationDetails.Toggles.Count().Should().Be(0);
+        }
+
+        private void ThenThereAreTwoTogglesOnTheApplication()
+        {
+            _retrievedApplicationDetails.Toggles.Count().Should().Be(2);
+        }
+
+        private void ThenThereIsOneToggleOnTheApplication()
+        {
+            _retrievedApplicationDetails.Toggles.Count().Should().Be(1);
+        }
+
+        private void ThenToggle1IsOnTheApplication()
+        {
+            ThenTheToggleIsOnTheApplication(_toggle1Added);
+        }
+
+        private void ThenToggle2IsOnTheApplication()
+        {
+            ThenTheToggleIsOnTheApplication(_toggle2Added);
+        }
+
+        private void ThenToggle3IsOnTheApplication()
+        {
+            ThenTheToggleIsOnTheApplication(_toggle3Added);
+        }
+
         private void ThenTheDetailsAreSetForApplication1()
         {
             ThenTheDetailsAreSetFor(_application1Created);
@@ -247,34 +343,61 @@
                 environment.Name == environmentAdded.Name);
         }
 
+        private void ThenTheToggleIsOnTheApplication(ToggleAdded toggleAdded)
+        {
+            _retrievedApplicationDetails.Toggles.Should().Contain(toggle =>
+                toggle.Id == toggleAdded.ToggleId &&
+                toggle.Name == toggleAdded.Name);
+        }
+
         private void ThenTheVersionOfTheApplicationHasBeenUpdatedForEnvironment3()
         {
-            ThenTheVersionOfTheApplicationHasBeenUpdated(_environment3Added);
+            ThenTheVersionOfTheApplicationHasBeenUpdatedTo(_environment3Added.Version);
         }
 
         private void ThenTheVersionOfTheApplicationHasBeenUpdatedForEnvironment2()
         {
-            ThenTheVersionOfTheApplicationHasBeenUpdated(_environment2Added);
+            ThenTheVersionOfTheApplicationHasBeenUpdatedTo(_environment2Added.Version);
         }
 
-        private void ThenTheVersionOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
+        private void ThenTheVersionOfTheApplicationHasBeenUpdatedForToggle3()
         {
-            _retrievedApplicationDetails.Version.Should().Be(environmentAdded.Version);
+            ThenTheVersionOfTheApplicationHasBeenUpdatedTo(_toggle3Added.Version);
+        }
+
+        private void ThenTheVersionOfTheApplicationHasBeenUpdatedForToggle2()
+        {
+            ThenTheVersionOfTheApplicationHasBeenUpdatedTo(_toggle2Added.Version);
+        }
+
+        private void ThenTheVersionOfTheApplicationHasBeenUpdatedTo(int version)
+        {
+            _retrievedApplicationDetails.Version.Should().Be(version);
         }
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForEnvironment3()
         {
-            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environment3Added);
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedTo(_environment3Added.TimeStamp);
         }
 
         private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForEnvironment2()
         {
-            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(_environment2Added);
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedTo(_environment2Added.TimeStamp);
         }
 
-        private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdated(EnvironmentAdded environmentAdded)
+        private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForToggle3()
         {
-            _retrievedApplicationDetails.LastModified.Should().Be(environmentAdded.TimeStamp);
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedTo(_toggle3Added.TimeStamp);
+        }
+
+        private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedForToggle2()
+        {
+            ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedTo(_toggle2Added.TimeStamp);
+        }
+
+        private void ThenTheLastModifiedTimeOfTheApplicationHasBeenUpdatedTo(DateTimeOffset timeStamp)
+        {
+            _retrievedApplicationDetails.LastModified.Should().Be(timeStamp);
         }
     }
 }
