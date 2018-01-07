@@ -1,8 +1,8 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel
 {
     using System;
-    using System.Collections.Generic;
     using AutoFixture;
+    using Core.ReadModel.ToggleDetails;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
@@ -15,18 +15,20 @@
     {
         private readonly IEventPublisher _publisher;
 
-        public HandlerSpecs()
+        protected HandlerSpecs()
         {
             DataFixture = new Fixture();
 
             ApplicationsStore = new InMemoryDatabase<ApplicationListDto>();
             ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
             EnvironmentDetailsStore = new InMemoryDatabase<EnvironmentDetailsDto>();
+            ToggleDetailsStore = new InMemoryDatabase<ToggleDetailsDto>();
 
             ReadModelFacade = new DatabaseReadModelFacade(
                 ApplicationsStore,
                 ApplicationDetailsStore,
-                EnvironmentDetailsStore);
+                EnvironmentDetailsStore,
+                ToggleDetailsStore);
 
             var router = new Router();
             RegisterHandlers(router);
@@ -42,6 +44,8 @@
         protected IDatabase<ApplicationDetailsDto> ApplicationDetailsStore { get; }
 
         protected IDatabase<EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
+
+        protected IDatabase<ToggleDetailsDto> ToggleDetailsStore { get; set; }
 
         protected Exception ThrownException { get; set; }
 

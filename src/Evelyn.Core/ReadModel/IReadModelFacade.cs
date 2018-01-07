@@ -6,6 +6,7 @@
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.ToggleDetails;
 
     public interface IReadModelFacade
     {
@@ -14,5 +15,7 @@
         Task<ApplicationDetailsDto> GetApplicationDetails(Guid applicationId);
 
         Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId);
+
+        Task<ToggleDetailsDto> GetToggleDetails(Guid toggleId);
     }
 }
