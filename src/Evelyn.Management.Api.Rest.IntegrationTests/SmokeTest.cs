@@ -8,6 +8,7 @@
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Applications.Messages;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Evelyn.Management.Api.Rest.Write.Toggles.Messages;
@@ -60,6 +61,9 @@
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheEnvironmentWeAddedIsReturned())
 
+                .When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
+                .Then(_ => ThenTheResponseHasStatusCode200Ok())
+                .And(_ => ThenTheToggleWeAddedIsReturned())
                 .BDDfy();
         }
 
@@ -120,6 +124,15 @@
         {
             _response = await Client
                 .Request($"/api/applications/{_createApplicationMessage.Id}/environments/{_addEnvironmentMessage.Id}")
+                .GetAsync();
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
+        }
+
+        private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
+        {
+            _response = await Client
+                .Request($"/api/applications/{_createApplicationMessage.Id}/toggles/{_addToggleMessage.Id}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -199,6 +212,15 @@
             environmentDetails.Id.Should().Be(_addEnvironmentMessage.Id);
             environmentDetails.Name.Should().Be(_addEnvironmentMessage.Name);
             environmentDetails.ApplicationId.Should().Be(_createApplicationMessage.Id);
+        }
+
+        private void ThenTheToggleWeAddedIsReturned()
+        {
+            var toggleDetails = JsonConvert.DeserializeObject<ToggleDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            toggleDetails.Id.Should().Be(_addToggleMessage.Id);
+            toggleDetails.Name.Should().Be(_addToggleMessage.Name);
+            toggleDetails.Key.Should().Be(_addToggleMessage.Key);
+            toggleDetails.ApplicationId.Should().Be(_createApplicationMessage.Id);
         }
     }
 }

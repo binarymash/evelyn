@@ -6,6 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.ToggleDetails;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class InMemoryReadCacheExtensions
@@ -16,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             parentRegistration.Services.TryAddSingleton<IDatabase<ApplicationListDto>, InMemoryApplicationListDtoDatabase>();
             parentRegistration.Services.TryAddSingleton<IDatabase<ApplicationDetailsDto>, InMemoryApplicationDetailsDtoDatabase>();
             parentRegistration.Services.TryAddSingleton<IDatabase<EnvironmentDetailsDto>, InMemoryEnvironmentDetailsDtoDatabase>();
+            parentRegistration.Services.TryAddSingleton<IDatabase<ToggleDetailsDto>, InMemoryToggleDetailsDtoDatabase>();
         }
     }
 }

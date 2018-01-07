@@ -4,6 +4,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.ToggleDetails;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 
@@ -14,6 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             parentRegistration.Services.TryAddSingleton<ApplicationDetailsHandler>();
             parentRegistration.Services.TryAddSingleton<ApplicationListHandler>();
             parentRegistration.Services.TryAddSingleton<EnvironmentDetailsHandler>();
+            parentRegistration.Services.TryAddSingleton<ToggleDetailsHandler>();
 
             parentRegistration.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
         }

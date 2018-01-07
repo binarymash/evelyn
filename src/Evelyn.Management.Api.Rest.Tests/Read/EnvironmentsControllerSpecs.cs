@@ -105,7 +105,7 @@
 
         private void ThenTheExpectedEnvironmentIsReturned()
         {
-            var returnedEnvironment = ((ObjectResult)_result).Value as EnvironmentDetailsDto;
+            var returnedEnvironment = _result.Value as EnvironmentDetailsDto;
             returnedEnvironment.Should().Be(_environmentReturnedByFacade);
         }
     }

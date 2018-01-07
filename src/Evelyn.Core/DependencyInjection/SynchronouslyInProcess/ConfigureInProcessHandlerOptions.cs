@@ -3,6 +3,7 @@
     using Evelyn.Core.ReadModel.ApplicationDetails;
     using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.ToggleDetails;
     using Evelyn.Core.WriteModel.Handlers;
     using Microsoft.Extensions.Options;
 
@@ -15,7 +16,8 @@
                 typeof(ApplicationCommandHandler),
                 typeof(ApplicationDetailsHandler),
                 typeof(ApplicationListHandler),
-                typeof(EnvironmentDetailsHandler)
+                typeof(EnvironmentDetailsHandler),
+                typeof(ToggleDetailsHandler)
             });
         }
     }
