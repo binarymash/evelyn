@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Gets the read strategy options
+        /// Configures how we will retrieve the read model.
         /// </summary>
         /// <value>
         /// The read strategy options

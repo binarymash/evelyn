@@ -1,9 +1,6 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    /// <summary>
-    /// Configures the in-memory event store
-    /// </summary>
     public class InMemoryEventStoreOptions : EvelynComponentOptions
     {
         public InMemoryEventStoreOptions(IServiceCollection services)
@@ -13,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Configures the event publisher options on the in-memory event store
+        /// Configures how we will publish events from the in-memory event store.
         /// </summary>
         /// <value>
         /// The event publisher options

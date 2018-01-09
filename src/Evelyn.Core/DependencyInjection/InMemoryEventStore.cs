@@ -11,12 +11,12 @@ namespace Microsoft.Extensions.DependencyInjection
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
         /// <summary>
-        /// Use an in-memory event store.
-        /// Any events stored in here will be lost when the executing process exits, so you
+        /// We will use an in-memory event store.
+        /// WARNING! Any events stored in here will be lost when the executing process exits, so you
         /// probably don't want to use this in production.
         /// </summary>
         /// <param name="parentOptions"></param>
-        /// <param name="action">An Action&lt;InMemoryEventStoreRegistration&gt; to configure the provided InMemoryEventStoreRegistration</param>
+        /// <param name="action">An Action&lt;InMemoryEventStoreOptions&gt; to configure the provided InMemoryEventStoreOptions</param>
         public static void InMemory(this EventStoreOptions parentOptions, Action<InMemoryEventStoreOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {

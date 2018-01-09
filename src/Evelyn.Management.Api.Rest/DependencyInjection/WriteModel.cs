@@ -7,14 +7,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
         /// <summary>
-        /// Configures what happens when a command is receieved by the API
+        /// Configures what will happen when a command is received by the API.
         /// </summary>
-        /// <param name="parentRegistration"></param>
-        /// <param name="action">An Action&lt;WriteModelRegistration;gt; to configure the provided WriteModelRegistration</param>
-        public static void WithWriteModel(this EvelynApiOptions parentRegistration, Action<WriteModelOptions> action)
+        /// <param name="parentOptions"></param>
+        /// <param name="action">An Action&lt;WriteModelOptions;gt; to configure the provided WriteModelOptions</param>
+        public static void WithWriteModel(this EvelynApiOptions parentOptions, Action<WriteModelOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentRegistration.Services.AddEvelynWriteModel(action);
+            parentOptions.Services.AddEvelynWriteModel(action);
         }
     }
 }

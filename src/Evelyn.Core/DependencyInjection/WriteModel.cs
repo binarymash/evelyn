@@ -1,5 +1,4 @@
 ﻿// ReSharper disable CheckNamespace
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     using System;

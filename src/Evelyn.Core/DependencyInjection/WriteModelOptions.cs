@@ -1,8 +1,6 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection
 {
-    /// <summary>
-    /// Configures the write model options
-    /// </summary>
     public class WriteModelOptions : EvelynComponentOptions
     {
         public WriteModelOptions(IServiceCollection services)
@@ -12,10 +10,10 @@
         }
 
         /// <summary>
-        /// Configures the event store options
+        /// Configures how we will store the events that are created when a command is processed.
         /// </summary>
         /// <value>
-        /// The Event store options
+        /// The Event Store options
         /// </value>
         public EventStoreOptions WithEventStore { get; }
     }
