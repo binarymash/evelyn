@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class ReadStrategyRegistration : EvelynComponentRegistration
+    public class InMemoryReadCacheOptions : EvelynComponentOptions
     {
-        public ReadStrategyRegistration(IServiceCollection services)
+        public InMemoryReadCacheOptions(IServiceCollection services)
             : base(services)
         {
         }
