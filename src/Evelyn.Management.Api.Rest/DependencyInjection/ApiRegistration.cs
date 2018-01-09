@@ -6,12 +6,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public ApiRegistration(IServiceCollection services)
             : base(services)
         {
-            WithWriteModel = new WriteModelRegistration(services);
-            WithReadModel = new ReadModelRegistration(services);
         }
-
-        public WriteModelRegistration WithWriteModel { get; }
-
-        public ReadModelRegistration WithReadModel { get; }
     }
 }

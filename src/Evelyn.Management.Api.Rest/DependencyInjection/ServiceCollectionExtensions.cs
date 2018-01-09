@@ -5,7 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEvelynApi(this IServiceCollection services, Action<ApiRegistration> action)
+#pragma warning disable SA1614 // Element parameter documentation must have text
+#pragma warning disable SA1616 // Element return value documentation must have text
+                              /// <summary>
+                              /// Adds Evelyn Management Rest API services to the specified IServiceCollection
+                              /// </summary>
+                              /// <param name="services"></param>
+                              /// <param name="options">An Action&lt;ApiRegistration&gt; to configure the provided ApiRegistration</param>
+                              /// <returns></returns>
+        public static IServiceCollection AddEvelynApi(this IServiceCollection services, Action<ApiRegistration> options)
+#pragma warning restore SA1616 // Element return value documentation must have text
+#pragma warning restore SA1614 // Element parameter documentation must have text
         {
             var swaggerInfo = new Swashbuckle.AspNetCore.Swagger.Info()
             {
@@ -16,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSwaggerGen(c => c.SwaggerDoc("v0.1", swaggerInfo));
 
-            action.Invoke(new ApiRegistration(services));
+            options.Invoke(new ApiRegistration(services));
 
             return services;
         }

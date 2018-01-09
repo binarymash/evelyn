@@ -10,7 +10,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
     public static class SynchronouslyInProcessExtensions
     {
+#pragma warning disable SA1614 // Element parameter documentation must have text
+                              /// <summary>
+                              /// Publishes events synchronously and in-process.
+                              /// All events will be processed before a response is returned to the user.
+                              /// </summary>
+                              /// <param name="parentRegistration"></param>
         public static void SynchronouslyInProcess(this EventPublisherRegistration parentRegistration)
+#pragma warning restore SA1614 // Element parameter documentation must have text
         {
             parentRegistration.Services.TryAddSingleton<ApplicationDetailsHandler>();
             parentRegistration.Services.TryAddSingleton<ApplicationListHandler>();
