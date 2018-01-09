@@ -2,11 +2,11 @@
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Configures how events will be stored
+    /// Configures the in-memory read cache
     /// </summary>
-    public class EventStoreRegistration : EvelynComponentRegistration
+    public class InMemoryReadCacheOptions : EvelynComponentOptions
     {
-        public EventStoreRegistration(IServiceCollection services)
+        public InMemoryReadCacheOptions(IServiceCollection services)
             : base(services)
         {
         }

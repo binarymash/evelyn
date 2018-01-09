@@ -8,23 +8,23 @@ namespace Microsoft.Extensions.DependencyInjection
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 
-    public static class SynchronouslyInProcessExtensions
+    public static class InProcessHandlers
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
                               /// <summary>
                               /// Publishes events synchronously and in-process.
                               /// All events will be processed before a response is returned to the user.
                               /// </summary>
-                              /// <param name="parentRegistration"></param>
-        public static void SynchronouslyInProcess(this EventPublisherRegistration parentRegistration)
+                              /// <param name="parentOptions"></param>
+        public static void SynchronouslyInProcess(this EventPublisherOptions parentOptions)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentRegistration.Services.TryAddSingleton<ApplicationDetailsHandler>();
-            parentRegistration.Services.TryAddSingleton<ApplicationListHandler>();
-            parentRegistration.Services.TryAddSingleton<EnvironmentDetailsHandler>();
-            parentRegistration.Services.TryAddSingleton<ToggleDetailsHandler>();
+            parentOptions.Services.TryAddSingleton<ApplicationDetailsHandler>();
+            parentOptions.Services.TryAddSingleton<ApplicationListHandler>();
+            parentOptions.Services.TryAddSingleton<EnvironmentDetailsHandler>();
+            parentOptions.Services.TryAddSingleton<ToggleDetailsHandler>();
 
-            parentRegistration.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
+            parentOptions.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
         }
     }
 }

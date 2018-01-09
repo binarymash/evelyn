@@ -3,12 +3,12 @@
     /// <summary>
     /// Configures the write model options
     /// </summary>
-    public class WriteModelRegistration : EvelynComponentRegistration
+    public class WriteModelOptions : EvelynComponentOptions
     {
-        public WriteModelRegistration(IServiceCollection services)
+        public WriteModelOptions(IServiceCollection services)
             : base(services)
         {
-            WithEventStore = new EventStoreRegistration(services);
+            WithEventStore = new EventStoreOptions(services);
         }
 
         /// <summary>
@@ -17,6 +17,6 @@
         /// <value>
         /// The Event store options
         /// </value>
-        public EventStoreRegistration WithEventStore { get; }
+        public EventStoreOptions WithEventStore { get; }
     }
 }

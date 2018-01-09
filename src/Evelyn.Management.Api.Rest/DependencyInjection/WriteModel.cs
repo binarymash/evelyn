@@ -3,7 +3,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
 
-    public static class ApiWriteModelExtensions
+    public static class WriteModel
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
         /// <summary>
@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="parentRegistration"></param>
         /// <param name="action">An Action&lt;WriteModelRegistration;gt; to configure the provided WriteModelRegistration</param>
-        public static void WithWriteModel(this ApiRegistration parentRegistration, Action<WriteModelRegistration> action)
+        public static void WithWriteModel(this EvelynApiOptions parentRegistration, Action<WriteModelOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
             parentRegistration.Services.AddEvelynWriteModel(action);

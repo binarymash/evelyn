@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class ReadModelCacheRegistration : EvelynComponentRegistration
+    public class EvelynApiOptions : EvelynComponentOptions
     {
-        public ReadModelCacheRegistration(IServiceCollection services)
+        public EvelynApiOptions(IServiceCollection services)
             : base(services)
         {
         }

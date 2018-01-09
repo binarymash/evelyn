@@ -21,10 +21,6 @@
         {
             services.AddMvc();
 
-            services.AddEvelynApi(eve =>
-            {
-                eve.WithWriteModel(wm => wm.WithEventStore);
-            });
             services.AddEvelynApi(api =>
             {
                 api.WithWriteModel(wm =>

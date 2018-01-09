@@ -3,9 +3,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
 
-    public static class ApiReadModelExtensions
+    public static class ReadModel
     {
-        public static void WithReadModel(this ApiRegistration parentRegistration, Action<ReadModelRegistration> action)
+        public static void WithReadModel(this EvelynApiOptions parentRegistration, Action<ReadModelOptions> action)
         {
             parentRegistration.Services.AddEvelynReadModel(action);
         }

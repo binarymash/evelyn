@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using Evelyn.Core;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    public static class InMemoryEventStoreExtensions
+    public static class InMemoryEventStore
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
         /// <summary>
@@ -15,14 +15,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Any events stored in here will be lost when the executing process exits, so you
         /// probably don't want to use this in production.
         /// </summary>
-        /// <param name="parentRegistration"></param>
+        /// <param name="parentOptions"></param>
         /// <param name="action">An Action&lt;InMemoryEventStoreRegistration&gt; to configure the provided InMemoryEventStoreRegistration</param>
-        public static void InMemory(this EventStoreRegistration parentRegistration, Action<InMemoryEventStoreRegistration> action)
+        public static void InMemory(this EventStoreOptions parentOptions, Action<InMemoryEventStoreOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentRegistration.Services.TryAddSingleton<IEventStore, InMemoryEventStore>();
+            parentOptions.Services.TryAddSingleton<IEventStore, Evelyn.Core.InMemoryEventStore>();
 
-            action.Invoke(new InMemoryEventStoreRegistration(parentRegistration.Services));
+            action.Invoke(new InMemoryEventStoreOptions(parentOptions.Services));
         }
     }
 }

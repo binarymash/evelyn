@@ -4,12 +4,12 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Configures the read model
     /// </summary>
-    public class ReadModelRegistration : EvelynComponentRegistration
+    public class ReadModelOptions : EvelynComponentOptions
     {
-        public ReadModelRegistration(IServiceCollection services)
+        public ReadModelOptions(IServiceCollection services)
             : base(services)
         {
-            WithReadStrategy = new ReadStrategyRegistration(services);
+            WithReadStrategy = new ReadStrategyOptions(services);
         }
 
         /// <summary>
@@ -18,6 +18,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <value>
         /// The read strategy options
         /// </value>
-        public ReadStrategyRegistration WithReadStrategy { get; }
+        public ReadStrategyOptions WithReadStrategy { get; }
     }
 }

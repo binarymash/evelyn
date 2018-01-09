@@ -4,9 +4,9 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Configures the event publisher
     /// </summary>
-    public class EventPublisherRegistration : EvelynComponentRegistration
+    public class EventPublisherOptions : EvelynComponentOptions
     {
-        public EventPublisherRegistration(IServiceCollection services)
+        public EventPublisherOptions(IServiceCollection services)
             : base(services)
         {
         }

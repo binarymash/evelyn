@@ -4,12 +4,12 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Configures the in-memory event store
     /// </summary>
-    public class InMemoryEventStoreRegistration : EvelynComponentRegistration
+    public class InMemoryEventStoreOptions : EvelynComponentOptions
     {
-        public InMemoryEventStoreRegistration(IServiceCollection services)
+        public InMemoryEventStoreOptions(IServiceCollection services)
             : base(services)
         {
-            WithEventPublisher = new EventPublisherRegistration(services);
+            WithEventPublisher = new EventPublisherOptions(services);
         }
 
         /// <summary>
@@ -18,6 +18,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <value>
         /// The event publisher options
         /// </value>
-        public EventPublisherRegistration WithEventPublisher { get; }
+        public EventPublisherOptions WithEventPublisher { get; }
     }
 }

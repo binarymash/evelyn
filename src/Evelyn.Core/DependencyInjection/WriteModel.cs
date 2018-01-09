@@ -12,16 +12,16 @@ namespace Microsoft.Extensions.DependencyInjection
     using Evelyn.Core.WriteModel;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    public static class WriteModelExtensions
+    public static class WriteModel
     {
-        public static IServiceCollection AddEvelynWriteModel(this IServiceCollection services, Action<WriteModelRegistration> action)
+        public static IServiceCollection AddEvelynWriteModel(this IServiceCollection services, Action<WriteModelOptions> action)
         {
             services
                 .AddCoreWriteInfrastructure()
                 .AddCommandHandlers()
                 .AddRouting();
 
-            action.Invoke(new WriteModelRegistration(services));
+            action.Invoke(new WriteModelOptions(services));
 
             return services;
         }
