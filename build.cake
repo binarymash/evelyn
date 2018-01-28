@@ -132,6 +132,22 @@ Task("RunUnitTestsCoverageReport")
         
         EnsureDirectoryExists(artifactsForUnitTestsDir);
         
+		if(!IsRunningOnWindows())
+		{
+			Warning("We are not running on Windows so we can't run test coverage, but we will run the tests.");
+			foreach(var testAssembly in unitTestAssemblies)
+			{
+				DotNetCoreTest(testAssembly, new DotNetCoreTestSettings()
+				{
+					ArgumentCustomization = args => args
+						.Append("--no-build")
+						.Append("--no-restore")
+						.Append("--results-directory " + artifactsForUnitTestsDir)
+				});
+			}			
+			return;
+		}
+
 		foreach(var testAssembly in unitTestAssemblies)
 		{
 			OpenCover(tool => 
