@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Write.Toggles
+﻿namespace Evelyn.Management.Api.Rest.Write.ToggleStates
 {
     using System;
     using System.Collections.Generic;
@@ -8,37 +8,36 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/toggles")]
+    [Route("api/applications/{applicationId}/toggleState")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.AddToggle> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Commands.FlipToggle> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.AddToggle> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Commands.FlipToggle> handler)
         {
             _handler = handler;
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Toggles.Messages.AddToggle message)
+        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.FlipToggle message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddToggle(applicationId, message.Id, message.Name, message.Key)
+                var command = new Core.WriteModel.Commands.FlipToggle(applicationId, message.EnvironmentId, message.ToggleId)
                 {
-                    ExpectedVersion = -1
+                    ExpectedVersion = message.ExpectedVersion
                 };
                 await _handler.Handle(command);
                 return Accepted();
             }
-            catch (ConcurrencyException)
+            catch (ConcurrencyException ex)
             {
                 // TODO: error handling
-                var value = new Dictionary<string, string>();
-                return new BadRequestObjectResult(value);
+                return new BadRequestObjectResult(ex.Message);
             }
             catch (Exception)
             {
