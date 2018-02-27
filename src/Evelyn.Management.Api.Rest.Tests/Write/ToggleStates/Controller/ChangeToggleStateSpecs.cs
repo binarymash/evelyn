@@ -13,19 +13,19 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class FlipToggleSpecs
+    public class ChangeToggleStateSpecs
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.ToggleStates.Controller _controller;
-        private readonly ICommandHandler<FlipToggle> _handler;
+        private readonly ICommandHandler<ChangeToggleState> _handler;
         private readonly Guid _applicationId;
-        private Rest.Write.ToggleStates.Messages.FlipToggle _message;
+        private Rest.Write.ToggleStates.Messages.ChangeToggleState _message;
         private ObjectResult _result;
 
-        public FlipToggleSpecs()
+        public ChangeToggleStateSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<FlipToggle>>();
+            _handler = Substitute.For<ICommandHandler<ChangeToggleState>>();
             _controller = new Rest.Write.ToggleStates.Controller(_handler);
             _applicationId = _fixture.Create<Guid>();
         }
@@ -64,20 +64,20 @@
 
         private void GivenAValidAddToggleMessage()
         {
-            _message = _fixture.Create<Rest.Write.ToggleStates.Messages.FlipToggle>();
+            _message = _fixture.Create<Rest.Write.ToggleStates.Messages.ChangeToggleState>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<FlipToggle>())
+                .Handle(Arg.Any<ChangeToggleState>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<FlipToggle>())
+                .Handle(Arg.Any<ChangeToggleState>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -91,7 +91,7 @@
             // TODO: add all properties
             _handler
                 .Received(1)
-                .Handle(Arg.Is<FlipToggle>(command =>
+                .Handle(Arg.Is<ChangeToggleState>(command =>
                     command.ApplicationId == _applicationId));
         }
 

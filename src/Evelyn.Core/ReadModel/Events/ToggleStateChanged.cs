@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class ToggleFlipped : ApplicationEvent
+    public class ToggleStateChanged : ApplicationEvent
     {
-        public ToggleFlipped(Guid id, Guid environmentId, Guid toggleId, bool value)
+        public ToggleStateChanged(Guid id, Guid environmentId, Guid toggleId, string value)
             : base(id)
         {
             EnvironmentId = environmentId;
@@ -16,6 +16,6 @@
 
         public Guid ToggleId { get; set; }
 
-        public bool Value { get; set; }
+        public string Value { get; set; }
     }
 }

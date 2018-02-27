@@ -14,23 +14,20 @@
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.FlipToggle> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Commands.ChangeToggleState> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.FlipToggle> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Commands.ChangeToggleState> handler)
         {
             _handler = handler;
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.FlipToggle message)
+        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.ChangeToggleState message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.FlipToggle(applicationId, message.EnvironmentId, message.ToggleId)
-                {
-                    ExpectedVersion = message.ExpectedVersion
-                };
+                var command = new Core.WriteModel.Commands.ChangeToggleState(applicationId, message.EnvironmentId, message.ToggleId, message.State, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

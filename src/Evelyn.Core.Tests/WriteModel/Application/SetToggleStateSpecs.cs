@@ -9,7 +9,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
     using TestStack.BDDfy;
     using Xunit;
 
-    public class FlipToggleSpecs : ApplicationCommandHandlerSpecs<FlipToggle>
+    public class SetToggleStateSpecs : ApplicationCommandHandlerSpecs<ChangeToggleState>
     {
         private Guid _applicationId;
 
@@ -18,12 +18,13 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private Guid _toggleId;
         private string _toggleName;
         private string _toggleKey;
+        private string _toggleState;
 
         [Fact]
         public void EnvironmentDoesntExist()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
-                .When(_ => WhenWeFlipAToggleThatDoesntExist())
+                .When(_ => WhenWeChangeTheValueOfAToggleThatDoesntExist())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAnEnvironmentDoesNotExistExceptionIsThrown())
                 .BDDfy();
@@ -34,40 +35,36 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
-                .When(_ => WhenWeFlipAToggleThatDoesntExist())
+                .When(_ => WhenWeChangeTheValueOfAToggleThatDoesntExist())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAToggleDoesNotExistExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
-        public void ToggleIsOff()
+        public void InvalidToggleState()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .When(_ => WhenWeFlipTheToggle())
-                .Then(_ => ThenThePublishedEventIsToggledFlipped())
-                .And(_ => ThenTheApplicationIdIsSaved())
-                .And(_ => ThenTheEnvironmentIdIsSaved())
-                .And(_ => ThenTheToggleIdIsSaved())
-                .And(_ => ThenTheToggleValueIdIsSavedAsTrue())
+                .When(_ => WhenWeChangeTheToggleStateToAnInvalidValue())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAnInvalidToggleStateExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
-        public void ToggleIsOn()
+        public void ValidToggleState()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenWeHaveFlippedTheToggle())
-                .When(_ => WhenWeFlipTheToggle())
-                .Then(_ => ThenThePublishedEventIsToggledFlipped())
+                .When(_ => WhenWeChangeTheToggleState())
+                .Then(_ => ThenThePublishedEventIsToggledValueChanged())
                 .And(_ => ThenTheApplicationIdIsSaved())
                 .And(_ => ThenTheEnvironmentIdIsSaved())
                 .And(_ => ThenTheToggleIdIsSaved())
-                .And(_ => ThenTheToggleValueIdIsSavedAsFalse())
+                .And(_ => ThenTheToggleStateIsSaved())
                 .BDDfy();
         }
 
@@ -94,22 +91,33 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             HistoricalEvents.Add(new ToggleAdded(_applicationId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count + 1 });
         }
 
-        private void GivenWeHaveFlippedTheToggle()
+        private void GivenWeHaveChangedTheToggleState()
         {
-            HistoricalEvents.Add(new ToggleFlipped(_applicationId, _environmentId, _toggleId, true) { Version = HistoricalEvents.Count + 1 });
+            HistoricalEvents.Add(new ToggleStateChanged(_applicationId, _environmentId, _toggleId, DataFixture.Create<bool>().ToString()) { Version = HistoricalEvents.Count + 1 });
         }
 
-        private void WhenWeFlipAToggleThatDoesntExist()
+        private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
         {
             _toggleId = DataFixture.Create<Guid>();
+            _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new FlipToggle(_applicationId, _environmentId, _toggleId) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
-        private void WhenWeFlipTheToggle()
+        private void WhenWeChangeTheToggleStateToAnInvalidValue()
         {
-            var command = new FlipToggle(_applicationId, _environmentId, _toggleId) { ExpectedVersion = HistoricalEvents.Count };
+            _toggleState = DataFixture.Create<string>();
+
+            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count };
+            WhenWeHandle(command);
+        }
+
+        private void WhenWeChangeTheToggleState()
+        {
+            _toggleState = DataFixture.Create<bool>().ToString();
+
+            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
@@ -128,34 +136,34 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no toggle with the ID {_toggleId}");
         }
 
-        private void ThenThePublishedEventIsToggledFlipped()
+        private void ThenAnInvalidToggleStateExceptionIsThrown()
         {
-            PublishedEvents.First().Should().BeOfType<ToggleFlipped>();
+            ThenAnInvalidOperationExceptionIsThrownWithMessage("Invalid toggle value");
+        }
+
+        private void ThenThePublishedEventIsToggledValueChanged()
+        {
+            PublishedEvents.First().Should().BeOfType<ToggleStateChanged>();
         }
 
         private void ThenTheApplicationIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Id.Should().Be(_applicationId);
+            ((ToggleStateChanged)PublishedEvents.First()).Id.Should().Be(_applicationId);
         }
 
         private void ThenTheEnvironmentIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).EnvironmentId.Should().Be(_environmentId);
+            ((ToggleStateChanged)PublishedEvents.First()).EnvironmentId.Should().Be(_environmentId);
         }
 
         private void ThenTheToggleIdIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).ToggleId.Should().Be(_toggleId);
+            ((ToggleStateChanged)PublishedEvents.First()).ToggleId.Should().Be(_toggleId);
         }
 
-        private void ThenTheToggleValueIdIsSavedAsTrue()
+        private void ThenTheToggleStateIsSaved()
         {
-            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeTrue();
-        }
-
-        private void ThenTheToggleValueIdIsSavedAsFalse()
-        {
-            ((ToggleFlipped)PublishedEvents.First()).Value.Should().BeFalse();
+            ((ToggleStateChanged)PublishedEvents.First()).Value.Should().Be(_toggleState);
         }
     }
 }

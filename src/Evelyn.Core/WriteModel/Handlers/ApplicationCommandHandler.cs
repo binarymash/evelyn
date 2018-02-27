@@ -10,7 +10,7 @@
         ICommandHandler<CreateApplication>,
         ICommandHandler<AddEnvironment>,
         ICommandHandler<AddToggle>,
-        ICommandHandler<FlipToggle>
+        ICommandHandler<ChangeToggleState>
     {
         private readonly ISession _session;
 
@@ -40,10 +40,10 @@
             await _session.Commit();
         }
 
-        public async Task Handle(FlipToggle message)
+        public async Task Handle(ChangeToggleState message)
         {
             var application = await _session.Get<Application>(message.ApplicationId, message.ExpectedVersion);
-            application.FlipToggle(message.EnvironmentId, message.ToggleId);
+            application.ChangeToggleState(message.EnvironmentId, message.ToggleId, message.Value);
             await _session.Commit();
         }
     }

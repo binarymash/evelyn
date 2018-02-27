@@ -2,13 +2,14 @@
 {
     using System;
 
-    public class FlipToggle
+    public class ChangeToggleState
     {
-        public FlipToggle(Guid environmentId, Guid toggleId, int expectedVersion)
+        public ChangeToggleState(Guid environmentId, Guid toggleId, int expectedVersion, string state)
         {
             EnvironmentId = environmentId;
             ToggleId = toggleId;
             ExpectedVersion = expectedVersion;
+            State = state;
         }
 
         public Guid EnvironmentId { get; }
@@ -16,5 +17,7 @@
         public Guid ToggleId { get; }
 
         public int ExpectedVersion { get; }
+
+        public string State { get; }
     }
 }

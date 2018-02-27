@@ -27,10 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddToggle(applicationId, message.Id, message.Name, message.Key)
-                {
-                    ExpectedVersion = -1
-                };
+                var command = new Core.WriteModel.Commands.AddToggle(applicationId, message.Id, message.Name, message.Key, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

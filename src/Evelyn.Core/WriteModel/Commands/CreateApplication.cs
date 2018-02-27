@@ -5,13 +5,14 @@
 
     public class CreateApplication : ICommand
     {
-        public CreateApplication(Guid id, string name)
+        public CreateApplication(Guid id, string name, int? expectedVersion = null)
         {
             Id = id;
             Name = name;
+            ExpectedVersion = expectedVersion;
         }
 
-        public int ExpectedVersion { get; set; }
+        public int? ExpectedVersion { get; set; }
 
         public Guid Id { get; set; }
 

@@ -91,7 +91,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
                 .Handle(Arg.Is<CreateApplication>(command =>
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
-                    command.ExpectedVersion == 0));
+                    command.ExpectedVersion == null));
         }
 
         private void ThenA202AcceptedStatusIsReturned()
