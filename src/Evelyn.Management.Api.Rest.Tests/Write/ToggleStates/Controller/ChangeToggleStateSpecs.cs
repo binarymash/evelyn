@@ -19,6 +19,8 @@
         private readonly Rest.Write.ToggleStates.Controller _controller;
         private readonly ICommandHandler<ChangeToggleState> _handler;
         private readonly Guid _applicationId;
+        private readonly Guid _environmentId;
+        private readonly Guid _toggleId;
         private Rest.Write.ToggleStates.Messages.ChangeToggleState _message;
         private ObjectResult _result;
 
@@ -28,10 +30,12 @@
             _handler = Substitute.For<ICommandHandler<ChangeToggleState>>();
             _controller = new Rest.Write.ToggleStates.Controller(_handler);
             _applicationId = _fixture.Create<Guid>();
+            _environmentId = _fixture.Create<Guid>();
+            _toggleId = _fixture.Create<Guid>();
         }
 
         [Fact]
-        public void SuccessfulFlipToggle()
+        public void SuccessfulChangeToggleStatus()
         {
             this.Given(_ => GivenAValidAddToggleMessage())
                 .When(_ => WhenTheMessageIsPosted())
@@ -83,7 +87,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message) as ObjectResult;
+            _result = await _controller.Post(_applicationId, _environmentId, _toggleId, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
