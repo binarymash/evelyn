@@ -27,10 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name)
-                {
-                    ExpectedVersion = message.ExpectedVersion
-                };
+                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

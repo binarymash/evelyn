@@ -5,15 +5,16 @@
 
     public class AddToggle : ICommand
     {
-        public AddToggle(Guid applicationId, Guid id, string name, string key)
+        public AddToggle(Guid applicationId, Guid id, string name, string key, int? expectedVersion = null)
         {
             Id = id;
             Name = name;
             Key = key;
             ApplicationId = applicationId;
+            ExpectedVersion = expectedVersion;
         }
 
-        public int ExpectedVersion { get; set; }
+        public int? ExpectedVersion { get; set; }
 
         public Guid ApplicationId { get; set; }
 

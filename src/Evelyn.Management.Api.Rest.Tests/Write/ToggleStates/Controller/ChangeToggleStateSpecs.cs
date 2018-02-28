@@ -1,11 +1,11 @@
-namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
+﻿namespace Evelyn.Management.Api.Rest.Tests.Write.ToggleStates.Controller
 {
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel.Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -13,27 +13,33 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CreateApplicationSpecs
+    public class ChangeToggleStateSpecs
     {
         private readonly Fixture _fixture;
-        private readonly Rest.Write.Applications.Controller _controller;
-        private readonly ICommandHandler<CreateApplication> _createApplicationHandler;
-        private Rest.Write.Applications.Messages.CreateApplication _message;
+        private readonly Rest.Write.ToggleStates.Controller _controller;
+        private readonly ICommandHandler<ChangeToggleState> _handler;
+        private readonly Guid _applicationId;
+        private readonly Guid _environmentId;
+        private readonly Guid _toggleId;
+        private Rest.Write.ToggleStates.Messages.ChangeToggleState _message;
         private ObjectResult _result;
 
-        public CreateApplicationSpecs()
+        public ChangeToggleStateSpecs()
         {
             _fixture = new Fixture();
-            _createApplicationHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateApplication>>();
-            _controller = new Rest.Write.Applications.Controller(_createApplicationHandler);
+            _handler = Substitute.For<ICommandHandler<ChangeToggleState>>();
+            _controller = new Rest.Write.ToggleStates.Controller(_handler);
+            _applicationId = _fixture.Create<Guid>();
+            _environmentId = _fixture.Create<Guid>();
+            _toggleId = _fixture.Create<Guid>();
         }
 
         [Fact]
-        public void SuccessfulCreateApplication()
+        public void SuccessfulChangeToggleStatus()
         {
-            this.Given(_ => GivenAValidCreateApplicationCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
                 .BDDfy();
         }
@@ -41,10 +47,10 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidCreateApplicationCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA400BadRequestStatusIsReturned())
                 .BDDfy();
         }
@@ -52,46 +58,45 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidCreateApplicationCommand())
+            this.Given(_ => GivenAValidAddToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA500InternalServerErrorStatusIsReturned())
                 .BDDfy();
         }
 
-        private void GivenAValidCreateApplicationCommand()
+        private void GivenAValidAddToggleMessage()
         {
-            _message = _fixture.Create<Rest.Write.Applications.Messages.CreateApplication>();
+            _message = _fixture.Create<Rest.Write.ToggleStates.Messages.ChangeToggleState>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
-            _createApplicationHandler
-                .Handle(Arg.Any<CreateApplication>())
+            _handler
+                .Handle(Arg.Any<ChangeToggleState>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
-            _createApplicationHandler
-                .Handle(Arg.Any<CreateApplication>())
+            _handler
+                .Handle(Arg.Any<ChangeToggleState>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_message) as ObjectResult;
+            _result = await _controller.Post(_applicationId, _environmentId, _toggleId, _message);
         }
 
-        private void ThenTheCommandIsPassedToTheCommandHandler()
+        private void ThenACommandIsPassedToTheCommandHandler()
         {
-            _createApplicationHandler
+            // TODO: add all properties
+            _handler
                 .Received(1)
-                .Handle(Arg.Is<CreateApplication>(command =>
-                    command.Id == _message.Id &&
-                    command.Name == _message.Name &&
-                    command.ExpectedVersion == null));
+                .Handle(Arg.Is<ChangeToggleState>(command =>
+                    command.ApplicationId == _applicationId));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

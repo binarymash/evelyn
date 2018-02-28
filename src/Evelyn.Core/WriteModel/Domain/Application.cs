@@ -56,7 +56,7 @@
             ApplyChange(new ToggleAdded(Id, toggleId, name, key));
         }
 
-        public void FlipToggle(Guid environmentId, Guid toggleId)
+        public void ChangeToggleState(Guid environmentId, Guid toggleId, string value)
         {
             var environment = _environments.FirstOrDefault(e => e.Id == environmentId);
             if (environment == null)
@@ -69,7 +69,12 @@
                 throw new InvalidOperationException($"There is no toggle with the ID {toggleId}");
             }
 
-            ApplyChange(new ToggleFlipped(Id, environmentId, toggleId, !environment.ToggleStates.Any(t => t == toggleId)));
+            if (!bool.TryParse(value, out var parsedValue))
+            {
+                throw new InvalidOperationException("Invalid toggle value");
+            }
+
+            ApplyChange(new ToggleStateChanged(Id, environmentId, toggleId, value));
         }
 
         private void Apply(ApplicationCreated e)
@@ -88,7 +93,7 @@
             _toggles.Add(new Toggle(e.ToggleId, e.Name, e.Key));
         }
 
-        private void Apply(ToggleFlipped @event)
+        private void Apply(ToggleStateChanged @event)
         {
             var environment = _environments.First(e => e.Id == @event.EnvironmentId);
             environment.Toggle(@event.ToggleId);
