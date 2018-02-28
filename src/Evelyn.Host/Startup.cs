@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Host
 {
+    using System.Net;
     using Evelyn.Management.Api.Rest;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,10 @@
                     {
                         es.WithEventPublisher.SynchronouslyInProcess();
                     });
+                    ////wm.WithEventStore.UsingEventStoreDotOrg(es =>
+                    ////{
+                    ////    es.Endpoint = new IPEndPoint(IPAddress.Parse("192.168.1.64"), 2113);
+                    ////});
                 });
                 api.WithReadModel(rm =>
                 {
