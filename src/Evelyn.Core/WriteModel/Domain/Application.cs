@@ -17,7 +17,7 @@
         }
 
         public Application(Guid id, string name)
-            : base()
+            : this()
         {
             ApplyChange(new ApplicationCreated(id, name));
         }
@@ -81,7 +81,6 @@
         private void Apply(ApplicationCreated e)
         {
             Id = e.Id;
-            Version = e.Version;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
         }

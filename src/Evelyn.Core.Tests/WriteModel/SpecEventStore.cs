@@ -7,11 +7,11 @@
     using System.Threading.Tasks;
     using CQRSlite.Events;
 
-    public class SpecEventStorage : IEventStore
+    public class SpecEventStore : IEventStore
     {
         private readonly IEventPublisher _publisher;
 
-        public SpecEventStorage(IEventPublisher publisher, IList<IEvent> events)
+        public SpecEventStore(IEventPublisher publisher, IList<IEvent> events)
         {
             _publisher = publisher;
             Events = events;
