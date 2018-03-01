@@ -14,11 +14,7 @@
 
     public class EventStoreImplementation : IEventStore
     {
-        private readonly EventStoreDotOrgOptions _options;
-
         private readonly IEventStoreConnection _connection;
-
-        private IEventStoreConnectionFactory _connectionFactory;
 
         public EventStoreImplementation(IEventStoreConnectionFactory connectionFactory)
         {
@@ -26,7 +22,9 @@
             _connection.ConnectAsync().Wait();
         }
 
+#pragma warning disable SA1129 // Do not use default value type constructor
         public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = new CancellationToken())
+#pragma warning restore SA1129 // Do not use default value type constructor
         {
             var expectedVersion = events.First().Version - 1;
             var streamName = MapStreamName(events);
@@ -35,7 +33,9 @@
             await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
         }
 
+#pragma warning disable SA1129 // Do not use default value type constructor
         public async Task<IEnumerable<IEvent>> Get(Guid aggregateId, int fromVersion, CancellationToken cancellationToken = new CancellationToken())
+#pragma warning restore SA1129 // Do not use default value type constructor
         {
             var streamEvents = new List<ResolvedEvent>();
 
@@ -52,7 +52,8 @@
                 nextSliceStart = currentSlice.NextEventNumber;
 
                 streamEvents.AddRange(currentSlice.Events);
-            } while (!currentSlice.IsEndOfStream);
+            }
+            while (!currentSlice.IsEndOfStream);
 
             var mappedEvents = streamEvents.Select(MapEvent);
             var eventsToReturn = mappedEvents.Where(e => e.Version > fromVersion);

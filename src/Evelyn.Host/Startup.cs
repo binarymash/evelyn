@@ -22,7 +22,6 @@
         {
             services.AddMvc();
 
-
             services.AddEvelynApi(api =>
             {
                 api.WithWriteModel(wm =>
