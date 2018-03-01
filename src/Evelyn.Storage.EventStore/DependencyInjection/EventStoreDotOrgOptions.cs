@@ -1,10 +1,10 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using System.Net;
+    using Evelyn.Storage.EventStore;
 
     public class EventStoreDotOrgOptions
     {
-        public IPEndPoint Endpoint { get; set; }
+        public IEventStoreConnectionFactory ConnectionFactory { get; set; }
     }
 }

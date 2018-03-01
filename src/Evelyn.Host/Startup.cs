@@ -22,6 +22,7 @@
         {
             services.AddMvc();
 
+
             services.AddEvelynApi(api =>
             {
                 api.WithWriteModel(wm =>
@@ -32,7 +33,7 @@
                     });
                     ////wm.WithEventStore.UsingEventStoreDotOrg(es =>
                     ////{
-                    ////    es.Endpoint = new IPEndPoint(IPAddress.Parse("192.168.1.64"), 2113);
+                    ////    es.ConnectionFactory = new EventStoreConnectionFactory("tcp://192.168.1.64:1113");
                     ////});
                 });
                 api.WithReadModel(rm =>

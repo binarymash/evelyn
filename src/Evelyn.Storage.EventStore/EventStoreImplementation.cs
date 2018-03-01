@@ -15,57 +15,15 @@
     public class EventStoreImplementation : IEventStore
     {
         private readonly EventStoreDotOrgOptions _options;
-        private IEventStoreConnection _connection;
 
-        public EventStoreImplementation(EventStoreDotOrgOptions options)
+        private readonly IEventStoreConnection _connection;
+
+        private IEventStoreConnectionFactory _connectionFactory;
+
+        public EventStoreImplementation(IEventStoreConnectionFactory connectionFactory)
         {
-            _options = options;
-            var connectionSettings = ConnectionSettings.Create()
-                .EnableVerboseLogging()
-                .UseConsoleLogger()
-                .Build();
-
-            //_connection = EventStoreConnection.Create(connectionSettings, "tcp://192.168.1.64:2113");
-            _connection = EventStoreConnection.Create(connectionSettings, new Uri("tcp://192.168.1.64:1113"), "MyConnection");
-
-            _connection.AuthenticationFailed += OnAuthenticationFailed;
-            _connection.Connected += OnConnected;
-            _connection.Disconnected += OnDisconnected;
-            _connection.Reconnecting += OnReconnecting;
-            _connection.Closed += OnClosed;
-            _connection.ErrorOccurred += OnErrorOccurred;
-
+            _connection = connectionFactory.Invoke();
             _connection.ConnectAsync().Wait();
-        }
-
-        private void OnErrorOccurred(object sender, ClientErrorEventArgs clientErrorEventArgs)
-        {
-            //throw new NotImplementedException();
-        }
-
-        private void OnReconnecting(object sender, ClientReconnectingEventArgs clientReconnectingEventArgs)
-        {
-        //    throw new NotImplementedException();
-        }
-
-        private void OnClosed(object sender, ClientClosedEventArgs clientClosedEventArgs)
-        {
-            //throw new NotImplementedException();
-        }
-
-        private void OnDisconnected(object sender, ClientConnectionEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
-
-        private void OnConnected(object sender, ClientConnectionEventArgs clientConnectionEventArgs)
-        {
-            //throw new NotImplementedException();
-        }
-
-        private void OnAuthenticationFailed(object sender, ClientAuthenticationFailedEventArgs clientAuthenticationFailedEventArgs)
-        {
-            //throw new NotImplementedException();
         }
 
         public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = new CancellationToken())
