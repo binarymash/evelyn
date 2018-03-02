@@ -3,23 +3,21 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using global::EventStore.ClientAPI;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
 
     public class EventStoreImplementation : IEventStore
     {
         private readonly IEventStoreConnection _connection;
+        private readonly EventMapper _eventMapper;
 
         public EventStoreImplementation(IEventStoreConnectionFactory connectionFactory)
         {
             _connection = connectionFactory.Invoke();
             _connection.ConnectAsync().Wait();
+            _eventMapper = new EventMapper();
         }
 
 #pragma warning disable SA1129 // Do not use default value type constructor
@@ -28,7 +26,7 @@
         {
             var expectedVersion = events.First().Version - 1;
             var streamName = MapStreamName(events);
-            var eventStoreEvents = MapEvents(events);
+            var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
 
             await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
         }
@@ -55,7 +53,7 @@
             }
             while (!currentSlice.IsEndOfStream);
 
-            var mappedEvents = streamEvents.Select(MapEvent);
+            var mappedEvents = streamEvents.Select(_eventMapper.MapEvent);
             var eventsToReturn = mappedEvents.Where(e => e.Version > fromVersion);
             return eventsToReturn;
         }
@@ -69,28 +67,6 @@
         private string MapStreamName(Guid applicationId)
         {
             return $"application-{applicationId}";
-        }
-
-        private EventData[] MapEvents(IEnumerable<IEvent> events)
-        {
-            return events.Select(MapEvent).ToArray();
-        }
-
-        private EventData MapEvent(IEvent @event)
-        {
-            return new EventData(
-                Guid.NewGuid(),
-                @event.GetType().AssemblyQualifiedName,
-                false,
-                Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event)),
-                null);
-        }
-
-        private IEvent MapEvent(ResolvedEvent @event)
-        {
-            var type = Type.GetType(@event.Event.EventType);
-            var json = Encoding.UTF8.GetString(@event.Event.Data);
-            return JsonConvert.DeserializeObject(json, type) as IEvent;
         }
     }
 }

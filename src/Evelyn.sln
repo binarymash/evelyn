@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Management.Api.Rest.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Storage.EventStore", "Evelyn.Storage.EventStore\Evelyn.Storage.EventStore.csproj", "{A3E06920-F41A-4349-9F52-BFB3E212583A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evelyn.Storage.EventStore.Tests", "Evelyn.Storage.EventStore.Tests\Evelyn.Storage.EventStore.Tests.csproj", "{4D014EA9-4CB0-4CF5-A076-3A3DD143A2CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Storage.EventStore.Tests", "Evelyn.Storage.EventStore.Tests\Evelyn.Storage.EventStore.Tests.csproj", "{4D014EA9-4CB0-4CF5-A076-3A3DD143A2CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
