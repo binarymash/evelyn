@@ -34,7 +34,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         }
 
         [Fact]
-        public void EnvironmentAlreadyExistWithSameId()
+        public void ToggleAlreadyExistWithSameId()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveAddedAToggle())
@@ -45,7 +45,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         }
 
         [Fact]
-        public void EnvironmentAlreadyExistWithSameKey()
+        public void ToggleAlreadyExistWithSameKey()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveAddedAToggle())
@@ -56,7 +56,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         }
 
         [Fact]
-        public void EnvironmentAlreadyExistWithSameName()
+        public void ToggleAlreadyExistWithSameName()
         {
             this.Given(_ => GivenWeHaveCreatedAnApplication())
                 .And(_ => GivenWeHaveAddedAToggle())
@@ -79,7 +79,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _existingToggleName = DataFixture.Create<string>();
             _existingToggleKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(_applicationId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count + 1 });
+            HistoricalEvents.Add(new ToggleAdded(_applicationId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAToggle()
@@ -88,7 +88,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -98,7 +98,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -108,7 +108,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = _existingToggleKey;
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -118,7 +118,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = _existingToggleName;
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 

@@ -5,11 +5,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel.Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
-    using CQRSlite.Snapshotting;
     using FluentAssertions;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
@@ -18,12 +18,10 @@
         where TCommand : ICommand
     {
         private dynamic _handler;
-        private Snapshot _snapshot;
-        private SpecSnapShotStorage _snapshotStore;
         private SpecEventPublisher _eventPublisher;
-        private SpecEventStorage _eventStorage;
+        private SpecEventStore _eventStore;
 
-        public CommandHandlerSpecs()
+        protected CommandHandlerSpecs()
         {
             HistoricalEvents = new List<IEvent>();
             DataFixture = new Fixture();
@@ -47,14 +45,13 @@
 
         protected void WhenWeHandle(TCommand command)
         {
-            _eventPublisher = new SpecEventPublisher();
-            _eventStorage = new SpecEventStorage(_eventPublisher, HistoricalEvents);
-            _snapshotStore = new SpecSnapShotStorage(_snapshot);
+            var aggregateId = ExtractAggregateId(command);
 
-            var snapshotStrategy = new DefaultSnapshotStrategy();
-            var repository = new SnapshotRepository(_snapshotStore, snapshotStrategy, new Repository(_eventStorage), _eventStorage);
+            _eventPublisher = new SpecEventPublisher();
+            _eventStore = new SpecEventStore(_eventPublisher, HistoricalEvents);
+            var repository = new Repository(_eventStore);
             Session = new Session(repository);
-            Aggregate = GetAggregate().Result;
+            Aggregate = GetAggregate(aggregateId).Result;
 
             _handler = BuildHandler();
 
@@ -80,9 +77,8 @@
                 ThrownException = ex;
             }
 
-            _snapshot = _snapshotStore.Snapshot;
             PublishedEvents = _eventPublisher.PublishedEvents;
-            EventDescriptors = _eventStorage.Events;
+            EventDescriptors = _eventStore.Events;
         }
 
         protected void ThenNoEventIsPublished()
@@ -101,11 +97,37 @@
             ThrownException.Message.Should().Be(expectedMessage);
         }
 
-        private async Task<TAggregate> GetAggregate()
+        private Guid ExtractAggregateId(TCommand command)
+        {
+            if (command is CreateApplication)
+            {
+                return (command as CreateApplication).Id;
+            }
+
+            if (command is AddEnvironment)
+            {
+                return (command as AddEnvironment).ApplicationId;
+            }
+
+            if (command is AddToggle)
+            {
+                return (command as AddToggle).ApplicationId;
+            }
+
+            if (command is ChangeToggleState)
+            {
+                return (command as ChangeToggleState).ApplicationId;
+            }
+
+            return Guid.Empty;
+        }
+
+        private async Task<TAggregate> GetAggregate(Guid id)
         {
             try
             {
-                return await Session.Get<TAggregate>(Guid.Empty);
+                var aggregate = await Session.Get<TAggregate>(id);
+                return aggregate;
             }
             catch (AggregateNotFoundException)
             {

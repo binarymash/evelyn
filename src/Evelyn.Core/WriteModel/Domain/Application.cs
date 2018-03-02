@@ -13,11 +13,12 @@
 
         public Application()
         {
+            Version = -1;
         }
 
         public Application(Guid id, string name)
+            : this()
         {
-            Id = id;
             ApplyChange(new ApplicationCreated(id, name));
         }
 
@@ -79,6 +80,7 @@
 
         private void Apply(ApplicationCreated e)
         {
+            Id = e.Id;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
         }

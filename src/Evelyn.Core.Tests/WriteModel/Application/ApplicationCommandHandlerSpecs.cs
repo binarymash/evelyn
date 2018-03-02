@@ -19,7 +19,7 @@
         {
             var applicationCreated = DataFixture.Create<ApplicationCreated>();
             applicationCreated.Id = id;
-            applicationCreated.Version = HistoricalEvents.Count + 1;
+            applicationCreated.Version = HistoricalEvents.Count;
 
             HistoricalEvents.Add(applicationCreated);
         }
@@ -29,7 +29,7 @@
             var environmentAdded = DataFixture.Create<EnvironmentAdded>();
             environmentAdded.Id = applicationId;
             environmentAdded.EnvironmentId = environmentId;
-            environmentAdded.Version = HistoricalEvents.Count + 1;
+            environmentAdded.Version = HistoricalEvents.Count;
 
             HistoricalEvents.Add(environmentAdded);
         }
