@@ -44,7 +44,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void AggregateHasNoEvents()
+        public void GetAggregateThatDoesntHaveEvents()
         {
             this.Given(_ => GivenAnAggregateHasNoEvents())
                 .When(_ => WhenWeGetAllEventsForTheAggregate())
@@ -53,7 +53,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void AggregateHasEvents()
+        public void SetAndGetAggregateEvents()
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
@@ -69,7 +69,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void AggregateHasMoreEventsThanTheSliceSize()
+        public void SetAndGetAggregateEventsThatExceedSliceSize()
         {
             this.Given(_ => GivenWeHave300EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
@@ -85,7 +85,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void PersistedEventStreamName()
+        public void EventStreamName()
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
@@ -94,7 +94,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void PersistedEventTypes()
+        public void EventTypePersistence()
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
@@ -103,7 +103,7 @@ namespace Evelyn.Storage.EventStore.Tests
         }
 
         [Fact]
-        public void PersistedEventIDsAreUnique()
+        public void EventIDPersistence()
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
