@@ -11,12 +11,14 @@ namespace Evelyn.Storage.EventStore.Tests
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.Events;
+    using Core.WriteModel;
     using CQRSlite.Events;
     using Evelyn.Storage.EventStore;
     using FluentAssertions;
     using NetCoreES::EventStore.ClientAPI;
     using TestStack.BDDfy;
     using Xunit;
+    using RecordedEvent = EmbeddedES::EventStore.ClientAPI.RecordedEvent;
 
     public class EventStoreImplementationSpecs : IDisposable
     {
@@ -32,7 +34,9 @@ namespace Evelyn.Storage.EventStore.Tests
 
         public EventStoreImplementationSpecs()
         {
+            EnsureCoreAssemblyIsLoaded();
             BootstrapEmbeddedEventStore();
+
             _eventStore = new EventStoreImplementation(new EventStoreConnectionFactory());
             _fixture = new Fixture();
             _aggregateId = _fixture.Create<Guid>();
@@ -80,9 +84,41 @@ namespace Evelyn.Storage.EventStore.Tests
                 .BDDfy();
         }
 
+        [Fact]
+        public void PersistedEventStreamName()
+        {
+            this.Given(_ => GivenWeHave3EventsForAnAggregate())
+                .When(_ => WhenWeSaveTheseEventsToTheStore())
+                .Then(_ => ThenTheStoredEventStreamIsNamedByApplicationAggregateRootId())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void PersistedEventTypes()
+        {
+            this.Given(_ => GivenWeHave3EventsForAnAggregate())
+                .When(_ => WhenWeSaveTheseEventsToTheStore())
+                .And(_ => ThenTheStoredEventTypesAreTheFullNameOfTheEvent())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void PersistedEventIDsAreUnique()
+        {
+            this.Given(_ => GivenWeHave3EventsForAnAggregate())
+                .When(_ => WhenWeSaveTheseEventsToTheStore())
+                .And(_ => ThenTheStoredEventsAllHaveDifferentIDs())
+                .BDDfy();
+        }
+
         public void Dispose()
         {
             TearDownEmbeddedEventStore();
+        }
+
+        private void EnsureCoreAssemblyIsLoaded()
+        {
+            WriteModelAssemblyMarker assemblyMarker = null;
         }
 
         private void BootstrapEmbeddedEventStore()
@@ -108,18 +144,28 @@ namespace Evelyn.Storage.EventStore.Tests
                     throw new InvalidOperationException("Waited too long (20 seconds) for EventStore node to become master.");
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(50);
             }
 
             stopwatch.Stop();
 
-            _managementConnection = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedEventStoreConnection.Create(_server);
+            var connectionSettings = EmbeddedES::EventStore.ClientAPI.ConnectionSettings
+                .Create()
+                .SetDefaultUserCredentials(new EmbeddedES::EventStore.ClientAPI.SystemData.UserCredentials("admin", "changeit"))
+                .Build();
+
+            _managementConnection = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedEventStoreConnection.Create(_server, connectionSettings);
             _managementConnection.ConnectAsync().GetAwaiter().GetResult();
         }
 
         private void TearDownEmbeddedEventStore()
         {
-            _managementConnection?.Dispose();
+            _managementConnection?.Close();
+
+            if (!_server.Stop(TimeSpan.FromSeconds(30), true, true))
+            {
+                throw new Exception("Failed to stop embedded eventstore server");
+            }
         }
 
         private void GivenAnAggregateHasNoEvents()
@@ -232,6 +278,7 @@ namespace Evelyn.Storage.EventStore.Tests
             _returnedEvents.Should().HaveCount(expectedNumberOfResults);
 
             var addedEventIndex = startPosition;
+
             for (var returnedEventIndex = 0; returnedEventIndex < _returnedEvents.Count; returnedEventIndex++)
             {
                 ThenEventsMatch(_returnedEvents[returnedEventIndex], _eventsAddedToStore[addedEventIndex]);
@@ -242,6 +289,39 @@ namespace Evelyn.Storage.EventStore.Tests
         private void ThenEventsMatch(IEvent event1, IEvent event2)
         {
             event1.Should().BeEquivalentTo(event2);
+        }
+
+        private async Task ThenTheStoredEventStreamIsNamedByApplicationAggregateRootId()
+        {
+            var expectedStreamName = $"application-{_aggregateId}";
+            var result = await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
+            result.Events.Should().HaveCount(_eventsAddedToStore.Count);
+        }
+
+        private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetApplicationAggregateRootStream(Guid id)
+        {
+            var expectedStreamName = $"application-{_aggregateId}";
+            return await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
+        }
+
+        private async Task ThenTheStoredEventTypesAreTheFullNameOfTheEvent()
+        {
+            var events = (await GetApplicationAggregateRootStream(_aggregateId)).Events;
+            for (var i = 0; i < _eventsAddedToStore.Count; i++)
+            {
+                ThenTheStoredEventTypeIsTheFullNameOfTheEvent(events[i].Event, _eventsAddedToStore[i].GetType());
+            }
+        }
+
+        private void ThenTheStoredEventTypeIsTheFullNameOfTheEvent(RecordedEvent @event, Type type)
+        {
+            @event.EventType.Should().Be(type.FullName);
+        }
+
+        private async Task ThenTheStoredEventsAllHaveDifferentIDs()
+        {
+            var events = (await GetApplicationAggregateRootStream(_aggregateId)).Events;
+            events.Select(e => e.Event.EventId).Should().OnlyHaveUniqueItems();
         }
 
         private class EventStoreConnectionFactory : IEventStoreConnectionFactory
