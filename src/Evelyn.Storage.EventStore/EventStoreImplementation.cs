@@ -10,6 +10,9 @@
 
     public class EventStoreImplementation : IEventStore
     {
+        private const int SliceSize = 200;
+        private const bool ResolveLinkTos = false;
+
         private readonly IEventStoreConnection _connection;
         private readonly EventMapper _eventMapper;
 
@@ -24,7 +27,7 @@
         public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = new CancellationToken())
 #pragma warning restore SA1129 // Do not use default value type constructor
         {
-            var expectedVersion = events.First().Version - 1;
+            var expectedVersion = MapExpectedVersion(events);
             var streamName = MapStreamName(events);
             var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
 
@@ -38,16 +41,17 @@
             var streamEvents = new List<ResolvedEvent>();
 
             StreamEventsSlice currentSlice;
-            var nextSliceStart = (long)StreamPosition.Start;
+            var startPosition = (long)fromVersion + 1;
+
             do
             {
                 currentSlice = await _connection.ReadStreamEventsForwardAsync(
                     MapStreamName(aggregateId),
-                    nextSliceStart,
-                    200,
-                    false);
+                    startPosition,
+                    SliceSize,
+                    ResolveLinkTos);
 
-                nextSliceStart = currentSlice.NextEventNumber;
+                startPosition = currentSlice.NextEventNumber;
 
                 streamEvents.AddRange(currentSlice.Events);
             }
@@ -58,10 +62,14 @@
             return eventsToReturn;
         }
 
+        private long MapExpectedVersion(IEnumerable<IEvent> events)
+        {
+            return events.First().Version - 1;
+        }
+
         private string MapStreamName(IEnumerable<IEvent> events)
         {
-            var @event = events.First();
-            return $"application-{@event.Id}";
+            return $"application-{events.First().Id}";
         }
 
         private string MapStreamName(Guid applicationId)

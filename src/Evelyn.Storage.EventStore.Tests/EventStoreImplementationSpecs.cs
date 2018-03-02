@@ -23,7 +23,6 @@ namespace Evelyn.Storage.EventStore.Tests
     public class EventStoreImplementationSpecs : IDisposable
     {
         private readonly Fixture _fixture;
-        private readonly NetCoreES::EventStore.ClientAPI.IEventStoreConnection _connection;
         private readonly EventStoreImplementation _eventStore;
         private readonly Guid _aggregateId;
         private readonly List<IEvent> _eventsAddedToStore;
@@ -118,7 +117,7 @@ namespace Evelyn.Storage.EventStore.Tests
 
         private void EnsureCoreAssemblyIsLoaded()
         {
-            WriteModelAssemblyMarker assemblyMarker = null;
+            System.Diagnostics.Trace.WriteLine($"Let's ensure that the core assembly is loaded by referencing {typeof(WriteModelAssemblyMarker).FullName}");
         }
 
         private void BootstrapEmbeddedEventStore()
