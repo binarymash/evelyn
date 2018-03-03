@@ -3,9 +3,10 @@
     using System;
     using CQRSlite.Commands;
 
-    public class AddEnvironment : ICommand
+    public class AddEnvironment : Command
     {
-        public AddEnvironment(Guid applicationId, Guid id, string name, int? expectedVersion = null)
+        public AddEnvironment(string userId, Guid applicationId, Guid id, string name, int? expectedVersion = null)
+            : base(userId)
         {
             Id = id;
             Name = name;

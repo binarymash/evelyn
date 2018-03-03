@@ -11,6 +11,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
     public class CreateApplicationSpecs : ApplicationCommandHandlerSpecs<CreateApplication>
     {
+        private string _accountId;
         private Guid _applicationId;
         private string _applicationName;
 
@@ -43,8 +44,9 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         {
             _applicationId = DataFixture.Create<Guid>();
             _applicationName = DataFixture.Create<string>();
+            _accountId = DataFixture.Create<string>();
 
-            var command = new CreateApplication(_applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new CreateApplication(UserId, _accountId, _applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 

@@ -4,8 +4,8 @@
 
     public class EnvironmentAdded : ApplicationEvent
     {
-        public EnvironmentAdded(Guid applicationId, Guid environmentId, string name)
-            : base(applicationId)
+        public EnvironmentAdded(string userId, Guid applicationId, Guid environmentId, string name)
+            : base(userId, applicationId)
         {
             EnvironmentId = environmentId;
             Name = name;

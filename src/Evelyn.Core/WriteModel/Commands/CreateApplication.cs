@@ -1,14 +1,15 @@
 ﻿namespace Evelyn.Core.WriteModel.Commands
 {
     using System;
-    using CQRSlite.Commands;
 
-    public class CreateApplication : ICommand
+    public class CreateApplication : Command
     {
-        public CreateApplication(Guid id, string name, int? expectedVersion = null)
+        public CreateApplication(string userId, string accountId, Guid id, string name, int? expectedVersion = null)
+            : base(userId)
         {
             Id = id;
             Name = name;
+            AccountId = accountId;
             ExpectedVersion = expectedVersion;
         }
 
@@ -17,5 +18,7 @@
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string AccountId { get; set; }
     }
 }

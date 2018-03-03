@@ -4,12 +4,15 @@
 
     public class ApplicationCreated : ApplicationEvent
     {
-        public ApplicationCreated(Guid id, string name)
-            : base(id)
+        public ApplicationCreated(string userId, string accountId, Guid applicationId, string name)
+            : base(userId, applicationId)
         {
+            AccountId = accountId;
             Name = name;
             Version = -1;
         }
+
+        public string AccountId { get; set; }
 
         public string Name { get; set; }
     }

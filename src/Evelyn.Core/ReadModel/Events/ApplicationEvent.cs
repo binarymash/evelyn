@@ -5,10 +5,13 @@
 
     public abstract class ApplicationEvent : IEvent
     {
-        public ApplicationEvent(Guid id)
+        protected ApplicationEvent(string userId, Guid applicationId)
         {
-            Id = id;
+            UserId = userId;
+            Id = applicationId;
         }
+
+        public string UserId { get; set; }
 
         public Guid Id { get; set; }
 

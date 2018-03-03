@@ -16,13 +16,13 @@
             Version = -1;
         }
 
-        public Application(Guid id, string name)
+        public Application(string userId, string accountId, Guid applicationId, string name)
             : this()
         {
-            ApplyChange(new ApplicationCreated(id, name));
+            ApplyChange(new ApplicationCreated(userId, accountId, applicationId, name));
         }
 
-        public void AddEnvironment(Guid environmentId, string name)
+        public void AddEnvironment(string userId, Guid environmentId, string name)
         {
             if (_environments.Any(e => e.Id == environmentId))
             {
@@ -34,10 +34,10 @@
                 throw new InvalidOperationException($"There is already an environment with the name {name}");
             }
 
-            ApplyChange(new EnvironmentAdded(Id, environmentId, name));
+            ApplyChange(new EnvironmentAdded(userId, Id, environmentId, name));
         }
 
-        public void AddToggle(Guid toggleId, string name, string key)
+        public void AddToggle(string userId, Guid toggleId, string name, string key)
         {
             if (_toggles.Any(t => t.Id == toggleId))
             {
@@ -54,10 +54,10 @@
                 throw new InvalidOperationException($"There is already a toggle with the name {name}");
             }
 
-            ApplyChange(new ToggleAdded(Id, toggleId, name, key));
+            ApplyChange(new ToggleAdded(userId, Id, toggleId, name, key));
         }
 
-        public void ChangeToggleState(Guid environmentId, Guid toggleId, string value)
+        public void ChangeToggleState(string userId, Guid environmentId, Guid toggleId, string value)
         {
             var environment = _environments.FirstOrDefault(e => e.Id == environmentId);
             if (environment == null)
@@ -75,7 +75,7 @@
                 throw new InvalidOperationException("Invalid toggle value");
             }
 
-            ApplyChange(new ToggleStateChanged(Id, environmentId, toggleId, value));
+            ApplyChange(new ToggleStateChanged(userId, Id, environmentId, toggleId, value));
         }
 
         private void Apply(ApplicationCreated e)

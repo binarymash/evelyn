@@ -4,8 +4,8 @@
 
     public class ToggleAdded : ApplicationEvent
     {
-        public ToggleAdded(Guid id, Guid toggleId, string name, string key)
-            : base(id)
+        public ToggleAdded(string userId, Guid applicationId, Guid toggleId, string name, string key)
+            : base(userId, applicationId)
         {
             ToggleId = toggleId;
             Name = name;

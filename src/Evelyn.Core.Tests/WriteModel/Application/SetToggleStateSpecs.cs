@@ -88,12 +88,12 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _toggleName = DataFixture.Create<string>();
             _toggleKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(_applicationId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _applicationId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveChangedTheToggleState()
         {
-            HistoricalEvents.Add(new ToggleStateChanged(_applicationId, _environmentId, _toggleId, DataFixture.Create<bool>().ToString()) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleStateChanged(UserId, _applicationId, _environmentId, _toggleId, DataFixture.Create<bool>().ToString()) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
@@ -101,7 +101,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _toggleId = DataFixture.Create<Guid>();
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -109,7 +109,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         {
             _toggleState = DataFixture.Create<string>();
 
-            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -117,7 +117,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         {
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(_applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _applicationId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
