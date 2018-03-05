@@ -2,8 +2,8 @@
 {
     public abstract class EvelynController : Microsoft.AspNetCore.Mvc.Controller
     {
-        protected string UserId => "AnonymousUser";
+        protected string UserId => Constants.AnonymousUser;
 
-        protected string AccountId => "DefaultAccount";
+        protected string AccountId => Constants.DefaultAccount;
     }
 }

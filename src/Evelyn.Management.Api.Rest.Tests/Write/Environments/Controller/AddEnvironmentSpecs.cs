@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -83,7 +84,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message) as ObjectResult;
+            _result = await _controller.Post(_applicationId, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
@@ -91,6 +92,7 @@
             _handler
                 .Received(1)
                 .Handle(Arg.Is<AddEnvironment>(command =>
+                    command.UserId == Constants.AnonymousUser &&
                     command.ApplicationId == _applicationId &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&

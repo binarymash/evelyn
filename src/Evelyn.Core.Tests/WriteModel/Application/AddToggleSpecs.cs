@@ -28,6 +28,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsToggleAdded())
+                .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .And(_ => ThenTheKeyIsSaved())
                 .BDDfy();
@@ -125,6 +126,11 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void ThenThePublishedEventIsToggleAdded()
         {
             PublishedEvents.First().Should().BeOfType<ToggleAdded>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((ToggleAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
         }
 
         private void ThenTheNameIsSaved()

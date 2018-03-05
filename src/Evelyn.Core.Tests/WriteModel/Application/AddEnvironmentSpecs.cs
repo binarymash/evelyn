@@ -26,6 +26,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
                 .When(_ => WhenWeAddAnEnvironment())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsEnvironmentAdded())
+                .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .BDDfy();
         }
@@ -96,6 +97,11 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void ThenThePublishedEventIsEnvironmentAdded()
         {
             PublishedEvents.First().Should().BeOfType<EnvironmentAdded>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((EnvironmentAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
         }
 
         private void ThenTheNameIsSaved()

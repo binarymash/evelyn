@@ -61,6 +61,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
                 .And(_ => GivenWeHaveAddedAToggle())
                 .When(_ => WhenWeChangeTheToggleState())
                 .Then(_ => ThenThePublishedEventIsToggledValueChanged())
+                .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheApplicationIdIsSaved())
                 .And(_ => ThenTheEnvironmentIdIsSaved())
                 .And(_ => ThenTheToggleIdIsSaved())
@@ -91,11 +92,6 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             HistoricalEvents.Add(new ToggleAdded(UserId, _applicationId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count });
         }
 
-        private void GivenWeHaveChangedTheToggleState()
-        {
-            HistoricalEvents.Add(new ToggleStateChanged(UserId, _applicationId, _environmentId, _toggleId, DataFixture.Create<bool>().ToString()) { Version = HistoricalEvents.Count });
-        }
-
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
         {
             _toggleId = DataFixture.Create<Guid>();
@@ -121,11 +117,6 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             WhenWeHandle(command);
         }
 
-        private void ThenAnApplicationDoesNotExistExceptionIsThrown()
-        {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no application with the ID {_applicationId}");
-        }
-
         private void ThenAnEnvironmentDoesNotExistExceptionIsThrown()
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no environment with the ID {_environmentId}");
@@ -144,6 +135,11 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void ThenThePublishedEventIsToggledValueChanged()
         {
             PublishedEvents.First().Should().BeOfType<ToggleStateChanged>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((ToggleStateChanged)PublishedEvents.First()).UserId.Should().Be(UserId);
         }
 
         private void ThenTheApplicationIdIsSaved()

@@ -18,9 +18,11 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         [Fact]
         public void ApplicationDoesNotExist()
         {
-            this.When(_ => WhenACreateApplicationCommand())
+            this.When(_ => WhenWeCreateAnApplication())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsApplicationCreated())
+                .And(_ => ThenTheUserIdIsSaved())
+                .And(_ => ThenTheAccountIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .BDDfy();
         }
@@ -40,7 +42,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         ////    GivenWeHaveCreatedAnApplicationWith(_applicationId);
         ////}
 
-        private void WhenACreateApplicationCommand()
+        private void WhenWeCreateAnApplication()
         {
             _applicationId = DataFixture.Create<Guid>();
             _applicationName = DataFixture.Create<string>();
@@ -53,6 +55,16 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         private void ThenThePublishedEventIsApplicationCreated()
         {
             PublishedEvents.First().Should().BeOfType<ApplicationCreated>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((ApplicationCreated)PublishedEvents.First()).UserId.Should().Be(UserId);
+        }
+
+        private void ThenTheAccountIdIsSaved()
+        {
+            ((ApplicationCreated)PublishedEvents.First()).AccountId.Should().Be(_accountId);
         }
 
         private void ThenTheNameIsSaved()
