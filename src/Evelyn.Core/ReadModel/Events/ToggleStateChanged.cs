@@ -4,8 +4,8 @@
 
     public class ToggleStateChanged : ApplicationEvent
     {
-        public ToggleStateChanged(Guid id, Guid environmentId, Guid toggleId, string value)
-            : base(id)
+        public ToggleStateChanged(string userId, Guid applicationId, Guid environmentId, Guid toggleId, string value)
+            : base(userId, applicationId)
         {
             EnvironmentId = environmentId;
             ToggleId = toggleId;

@@ -10,6 +10,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -81,7 +82,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_message) as ObjectResult;
+            _result = await _controller.Post(_message);
         }
 
         private void ThenTheCommandIsPassedToTheCommandHandler()
@@ -89,6 +90,8 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Applications.Controller
             _createApplicationHandler
                 .Received(1)
                 .Handle(Arg.Is<CreateApplication>(command =>
+                    command.UserId == Constants.AnonymousUser &&
+                    command.AccountId == Constants.DefaultAccount &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
                     command.ExpectedVersion == null));

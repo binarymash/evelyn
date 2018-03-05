@@ -26,6 +26,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
                 .When(_ => WhenWeAddAnEnvironment())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsEnvironmentAdded())
+                .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .BDDfy();
         }
@@ -63,7 +64,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _existingEnvironmentId = DataFixture.Create<Guid>();
             _existingEnvironmentName = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new EnvironmentAdded(_applicationId, _existingEnvironmentId, _existingEnvironmentName) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _applicationId, _existingEnvironmentId, _existingEnvironmentName) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAnEnvironment()
@@ -71,7 +72,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newEnvironmentId = DataFixture.Create<Guid>();
             _newEnvironmentName = DataFixture.Create<string>();
 
-            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -80,7 +81,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newEnvironmentId = _existingEnvironmentId;
             _newEnvironmentName = DataFixture.Create<string>();
 
-            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -89,13 +90,18 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newEnvironmentId = DataFixture.Create<Guid>();
             _newEnvironmentName = _existingEnvironmentName;
 
-            var command = new AddEnvironment(_applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _applicationId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
         private void ThenThePublishedEventIsEnvironmentAdded()
         {
             PublishedEvents.First().Should().BeOfType<EnvironmentAdded>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((EnvironmentAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
         }
 
         private void ThenTheNameIsSaved()

@@ -3,9 +3,10 @@
     using System;
     using CQRSlite.Commands;
 
-    public class AddToggle : ICommand
+    public class AddToggle : Command
     {
-        public AddToggle(Guid applicationId, Guid id, string name, string key, int? expectedVersion = null)
+        public AddToggle(string userId, Guid applicationId, Guid id, string name, string key, int? expectedVersion = null)
+            : base(userId)
         {
             Id = id;
             Name = name;

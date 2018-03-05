@@ -21,7 +21,7 @@
 
         public async Task Handle(CreateApplication message)
         {
-            var application = new Application(message.Id, message.Name);
+            var application = new Application(message.UserId, message.AccountId, message.Id, message.Name);
             await _session.Add(application);
             await _session.Commit();
         }
@@ -29,21 +29,21 @@
         public async Task Handle(AddEnvironment message)
         {
             var application = await _session.Get<Application>(message.ApplicationId, message.ExpectedVersion);
-            application.AddEnvironment(message.Id, message.Name);
+            application.AddEnvironment(message.UserId, message.Id, message.Name);
             await _session.Commit();
         }
 
         public async Task Handle(AddToggle message)
         {
             var application = await _session.Get<Application>(message.ApplicationId, message.ExpectedVersion);
-            application.AddToggle(message.Id, message.Name, message.Key);
+            application.AddToggle(message.UserId, message.Id, message.Name, message.Key);
             await _session.Commit();
         }
 
         public async Task Handle(ChangeToggleState message)
         {
             var application = await _session.Get<Application>(message.ApplicationId, message.ExpectedVersion);
-            application.ChangeToggleState(message.EnvironmentId, message.ToggleId, message.Value);
+            application.ChangeToggleState(message.UserId, message.EnvironmentId, message.ToggleId, message.Value);
             await _session.Commit();
         }
     }

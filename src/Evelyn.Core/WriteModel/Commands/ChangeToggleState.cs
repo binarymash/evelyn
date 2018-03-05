@@ -3,9 +3,10 @@
     using System;
     using CQRSlite.Commands;
 
-    public class ChangeToggleState : ICommand
+    public class ChangeToggleState : Command
     {
-        public ChangeToggleState(Guid applicationId, Guid environmentId, Guid toggleId, string value, int? expectedVersion = null)
+        public ChangeToggleState(string userId, Guid applicationId, Guid environmentId, Guid toggleId, string value, int? expectedVersion = null)
+            : base(userId)
         {
             ApplicationId = applicationId;
             EnvironmentId = environmentId;

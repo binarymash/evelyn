@@ -25,7 +25,10 @@
         {
             HistoricalEvents = new List<IEvent>();
             DataFixture = new Fixture();
+            UserId = DataFixture.Create<string>();
         }
+
+        protected string UserId { get; set; }
 
         protected Fixture DataFixture { get; }
 

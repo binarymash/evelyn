@@ -28,6 +28,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsToggleAdded())
+                .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .And(_ => ThenTheKeyIsSaved())
                 .BDDfy();
@@ -79,7 +80,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _existingToggleName = DataFixture.Create<string>();
             _existingToggleKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(_applicationId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _applicationId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAToggle()
@@ -88,7 +89,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -98,7 +99,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -108,7 +109,7 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = DataFixture.Create<string>();
             _newToggleKey = _existingToggleKey;
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -118,13 +119,18 @@ namespace Evelyn.Core.Tests.WriteModel.Application
             _newToggleName = _existingToggleName;
             _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(_applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _applicationId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
         private void ThenThePublishedEventIsToggleAdded()
         {
             PublishedEvents.First().Should().BeOfType<ToggleAdded>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((ToggleAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
         }
 
         private void ThenTheNameIsSaved()

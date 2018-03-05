@@ -12,7 +12,7 @@
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class Controller : Microsoft.AspNetCore.Mvc.Controller
+    public class Controller : EvelynController
     {
         private readonly ICommandHandler<Core.WriteModel.Commands.AddToggle> _handler;
 
@@ -27,7 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddToggle(applicationId, message.Id, message.Name, message.Key, message.ExpectedVersion);
+                var command = new Core.WriteModel.Commands.AddToggle(UserId, applicationId, message.Id, message.Name, message.Key, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

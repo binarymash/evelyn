@@ -122,12 +122,12 @@
 
         private async Task WhenWeGetAllTheApplications()
         {
-            _result = await _controller.Get() as ObjectResult;
+            _result = await _controller.Get();
         }
 
         private async Task WhenWeGetTheApplication()
         {
-            _result = await _controller.Get(_idOfApplicationToGet) as ObjectResult;
+            _result = await _controller.Get(_idOfApplicationToGet);
         }
 
         private void ThenStatusCode200IsReturned()

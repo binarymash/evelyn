@@ -11,15 +11,18 @@ namespace Evelyn.Core.Tests.WriteModel.Application
 
     public class CreateApplicationSpecs : ApplicationCommandHandlerSpecs<CreateApplication>
     {
+        private string _accountId;
         private Guid _applicationId;
         private string _applicationName;
 
         [Fact]
         public void ApplicationDoesNotExist()
         {
-            this.When(_ => WhenACreateApplicationCommand())
+            this.When(_ => WhenWeCreateAnApplication())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsApplicationCreated())
+                .And(_ => ThenTheUserIdIsSaved())
+                .And(_ => ThenTheAccountIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .BDDfy();
         }
@@ -39,18 +42,29 @@ namespace Evelyn.Core.Tests.WriteModel.Application
         ////    GivenWeHaveCreatedAnApplicationWith(_applicationId);
         ////}
 
-        private void WhenACreateApplicationCommand()
+        private void WhenWeCreateAnApplication()
         {
             _applicationId = DataFixture.Create<Guid>();
             _applicationName = DataFixture.Create<string>();
+            _accountId = DataFixture.Create<string>();
 
-            var command = new CreateApplication(_applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
+            var command = new CreateApplication(UserId, _accountId, _applicationId, _applicationName) { ExpectedVersion = HistoricalEvents.Count };
             WhenWeHandle(command);
         }
 
         private void ThenThePublishedEventIsApplicationCreated()
         {
             PublishedEvents.First().Should().BeOfType<ApplicationCreated>();
+        }
+
+        private void ThenTheUserIdIsSaved()
+        {
+            ((ApplicationCreated)PublishedEvents.First()).UserId.Should().Be(UserId);
+        }
+
+        private void ThenTheAccountIdIsSaved()
+        {
+            ((ApplicationCreated)PublishedEvents.First()).AccountId.Should().Be(_accountId);
         }
 
         private void ThenTheNameIsSaved()

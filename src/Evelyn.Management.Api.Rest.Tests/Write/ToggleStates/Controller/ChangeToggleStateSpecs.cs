@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -96,7 +97,11 @@
             _handler
                 .Received(1)
                 .Handle(Arg.Is<ChangeToggleState>(command =>
-                    command.ApplicationId == _applicationId));
+                    command.UserId == Constants.AnonymousUser &&
+                    command.ApplicationId == _applicationId &&
+                    command.EnvironmentId == _environmentId &&
+                    command.ToggleId == _toggleId &&
+                    command.Value == _message.State));
         }
 
         private void ThenA202AcceptedStatusIsReturned()
