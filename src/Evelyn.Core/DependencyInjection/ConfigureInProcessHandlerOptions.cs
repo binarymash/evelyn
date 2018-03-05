@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.ProjectDetails;
+    using Evelyn.Core.ReadModel.ProjectList;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using Evelyn.Core.WriteModel.Handlers;
     using Microsoft.Extensions.Options;
@@ -14,9 +14,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.Handlers.AddRange(new[]
             {
-                typeof(ApplicationCommandHandler),
-                typeof(ApplicationDetailsHandler),
-                typeof(ApplicationListHandler),
+                typeof(ProjectCommandHandler),
+                typeof(ProjectDetailsHandler),
+                typeof(ProjectListHandler),
                 typeof(EnvironmentDetailsHandler),
                 typeof(ToggleDetailsHandler)
             });

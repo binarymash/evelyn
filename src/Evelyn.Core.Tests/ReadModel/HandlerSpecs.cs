@@ -2,12 +2,12 @@
 {
     using System;
     using AutoFixture;
+    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.ProjectList;
     using Core.ReadModel.ToggleDetails;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
 
@@ -19,14 +19,14 @@
         {
             DataFixture = new Fixture();
 
-            ApplicationsStore = new InMemoryDatabase<ApplicationListDto>();
-            ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
+            ProjectsStore = new InMemoryDatabase<ProjectListDto>();
+            ProjectDetailsStore = new InMemoryDatabase<ProjectDetailsDto>();
             EnvironmentDetailsStore = new InMemoryDatabase<EnvironmentDetailsDto>();
             ToggleDetailsStore = new InMemoryDatabase<ToggleDetailsDto>();
 
             ReadModelFacade = new DatabaseReadModelFacade(
-                ApplicationsStore,
-                ApplicationDetailsStore,
+                ProjectsStore,
+                ProjectDetailsStore,
                 EnvironmentDetailsStore,
                 ToggleDetailsStore);
 
@@ -39,9 +39,9 @@
 
         protected IReadModelFacade ReadModelFacade { get; }
 
-        protected IDatabase<ApplicationListDto> ApplicationsStore { get; }
+        protected IDatabase<ProjectListDto> ProjectsStore { get; }
 
-        protected IDatabase<ApplicationDetailsDto> ApplicationDetailsStore { get; }
+        protected IDatabase<ProjectDetailsDto> ProjectDetailsStore { get; }
 
         protected IDatabase<EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
 

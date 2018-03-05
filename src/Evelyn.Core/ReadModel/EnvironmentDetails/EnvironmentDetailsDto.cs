@@ -4,16 +4,16 @@
 
     public class EnvironmentDetailsDto
     {
-        public EnvironmentDetailsDto(Guid applicationId, Guid environmentId, string name, DateTimeOffset created)
+        public EnvironmentDetailsDto(Guid projectId, Guid environmentId, string name, DateTimeOffset created)
         {
             Id = environmentId;
             Name = name;
             Created = created;
             LastModified = created;
-            ApplicationId = applicationId;
+            ProjectId = projectId;
         }
 
-        public Guid ApplicationId { get; private set; }
+        public Guid ProjectId { get; private set; }
 
         public Guid Id { get; private set; }
 

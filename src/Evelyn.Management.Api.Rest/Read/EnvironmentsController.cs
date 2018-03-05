@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/environments")]
+    [Route("api/projects/{projectId}/environments")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class EnvironmentsController : Controller
     {

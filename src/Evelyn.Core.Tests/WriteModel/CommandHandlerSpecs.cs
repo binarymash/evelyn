@@ -102,24 +102,24 @@
 
         private Guid ExtractAggregateId(TCommand command)
         {
-            if (command is CreateApplication)
+            if (command is CreateProject)
             {
-                return (command as CreateApplication).Id;
+                return (command as CreateProject).Id;
             }
 
             if (command is AddEnvironment)
             {
-                return (command as AddEnvironment).ApplicationId;
+                return (command as AddEnvironment).ProjectId;
             }
 
             if (command is AddToggle)
             {
-                return (command as AddToggle).ApplicationId;
+                return (command as AddToggle).ProjectId;
             }
 
             if (command is ChangeToggleState)
             {
-                return (command as ChangeToggleState).ApplicationId;
+                return (command as ChangeToggleState).ProjectId;
             }
 
             return Guid.Empty;
