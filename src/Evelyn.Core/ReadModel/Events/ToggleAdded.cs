@@ -2,10 +2,10 @@
 {
     using System;
 
-    public class ToggleAdded : ApplicationEvent
+    public class ToggleAdded : ProjectEvent
     {
-        public ToggleAdded(string userId, Guid applicationId, Guid toggleId, string name, string key)
-            : base(userId, applicationId)
+        public ToggleAdded(string userId, Guid projectId, Guid toggleId, string name, string key)
+            : base(userId, projectId)
         {
             ToggleId = toggleId;
             Name = name;

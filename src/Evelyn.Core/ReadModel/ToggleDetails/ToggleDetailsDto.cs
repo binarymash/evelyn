@@ -4,17 +4,17 @@
 
     public class ToggleDetailsDto
     {
-        public ToggleDetailsDto(Guid applicationId, Guid toggleId, string name, string key, DateTimeOffset created)
+        public ToggleDetailsDto(Guid projectId, Guid toggleId, string name, string key, DateTimeOffset created)
         {
             Id = toggleId;
             Name = name;
             Key = key;
             Created = created;
             LastModified = created;
-            ApplicationId = applicationId;
+            ProjectId = projectId;
         }
 
-        public Guid ApplicationId { get; private set; }
+        public Guid ProjectId { get; private set; }
 
         public Guid Id { get; private set; }
 

@@ -2,10 +2,10 @@
 {
     using System;
 
-    public class ToggleStateChanged : ApplicationEvent
+    public class ToggleStateChanged : ProjectEvent
     {
-        public ToggleStateChanged(string userId, Guid applicationId, Guid environmentId, Guid toggleId, string value)
-            : base(userId, applicationId)
+        public ToggleStateChanged(string userId, Guid projectId, Guid environmentId, Guid toggleId, string value)
+            : base(userId, projectId)
         {
             EnvironmentId = environmentId;
             ToggleId = toggleId;

@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/toggles")]
+    [Route("api/projects/{projectId}/toggles")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class TogglesController : Controller
     {

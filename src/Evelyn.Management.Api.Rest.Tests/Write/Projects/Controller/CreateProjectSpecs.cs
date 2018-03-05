@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Write.Environments.Controller
+namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
 {
     using System;
     using System.Threading.Tasks;
@@ -14,29 +14,27 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AddEnvironmentSpecs
+    public class CreateProjectSpecs
     {
         private readonly Fixture _fixture;
-        private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
-        private readonly Guid _projectId;
-        private Rest.Write.Environments.Messages.AddEnvironment _message;
+        private readonly Rest.Write.Projects.Controller _controller;
+        private readonly ICommandHandler<CreateProject> _createProjectHandler;
+        private Rest.Write.Projects.Messages.CreateProject _message;
         private ObjectResult _result;
 
-        public AddEnvironmentSpecs()
+        public CreateProjectSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
-            _controller = new Rest.Write.Environments.Controller(_handler);
-            _projectId = _fixture.Create<Guid>();
+            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateProject>>();
+            _controller = new Rest.Write.Projects.Controller(_createProjectHandler);
         }
 
         [Fact]
-        public void SuccessfulAddEnvironment()
+        public void SuccessfulCreateProject()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateProjectCommand())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
                 .BDDfy();
         }
@@ -44,10 +42,10 @@
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateProjectCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA400BadRequestStatusIsReturned())
                 .BDDfy();
         }
@@ -55,48 +53,48 @@
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidCreateProjectCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
-                .Then(_ => ThenACommandIsPassedToTheCommandHandler())
+                .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA500InternalServerErrorStatusIsReturned())
                 .BDDfy();
         }
 
-        private void GivenAValidAddEnvironmentCommand()
+        private void GivenAValidCreateProjectCommand()
         {
-            _message = _fixture.Create<Rest.Write.Environments.Messages.AddEnvironment>();
+            _message = _fixture.Create<Rest.Write.Projects.Messages.CreateProject>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
-            _handler
-                .Handle(Arg.Any<AddEnvironment>())
+            _createProjectHandler
+                .Handle(Arg.Any<CreateProject>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
-            _handler
-                .Handle(Arg.Any<AddEnvironment>())
+            _createProjectHandler
+                .Handle(Arg.Any<CreateProject>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_projectId, _message);
+            _result = await _controller.Post(_message);
         }
 
-        private void ThenACommandIsPassedToTheCommandHandler()
+        private void ThenTheCommandIsPassedToTheCommandHandler()
         {
-            _handler
+            _createProjectHandler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
+                .Handle(Arg.Is<CreateProject>(command =>
                     command.UserId == Constants.AnonymousUser &&
-                    command.ProjectId == _projectId &&
+                    command.AccountId == Constants.DefaultAccount &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
-                    command.ExpectedVersion == _message.ExpectedVersion));
+                    command.ExpectedVersion == null));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

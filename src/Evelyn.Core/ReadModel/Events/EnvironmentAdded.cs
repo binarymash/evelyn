@@ -2,10 +2,10 @@
 {
     using System;
 
-    public class EnvironmentAdded : ApplicationEvent
+    public class EnvironmentAdded : ProjectEvent
     {
-        public EnvironmentAdded(string userId, Guid applicationId, Guid environmentId, string name)
-            : base(userId, applicationId)
+        public EnvironmentAdded(string userId, Guid projectId, Guid environmentId, string name)
+            : base(userId, projectId)
         {
             EnvironmentId = environmentId;
             Name = name;

@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/environments")]
+    [Route("api/projects/{projectId}/environments")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
@@ -22,12 +22,12 @@
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.AddEnvironment message)
+        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Messages.AddEnvironment message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddEnvironment(UserId, applicationId, message.Id, message.Name, message.ExpectedVersion);
+                var command = new Core.WriteModel.Commands.AddEnvironment(UserId, projectId, message.Id, message.Name, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

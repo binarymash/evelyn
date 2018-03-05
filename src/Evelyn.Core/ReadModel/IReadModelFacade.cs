@@ -3,16 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.ToggleDetails;
+    using ProjectDetails;
+    using ProjectList;
 
     public interface IReadModelFacade
     {
-        Task<IEnumerable<ApplicationListDto>> GetApplications();
+        Task<IEnumerable<ProjectListDto>> GetProjects();
 
-        Task<ApplicationDetailsDto> GetApplicationDetails(Guid applicationId);
+        Task<ProjectDetailsDto> GetProjectDetails(Guid projectId);
 
         Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId);
 

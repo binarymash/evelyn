@@ -19,7 +19,7 @@
         private readonly Fixture _fixture;
         private readonly Rest.Write.Toggles.Controller _controller;
         private readonly ICommandHandler<AddToggle> _handler;
-        private readonly Guid _applicationId;
+        private readonly Guid _projectId;
         private Rest.Write.Toggles.Messages.AddToggle _message;
         private ObjectResult _result;
 
@@ -28,7 +28,7 @@
             _fixture = new Fixture();
             _handler = Substitute.For<ICommandHandler<AddToggle>>();
             _controller = new Rest.Write.Toggles.Controller(_handler);
-            _applicationId = _fixture.Create<Guid>();
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
@@ -84,7 +84,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message);
+            _result = await _controller.Post(_projectId, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
@@ -93,7 +93,7 @@
                 .Received(1)
                 .Handle(Arg.Is<AddToggle>(command =>
                     command.UserId == Constants.AnonymousUser &&
-                    command.ApplicationId == _applicationId &&
+                    command.ProjectId == _projectId &&
                     command.Id == _message.Id &&
                     command.Name == _message.Name &&
                     command.Key == _message.Key &&

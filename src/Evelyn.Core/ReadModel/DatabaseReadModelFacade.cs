@@ -3,42 +3,42 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
     using Evelyn.Core.ReadModel.ToggleDetails;
+    using ProjectDetails;
+    using ProjectList;
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IDatabase<ApplicationListDto> _applications;
+        private readonly IDatabase<ProjectListDto> _projects;
 
-        private readonly IDatabase<ApplicationDetailsDto> _applicationDetails;
+        private readonly IDatabase<ProjectDetailsDto> _projectDetails;
 
         private readonly IDatabase<EnvironmentDetailsDto> _environmentDetails;
 
         private readonly IDatabase<ToggleDetailsDto> _toggleDetails;
 
         public DatabaseReadModelFacade(
-            IDatabase<ApplicationListDto> applications,
-            IDatabase<ApplicationDetailsDto> applicationDetails,
+            IDatabase<ProjectListDto> projects,
+            IDatabase<ProjectDetailsDto> projectDetails,
             IDatabase<EnvironmentDetailsDto> environmentDetails,
             IDatabase<ToggleDetailsDto> toggleDetails)
         {
-            _applications = applications;
-            _applicationDetails = applicationDetails;
+            _projects = projects;
+            _projectDetails = projectDetails;
             _environmentDetails = environmentDetails;
             _toggleDetails = toggleDetails;
         }
 
-        public async Task<IEnumerable<ApplicationListDto>> GetApplications()
+        public async Task<IEnumerable<ProjectListDto>> GetProjects()
         {
-            return await _applications.Get();
+            return await _projects.Get();
         }
 
-        public async Task<ApplicationDetailsDto> GetApplicationDetails(Guid applicationId)
+        public async Task<ProjectDetailsDto> GetProjectDetails(Guid projectId)
         {
-            return await _applicationDetails.Get(applicationId);
+            return await _projectDetails.Get(projectId);
         }
 
         public async Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId)

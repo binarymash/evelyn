@@ -88,7 +88,7 @@ namespace Evelyn.Storage.EventStore.Tests
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
-                .Then(_ => ThenTheStoredEventStreamIsNamedByApplicationAggregateRootId())
+                .Then(_ => ThenTheStoredEventStreamIsNamedByProjectAggregateRootId())
                 .BDDfy();
         }
 
@@ -173,14 +173,14 @@ namespace Evelyn.Storage.EventStore.Tests
 
         private void GivenWeHave3EventsForAnAggregate()
         {
-            GivenAggregateEvent(_fixture.Build<ApplicationCreated>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvent(_fixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
             GivenAggregateEvent(_fixture.Build<EnvironmentAdded>().With(e => e.Id, _aggregateId).Create());
             GivenAggregateEvent(_fixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).Create());
         }
 
         private void GivenWeHave300EventsForAnAggregate()
         {
-            GivenAggregateEvent(_fixture.Build<ApplicationCreated>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvent(_fixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
             GivenAggregateEvents(_fixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).CreateMany(299));
         }
 
@@ -290,22 +290,22 @@ namespace Evelyn.Storage.EventStore.Tests
             event1.Should().BeEquivalentTo(event2);
         }
 
-        private async Task ThenTheStoredEventStreamIsNamedByApplicationAggregateRootId()
+        private async Task ThenTheStoredEventStreamIsNamedByProjectAggregateRootId()
         {
-            var expectedStreamName = $"application-{_aggregateId}";
+            var expectedStreamName = $"project-{_aggregateId}";
             var result = await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
             result.Events.Should().HaveCount(_eventsAddedToStore.Count);
         }
 
-        private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetApplicationAggregateRootStream(Guid id)
+        private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetProjectAggregateRootStream(Guid id)
         {
-            var expectedStreamName = $"application-{_aggregateId}";
+            var expectedStreamName = $"project-{_aggregateId}";
             return await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
         }
 
         private async Task ThenTheStoredEventTypesAreTheFullNameOfTheEvent()
         {
-            var events = (await GetApplicationAggregateRootStream(_aggregateId)).Events;
+            var events = (await GetProjectAggregateRootStream(_aggregateId)).Events;
             for (var i = 0; i < _eventsAddedToStore.Count; i++)
             {
                 ThenTheStoredEventTypeIsTheFullNameOfTheEvent(events[i].Event, _eventsAddedToStore[i].GetType());
@@ -319,7 +319,7 @@ namespace Evelyn.Storage.EventStore.Tests
 
         private async Task ThenTheStoredEventsAllHaveDifferentIDs()
         {
-            var events = (await GetApplicationAggregateRootStream(_aggregateId)).Events;
+            var events = (await GetProjectAggregateRootStream(_aggregateId)).Events;
             events.Select(e => e.Event.EventId).Should().OnlyHaveUniqueItems();
         }
 
