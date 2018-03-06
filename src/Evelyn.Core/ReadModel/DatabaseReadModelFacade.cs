@@ -1,39 +1,46 @@
 ﻿namespace Evelyn.Core.ReadModel
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using AccountProjects;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using ProjectDetails;
-    using ProjectList;
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IDatabase<ProjectListDto> _projects;
+        private readonly IDatabase<string, AccountProjectsDto> _accountProjects;
 
-        private readonly IDatabase<ProjectDetailsDto> _projectDetails;
+        private readonly IDatabase<Guid, ProjectDetailsDto> _projectDetails;
 
-        private readonly IDatabase<EnvironmentDetailsDto> _environmentDetails;
+        private readonly IDatabase<Guid, EnvironmentDetailsDto> _environmentDetails;
 
-        private readonly IDatabase<ToggleDetailsDto> _toggleDetails;
+        private readonly IDatabase<Guid, ToggleDetailsDto> _toggleDetails;
 
         public DatabaseReadModelFacade(
-            IDatabase<ProjectListDto> projects,
-            IDatabase<ProjectDetailsDto> projectDetails,
-            IDatabase<EnvironmentDetailsDto> environmentDetails,
-            IDatabase<ToggleDetailsDto> toggleDetails)
+            IDatabase<string, AccountProjectsDto> accountProjects,
+            IDatabase<Guid, ProjectDetailsDto> projectDetails,
+            IDatabase<Guid, EnvironmentDetailsDto> environmentDetails,
+            IDatabase<Guid, ToggleDetailsDto> toggleDetails)
         {
-            _projects = projects;
+            _accountProjects = accountProjects;
             _projectDetails = projectDetails;
             _environmentDetails = environmentDetails;
             _toggleDetails = toggleDetails;
         }
 
-        public async Task<IEnumerable<ProjectListDto>> GetProjects()
+        public async Task<AccountProjectsDto> GetProjects(string accountId)
         {
-            return await _projects.Get();
+            try
+            {
+                return await _accountProjects.Get(accountId);
+            }
+            catch (NotFoundException)
+            {
+                // hack! Remove this
+                return new AccountProjectsDto(accountId);
+            }
         }
 
         public async Task<ProjectDetailsDto> GetProjectDetails(Guid projectId)

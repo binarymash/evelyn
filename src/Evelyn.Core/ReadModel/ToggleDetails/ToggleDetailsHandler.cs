@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.ReadModel.ToggleDetails
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
@@ -9,16 +10,16 @@
     public class ToggleDetailsHandler
         : ICancellableEventHandler<ToggleAdded>
     {
-        private readonly IDatabase<ToggleDetailsDto> _toggles;
+        private readonly IDatabase<Guid, ToggleDetailsDto> _db;
 
-        public ToggleDetailsHandler(IDatabase<ToggleDetailsDto> toggles)
+        public ToggleDetailsHandler(IDatabase<Guid, ToggleDetailsDto> db)
         {
-            _toggles = toggles;
+            _db = db;
         }
 
         public Task Handle(ToggleAdded message, CancellationToken token)
         {
-            _toggles.Add(message.ToggleId, new ToggleDetailsDto(message.Id, message.ToggleId, message.Name, message.Key, message.TimeStamp));
+            _db.AddOrUpdate(message.ToggleId, new ToggleDetailsDto(message.Id, message.ToggleId, message.Name, message.Key, message.TimeStamp));
             return Task.CompletedTask;
         }
     }

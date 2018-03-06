@@ -1,23 +1,20 @@
 ﻿namespace Evelyn.Core.ReadModel.Infrastructure
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
 
-    public class InMemoryDatabase<T> : IDatabase<T>
+    public class InMemoryDatabase<TKey, TValue> : IDatabase<TKey, TValue>
     {
-        private Dictionary<Guid, T> _items;
+        private readonly Dictionary<TKey, TValue> _items;
 
         public InMemoryDatabase()
         {
-            _items = new Dictionary<Guid, T>();
+            _items = new Dictionary<TKey, TValue>();
         }
 
-        public async Task<T> Get(Guid id)
+        public async Task<TValue> Get(TKey key)
         {
-            T value;
-            if (!_items.TryGetValue(id, out value))
+            if (!_items.TryGetValue(key, out var value))
             {
                 throw new NotFoundException();
             }
@@ -25,14 +22,28 @@
             return await Task.FromResult(value);
         }
 
-        public async Task<List<T>> Get()
+        public async Task AddOrUpdate(TKey key, TValue value)
         {
-            return await Task.FromResult(_items.Values.ToList());
+            if (_items.ContainsKey(key))
+            {
+                _items[key] = value;
+            }
+            else
+            {
+                _items.Add(key, value);
+            }
+
+            await Task.CompletedTask;
         }
 
-        public async Task Add(Guid id, T item)
+        public async Task Delete(TKey key)
         {
-            _items.Add(id, item);
+            if (_items.ContainsKey(key))
+            {
+                throw new NotFoundException();
+            }
+
+            _items.Remove(key);
             await Task.CompletedTask;
         }
     }

@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentDetails
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
@@ -9,16 +10,16 @@
     public class EnvironmentDetailsHandler
         : ICancellableEventHandler<EnvironmentAdded>
     {
-        private readonly IDatabase<EnvironmentDetailsDto> _environments;
+        private readonly IDatabase<Guid, EnvironmentDetailsDto> _db;
 
-        public EnvironmentDetailsHandler(IDatabase<EnvironmentDetailsDto> environments)
+        public EnvironmentDetailsHandler(IDatabase<Guid, EnvironmentDetailsDto> db)
         {
-            _environments = environments;
+            _db = db;
         }
 
         public Task Handle(EnvironmentAdded message, CancellationToken token)
         {
-            _environments.Add(message.EnvironmentId, new EnvironmentDetailsDto(message.Id, message.EnvironmentId, message.Name, message.TimeStamp));
+            _db.AddOrUpdate(message.EnvironmentId, new EnvironmentDetailsDto(message.Id, message.EnvironmentId, message.Name, message.TimeStamp));
             return Task.CompletedTask;
         }
     }
