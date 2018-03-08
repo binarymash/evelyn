@@ -4,15 +4,15 @@
 
     public class ToggleStateChanged : ProjectEvent
     {
-        public ToggleStateChanged(string userId, Guid projectId, Guid environmentId, Guid toggleId, string value)
+        public ToggleStateChanged(string userId, Guid projectId, string environmentKey, Guid toggleId, string value)
             : base(userId, projectId)
         {
-            EnvironmentId = environmentId;
+            EnvironmentKey = environmentKey;
             ToggleId = toggleId;
             Value = value;
         }
 
-        public Guid EnvironmentId { get; set; }
+        public string EnvironmentKey { get; set; }
 
         public Guid ToggleId { get; set; }
 

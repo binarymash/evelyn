@@ -5,7 +5,7 @@
 
     public class ProjectDetailsDto
     {
-        private readonly Dictionary<Guid, EnvironmentListDto> _environments;
+        private readonly Dictionary<string, EnvironmentListDto> _environments;
         private readonly Dictionary<Guid, ToggleListDto> _toggles;
 
         public ProjectDetailsDto(Guid id, string name, int version, DateTimeOffset created)
@@ -15,7 +15,7 @@
             Version = version;
             Created = created;
             LastModified = created;
-            _environments = new Dictionary<Guid, EnvironmentListDto>();
+            _environments = new Dictionary<string, EnvironmentListDto>();
             _toggles = new Dictionary<Guid, ToggleListDto>();
         }
 
@@ -38,7 +38,7 @@
             {
                 foreach (var environment in value)
                 {
-                    _environments.Add(environment.Id, environment);
+                    _environments.Add(environment.Key, environment);
                 }
             }
         }
@@ -59,7 +59,7 @@
 
         public void AddEnvironment(EnvironmentListDto environment, DateTimeOffset timestamp, int version)
         {
-            _environments.Add(environment.Id, environment);
+            _environments.Add(environment.Key, environment);
             Version = version;
             LastModified = timestamp;
         }

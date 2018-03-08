@@ -27,7 +27,7 @@
         public async Task Handle(EnvironmentAdded message, CancellationToken token)
         {
             var projectDetails = await _db.Get(message.Id);
-            projectDetails.AddEnvironment(new EnvironmentListDto(message.EnvironmentId, message.Name), message.TimeStamp, message.Version);
+            projectDetails.AddEnvironment(new EnvironmentListDto(message.Key), message.TimeStamp, message.Version);
         }
 
         public async Task Handle(ToggleAdded message, CancellationToken token)

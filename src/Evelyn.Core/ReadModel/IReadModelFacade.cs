@@ -13,7 +13,7 @@
 
         Task<ProjectDetailsDto> GetProjectDetails(Guid projectId);
 
-        Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid environmentId);
+        Task<EnvironmentDetailsDto> GetEnvironmentDetails(string environmentKey);
 
         Task<ToggleDetailsDto> GetToggleDetails(Guid toggleId);
     }

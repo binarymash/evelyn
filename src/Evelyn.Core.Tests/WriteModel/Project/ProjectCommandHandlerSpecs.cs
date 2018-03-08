@@ -24,11 +24,11 @@
             HistoricalEvents.Add(projectCreated);
         }
 
-        protected void GivenWeHaveAddedAnEnvironmentWith(Guid projectedId, Guid environmentId)
+        protected void GivenWeHaveAddedAnEnvironmentWith(Guid projectedId, string environmentKey)
         {
             var environmentAdded = DataFixture.Create<EnvironmentAdded>();
             environmentAdded.Id = projectedId;
-            environmentAdded.EnvironmentId = environmentId;
+            environmentAdded.Key = environmentKey;
             environmentAdded.Version = HistoricalEvents.Count;
 
             HistoricalEvents.Add(environmentAdded);

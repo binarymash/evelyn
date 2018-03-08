@@ -19,14 +19,14 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{environmentId}")]
+        [HttpGet("{environmentKey}")]
         [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(Guid environmentId)
+        public async Task<ObjectResult> Get(string environmentKey)
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentDetails(environmentId);
+                var result = await _readModelFacade.GetEnvironmentDetails(environmentKey);
                 return Ok(result);
             }
             catch (NotFoundException)

@@ -13,7 +13,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     {
         private Guid _projectId;
 
-        private Guid _environmentId;
+        private string _environmentKey;
 
         private Guid _toggleId;
         private string _toggleName;
@@ -63,7 +63,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .Then(_ => ThenThePublishedEventIsToggledValueChanged())
                 .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheProjectIdIsSaved())
-                .And(_ => ThenTheEnvironmentIdIsSaved())
+                .And(_ => ThenTheEnvironmentKeyIsSaved())
                 .And(_ => ThenTheToggleIdIsSaved())
                 .And(_ => ThenTheToggleStateIsSaved())
                 .BDDfy();
@@ -78,9 +78,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void GivenWeHaveCreatedAnEnvironment()
         {
-            _environmentId = DataFixture.Create<Guid>();
+            _environmentKey = DataFixture.Create<string>();
 
-            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environmentId);
+            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environmentKey);
         }
 
         private void GivenWeHaveAddedAToggle()
@@ -97,7 +97,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleId = DataFixture.Create<Guid>();
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -105,7 +105,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             _toggleState = DataFixture.Create<string>();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -113,13 +113,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentId, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
         private void ThenAnEnvironmentDoesNotExistExceptionIsThrown()
         {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no environment with the ID {_environmentId}");
+            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no environment with the key {_environmentKey}");
         }
 
         private void ThenAToggleDoesNotExistExceptionIsThrown()
@@ -147,9 +147,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             ((ToggleStateChanged)PublishedEvents.First()).Id.Should().Be(_projectId);
         }
 
-        private void ThenTheEnvironmentIdIsSaved()
+        private void ThenTheEnvironmentKeyIsSaved()
         {
-            ((ToggleStateChanged)PublishedEvents.First()).EnvironmentId.Should().Be(_environmentId);
+            ((ToggleStateChanged)PublishedEvents.First()).EnvironmentKey.Should().Be(_environmentKey);
         }
 
         private void ThenTheToggleIdIsSaved()

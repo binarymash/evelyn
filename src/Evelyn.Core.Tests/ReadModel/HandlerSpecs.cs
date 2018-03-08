@@ -22,7 +22,7 @@
 
             AccountProjectsStore = new InMemoryDatabase<string, AccountProjectsDto>();
             ProjectDetailsStore = new InMemoryDatabase<Guid, ProjectDetailsDto>();
-            EnvironmentDetailsStore = new InMemoryDatabase<Guid, EnvironmentDetailsDto>();
+            EnvironmentDetailsStore = new InMemoryDatabase<string, EnvironmentDetailsDto>();
             ToggleDetailsStore = new InMemoryDatabase<Guid, ToggleDetailsDto>();
 
             ReadModelFacade = new DatabaseReadModelFacade(
@@ -44,7 +44,7 @@
 
         protected IDatabase<Guid, ProjectDetailsDto> ProjectDetailsStore { get; }
 
-        protected IDatabase<Guid, EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
+        protected IDatabase<string, EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
 
         protected IDatabase<Guid, ToggleDetailsDto> ToggleDetailsStore { get; set; }
 

@@ -29,7 +29,7 @@
         public async Task Handle(AddEnvironment message)
         {
             var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.AddEnvironment(message.UserId, message.Id, message.Name);
+            project.AddEnvironment(message.UserId, message.Key);
             await _session.Commit();
         }
 
@@ -43,7 +43,7 @@
         public async Task Handle(ChangeToggleState message)
         {
             var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.ChangeToggleState(message.UserId, message.EnvironmentId, message.ToggleId, message.Value);
+            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleId, message.Value);
             await _session.Commit();
         }
     }

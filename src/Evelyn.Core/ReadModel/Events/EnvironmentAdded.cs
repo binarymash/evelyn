@@ -4,15 +4,12 @@
 
     public class EnvironmentAdded : ProjectEvent
     {
-        public EnvironmentAdded(string userId, Guid projectId, Guid environmentId, string name)
+        public EnvironmentAdded(string userId, Guid projectId, string key)
             : base(userId, projectId)
         {
-            EnvironmentId = environmentId;
-            Name = name;
+            Key = key;
         }
 
-        public Guid EnvironmentId { get; set; }
-
-        public string Name { get; set; }
+        public string Key { get; set; }
     }
 }

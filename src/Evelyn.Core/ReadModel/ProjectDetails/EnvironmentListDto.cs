@@ -4,14 +4,11 @@
 
     public class EnvironmentListDto
     {
-        public EnvironmentListDto(Guid id, string name)
+        public EnvironmentListDto(string key)
         {
-            Id = id;
-            Name = name;
+            Key = key;
         }
 
-        public Guid Id { get; }
-
-        public string Name { get; }
+        public string Key { get; }
     }
 }
