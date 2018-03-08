@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
             parentOptions.Services.TryAddSingleton<ProjectDetailsHandler>();
-            parentOptions.Services.TryAddSingleton<ProjectListHandler>();
+            parentOptions.Services.TryAddSingleton<AccountProjectsHandler>();
             parentOptions.Services.TryAddSingleton<EnvironmentDetailsHandler>();
             parentOptions.Services.TryAddSingleton<ToggleDetailsHandler>();
 

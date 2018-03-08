@@ -7,10 +7,11 @@
     using Evelyn.Core.ReadModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Write;
 
     [Route("api/projects")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class ProjectsController : Controller
+    public class ProjectsController : EvelynController
     {
         private readonly IReadModelFacade _readModelFacade;
 
@@ -25,7 +26,7 @@
         {
             try
             {
-                var result = await _readModelFacade.GetProjects();
+                var result = await _readModelFacade.GetProjects(AccountId);
                 return Ok(result);
             }
             catch (Exception)

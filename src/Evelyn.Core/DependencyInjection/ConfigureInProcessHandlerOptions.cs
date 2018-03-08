@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 typeof(ProjectCommandHandler),
                 typeof(ProjectDetailsHandler),
-                typeof(ProjectListHandler),
+                typeof(AccountProjectsHandler),
                 typeof(EnvironmentDetailsHandler),
                 typeof(ToggleDetailsHandler)
             });

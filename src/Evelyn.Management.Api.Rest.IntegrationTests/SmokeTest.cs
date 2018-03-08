@@ -1,10 +1,12 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.ReadModel.AccountProjects;
     using Core.ReadModel.ProjectDetails;
     using Core.ReadModel.ProjectList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
@@ -160,22 +162,21 @@
 
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
-            var response = JsonConvert.DeserializeObject<List<ProjectListDto>>(_responseContent, DeserializeWithPrivateSetters);
-            response.Count.Should().Be(0);
+            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
+            response.Projects.Count.Should().Be(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneProject()
         {
-            var response = JsonConvert.DeserializeObject<List<ProjectListDto>>(_responseContent, DeserializeWithPrivateSetters);
-            response.Count.Should().Be(1);
+            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
+            response.Projects.Count.Should().Be(1);
         }
 
         private void ThenTheProjectWeAddedIsInTheCollection()
         {
-            var projectList = JsonConvert.DeserializeObject<List<ProjectListDto>>(_responseContent, DeserializeWithPrivateSetters).ToList();
-            projectList.Should().Contain(project =>
-                project.Id == _createProjectMessage.Id &&
-                project.Name == _createProjectMessage.Name);
+            var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
+            projectList.Projects[_createProjectMessage.Id].Id.Should().Be(_createProjectMessage.Id);
+            projectList.Projects[_createProjectMessage.Id].Name.Should().Be(_createProjectMessage.Name);
         }
 
         private void ThenTheProjectContainsOneEnvironment()

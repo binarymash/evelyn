@@ -1,31 +1,33 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.ProjectList
+﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.ReadModel.AccountProjects;
+    using Core.ReadModel.Events;
     using Core.ReadModel.ProjectList;
     using CQRSlite.Events;
     using CQRSlite.Routing;
-    using Evelyn.Core.ReadModel.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectListHandlerSpecs : HandlerSpecs
+    public class AccountProjectsHandlerSpecs : HandlerSpecs
     {
-        private List<IEvent> _eventsProject1;
-        private List<IEvent> _eventsProject2;
+        private readonly List<IEvent> _eventsProject1;
+        private readonly List<IEvent> _eventsProject2;
+        private readonly string _accountId;
 
         private ProjectCreated _event1;
         private ProjectCreated _event2;
 
-        private List<ProjectListDto> _retrievedProjectList;
+        private AccountProjectsDto _retrievedAccountProjects;
 
-        public ProjectListHandlerSpecs()
+        public AccountProjectsHandlerSpecs()
         {
             _eventsProject1 = new List<IEvent>();
             _eventsProject2 = new List<IEvent>();
+            _accountId = DataFixture.Create<string>();
         }
 
         [Fact]
@@ -49,14 +51,16 @@
 
         protected override void RegisterHandlers(Router router)
         {
-            var handler = new ProjectListHandler(ProjectsStore);
+            var handler = new AccountProjectsHandler(AccountProjectsStore);
             router.RegisterHandler<ProjectCreated>(handler.Handle);
         }
 
         private void GivenAnProjectIsCreated()
         {
-            _event1 = DataFixture.Create<ProjectCreated>();
-            _event1.Version = _eventsProject1.Count + 1;
+            _event1 = DataFixture.Build<ProjectCreated>()
+                .With(pc => pc.AccountId, _accountId)
+                .With(pc => pc.Version, _eventsProject1.Count + 1)
+                .Create();
 
             _eventsProject1.Add(_event1);
             GivenWePublish(_event1);
@@ -64,8 +68,10 @@
 
         private void GivenAnotherProjectIsCreated()
         {
-            _event2 = DataFixture.Create<ProjectCreated>();
-            _event2.Version = _eventsProject2.Count + 1;
+            _event2 = DataFixture.Build<ProjectCreated>()
+                .With(pc => pc.AccountId, _accountId)
+                .With(pc => pc.Version, _eventsProject2.Count + 1)
+                .Create();
 
             _eventsProject2.Add(_event2);
             GivenWePublish(_event2);
@@ -73,18 +79,18 @@
 
         private async Task WhenWeGetTheProjectList()
         {
-            _retrievedProjectList = (await ReadModelFacade.GetProjects()).ToList();
+            _retrievedAccountProjects = await ReadModelFacade.GetProjects(_accountId);
         }
 
         private void ThenTheProjectIsAddedToTheProjectList()
         {
-            _retrievedProjectList.Count.Should().Be(1);
+            _retrievedAccountProjects.Projects.Count.Should().Be(1);
             ThenThereIsAnProjectInTheListFor(_event1);
         }
 
         private void ThenBothProjectsAreInTheProjectList()
         {
-            _retrievedProjectList.Count().Should().Be(2);
+            _retrievedAccountProjects.Projects.Count.Should().Be(2);
 
             ThenThereIsAnProjectInTheListFor(_event1);
             ThenThereIsAnProjectInTheListFor(_event2);
@@ -92,9 +98,9 @@
 
         private void ThenThereIsAnProjectInTheListFor(ProjectCreated ev)
         {
-            ProjectsStore.Get().GetAwaiter().GetResult().Should().Contain(project =>
-                project.Id == ev.Id &&
-                project.Name == ev.Name);
+            AccountProjectsStore.Get(_accountId)
+                .GetAwaiter().GetResult()
+                .Projects[ev.Id].Name.Should().Be(ev.Name);
         }
     }
 }

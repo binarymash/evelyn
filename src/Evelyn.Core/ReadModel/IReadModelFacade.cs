@@ -1,16 +1,15 @@
 ﻿namespace Evelyn.Core.ReadModel
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using AccountProjects;
+    using EnvironmentDetails;
     using ProjectDetails;
-    using ProjectList;
+    using ToggleDetails;
 
     public interface IReadModelFacade
     {
-        Task<IEnumerable<ProjectListDto>> GetProjects();
+        Task<AccountProjectsDto> GetProjects(string accountId);
 
         Task<ProjectDetailsDto> GetProjectDetails(Guid projectId);
 
