@@ -94,8 +94,7 @@
                 .Handle(Arg.Is<AddEnvironment>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
-                    command.Id == _message.Id &&
-                    command.Name == _message.Name &&
+                    command.Key == _message.Key &&
                     command.ExpectedVersion == _message.ExpectedVersion));
         }
 

@@ -339,14 +339,13 @@
         private void ThenTheEnvironmentIsOnTheProject(EnvironmentAdded environmentAdded)
         {
             _retrievedProjectDetails.Environments.Should().Contain(environment =>
-                environment.Id == environmentAdded.EnvironmentId &&
-                environment.Name == environmentAdded.Name);
+                environment.Key == environmentAdded.Key);
         }
 
         private void ThenTheToggleIsOnTheProject(ToggleAdded toggleAdded)
         {
             _retrievedProjectDetails.Toggles.Should().Contain(toggle =>
-                toggle.Id == toggleAdded.ToggleId &&
+                toggle.Key == toggleAdded.Key &&
                 toggle.Name == toggleAdded.Name);
         }
 

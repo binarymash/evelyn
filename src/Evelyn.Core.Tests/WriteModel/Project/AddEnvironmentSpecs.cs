@@ -13,11 +13,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     {
         private Guid _projectId;
 
-        private Guid _newEnvironmentId;
-        private string _newEnvironmentName;
+        private string _newEnvironmentKey;
 
-        private Guid _existingEnvironmentId;
-        private string _existingEnvironmentName;
+        private string _existingEnvironmentKey;
 
         [Fact]
         public void EnvironmentDoesntExist()
@@ -32,24 +30,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         }
 
         [Fact]
-        public void EnvironmentAlreadyExistWithSameId()
+        public void EnvironmentAlreadyExistWithSameKey()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAnEnvironment())
-                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameId())
+                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameKey())
                 .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateEnvironmentIdExceptionIsThrown())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void EnvironmentAlreadyExistWithSameName()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameName())
-                .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateEnvironmentNameExceptionIsThrown())
+                .Then(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -61,36 +48,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void GivenWeHaveAddedAnEnvironment()
         {
-            _existingEnvironmentId = DataFixture.Create<Guid>();
-            _existingEnvironmentName = DataFixture.Create<string>();
+            _existingEnvironmentKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentId, _existingEnvironmentName) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAnEnvironment()
         {
-            _newEnvironmentId = DataFixture.Create<Guid>();
-            _newEnvironmentName = DataFixture.Create<string>();
+            _newEnvironmentKey = DataFixture.Create<string>();
 
-            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
-        private void WhenWeAddAnotherEnvironmentWithTheSameId()
+        private void WhenWeAddAnotherEnvironmentWithTheSameKey()
         {
-            _newEnvironmentId = _existingEnvironmentId;
-            _newEnvironmentName = DataFixture.Create<string>();
+            _newEnvironmentKey = _existingEnvironmentKey;
 
-            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
-            WhenWeHandle(command);
-        }
-
-        private void WhenWeAddAnotherEnvironmentWithTheSameName()
-        {
-            _newEnvironmentId = DataFixture.Create<Guid>();
-            _newEnvironmentName = _existingEnvironmentName;
-
-            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentId, _newEnvironmentName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -106,17 +81,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void ThenTheNameIsSaved()
         {
-            ((EnvironmentAdded)PublishedEvents.First()).Name.Should().Be(_newEnvironmentName);
+            ((EnvironmentAdded)PublishedEvents.First()).Key.Should().Be(_newEnvironmentKey);
         }
 
-        private void ThenADuplicateEnvironmentIdExceptionIsThrown()
+        private void ThenADuplicateEnvironmentKeyExceptionIsThrown()
         {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the ID {_newEnvironmentId}");
-        }
-
-        private void ThenADuplicateEnvironmentNameExceptionIsThrown()
-        {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the name {_newEnvironmentName}");
+            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the key {_newEnvironmentKey}");
         }
     }
 }

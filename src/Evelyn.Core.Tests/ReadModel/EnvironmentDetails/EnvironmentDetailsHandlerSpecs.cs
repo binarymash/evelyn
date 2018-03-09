@@ -12,7 +12,7 @@
 
     public class EnvironmentDetailsHandlerSpecs : HandlerSpecs
     {
-        private Guid _environment1Id;
+        private string _environment1Key;
 
         [Fact]
         public void Environment1DoesNotExist()
@@ -31,14 +31,14 @@
 
         private void GivenThatWeDontCreateEnvironment1()
         {
-            _environment1Id = DataFixture.Create<Guid>();
+            _environment1Key = DataFixture.Create<string>();
         }
 
         private void WhenWeGetEnvironment1Details()
         {
             try
             {
-                ReadModelFacade.GetEnvironmentDetails(_environment1Id).GetAwaiter().GetResult().Should().BeNull();
+                ReadModelFacade.GetEnvironmentDetails(_environment1Key).GetAwaiter().GetResult().Should().BeNull();
             }
             catch (Exception ex)
             {
@@ -166,7 +166,7 @@
         ////{
         ////    var projectDetails = _readModelFacade.GetProjectDetails(ev.Id);
         ////    projectDetails.Id.Should().Be(ev.Id);
-        ////    projectDetails.Name.Should().Be(ev.Name);
+        ////    projectDetails.Key.Should().Be(ev.Key);
         ////    projectDetails.Version.Should().Be(ev.Version);
         ////    projectDetails.Environments.Count().Should().Be(0);
         ////    projectDetails.Created.Should().Be(ev.TimeStamp);
@@ -211,8 +211,7 @@
         ////{
         ////    var projectDetails = _readModelFacade.GetProjectDetails(projectId);
         ////    projectDetails.Environments.ShouldContain(environment =>
-        ////        environment.Id == environmentAdded.EnvironmentId &&
-        ////        environment.Name == environmentAdded.Name);
+        ////        environment.Key == environmentAdded.Key);
         ////}
 
         ////private void ThenTheVersionOfTheProjectHasBeenUpdated(Guid ProjectId, EnvironmentAdded environmentAdded)

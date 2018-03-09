@@ -4,16 +4,13 @@
 
     public class AddEnvironment
     {
-        public AddEnvironment(Guid id, string name, int expectedVersion)
+        public AddEnvironment(string key, int expectedVersion)
         {
-            Id = id;
-            Name = name;
+            Key = key;
             ExpectedVersion = expectedVersion;
         }
 
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
+        public string Key { get; set; }
 
         public int ExpectedVersion { get; set; }
     }

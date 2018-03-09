@@ -20,7 +20,7 @@
         private readonly IReadModelFacade _readModelFacade;
         private readonly EnvironmentsController _controller;
         private EnvironmentDetailsDto _environmentReturnedByFacade;
-        private Guid _idOfEnvironmentToGet;
+        private string _keyOfEnvironmentToGet;
         private ObjectResult _result;
 
         public EnvironmentsControllerSpecs()
@@ -61,31 +61,31 @@
         private void GivenTheEnvironmentWeWantDoesExist()
         {
             _environmentReturnedByFacade = _fixture.Create<EnvironmentDetailsDto>();
-            _idOfEnvironmentToGet = _environmentReturnedByFacade.Id;
+            _keyOfEnvironmentToGet = _environmentReturnedByFacade.Key;
             _readModelFacade
-                .GetEnvironmentDetails(_idOfEnvironmentToGet)
+                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
                 .Returns(_environmentReturnedByFacade);
         }
 
         private void GivenTheEnvironmentWeWantDoesntExist()
         {
-            _idOfEnvironmentToGet = _fixture.Create<Guid>();
+            _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetEnvironmentDetails(_idOfEnvironmentToGet)
+                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
                 .Throws(_fixture.Create<NotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingEnvironment()
         {
-            _idOfEnvironmentToGet = _fixture.Create<Guid>();
+            _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetEnvironmentDetails(_idOfEnvironmentToGet)
+                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
                 .Throws(_fixture.Create<Exception>());
         }
 
         private async Task WhenWeGetTheEnvironment()
         {
-            _result = await _controller.Get(_idOfEnvironmentToGet);
+            _result = await _controller.Get(_keyOfEnvironmentToGet);
         }
 
         private void ThenStatusCode200IsReturned()

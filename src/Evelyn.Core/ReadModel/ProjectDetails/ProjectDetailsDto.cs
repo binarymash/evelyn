@@ -5,8 +5,8 @@
 
     public class ProjectDetailsDto
     {
-        private readonly Dictionary<Guid, EnvironmentListDto> _environments;
-        private readonly Dictionary<Guid, ToggleListDto> _toggles;
+        private readonly Dictionary<string, EnvironmentListDto> _environments;
+        private readonly Dictionary<string, ToggleListDto> _toggles;
 
         public ProjectDetailsDto(Guid id, string name, int version, DateTimeOffset created)
         {
@@ -15,8 +15,8 @@
             Version = version;
             Created = created;
             LastModified = created;
-            _environments = new Dictionary<Guid, EnvironmentListDto>();
-            _toggles = new Dictionary<Guid, ToggleListDto>();
+            _environments = new Dictionary<string, EnvironmentListDto>();
+            _toggles = new Dictionary<string, ToggleListDto>();
         }
 
         public Guid Id { get; }
@@ -38,7 +38,7 @@
             {
                 foreach (var environment in value)
                 {
-                    _environments.Add(environment.Id, environment);
+                    _environments.Add(environment.Key, environment);
                 }
             }
         }
@@ -52,21 +52,21 @@
             {
                 foreach (var toggle in value)
                 {
-                    _toggles.Add(toggle.Id, toggle);
+                    _toggles.Add(toggle.Key, toggle);
                 }
             }
         }
 
         public void AddEnvironment(EnvironmentListDto environment, DateTimeOffset timestamp, int version)
         {
-            _environments.Add(environment.Id, environment);
+            _environments.Add(environment.Key, environment);
             Version = version;
             LastModified = timestamp;
         }
 
         public void AddToggle(ToggleListDto toggle, DateTimeOffset timestamp, int version)
         {
-            _toggles.Add(toggle.Id, toggle);
+            _toggles.Add(toggle.Key, toggle);
             Version = version;
             LastModified = timestamp;
         }

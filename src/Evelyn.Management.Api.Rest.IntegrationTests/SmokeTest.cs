@@ -125,7 +125,7 @@
         private async Task WhenWeGetTheDetailsForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/environments/{_addEnvironmentMessage.Id}")
+                .Request($"/api/projects/{_createProjectMessage.Id}/environments/{_addEnvironmentMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -134,7 +134,7 @@
         private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/toggles/{_addToggleMessage.Id}")
+                .Request($"/api/projects/{_createProjectMessage.Id}/toggles/{_addToggleMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -189,8 +189,7 @@
         {
             var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
             projectDetails.Environments.Should().Contain(environment =>
-                environment.Id == _addEnvironmentMessage.Id &&
-                environment.Name == _addEnvironmentMessage.Name);
+                environment.Key == _addEnvironmentMessage.Key);
         }
 
         private void ThenTheProjectContainsOneToggle()
@@ -203,24 +202,22 @@
         {
             var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
             projectDetails.Toggles.Should().Contain(toggle =>
-                toggle.Id == _addToggleMessage.Id &&
+                toggle.Key == _addToggleMessage.Key &&
                 toggle.Name == _addToggleMessage.Name);
         }
 
         private void ThenTheEnvironmentWeAddedIsReturned()
         {
             var environmentDetails = JsonConvert.DeserializeObject<EnvironmentDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            environmentDetails.Id.Should().Be(_addEnvironmentMessage.Id);
-            environmentDetails.Name.Should().Be(_addEnvironmentMessage.Name);
+            environmentDetails.Key.Should().Be(_addEnvironmentMessage.Key);
             environmentDetails.ProjectId.Should().Be(_createProjectMessage.Id);
         }
 
         private void ThenTheToggleWeAddedIsReturned()
         {
             var toggleDetails = JsonConvert.DeserializeObject<ToggleDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            toggleDetails.Id.Should().Be(_addToggleMessage.Id);
-            toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
+            toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.ProjectId.Should().Be(_createProjectMessage.Id);
         }
     }

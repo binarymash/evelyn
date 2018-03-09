@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/projects/{projectId}/environments/{environmentId}/toggles/{toggleId}")]
+    [Route("api/projects/{projectId}/environments/{environmentKey}/toggles/{toggleKey}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
@@ -22,12 +22,12 @@
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid projectId, Guid environmentId, Guid toggleId, [FromBody]Messages.ChangeToggleState message)
+        public async Task<ObjectResult> Post(Guid projectId, string environmentKey, string toggleKey, [FromBody]Messages.ChangeToggleState message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.ChangeToggleState(UserId, projectId, environmentId, toggleId, message.State, message.ExpectedVersion);
+                var command = new Core.WriteModel.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }
