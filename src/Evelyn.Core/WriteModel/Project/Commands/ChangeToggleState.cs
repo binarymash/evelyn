@@ -1,7 +1,6 @@
-﻿namespace Evelyn.Core.WriteModel.Commands
+﻿namespace Evelyn.Core.WriteModel.Project.Commands
 {
     using System;
-    using CQRSlite.Commands;
 
     public class ChangeToggleState : Command
     {

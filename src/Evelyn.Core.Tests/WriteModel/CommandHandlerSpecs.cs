@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.WriteModel.Commands;
+    using Core.WriteModel.Project.Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;

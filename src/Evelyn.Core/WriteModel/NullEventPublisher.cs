@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.WriteModel.Infrastructure
+﻿namespace Evelyn.Core.WriteModel
 {
     using System.Threading;
     using System.Threading.Tasks;

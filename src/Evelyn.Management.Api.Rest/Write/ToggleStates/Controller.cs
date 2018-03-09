@@ -14,9 +14,9 @@
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.ChangeToggleState> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.ChangeToggleState> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> handler)
         {
             _handler = handler;
         }
@@ -27,7 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedVersion);
+                var command = new Core.WriteModel.Project.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

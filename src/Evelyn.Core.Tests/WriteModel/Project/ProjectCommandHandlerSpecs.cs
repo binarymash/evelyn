@@ -4,8 +4,8 @@
     using AutoFixture;
     using CQRSlite.Commands;
     using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.WriteModel.Domain;
-    using Evelyn.Core.WriteModel.Handlers;
+    using Evelyn.Core.WriteModel.Project.Domain;
+    using Evelyn.Core.WriteModel.Project.Handlers;
 
     public abstract class ProjectCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Project, ProjectCommandHandler, TCommand>
         where TCommand : ICommand

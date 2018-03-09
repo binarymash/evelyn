@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.WriteModel.Commands
+﻿namespace Evelyn.Core.WriteModel
 {
     using CQRSlite.Commands;
 

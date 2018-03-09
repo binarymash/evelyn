@@ -14,9 +14,9 @@
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.CreateProject> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.CreateProject> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.CreateProject> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.CreateProject> handler)
         {
             _handler = handler;
         }
@@ -27,7 +27,7 @@
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.CreateProject(UserId, AccountId, message.Id, message.Name);
+                var command = new Core.WriteModel.Project.Commands.CreateProject(UserId, AccountId, message.Id, message.Name);
                 await _handler.Handle(command);
                 return Accepted();
             }

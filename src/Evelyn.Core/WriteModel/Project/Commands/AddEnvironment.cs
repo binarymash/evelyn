@@ -1,14 +1,14 @@
-﻿namespace Evelyn.Core.WriteModel.Commands
+﻿namespace Evelyn.Core.WriteModel.Project.Commands
 {
     using System;
+    using Evelyn.Core.WriteModel;
 
-    public class AddToggle : Command
+    public class AddEnvironment : Command
     {
-        public AddToggle(string userId, Guid projectId, string key, string name, int? expectedVersion = null)
+        public AddEnvironment(string userId, Guid projectId, string key, int? expectedVersion = null)
             : base(userId)
         {
             Key = key;
-            Name = name;
             ProjectId = projectId;
             ExpectedVersion = expectedVersion;
         }
@@ -16,8 +16,6 @@
         public int? ExpectedVersion { get; set; }
 
         public Guid ProjectId { get; set; }
-
-        public string Name { get; set; }
 
         public string Key { get; set; }
     }

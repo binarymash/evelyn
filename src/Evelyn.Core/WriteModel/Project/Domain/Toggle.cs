@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.WriteModel.Domain
+﻿namespace Evelyn.Core.WriteModel.Project.Domain
 {
     public class Toggle
     {

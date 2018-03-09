@@ -4,7 +4,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     using System.Linq;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;

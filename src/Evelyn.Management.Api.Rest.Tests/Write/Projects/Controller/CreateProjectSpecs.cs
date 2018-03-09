@@ -5,7 +5,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using AutoFixture;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         public CreateProjectSpecs()
         {
             _fixture = new Fixture();
-            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateProject>>();
+            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Project.Commands.CreateProject>>();
             _controller = new Rest.Write.Projects.Controller(_createProjectHandler);
         }
 

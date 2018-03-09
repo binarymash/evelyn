@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.WriteModel.Domain
+﻿namespace Evelyn.Core.WriteModel.Project.Domain
 {
     using System;
     using System.Collections.Generic;

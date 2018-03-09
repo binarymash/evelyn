@@ -1,10 +1,10 @@
-﻿namespace Evelyn.Core.WriteModel.Handlers
+﻿namespace Evelyn.Core.WriteModel.Project.Handlers
 {
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
-    using Evelyn.Core.WriteModel.Commands;
-    using Evelyn.Core.WriteModel.Domain;
+    using Evelyn.Core.WriteModel.Project.Commands;
+    using Evelyn.Core.WriteModel.Project.Domain;
 
     public class ProjectCommandHandler :
         ICommandHandler<CreateProject>,
