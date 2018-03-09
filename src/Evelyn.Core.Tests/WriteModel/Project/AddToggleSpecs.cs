@@ -13,11 +13,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     {
         private Guid _projectId;
 
-        private Guid _newToggleId;
         private string _newToggleName;
         private string _newToggleKey;
 
-        private Guid _existingToggleId;
         private string _existingToggleName;
         private string _existingToggleKey;
 
@@ -31,17 +29,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheNameIsSaved())
                 .And(_ => ThenTheKeyIsSaved())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ToggleAlreadyExistWithSameId()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAToggle())
-                .When(_ => WhenWeAddAnotherToggleWithTheSameId())
-                .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateToggleIdExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -76,50 +63,36 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void GivenWeHaveAddedAToggle()
         {
-            _existingToggleId = DataFixture.Create<Guid>();
-            _existingToggleName = DataFixture.Create<string>();
             _existingToggleKey = DataFixture.Create<string>();
+            _existingToggleName = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleId, _existingToggleName, _existingToggleKey) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleKey, _existingToggleName) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAToggle()
         {
-            _newToggleId = DataFixture.Create<Guid>();
-            _newToggleName = DataFixture.Create<string>();
             _newToggleKey = DataFixture.Create<string>();
-
-            var command = new AddToggle(UserId, _projectId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
-            WhenWeHandle(command);
-        }
-
-        private void WhenWeAddAnotherToggleWithTheSameId()
-        {
-            _newToggleId = _existingToggleId;
             _newToggleName = DataFixture.Create<string>();
-            _newToggleKey = DataFixture.Create<string>();
 
-            var command = new AddToggle(UserId, _projectId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherToggleWithTheSameKey()
         {
-            _newToggleId = DataFixture.Create<Guid>();
-            _newToggleName = DataFixture.Create<string>();
             _newToggleKey = _existingToggleKey;
+            _newToggleName = DataFixture.Create<string>();
 
-            var command = new AddToggle(UserId, _projectId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherToggleWithTheSameName()
         {
-            _newToggleId = DataFixture.Create<Guid>();
-            _newToggleName = _existingToggleName;
             _newToggleKey = DataFixture.Create<string>();
+            _newToggleName = _existingToggleName;
 
-            var command = new AddToggle(UserId, _projectId, _newToggleId, _newToggleName, _newToggleKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -141,11 +114,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void ThenTheKeyIsSaved()
         {
             ((ToggleAdded)PublishedEvents.First()).Key.Should().Be(_newToggleKey);
-        }
-
-        private void ThenADuplicateToggleIdExceptionIsThrown()
-        {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already a toggle with the ID {_newToggleId}");
         }
 
         private void ThenADuplicateToggleKeyExceptionIsThrown()

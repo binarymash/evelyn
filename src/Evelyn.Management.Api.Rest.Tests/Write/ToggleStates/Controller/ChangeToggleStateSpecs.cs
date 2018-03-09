@@ -21,7 +21,7 @@
         private readonly ICommandHandler<ChangeToggleState> _handler;
         private readonly Guid _projectId;
         private readonly string _environmentKey;
-        private readonly Guid _toggleId;
+        private readonly string _toggleKey;
         private Rest.Write.ToggleStates.Messages.ChangeToggleState _message;
         private ObjectResult _result;
 
@@ -32,7 +32,7 @@
             _controller = new Rest.Write.ToggleStates.Controller(_handler);
             _projectId = _fixture.Create<Guid>();
             _environmentKey = _fixture.Create<string>();
-            _toggleId = _fixture.Create<Guid>();
+            _toggleKey = _fixture.Create<string>();
         }
 
         [Fact]
@@ -88,7 +88,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_projectId, _environmentKey, _toggleId, _message);
+            _result = await _controller.Post(_projectId, _environmentKey, _toggleKey, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
@@ -100,7 +100,7 @@
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
                     command.EnvironmentKey == _environmentKey &&
-                    command.ToggleId == _toggleId &&
+                    command.ToggleKey == _toggleKey &&
                     command.Value == _message.State));
         }
 

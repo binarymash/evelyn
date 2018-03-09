@@ -12,7 +12,7 @@
 
     public class ToggleDetailsHandlerSpecs : HandlerSpecs
     {
-        private Guid _toggleId;
+        private string _toggleKey;
 
         [Fact]
         public void Toggle1DoesNotExist()
@@ -31,14 +31,14 @@
 
         private void GivenThatWeDontCreateToggle1()
         {
-            _toggleId = DataFixture.Create<Guid>();
+            _toggleKey = DataFixture.Create<string>();
         }
 
         private void WhenWeGetToggle1Details()
         {
             try
             {
-                ReadModelFacade.GetToggleDetails(_toggleId).GetAwaiter().GetResult().Should().BeNull();
+                ReadModelFacade.GetToggleDetails(_toggleKey).GetAwaiter().GetResult().Should().BeNull();
             }
             catch (Exception ex)
             {

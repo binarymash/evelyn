@@ -36,14 +36,14 @@
         public async Task Handle(AddToggle message)
         {
             var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.AddToggle(message.UserId, message.Id, message.Name, message.Key);
+            project.AddToggle(message.UserId, message.Key, message.Name);
             await _session.Commit();
         }
 
         public async Task Handle(ChangeToggleState message)
         {
             var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleId, message.Value);
+            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value);
             await _session.Commit();
         }
     }

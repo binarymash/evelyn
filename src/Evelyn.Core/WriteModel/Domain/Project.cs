@@ -32,13 +32,8 @@
             ApplyChange(new EnvironmentAdded(userId, Id, key));
         }
 
-        public void AddToggle(string userId, Guid toggleId, string name, string key)
+        public void AddToggle(string userId, string key, string name)
         {
-            if (_toggles.Any(t => t.Id == toggleId))
-            {
-                throw new InvalidOperationException($"There is already a toggle with the ID {toggleId}");
-            }
-
             if (_toggles.Any(t => t.Key == key))
             {
                 throw new InvalidOperationException($"There is already a toggle with the key {key}");
@@ -49,10 +44,10 @@
                 throw new InvalidOperationException($"There is already a toggle with the name {name}");
             }
 
-            ApplyChange(new ToggleAdded(userId, Id, toggleId, name, key));
+            ApplyChange(new ToggleAdded(userId, Id, key, name));
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, Guid toggleId, string value)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value)
         {
             var environment = _environments.FirstOrDefault(e => e.Key == environmentKey);
             if (environment == null)
@@ -60,9 +55,9 @@
                 throw new InvalidOperationException($"There is no environment with the key {environmentKey}");
             }
 
-            if (!_toggles.Any(t => t.Id == toggleId))
+            if (!_toggles.Any(t => t.Key == toggleKey))
             {
-                throw new InvalidOperationException($"There is no toggle with the ID {toggleId}");
+                throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
             }
 
             if (!bool.TryParse(value, out var parsedValue))
@@ -70,7 +65,7 @@
                 throw new InvalidOperationException("Invalid toggle value");
             }
 
-            ApplyChange(new ToggleStateChanged(userId, Id, environmentKey, toggleId, value));
+            ApplyChange(new ToggleStateChanged(userId, Id, environmentKey, toggleKey, value));
         }
 
         private void Apply(ProjectCreated e)
@@ -87,7 +82,7 @@
 
         private void Apply(ToggleAdded e)
         {
-            _toggles.Add(new Toggle(e.ToggleId, e.Name, e.Key));
+            _toggles.Add(new Toggle(e.Key, e.Name));
         }
 
         private void Apply(ToggleStateChanged @event)

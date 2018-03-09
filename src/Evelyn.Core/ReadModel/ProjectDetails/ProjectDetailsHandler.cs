@@ -33,7 +33,7 @@
         public async Task Handle(ToggleAdded message, CancellationToken token)
         {
             var projectDetails = await _db.Get(message.Id);
-            projectDetails.AddToggle(new ToggleListDto(message.ToggleId, message.Name), message.TimeStamp, message.Version);
+            projectDetails.AddToggle(new ToggleListDto(message.Key, message.Name), message.TimeStamp, message.Version);
         }
     }
 }

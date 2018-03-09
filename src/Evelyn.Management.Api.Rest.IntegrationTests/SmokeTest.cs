@@ -134,7 +134,7 @@
         private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/toggles/{_addToggleMessage.Id}")
+                .Request($"/api/projects/{_createProjectMessage.Id}/toggles/{_addToggleMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -202,7 +202,7 @@
         {
             var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
             projectDetails.Toggles.Should().Contain(toggle =>
-                toggle.Id == _addToggleMessage.Id &&
+                toggle.Key == _addToggleMessage.Key &&
                 toggle.Name == _addToggleMessage.Name);
         }
 
@@ -216,9 +216,8 @@
         private void ThenTheToggleWeAddedIsReturned()
         {
             var toggleDetails = JsonConvert.DeserializeObject<ToggleDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
-            toggleDetails.Id.Should().Be(_addToggleMessage.Id);
-            toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
+            toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.ProjectId.Should().Be(_createProjectMessage.Id);
         }
     }

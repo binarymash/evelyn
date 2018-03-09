@@ -10,16 +10,16 @@
     public class ToggleDetailsHandler
         : ICancellableEventHandler<ToggleAdded>
     {
-        private readonly IDatabase<Guid, ToggleDetailsDto> _db;
+        private readonly IDatabase<string, ToggleDetailsDto> _db;
 
-        public ToggleDetailsHandler(IDatabase<Guid, ToggleDetailsDto> db)
+        public ToggleDetailsHandler(IDatabase<string, ToggleDetailsDto> db)
         {
             _db = db;
         }
 
         public Task Handle(ToggleAdded message, CancellationToken token)
         {
-            _db.AddOrUpdate(message.ToggleId, new ToggleDetailsDto(message.Id, message.ToggleId, message.Name, message.Key, message.TimeStamp));
+            _db.AddOrUpdate(message.Key, new ToggleDetailsDto(message.Id, message.Key, message.Name, message.TimeStamp));
             return Task.CompletedTask;
         }
     }

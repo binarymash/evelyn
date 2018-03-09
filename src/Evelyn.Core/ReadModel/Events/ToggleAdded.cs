@@ -4,15 +4,12 @@
 
     public class ToggleAdded : ProjectEvent
     {
-        public ToggleAdded(string userId, Guid projectId, Guid toggleId, string name, string key)
+        public ToggleAdded(string userId, Guid projectId, string key, string name)
             : base(userId, projectId)
         {
-            ToggleId = toggleId;
             Name = name;
             Key = key;
         }
-
-        public Guid ToggleId { get; set; }
 
         public string Name { get; set; }
 

@@ -1,16 +1,14 @@
 ﻿namespace Evelyn.Core.ReadModel.ProjectDetails
 {
-    using System;
-
     public class ToggleListDto
     {
-        public ToggleListDto(Guid id, string name)
+        public ToggleListDto(string key, string name)
         {
-            Id = id;
+            Key = key;
             Name = name;
         }
 
-        public Guid Id { get; }
+        public string Key { get; }
 
         public string Name { get; }
     }

@@ -12,12 +12,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     public class SetToggleStateSpecs : ProjectCommandHandlerSpecs<ChangeToggleState>
     {
         private Guid _projectId;
-
         private string _environmentKey;
-
-        private Guid _toggleId;
-        private string _toggleName;
         private string _toggleKey;
+        private string _toggleName;
         private string _toggleState;
 
         [Fact]
@@ -64,7 +61,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheUserIdIsSaved())
                 .And(_ => ThenTheProjectIdIsSaved())
                 .And(_ => ThenTheEnvironmentKeyIsSaved())
-                .And(_ => ThenTheToggleIdIsSaved())
+                .And(_ => ThenTheToggleKeyIsSaved())
                 .And(_ => ThenTheToggleStateIsSaved())
                 .BDDfy();
         }
@@ -85,19 +82,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void GivenWeHaveAddedAToggle()
         {
-            _toggleId = DataFixture.Create<Guid>();
             _toggleName = DataFixture.Create<string>();
             _toggleKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleId, _toggleName, _toggleKey) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
         {
-            _toggleId = DataFixture.Create<Guid>();
+            _toggleKey = DataFixture.Create<string>();
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -105,7 +101,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             _toggleState = DataFixture.Create<string>();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -113,7 +109,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             _toggleState = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleId, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _toggleState) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
         }
 
@@ -124,7 +120,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void ThenAToggleDoesNotExistExceptionIsThrown()
         {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no toggle with the ID {_toggleId}");
+            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is no toggle with the key {_toggleKey}");
         }
 
         private void ThenAnInvalidToggleStateExceptionIsThrown()
@@ -152,9 +148,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             ((ToggleStateChanged)PublishedEvents.First()).EnvironmentKey.Should().Be(_environmentKey);
         }
 
-        private void ThenTheToggleIdIsSaved()
+        private void ThenTheToggleKeyIsSaved()
         {
-            ((ToggleStateChanged)PublishedEvents.First()).ToggleId.Should().Be(_toggleId);
+            ((ToggleStateChanged)PublishedEvents.First()).ToggleKey.Should().Be(_toggleKey);
         }
 
         private void ThenTheToggleStateIsSaved()

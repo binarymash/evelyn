@@ -16,13 +16,13 @@
 
         private readonly IDatabase<string, EnvironmentDetailsDto> _environmentDetails;
 
-        private readonly IDatabase<Guid, ToggleDetailsDto> _toggleDetails;
+        private readonly IDatabase<string, ToggleDetailsDto> _toggleDetails;
 
         public DatabaseReadModelFacade(
             IDatabase<string, AccountProjectsDto> accountProjects,
             IDatabase<Guid, ProjectDetailsDto> projectDetails,
             IDatabase<string, EnvironmentDetailsDto> environmentDetails,
-            IDatabase<Guid, ToggleDetailsDto> toggleDetails)
+            IDatabase<string, ToggleDetailsDto> toggleDetails)
         {
             _accountProjects = accountProjects;
             _projectDetails = projectDetails;
@@ -53,9 +53,9 @@
             return await _environmentDetails.Get(environmentKey);
         }
 
-        public async Task<ToggleDetailsDto> GetToggleDetails(Guid toggleId)
+        public async Task<ToggleDetailsDto> GetToggleDetails(string toggleKey)
         {
-            return await _toggleDetails.Get(toggleId);
+            return await _toggleDetails.Get(toggleKey);
         }
     }
 }
