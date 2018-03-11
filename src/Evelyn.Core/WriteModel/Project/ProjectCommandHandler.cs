@@ -1,13 +1,12 @@
-﻿namespace Evelyn.Core.WriteModel.Project.Handlers
+﻿namespace Evelyn.Core.WriteModel.Project
 {
     using System.Threading.Tasks;
+    using Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
-    using Evelyn.Core.WriteModel.Project.Commands;
-    using Evelyn.Core.WriteModel.Project.Domain;
+    using Domain;
 
     public class ProjectCommandHandler :
-        ICommandHandler<CreateProject>,
         ICommandHandler<AddEnvironment>,
         ICommandHandler<AddToggle>,
         ICommandHandler<ChangeToggleState>
@@ -17,13 +16,6 @@
         public ProjectCommandHandler(ISession session)
         {
             _session = session;
-        }
-
-        public async Task Handle(CreateProject message)
-        {
-            var project = new Project(message.UserId, message.AccountId, message.Id, message.Name);
-            await _session.Add(project);
-            await _session.Commit();
         }
 
         public async Task Handle(AddEnvironment message)

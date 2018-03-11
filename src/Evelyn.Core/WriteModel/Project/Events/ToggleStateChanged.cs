@@ -1,8 +1,8 @@
-﻿namespace Evelyn.Core.ReadModel.Events
+﻿namespace Evelyn.Core.WriteModel.Project.Events
 {
     using System;
 
-    public class ToggleStateChanged : ProjectEvent
+    public class ToggleStateChanged : Event
     {
         public ToggleStateChanged(string userId, Guid projectId, string environmentKey, string toggleKey, string value)
             : base(userId, projectId)

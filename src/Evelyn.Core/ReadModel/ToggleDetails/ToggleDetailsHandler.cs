@@ -1,11 +1,10 @@
 ﻿namespace Evelyn.Core.ReadModel.ToggleDetails
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Events;
     using Infrastructure;
+    using WriteModel.Project.Events;
 
     public class ToggleDetailsHandler
         : ICancellableEventHandler<ToggleAdded>

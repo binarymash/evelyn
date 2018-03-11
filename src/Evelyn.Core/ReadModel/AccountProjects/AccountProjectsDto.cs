@@ -6,13 +6,13 @@
 
     public class AccountProjectsDto
     {
-        public AccountProjectsDto(string accountId)
+        public AccountProjectsDto(Guid accountId)
         {
             AccountId = accountId;
             Projects = new Dictionary<Guid, ProjectListDto>();
         }
 
-        public string AccountId { get; private set; }
+        public Guid AccountId { get; private set; }
 
         public Dictionary<Guid, ProjectListDto> Projects { get; private set; }
     }

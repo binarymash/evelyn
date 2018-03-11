@@ -23,9 +23,5 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="WriteModel\Account\" />
-  </ItemGroup>
 
 </Project>

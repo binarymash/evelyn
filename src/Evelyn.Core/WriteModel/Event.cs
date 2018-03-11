@@ -1,14 +1,14 @@
-﻿namespace Evelyn.Core.ReadModel.Events
+﻿namespace Evelyn.Core.WriteModel
 {
     using System;
     using CQRSlite.Events;
 
-    public abstract class ProjectEvent : IEvent
+    public abstract class Event : IEvent
     {
-        protected ProjectEvent(string userId, Guid projectId)
+        protected Event(string userId, Guid aggregateId)
         {
             UserId = userId;
-            Id = projectId;
+            Id = aggregateId;
         }
 
         public string UserId { get; set; }

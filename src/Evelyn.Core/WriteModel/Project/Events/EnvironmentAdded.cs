@@ -1,8 +1,8 @@
-﻿namespace Evelyn.Core.ReadModel.Events
+﻿namespace Evelyn.Core.WriteModel.Project.Events
 {
     using System;
 
-    public class EnvironmentAdded : ProjectEvent
+    public class EnvironmentAdded : Event
     {
         public EnvironmentAdded(string userId, Guid projectId, string key)
             : base(userId, projectId)

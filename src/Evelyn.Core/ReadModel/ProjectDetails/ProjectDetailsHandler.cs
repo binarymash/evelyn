@@ -4,8 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.ReadModel.Infrastructure;
+    using WriteModel.Project.Events;
 
     public class ProjectDetailsHandler :
         ICancellableEventHandler<ProjectCreated>,

@@ -6,10 +6,10 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.ProjectDetails;
+    using Core.WriteModel.Project.Events;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;

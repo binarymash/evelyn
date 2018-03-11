@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
+    using Evelyn.Core.ReadModel.AccountProjects;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.ProjectList;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
@@ -21,9 +21,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void SynchronouslyInProcess(this EventPublisherOptions parentOptions)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.TryAddSingleton<ProjectDetailsHandler>();
             parentOptions.Services.TryAddSingleton<AccountProjectsHandler>();
+            parentOptions.Services.TryAddSingleton<ProjectDetailsHandler>();
+
             parentOptions.Services.TryAddSingleton<EnvironmentDetailsHandler>();
+
             parentOptions.Services.TryAddSingleton<ToggleDetailsHandler>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();

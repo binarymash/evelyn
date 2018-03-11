@@ -2,9 +2,9 @@
 {
     using System;
     using AutoFixture;
+    using Core.WriteModel.Project.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Events;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using FluentAssertions;
     using TestStack.BDDfy;

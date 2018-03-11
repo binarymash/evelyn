@@ -1,8 +1,8 @@
-﻿namespace Evelyn.Core.ReadModel.Events
+﻿namespace Evelyn.Core.WriteModel.Project.Events
 {
     using System;
 
-    public class ToggleAdded : ProjectEvent
+    public class ToggleAdded : Event
     {
         public ToggleAdded(string userId, Guid projectId, string key, string name)
             : base(userId, projectId)

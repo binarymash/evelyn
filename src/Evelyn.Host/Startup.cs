@@ -1,6 +1,6 @@
 ﻿namespace Evelyn.Host
 {
-    using System.Net;
+    using Core.WriteModel;
     using Evelyn.Management.Api.Rest;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -43,7 +43,7 @@
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStartUpCommands startUpCommands)
         {
             if (env.IsDevelopment())
             {
@@ -52,7 +52,7 @@
 
             app.UseMvc();
 
-            app.UseEvelynApi();
+            app.UseEvelynApi(startUpCommands);
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "Evelyn Management API"));

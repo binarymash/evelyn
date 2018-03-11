@@ -8,7 +8,6 @@
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
     using Core.ReadModel.ProjectDetails;
-    using Core.ReadModel.ProjectList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
@@ -95,7 +94,7 @@
             _addEnvironmentMessage.ExpectedVersion = 0;
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/environments")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments")
                 .PostJsonAsync(_addEnvironmentMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -107,7 +106,7 @@
             _addToggleMessage.ExpectedVersion = 1;
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/toggles")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles")
                 .PostJsonAsync(_addToggleMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -116,7 +115,7 @@
         private async Task WhenWeGetTheDetailsForTheProjectWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -125,7 +124,7 @@
         private async Task WhenWeGetTheDetailsForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/environments/{_addEnvironmentMessage.Key}")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -134,7 +133,7 @@
         private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.Id}/toggles/{_addToggleMessage.Key}")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -175,8 +174,8 @@
         private void ThenTheProjectWeAddedIsInTheCollection()
         {
             var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            projectList.Projects[_createProjectMessage.Id].Id.Should().Be(_createProjectMessage.Id);
-            projectList.Projects[_createProjectMessage.Id].Name.Should().Be(_createProjectMessage.Name);
+            projectList.Projects[_createProjectMessage.ProjectId].Id.Should().Be(_createProjectMessage.ProjectId);
+            projectList.Projects[_createProjectMessage.ProjectId].Name.Should().Be(_createProjectMessage.Name);
         }
 
         private void ThenTheProjectContainsOneEnvironment()
@@ -210,7 +209,7 @@
         {
             var environmentDetails = JsonConvert.DeserializeObject<EnvironmentDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
             environmentDetails.Key.Should().Be(_addEnvironmentMessage.Key);
-            environmentDetails.ProjectId.Should().Be(_createProjectMessage.Id);
+            environmentDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
         }
 
         private void ThenTheToggleWeAddedIsReturned()
@@ -218,7 +217,7 @@
             var toggleDetails = JsonConvert.DeserializeObject<ToggleDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
             toggleDetails.Name.Should().Be(_addToggleMessage.Name);
-            toggleDetails.ProjectId.Should().Be(_createProjectMessage.Id);
+            toggleDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
         }
     }
 }

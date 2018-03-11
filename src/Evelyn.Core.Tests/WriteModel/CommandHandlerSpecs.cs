@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel.Account.Commands;
     using Core.WriteModel.Project.Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
@@ -92,6 +93,11 @@
         protected void ThenOneEventIsPublished()
         {
             PublishedEvents.Count.Should().Be(1);
+        }
+
+        protected void ThenTwoEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(2);
         }
 
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)

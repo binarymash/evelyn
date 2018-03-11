@@ -1,15 +1,15 @@
-﻿namespace Evelyn.Core.WriteModel.Project.Commands
+﻿namespace Evelyn.Core.WriteModel.Account.Commands
 {
     using System;
 
     public class CreateProject : Command
     {
-        public CreateProject(string userId, string accountId, Guid id, string name, int? expectedVersion = null)
+        public CreateProject(string userId, Guid id, Guid projectId, string name, int? expectedVersion = null)
             : base(userId)
         {
             Id = id;
+            ProjectId = projectId;
             Name = name;
-            AccountId = accountId;
             ExpectedVersion = expectedVersion;
         }
 
@@ -19,6 +19,6 @@
 
         public string Name { get; set; }
 
-        public string AccountId { get; set; }
+        public Guid ProjectId { get; set; }
     }
 }

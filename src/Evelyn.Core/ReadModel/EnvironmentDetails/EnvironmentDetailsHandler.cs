@@ -3,8 +3,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.ReadModel.Infrastructure;
+    using Infrastructure;
+    using WriteModel.Project.Events;
 
     public class EnvironmentDetailsHandler
         : ICancellableEventHandler<EnvironmentAdded>

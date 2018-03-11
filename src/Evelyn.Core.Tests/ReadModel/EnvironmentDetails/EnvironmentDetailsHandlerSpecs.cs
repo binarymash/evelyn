@@ -2,10 +2,10 @@
 {
     using System;
     using AutoFixture;
+    using Core.WriteModel.Project.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;

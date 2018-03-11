@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using CQRSlite.Domain;
-    using Evelyn.Core.ReadModel.Events;
+    using Events;
 
     public class Project : AggregateRoot
     {
@@ -16,7 +16,7 @@
             Version = -1;
         }
 
-        public Project(string userId, string accountId, Guid projectId, string name)
+        public Project(string userId, Guid accountId, Guid projectId, string name)
             : this()
         {
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name));

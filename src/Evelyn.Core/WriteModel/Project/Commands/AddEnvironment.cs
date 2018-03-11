@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Core.WriteModel.Project.Commands
 {
     using System;
-    using Evelyn.Core.WriteModel;
 
     public class AddEnvironment : Command
     {
