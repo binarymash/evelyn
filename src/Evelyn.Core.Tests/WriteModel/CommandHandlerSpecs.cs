@@ -100,6 +100,11 @@
             PublishedEvents.Count.Should().Be(2);
         }
 
+        protected void ThenThreeEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(3);
+        }
+
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)
         {
             ThrownException.Should().BeOfType<InvalidOperationException>();

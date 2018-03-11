@@ -4,11 +4,11 @@
 
     public class CreateSystem : Command
     {
-        public CreateSystem(string userId, Guid id, int? expectedVersion = null)
+        public CreateSystem(string userId, Guid id)
             : base(userId)
         {
             Id = id;
-            ExpectedVersion = expectedVersion;
+            ExpectedVersion = -1;
         }
 
         public int? ExpectedVersion { get; set; }

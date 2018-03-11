@@ -1,12 +1,15 @@
 ﻿namespace Evelyn.Core.WriteModel.Evelyn
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
+    using CQRSlite.Domain.Exception;
     using Domain;
 
     public class EvelynCommandHandler :
+        ICommandHandler<CreateSystem>,
         ICommandHandler<StartSystem>,
         ICommandHandler<RegisterAccount>
     {
@@ -17,18 +20,28 @@
             _session = session;
         }
 
-        public async Task Handle(StartSystem message)
+        public async Task Handle(CreateSystem message)
         {
-            var evelyn = await _session.Get<Evelyn>(Constants.EvelynSystem);
-            if (evelyn == null)
+            Evelyn evelyn;
+            try
+            {
+                evelyn = await _session.Get<Evelyn>(Constants.EvelynSystem);
+            }
+            catch (AggregateNotFoundException)
             {
                 evelyn = new Evelyn(Constants.SystemUser, Constants.EvelynSystem);
                 await _session.Add(evelyn);
 
-                var account = evelyn.RegisterAccount(Constants.SystemUser, Constants.DefaultAccount);
-                await _session.Add(account);
+                var defaultAccount = evelyn.RegisterAccount(Constants.SystemUser, Constants.DefaultAccount);
+                await _session.Add(defaultAccount);
             }
 
+            await _session.Commit();
+        }
+
+        public async Task Handle(StartSystem message)
+        {
+            var evelyn = await _session.Get<Evelyn>(Constants.EvelynSystem);
             evelyn.StartSystem(message.UserId);
             await _session.Commit();
         }

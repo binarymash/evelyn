@@ -2,44 +2,28 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
+    using Evelyn.Commands;
 
     public class StartUpCommands : IStartUpCommands
     {
-        private readonly ISession _session;
+        private readonly ICommandHandler<CreateSystem> _createSystemHandler;
+        private readonly ICommandHandler<StartSystem> _startSystemHandler;
 
-        public StartUpCommands(ISession session)
+        public StartUpCommands(
+            ICommandHandler<CreateSystem> createSystemHandler,
+            ICommandHandler<StartSystem> startSystemHandler)
         {
-            _session = session;
+            _createSystemHandler = createSystemHandler;
+            _startSystemHandler = startSystemHandler;
         }
 
         public async Task Execute()
         {
-            await EnsureSystemIsInitialised();
-        }
-
-        private async Task EnsureSystemIsInitialised()
-        {
-            Evelyn.Domain.Evelyn evelyn;
-            try
-            {
-                evelyn = await _session.Get<Evelyn.Domain.Evelyn>(Constants.EvelynSystem);
-            }
-            catch (AggregateNotFoundException)
-            {
-                evelyn = new Evelyn.Domain.Evelyn(Constants.SystemUser, Constants.EvelynSystem);
-                await _session.Add(evelyn);
-            }
-
-            if (!evelyn.Accounts.Any())
-            {
-                var defaultAccount = evelyn.RegisterAccount(Constants.SystemUser, Constants.DefaultAccount);
-                await _session.Add(defaultAccount);
-            }
-
-            evelyn.StartSystem(Constants.SystemUser);
-            await _session.Commit();
+            await _createSystemHandler.Handle(new CreateSystem(Constants.SystemUser, Constants.EvelynSystem));
+            await _startSystemHandler.Handle(new StartSystem(Constants.SystemUser, Constants.EvelynSystem));
         }
     }
 }

@@ -3,9 +3,9 @@
     using System;
     using AutoFixture;
     using Core.WriteModel.Project;
+    using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
-    using Evelyn.Core.WriteModel.Project.Domain;
 
     public abstract class ProjectCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Project, ProjectCommandHandler, TCommand>
         where TCommand : ICommand

@@ -3,7 +3,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account
     using System;
     using System.Linq;
     using AutoFixture;
-    using Evelyn.Core.WriteModel.Account.Commands;
+    using Core.WriteModel.Account.Commands;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
