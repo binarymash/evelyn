@@ -23,9 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             parentOptions.Services.TryAddSingleton<AccountProjectsHandler>();
             parentOptions.Services.TryAddSingleton<ProjectDetailsHandler>();
-
             parentOptions.Services.TryAddSingleton<EnvironmentDetailsHandler>();
-
             parentOptions.Services.TryAddSingleton<ToggleDetailsHandler>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();

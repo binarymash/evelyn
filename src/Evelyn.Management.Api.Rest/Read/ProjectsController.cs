@@ -29,6 +29,10 @@
                 var result = await _readModelFacade.GetProjects(AccountId);
                 return Ok(result);
             }
+            catch (NotFoundException)
+            {
+                return NotFound(null);
+            }
             catch (Exception)
             {
                 return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };

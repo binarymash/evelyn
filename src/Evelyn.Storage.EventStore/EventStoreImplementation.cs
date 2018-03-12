@@ -72,12 +72,12 @@
 
         private string MapStreamName(IEnumerable<IEvent> events)
         {
-            return $"{events.First().Id}";
+            return $"evelyn-{events.First().Id}";
         }
 
-        private string MapStreamName(Guid projectId)
+        private string MapStreamName(Guid aggregateId)
         {
-            return $"{projectId}";
+            return $"evelyn-{aggregateId}";
         }
     }
 }

@@ -4,6 +4,7 @@ namespace Microsoft.Extensions.DependencyInjection
     using System;
     using CQRSlite.Events;
     using Evelyn.Storage.EventStore;
+    using Hosting;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class EventStoreDotOrg
@@ -19,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             parentOptions.Services.TryAddSingleton<IEventStore, EventStoreImplementation>();
 
-            var options = new EventStoreDotOrgOptions();
+            var options = new EventStoreDotOrgOptions(parentOptions.Services);
             action.Invoke(options);
             parentOptions.Services.TryAddSingleton(options.ConnectionFactory);
         }
