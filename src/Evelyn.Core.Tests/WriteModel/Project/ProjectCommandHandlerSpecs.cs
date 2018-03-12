@@ -2,10 +2,10 @@
 {
     using System;
     using AutoFixture;
+    using Core.WriteModel.Project;
+    using Core.WriteModel.Project.Domain;
+    using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
-    using Evelyn.Core.ReadModel.Events;
-    using Evelyn.Core.WriteModel.Domain;
-    using Evelyn.Core.WriteModel.Handlers;
 
     public abstract class ProjectCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Project, ProjectCommandHandler, TCommand>
         where TCommand : ICommand

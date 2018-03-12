@@ -9,7 +9,7 @@
 
     public interface IReadModelFacade
     {
-        Task<AccountProjectsDto> GetProjects(string accountId);
+        Task<AccountProjectsDto> GetProjects(Guid accountId);
 
         Task<ProjectDetailsDto> GetProjectDetails(Guid projectId);
 

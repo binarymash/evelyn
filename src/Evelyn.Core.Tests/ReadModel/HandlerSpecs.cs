@@ -4,7 +4,6 @@
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
     using Core.ReadModel.ProjectDetails;
-    using Core.ReadModel.ProjectList;
     using Core.ReadModel.ToggleDetails;
     using CQRSlite.Events;
     using CQRSlite.Routing;
@@ -20,7 +19,7 @@
         {
             DataFixture = new Fixture();
 
-            AccountProjectsStore = new InMemoryDatabase<string, AccountProjectsDto>();
+            AccountProjectsStore = new InMemoryDatabase<Guid, AccountProjectsDto>();
             ProjectDetailsStore = new InMemoryDatabase<Guid, ProjectDetailsDto>();
             EnvironmentDetailsStore = new InMemoryDatabase<string, EnvironmentDetailsDto>();
             ToggleDetailsStore = new InMemoryDatabase<string, ToggleDetailsDto>();
@@ -40,7 +39,7 @@
 
         protected IReadModelFacade ReadModelFacade { get; }
 
-        protected IDatabase<string, AccountProjectsDto> AccountProjectsStore { get; }
+        protected IDatabase<Guid, AccountProjectsDto> AccountProjectsStore { get; }
 
         protected IDatabase<Guid, ProjectDetailsDto> ProjectDetailsStore { get; }
 

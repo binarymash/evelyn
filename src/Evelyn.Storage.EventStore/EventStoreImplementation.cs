@@ -27,11 +27,14 @@
         public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = new CancellationToken())
 #pragma warning restore SA1129 // Do not use default value type constructor
         {
-            var expectedVersion = MapExpectedVersion(events);
-            var streamName = MapStreamName(events);
-            var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
+            if (events.Any())
+            {
+                var expectedVersion = MapExpectedVersion(events);
+                var streamName = MapStreamName(events);
+                var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
 
-            await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
+                await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
+            }
         }
 
 #pragma warning disable SA1129 // Do not use default value type constructor
@@ -69,12 +72,12 @@
 
         private string MapStreamName(IEnumerable<IEvent> events)
         {
-            return $"project-{events.First().Id}";
+            return $"{events.First().Id}";
         }
 
         private string MapStreamName(Guid projectId)
         {
-            return $"project-{projectId}";
+            return $"{projectId}";
         }
     }
 }

@@ -1,25 +1,27 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.Events;
-    using Core.ReadModel.ProjectList;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
+    using AccountEvents = Core.WriteModel.Account.Events;
+    using ProjectEvents = Core.WriteModel.Project.Events;
 
     public class AccountProjectsHandlerSpecs : HandlerSpecs
     {
         private readonly List<IEvent> _eventsProject1;
         private readonly List<IEvent> _eventsProject2;
-        private readonly string _accountId;
 
-        private ProjectCreated _event1;
-        private ProjectCreated _event2;
+        private Guid _accountId;
+
+        private ProjectEvents.ProjectCreated project1CreatedEvent;
+        private ProjectEvents.ProjectCreated _project2CreatedEvent;
 
         private AccountProjectsDto _retrievedAccountProjects;
 
@@ -27,13 +29,13 @@
         {
             _eventsProject1 = new List<IEvent>();
             _eventsProject2 = new List<IEvent>();
-            _accountId = DataFixture.Create<string>();
         }
 
         [Fact]
         public void ProjectCreated()
         {
-            this.Given(_ => GivenAnProjectIsCreated())
+            this.Given(_ => GivenAnAccountIsRegistered())
+                .And(_ => GivenAnProjectIsCreated())
                 .When(_ => WhenWeGetTheProjectList())
                 .Then(_ => ThenTheProjectIsAddedToTheProjectList())
                 .BDDfy();
@@ -42,7 +44,8 @@
         [Fact]
         public void MultipleProjectsCreated()
         {
-            this.Given(_ => GivenAnProjectIsCreated())
+            this.Given(_ => GivenAnAccountIsRegistered())
+                .And(_ => GivenAnProjectIsCreated())
                 .And(_ => GivenAnotherProjectIsCreated())
                 .When(_ => WhenWeGetTheProjectList())
                 .Then(_ => ThenBothProjectsAreInTheProjectList())
@@ -52,29 +55,37 @@
         protected override void RegisterHandlers(Router router)
         {
             var handler = new AccountProjectsHandler(AccountProjectsStore);
-            router.RegisterHandler<ProjectCreated>(handler.Handle);
+            router.RegisterHandler<AccountEvents.AccountRegistered>(handler.Handle);
+            router.RegisterHandler<ProjectEvents.ProjectCreated>(handler.Handle);
+        }
+
+        private void GivenAnAccountIsRegistered()
+        {
+            var accountRegisteredEvent = DataFixture.Create<AccountEvents.AccountRegistered>();
+            _accountId = accountRegisteredEvent.Id;
+            GivenWePublish(accountRegisteredEvent);
         }
 
         private void GivenAnProjectIsCreated()
         {
-            _event1 = DataFixture.Build<ProjectCreated>()
+            project1CreatedEvent = DataFixture.Build<ProjectEvents.ProjectCreated>()
                 .With(pc => pc.AccountId, _accountId)
                 .With(pc => pc.Version, _eventsProject1.Count + 1)
                 .Create();
 
-            _eventsProject1.Add(_event1);
-            GivenWePublish(_event1);
+            _eventsProject1.Add(project1CreatedEvent);
+            GivenWePublish(project1CreatedEvent);
         }
 
         private void GivenAnotherProjectIsCreated()
         {
-            _event2 = DataFixture.Build<ProjectCreated>()
+            _project2CreatedEvent = DataFixture.Build<ProjectEvents.ProjectCreated>()
                 .With(pc => pc.AccountId, _accountId)
                 .With(pc => pc.Version, _eventsProject2.Count + 1)
                 .Create();
 
-            _eventsProject2.Add(_event2);
-            GivenWePublish(_event2);
+            _eventsProject2.Add(_project2CreatedEvent);
+            GivenWePublish(_project2CreatedEvent);
         }
 
         private async Task WhenWeGetTheProjectList()
@@ -85,18 +96,18 @@
         private void ThenTheProjectIsAddedToTheProjectList()
         {
             _retrievedAccountProjects.Projects.Count.Should().Be(1);
-            ThenThereIsAnProjectInTheListFor(_event1);
+            ThenThereIsAnProjectInTheListFor(project1CreatedEvent);
         }
 
         private void ThenBothProjectsAreInTheProjectList()
         {
             _retrievedAccountProjects.Projects.Count.Should().Be(2);
 
-            ThenThereIsAnProjectInTheListFor(_event1);
-            ThenThereIsAnProjectInTheListFor(_event2);
+            ThenThereIsAnProjectInTheListFor(project1CreatedEvent);
+            ThenThereIsAnProjectInTheListFor(_project2CreatedEvent);
         }
 
-        private void ThenThereIsAnProjectInTheListFor(ProjectCreated ev)
+        private void ThenThereIsAnProjectInTheListFor(ProjectEvents.ProjectCreated ev)
         {
             AccountProjectsStore.Get(_accountId)
                 .GetAwaiter().GetResult()

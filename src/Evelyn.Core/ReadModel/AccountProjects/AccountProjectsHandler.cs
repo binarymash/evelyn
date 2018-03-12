@@ -1,34 +1,34 @@
-﻿namespace Evelyn.Core.ReadModel.ProjectList
+﻿namespace Evelyn.Core.ReadModel.AccountProjects
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel.AccountProjects;
-    using Events;
     using Infrastructure;
+    using ProjectList;
+    using AccountEvents = WriteModel.Account.Events;
+    using ProjectEvents = WriteModel.Project.Events;
 
     public class AccountProjectsHandler
-        : ICancellableEventHandler<ProjectCreated>
+        : ICancellableEventHandler<AccountEvents.AccountRegistered>,
+        ICancellableEventHandler<ProjectEvents.ProjectCreated>
     {
-        private readonly IDatabase<string, AccountProjectsDto> _db;
+        private readonly IDatabase<Guid, AccountProjectsDto> _db;
 
-        public AccountProjectsHandler(IDatabase<string, AccountProjectsDto> db)
+        public AccountProjectsHandler(IDatabase<Guid, AccountProjectsDto> db)
         {
             _db = db;
         }
 
-        public async Task Handle(ProjectCreated message, CancellationToken token)
+        public async Task Handle(AccountEvents.AccountRegistered message, CancellationToken token = default(CancellationToken))
         {
-            AccountProjectsDto accountProjects;
-            try
-            {
-                accountProjects = await _db.Get(message.AccountId);
-            }
-            catch (NotFoundException)
-            {
-                accountProjects = new AccountProjectsDto(message.AccountId);
-            }
+            var accountProjects = new AccountProjectsDto(message.Id);
+            await _db.AddOrUpdate(accountProjects.AccountId, accountProjects);
+        }
 
+        public async Task Handle(ProjectEvents.ProjectCreated message, CancellationToken token)
+        {
+            var accountProjects = await _db.Get(message.AccountId);
             accountProjects.Projects.Add(message.Id, new ProjectListDto(message.Id, message.Name));
             await _db.AddOrUpdate(accountProjects.AccountId, accountProjects);
         }

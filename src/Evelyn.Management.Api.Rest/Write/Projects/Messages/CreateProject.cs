@@ -4,13 +4,13 @@
 
     public class CreateProject
     {
-        public CreateProject(Guid id, string name)
+        public CreateProject(Guid projectId, string name)
         {
-            Id = id;
+            ProjectId = projectId;
             Name = name;
         }
 
-        public Guid Id { get; set; }
+        public Guid ProjectId { get; set; }
 
         public string Name { get; set; }
     }

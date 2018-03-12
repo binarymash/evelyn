@@ -1,10 +1,9 @@
 ﻿namespace Evelyn.Management.Api.Rest.Tests.Read
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core;
     using Core.ReadModel.AccountProjects;
     using Core.ReadModel.ProjectDetails;
     using Core.ReadModel.ProjectList;
@@ -24,7 +23,7 @@
         private readonly Fixture _fixture;
         private readonly ProjectsController _controller;
         private readonly IReadModelFacade _readModelFacade;
-        private readonly string _accountId = Constants.DefaultAccount;
+        private readonly Guid _accountId = Constants.DefaultAccount;
         private Guid _idOfProjectToGet;
         private AccountProjectsDto _accountProjectsReturnedByFacade;
         private ProjectDetailsDto _projectReturnedByFacade;

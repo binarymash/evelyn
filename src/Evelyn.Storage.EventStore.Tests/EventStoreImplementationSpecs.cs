@@ -10,8 +10,8 @@ namespace Evelyn.Storage.EventStore.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.Events;
     using Core.WriteModel;
+    using Core.WriteModel.Project.Events;
     using CQRSlite.Events;
     using Evelyn.Storage.EventStore;
     using FluentAssertions;
@@ -88,7 +88,7 @@ namespace Evelyn.Storage.EventStore.Tests
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
-                .Then(_ => ThenTheStoredEventStreamIsNamedByProjectAggregateRootId())
+                .Then(_ => ThenTheStoredEventStreamIsNamedByAggregateRootId())
                 .BDDfy();
         }
 
@@ -290,16 +290,16 @@ namespace Evelyn.Storage.EventStore.Tests
             event1.Should().BeEquivalentTo(event2);
         }
 
-        private async Task ThenTheStoredEventStreamIsNamedByProjectAggregateRootId()
+        private async Task ThenTheStoredEventStreamIsNamedByAggregateRootId()
         {
-            var expectedStreamName = $"project-{_aggregateId}";
+            var expectedStreamName = $"{_aggregateId}";
             var result = await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
             result.Events.Should().HaveCount(_eventsAddedToStore.Count);
         }
 
         private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetProjectAggregateRootStream(Guid id)
         {
-            var expectedStreamName = $"project-{_aggregateId}";
+            var expectedStreamName = $"{_aggregateId}";
             return await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
         }
 

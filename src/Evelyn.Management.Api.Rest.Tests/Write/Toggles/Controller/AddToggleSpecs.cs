@@ -3,9 +3,10 @@
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

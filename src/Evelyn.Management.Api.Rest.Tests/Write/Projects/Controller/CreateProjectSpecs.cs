@@ -3,14 +3,14 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Core.WriteModel.Account.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
-    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -25,7 +25,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         public CreateProjectSpecs()
         {
             _fixture = new Fixture();
-            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Commands.CreateProject>>();
+            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Account.Commands.CreateProject>>();
             _controller = new Rest.Write.Projects.Controller(_createProjectHandler);
         }
 
@@ -91,8 +91,8 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
                 .Received(1)
                 .Handle(Arg.Is<CreateProject>(command =>
                     command.UserId == Constants.AnonymousUser &&
-                    command.AccountId == Constants.DefaultAccount &&
-                    command.Id == _message.Id &&
+                    command.Id == Constants.DefaultAccount &&
+                    command.ProjectId == _message.ProjectId &&
                     command.Name == _message.Name &&
                     command.ExpectedVersion == null));
         }

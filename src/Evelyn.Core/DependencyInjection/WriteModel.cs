@@ -27,6 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddCoreWriteInfrastructure(this IServiceCollection services)
         {
+            services.TryAddScoped<IStartUpCommands, StartUpCommands>();
             services.TryAddSingleton<Router>(new Router());
             services.TryAddSingleton<ICommandSender>(serviceProvider => serviceProvider.GetService<Router>());
             services.TryAddSingleton<IEventPublisher>(serviceProvider => serviceProvider.GetService<Router>());

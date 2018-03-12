@@ -10,7 +10,7 @@
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IDatabase<string, AccountProjectsDto> _accountProjects;
+        private readonly IDatabase<Guid, AccountProjectsDto> _accountProjects;
 
         private readonly IDatabase<Guid, ProjectDetailsDto> _projectDetails;
 
@@ -19,7 +19,7 @@
         private readonly IDatabase<string, ToggleDetailsDto> _toggleDetails;
 
         public DatabaseReadModelFacade(
-            IDatabase<string, AccountProjectsDto> accountProjects,
+            IDatabase<Guid, AccountProjectsDto> accountProjects,
             IDatabase<Guid, ProjectDetailsDto> projectDetails,
             IDatabase<string, EnvironmentDetailsDto> environmentDetails,
             IDatabase<string, ToggleDetailsDto> toggleDetails)
@@ -30,17 +30,9 @@
             _toggleDetails = toggleDetails;
         }
 
-        public async Task<AccountProjectsDto> GetProjects(string accountId)
+        public async Task<AccountProjectsDto> GetProjects(Guid accountId)
         {
-            try
-            {
-                return await _accountProjects.Get(accountId);
-            }
-            catch (NotFoundException)
-            {
-                // hack! Remove this
-                return new AccountProjectsDto(accountId);
-            }
+            return await _accountProjects.Get(accountId);
         }
 
         public async Task<ProjectDetailsDto> GetProjectDetails(Guid projectId)
