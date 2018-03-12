@@ -15,7 +15,7 @@
             _handlerOptions = handlerOptions;
         }
 
-        public void Bootstrap(IServiceProvider serviceProvider, IStartUpCommands startUpCommands = default(NullStartUpCommands))
+        public void Bootstrap(IServiceProvider serviceProvider, IStartUpCommands startUpCommands)
         {
             var registrar = new RouteRegistrar(serviceProvider);
             registrar.RegisterHandlers(_handlerOptions.Value.Handlers.ToArray());

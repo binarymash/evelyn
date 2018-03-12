@@ -46,9 +46,12 @@
             await _session.Commit();
         }
 
-        public Task Handle(RegisterAccount message)
+        public async Task Handle(RegisterAccount message)
         {
-            throw new System.NotImplementedException();
+            var evelyn = await _session.Get<Evelyn>(Constants.EvelynSystem);
+            var account = evelyn.RegisterAccount(message.UserId, message.AccountId);
+            await _session.Add(account);
+            await _session.Commit();
         }
     }
 }

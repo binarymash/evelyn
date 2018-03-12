@@ -51,7 +51,7 @@
 
         private void Apply(AccountRegistered @event)
         {
-            _accounts.Add(@event.Id);
+            _accounts.Add(@event.AccountId);
         }
     }
 }

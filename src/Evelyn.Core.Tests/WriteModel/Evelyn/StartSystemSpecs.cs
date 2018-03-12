@@ -20,7 +20,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
         }
 
         [Fact]
-        public void SystemHasAlreadyBeenCreated()
+        public void NominalStartUp()
         {
             this.Given(_ => GivenWeHaveCreatedTheSystem())
                 .When(_ => WhenWeStartTheSystem())
@@ -51,6 +51,5 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
             @event.UserId.Should().Be(Constants.SystemUser);
             @event.Id.Should().Be(Constants.EvelynSystem);
         }
-
     }
 }

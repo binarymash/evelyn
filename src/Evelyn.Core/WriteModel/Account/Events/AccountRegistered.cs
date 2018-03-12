@@ -7,10 +7,7 @@
         public AccountRegistered(string userId, Guid accountId)
             : base(userId, accountId)
         {
-            AccountId = accountId;
             Version = -1;
         }
-
-        public Guid AccountId { get; set; }
     }
 }

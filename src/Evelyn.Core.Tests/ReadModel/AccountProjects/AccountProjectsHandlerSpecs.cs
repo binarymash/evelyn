@@ -5,13 +5,13 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
-    using Core.WriteModel.Account.Events;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
-    using ProjectCreated = Core.WriteModel.Project.Events.ProjectCreated;
+    using AccountEvents = Core.WriteModel.Account.Events;
+    using ProjectEvents = Core.WriteModel.Project.Events;
 
     public class AccountProjectsHandlerSpecs : HandlerSpecs
     {
@@ -20,8 +20,8 @@
 
         private Guid _accountId;
 
-        private ProjectCreated project1CreatedEvent;
-        private ProjectCreated _project2CreatedEvent;
+        private ProjectEvents.ProjectCreated project1CreatedEvent;
+        private ProjectEvents.ProjectCreated _project2CreatedEvent;
 
         private AccountProjectsDto _retrievedAccountProjects;
 
@@ -55,20 +55,20 @@
         protected override void RegisterHandlers(Router router)
         {
             var handler = new AccountProjectsHandler(AccountProjectsStore);
-            router.RegisterHandler<AccountRegistered>(handler.Handle);
-            router.RegisterHandler<ProjectCreated>(handler.Handle);
+            router.RegisterHandler<AccountEvents.AccountRegistered>(handler.Handle);
+            router.RegisterHandler<ProjectEvents.ProjectCreated>(handler.Handle);
         }
 
         private void GivenAnAccountIsRegistered()
         {
-            var accountRegisteredEvent = DataFixture.Create<AccountRegistered>();
-            _accountId = accountRegisteredEvent.AccountId;
+            var accountRegisteredEvent = DataFixture.Create<AccountEvents.AccountRegistered>();
+            _accountId = accountRegisteredEvent.Id;
             GivenWePublish(accountRegisteredEvent);
         }
 
         private void GivenAnProjectIsCreated()
         {
-            project1CreatedEvent = DataFixture.Build<ProjectCreated>()
+            project1CreatedEvent = DataFixture.Build<ProjectEvents.ProjectCreated>()
                 .With(pc => pc.AccountId, _accountId)
                 .With(pc => pc.Version, _eventsProject1.Count + 1)
                 .Create();
@@ -79,7 +79,7 @@
 
         private void GivenAnotherProjectIsCreated()
         {
-            _project2CreatedEvent = DataFixture.Build<ProjectCreated>()
+            _project2CreatedEvent = DataFixture.Build<ProjectEvents.ProjectCreated>()
                 .With(pc => pc.AccountId, _accountId)
                 .With(pc => pc.Version, _eventsProject2.Count + 1)
                 .Create();
@@ -107,7 +107,7 @@
             ThenThereIsAnProjectInTheListFor(_project2CreatedEvent);
         }
 
-        private void ThenThereIsAnProjectInTheListFor(ProjectCreated ev)
+        private void ThenThereIsAnProjectInTheListFor(ProjectEvents.ProjectCreated ev)
         {
             AccountProjectsStore.Get(_accountId)
                 .GetAwaiter().GetResult()
