@@ -33,7 +33,7 @@
                 var streamName = MapStreamName(events);
                 var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
 
-                await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
+                var writeResult = await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
             }
         }
 
@@ -72,12 +72,12 @@
 
         private string MapStreamName(IEnumerable<IEvent> events)
         {
-            return $"{events.First().Id}";
+            return $"evelyn-{events.First().Id}";
         }
 
-        private string MapStreamName(Guid projectId)
+        private string MapStreamName(Guid aggregateId)
         {
-            return $"{projectId}";
+            return $"evelyn-{aggregateId}";
         }
     }
 }

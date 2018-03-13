@@ -26,14 +26,18 @@
             {
                 api.WithWriteModel(wm =>
                 {
-                    wm.WithEventStore.InMemory(es =>
-                    {
-                        es.WithEventPublisher.SynchronouslyInProcess();
-                    });
-                    ////wm.WithEventStore.UsingEventStoreDotOrg(es =>
+                    ////wm.WithEventStore.InMemory(es =>
                     ////{
-                    ////    es.ConnectionFactory = new EventStoreConnectionFactory("tcp://192.168.1.64:1113");
+                    ////    es.WithEventPublisher.SynchronouslyInProcess();
                     ////});
+                    wm.WithEventStore.UsingEventStoreDotOrg(es =>
+                    {
+                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://192.168.1.64:1113");
+                        es.WithEventPublisher.RunningInBackgroundService(p =>
+                        {
+                            p.PublishEvents.SynchronouslyInProcess();
+                        });
+                    });
                 });
                 api.WithReadModel(rm =>
                 {

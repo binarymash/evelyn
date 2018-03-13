@@ -5,41 +5,28 @@ namespace Evelyn.Storage.EventStore.Tests
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.WriteModel;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Events;
     using Evelyn.Storage.EventStore;
     using FluentAssertions;
-    using NetCoreES::EventStore.ClientAPI;
     using TestStack.BDDfy;
     using Xunit;
     using RecordedEvent = EmbeddedES::EventStore.ClientAPI.RecordedEvent;
 
-    public class EventStoreImplementationSpecs : IDisposable
+    public class EventStoreImplementationSpecs : EventStoreSpecs
     {
-        private readonly Fixture _fixture;
         private readonly EventStoreImplementation _eventStore;
         private readonly Guid _aggregateId;
-        private readonly List<IEvent> _eventsAddedToStore;
 
         private List<IEvent> _returnedEvents;
-        private EmbeddedES::EventStore.Core.ClusterVNode _server;
-        private EmbeddedES::EventStore.ClientAPI.IEventStoreConnection _managementConnection;
 
         public EventStoreImplementationSpecs()
         {
-            EnsureCoreAssemblyIsLoaded();
-            BootstrapEmbeddedEventStore();
-
             _eventStore = new EventStoreImplementation(new EventStoreConnectionFactory());
-            _fixture = new Fixture();
-            _aggregateId = _fixture.Create<Guid>();
-            _eventsAddedToStore = new List<IEvent>();
+            _aggregateId = DataFixture.Create<Guid>();
         }
 
         [Fact]
@@ -88,7 +75,7 @@ namespace Evelyn.Storage.EventStore.Tests
         {
             this.Given(_ => GivenWeHave3EventsForAnAggregate())
                 .When(_ => WhenWeSaveTheseEventsToTheStore())
-                .Then(_ => ThenTheStoredEventStreamIsNamedByAggregateRootId())
+                .Then(_ => ThenTheStoredEventStreamIsNamedByAggregateRootIdWithEvelynPrefix())
                 .BDDfy();
         }
 
@@ -110,100 +97,41 @@ namespace Evelyn.Storage.EventStore.Tests
                 .BDDfy();
         }
 
-        public void Dispose()
-        {
-            TearDownEmbeddedEventStore();
-        }
-
-        private void EnsureCoreAssemblyIsLoaded()
-        {
-            System.Diagnostics.Trace.WriteLine($"Let's ensure that the core assembly is loaded by referencing {typeof(WriteModelAssemblyMarker).FullName}");
-        }
-
-        private void BootstrapEmbeddedEventStore()
-        {
-            _server = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedVNodeBuilder
-                .AsSingleNode()
-                .RunInMemory()
-                .OnDefaultEndpoints()
-                .Build();
-
-            var isNodeMaster = false;
-
-            _server.NodeStatusChanged += (sender, args) => { isNodeMaster = args.NewVNodeState == EmbeddedES::EventStore.Core.Data.VNodeState.Master; };
-
-            _server.Start();
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            while (!isNodeMaster)
-            {
-                if (stopwatch.Elapsed.Seconds > 20)
-                {
-                    throw new InvalidOperationException("Waited too long (20 seconds) for EventStore node to become master.");
-                }
-
-                Thread.Sleep(50);
-            }
-
-            stopwatch.Stop();
-
-            var connectionSettings = EmbeddedES::EventStore.ClientAPI.ConnectionSettings
-                .Create()
-                .SetDefaultUserCredentials(new EmbeddedES::EventStore.ClientAPI.SystemData.UserCredentials("admin", "changeit"))
-                .Build();
-
-            _managementConnection = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedEventStoreConnection.Create(_server, connectionSettings);
-            _managementConnection.ConnectAsync().GetAwaiter().GetResult();
-        }
-
-        private void TearDownEmbeddedEventStore()
-        {
-            _managementConnection?.Close();
-
-            if (!_server.Stop(TimeSpan.FromSeconds(30), true, true))
-            {
-                throw new Exception("Failed to stop embedded eventstore server");
-            }
-        }
-
         private void GivenAnAggregateHasNoEvents()
         {
         }
 
         private void GivenWeHave3EventsForAnAggregate()
         {
-            GivenAggregateEvent(_fixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
-            GivenAggregateEvent(_fixture.Build<EnvironmentAdded>().With(e => e.Id, _aggregateId).Create());
-            GivenAggregateEvent(_fixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvent(DataFixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvent(DataFixture.Build<EnvironmentAdded>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvent(DataFixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).Create());
         }
 
         private void GivenWeHave300EventsForAnAggregate()
         {
-            GivenAggregateEvent(_fixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
-            GivenAggregateEvents(_fixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).CreateMany(299));
+            GivenAggregateEvent(DataFixture.Build<ProjectCreated>().With(e => e.Id, _aggregateId).Create());
+            GivenAggregateEvents(DataFixture.Build<ToggleAdded>().With(e => e.Id, _aggregateId).CreateMany(299));
         }
 
-        private void GivenAggregateEvent(IEvent @event)
+        private void GivenAggregateEvent(IEvent @event, int? version = null)
         {
-            @event.Version = _eventsAddedToStore.Count;
+            @event.Version = version ?? EventsAddedToStore.Count;
             @event.TimeStamp = DateTimeOffset.UtcNow;
-            _eventsAddedToStore.Add(@event);
+            EventsAddedToStore.Add(@event);
         }
 
-        private void GivenAggregateEvents(IEnumerable<IEvent> events)
+        private void GivenAggregateEvents(IEnumerable<IEvent> events, int? version = null)
         {
             foreach (var @event in events)
             {
-                @event.Version = _eventsAddedToStore.Count;
-                @event.TimeStamp = DateTimeOffset.UtcNow;
-                _eventsAddedToStore.Add(@event);
+                GivenAggregateEvent(@event, version);
             }
         }
 
         private async Task WhenWeSaveTheseEventsToTheStore()
         {
-            await _eventStore.Save(_eventsAddedToStore);
+            await _eventStore.Save(EventsAddedToStore);
         }
 
         private async Task WhenWeGetAllEventsForTheAggregate()
@@ -253,22 +181,22 @@ namespace Evelyn.Storage.EventStore.Tests
 
         private void ThenTheFinal2EventsAreReturned()
         {
-            ThenWeAreReturnedEventsFromPosition(_eventsAddedToStore.Count - 2);
+            ThenWeAreReturnedEventsFromPosition(EventsAddedToStore.Count - 2);
         }
 
         private void ThenTheFinal299EventsAreReturned()
         {
-            ThenWeAreReturnedEventsFromPosition(_eventsAddedToStore.Count - 299);
+            ThenWeAreReturnedEventsFromPosition(EventsAddedToStore.Count - 299);
         }
 
         private void ThenTheFinalEventIsReturned()
         {
-            ThenWeAreReturnedEventsFromPosition(_eventsAddedToStore.Count - 1);
+            ThenWeAreReturnedEventsFromPosition(EventsAddedToStore.Count - 1);
         }
 
         private void ThenWeAreReturnedEventsFromPosition(int startPosition)
         {
-            var expectedNumberOfResults = _eventsAddedToStore.Count - startPosition;
+            var expectedNumberOfResults = EventsAddedToStore.Count - startPosition;
             if (expectedNumberOfResults < 0)
             {
                 expectedNumberOfResults = 0;
@@ -280,7 +208,7 @@ namespace Evelyn.Storage.EventStore.Tests
 
             for (var returnedEventIndex = 0; returnedEventIndex < _returnedEvents.Count; returnedEventIndex++)
             {
-                ThenEventsMatch(_returnedEvents[returnedEventIndex], _eventsAddedToStore[addedEventIndex]);
+                ThenEventsMatch(_returnedEvents[returnedEventIndex], EventsAddedToStore[addedEventIndex]);
                 addedEventIndex++;
             }
         }
@@ -290,25 +218,25 @@ namespace Evelyn.Storage.EventStore.Tests
             event1.Should().BeEquivalentTo(event2);
         }
 
-        private async Task ThenTheStoredEventStreamIsNamedByAggregateRootId()
+        private async Task ThenTheStoredEventStreamIsNamedByAggregateRootIdWithEvelynPrefix()
         {
-            var expectedStreamName = $"{_aggregateId}";
-            var result = await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
-            result.Events.Should().HaveCount(_eventsAddedToStore.Count);
+            var expectedStreamName = $"evelyn-{_aggregateId}";
+            var result = await ManagementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
+            result.Events.Should().HaveCount(EventsAddedToStore.Count);
         }
 
         private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetProjectAggregateRootStream(Guid id)
         {
-            var expectedStreamName = $"{_aggregateId}";
-            return await _managementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
+            var expectedStreamName = $"evelyn-{_aggregateId}";
+            return await ManagementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
         }
 
         private async Task ThenTheStoredEventTypesAreTheFullNameOfTheEvent()
         {
             var events = (await GetProjectAggregateRootStream(_aggregateId)).Events;
-            for (var i = 0; i < _eventsAddedToStore.Count; i++)
+            for (var i = 0; i < EventsAddedToStore.Count; i++)
             {
-                ThenTheStoredEventTypeIsTheFullNameOfTheEvent(events[i].Event, _eventsAddedToStore[i].GetType());
+                ThenTheStoredEventTypeIsTheFullNameOfTheEvent(events[i].Event, EventsAddedToStore[i].GetType());
             }
         }
 
@@ -321,20 +249,6 @@ namespace Evelyn.Storage.EventStore.Tests
         {
             var events = (await GetProjectAggregateRootStream(_aggregateId)).Events;
             events.Select(e => e.Event.EventId).Should().OnlyHaveUniqueItems();
-        }
-
-        private class EventStoreConnectionFactory : IEventStoreConnectionFactory
-        {
-            public IEventStoreConnection Invoke()
-            {
-                var connectionSettings = NetCoreES::EventStore.ClientAPI.ConnectionSettings
-                    .Create()
-                    .Build();
-
-                var uri = new Uri("tcp://127.0.0.1:1113");
-
-                return NetCoreES::EventStore.ClientAPI.EventStoreConnection.Create(connectionSettings, uri);
-            }
         }
     }
 }
