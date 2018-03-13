@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using global::EventStore.ClientAPI;
+    using global::EventStore.ClientAPI.SystemData;
 
     public class SubscriptionPublisher : BackgroundService
     {
@@ -32,7 +33,7 @@
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var settings = new CatchUpSubscriptionSettings(100, 100, false, true);
-            var subscription = _connection.SubscribeToStreamFrom(EvelynEvents, StreamPosition.Start, settings, OnEventAppeared, OnLiveProcessingStarted, OnSubscriptionDropped);
+            var subscription = _connection.SubscribeToStreamFrom(EvelynEvents, null, settings, OnEventAppeared, OnLiveProcessingStarted, OnSubscriptionDropped, new UserCredentials("admin", "changeit"));
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);

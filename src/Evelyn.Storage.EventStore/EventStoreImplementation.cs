@@ -33,7 +33,7 @@
                 var streamName = MapStreamName(events);
                 var eventStoreEvents = events.Select(_eventMapper.MapEvent).ToArray();
 
-                await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
+                var writeResult = await _connection.AppendToStreamAsync(streamName, expectedVersion, eventStoreEvents);
             }
         }
 
