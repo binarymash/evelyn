@@ -41,12 +41,23 @@
         }
 
         [Fact]
-        public void StartUp()
+        public void EventsPublishedOnStartUp()
         {
             this.Given(_ => GivenSomeEventsOnAnAggregate())
                 .And(_ => GivenSomeEventsOnAnotherAggregate())
                 .When(_ => WhenTheSubscriptionPublisherIsStarted())
                 .Then(_ => ThenAllTheEventsArePublishedWithin2Seconds())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void NewEventsArePublished()
+        {
+            this.Given(_ => GivenTheSubscriptionPublisherIsStarted())
+                .When(_ => WhenNewEventsAreAdded())
+                .Then(_ => ThenTheNewEventsArePublishedWithin2Seconds())
+                .When(_ => WhenMoreNewEventsAreAdded())
+                .Then(_ => ThenTheNewEventsArePublishedWithin2Seconds())
                 .BDDfy();
         }
 
@@ -98,12 +109,73 @@
             return @event;
         }
 
-        private async Task WhenTheSubscriptionPublisherIsStarted()
+        private Task GivenTheSubscriptionPublisherIsStarted()
+        {
+            return StartPublisher();
+        }
+
+        private Task WhenTheSubscriptionPublisherIsStarted()
+        {
+            return StartPublisher();
+        }
+
+        private async Task StartPublisher()
         {
             await _subscriptionPublisher.StartAsync(default(CancellationToken));
         }
 
+        private async Task WhenNewEventsAreAdded()
+        {
+            var aggregateId = DataFixture.Create<Guid>();
+
+            var events = new List<IEvent>
+            {
+                CreateEvent<EnvironmentAdded>(aggregateId, 0),
+                CreateEvent<ToggleAdded>(aggregateId, 1),
+                CreateEvent<ProjectCreated>(aggregateId, 2)
+            };
+
+            await _eventStore.Save(events);
+
+            foreach (var @event in events)
+            {
+                _expectedEvents.Add(@event);
+            }
+        }
+
+        private async Task WhenMoreNewEventsAreAdded()
+        {
+            _publishedEvents.Clear();
+            _expectedEvents.Clear();
+
+            var aggregateId = DataFixture.Create<Guid>();
+
+            var events = new List<IEvent>
+            {
+                CreateEvent<ToggleAdded>(aggregateId, 0),
+                CreateEvent<ProjectCreated>(aggregateId, 1),
+                CreateEvent<EnvironmentAdded>(aggregateId, 2)
+            };
+
+            await _eventStore.Save(events);
+
+            foreach (var @event in events)
+            {
+                _expectedEvents.Add(@event);
+            }
+        }
+
         private void ThenAllTheEventsArePublishedWithin2Seconds()
+        {
+            ThenAllTheExpectedEventsArePublishedWithin2Seconds();
+        }
+
+        private void ThenTheNewEventsArePublishedWithin2Seconds()
+        {
+            ThenAllTheExpectedEventsArePublishedWithin2Seconds();
+        }
+
+        private void ThenAllTheExpectedEventsArePublishedWithin2Seconds()
         {
             var allEventsPublished = false;
             var startTime = DateTime.UtcNow;

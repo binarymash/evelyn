@@ -8,12 +8,10 @@ namespace Evelyn.Storage.EventStore.Tests
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading;
     using AutoFixture;
     using Core.WriteModel;
     using CQRSlite.Events;
-    using EmbeddedES::EventStore.ClientAPI.Embedded;
     using EmbeddedES::EventStore.Common.Options;
     using EmbeddedES::EventStore.Core.Bus;
     using EmbeddedES::EventStore.Core.Messages;
