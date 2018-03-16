@@ -20,7 +20,7 @@
         {
             get => _projects.ToList();
             private set => _projects.AddRange(value.ToList());
-        } 
+        }
 
         public void AddProject(ProjectListDto project)
         {

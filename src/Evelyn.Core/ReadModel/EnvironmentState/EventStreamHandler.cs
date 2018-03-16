@@ -1,44 +1,26 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentState
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : BackgroundService
+    public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, EnvironmentStateDto>
     {
-        private readonly IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> _projectionBuilder;
-        private readonly IDatabase<string, EnvironmentStateDto> _db;
-        private readonly Queue<IEvent> _eventsToHandle;
+        private IDatabase<string, EnvironmentStateDto> _db;
 
-        public EventStreamHandler(IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> projectionBuilder, IDatabase<string, EnvironmentStateDto> db, IEventStreamFactory eventQueueFactory)
+        public EventStreamHandler(
+            IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> projectionBuilder,
+            IDatabase<string, EnvironmentStateDto> db,
+            IEventStreamFactory eventQueueFactory)
+            : base(projectionBuilder, eventQueueFactory)
         {
-            _projectionBuilder = projectionBuilder;
             _db = db;
-            _eventsToHandle = eventQueueFactory.GetEventStream<EnvironmentStateDto>();
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_eventsToHandle.Count > 0)
-                {
-                    var @event = _eventsToHandle.Dequeue();
-                    var request = BuildProjectionRequest(@event);
-                    await UpdateProjection(request, stoppingToken);
-                }
-                else
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
-                }
-            }
-        }
-
-        private ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
+        protected override ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
         {
             switch (@event)
             {
@@ -53,9 +35,9 @@
             }
         }
 
-        private async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
+        protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
         {
-            var dto = await _projectionBuilder.Invoke(request, token);
+            var dto = await ProjectionBuilder.Invoke(request, token);
             await _db.AddOrUpdate($"{request.ProjectId}-{request.EnvironmentKey}", dto);
         }
     }
