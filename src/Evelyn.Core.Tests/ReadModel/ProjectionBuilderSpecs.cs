@@ -2,12 +2,9 @@
 {
     using System;
     using AutoFixture;
-    using CQRSlite.Events;
 
     public abstract class ProjectionBuilderSpecs
     {
-        private readonly IEventPublisher _publisher;
-
         protected ProjectionBuilderSpecs()
         {
             DataFixture = new Fixture();

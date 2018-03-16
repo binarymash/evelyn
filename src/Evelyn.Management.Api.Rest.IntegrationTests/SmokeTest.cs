@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
+    using System;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -33,7 +34,7 @@
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsAnEmptyCollection())
 
-            // writing...
+                // writing...
                 .When(_ => WhenWeAddAProject())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
 
@@ -43,7 +44,9 @@
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
 
-            // reading...
+                // reading...
+                .Given(_ => GivenweWaitAFewSecondsForEventualConsistency())
+
                 .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
@@ -66,13 +69,18 @@
                 .BDDfy();
         }
 
+        private async Task GivenweWaitAFewSecondsForEventualConsistency()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
         private async Task WhenGetProjects()
         {
             _response = await Client
                 .Request("/api/projects")
-                .GetAsync();
+                .GetAsync().ConfigureAwait(false);
 
-            _responseContent = await _response.Content.ReadAsStringAsync();
+            _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         private async Task WhenWeAddAProject()
@@ -81,9 +89,9 @@
 
             _response = await Client
                 .Request("/api/projects")
-                .PostJsonAsync(_createProjectMessage);
+                .PostJsonAsync(_createProjectMessage).ConfigureAwait(false);
 
-            _responseContent = await _response.Content.ReadAsStringAsync();
+            _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         private async Task WhenWeAddAnEnvironment()

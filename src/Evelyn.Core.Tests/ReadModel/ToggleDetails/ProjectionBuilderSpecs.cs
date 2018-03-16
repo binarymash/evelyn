@@ -48,7 +48,7 @@
         {
             try
             {
-                _dto = await _builder.Invoke(request, new CancellationToken(false));
+                _dto = await _builder.Invoke(request);
             }
             catch (Exception ex)
             {

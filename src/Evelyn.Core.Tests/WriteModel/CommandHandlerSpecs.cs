@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.WriteModel.Account.Commands;
@@ -63,9 +62,7 @@
             {
                 if (_handler is ICancellableCommandHandler<TCommand>)
                 {
-#pragma warning disable SA1129 // Do not use default value type constructor
-                    ((ICancellableCommandHandler<TCommand>)_handler).Handle(command, new CancellationToken()).GetAwaiter().GetResult();
-#pragma warning restore SA1129 // Do not use default value type constructor
+                    ((ICancellableCommandHandler<TCommand>)_handler).Handle(command).GetAwaiter().GetResult();
                 }
                 else if (_handler is ICommandHandler<TCommand>)
                 {

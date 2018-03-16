@@ -1,16 +1,18 @@
 ﻿namespace Evelyn.Core
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
 
     public class InMemoryEventStore : IEventStore
     {
         private readonly IEventPublisher _publisher;
-        private readonly Dictionary<Guid, List<IEvent>> _inMemoryDb = new Dictionary<Guid, List<IEvent>>();
+        private readonly ConcurrentDictionary<Guid, List<IEvent>> _inMemoryDb = new ConcurrentDictionary<Guid, List<IEvent>>();
 
         public InMemoryEventStore(IEventPublisher publisher)
         {
@@ -25,11 +27,11 @@
                 if (list == null)
                 {
                     list = new List<IEvent>();
-                    _inMemoryDb.Add(@event.Id, list);
+                    _inMemoryDb.AddOrUpdate(@event.Id, list, (key, value) => throw new ConcurrencyException(@event.Id));
                 }
 
                 list.Add(@event);
-                await _publisher.Publish(@event, cancellationToken);
+                await _publisher.Publish(@event, cancellationToken).ConfigureAwait(false);
             }
         }
 

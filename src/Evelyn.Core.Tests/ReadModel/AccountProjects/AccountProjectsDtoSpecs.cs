@@ -10,6 +10,10 @@
         public void Serialization()
         {
             var accountProjects = DataFixture.Create<AccountProjectsDto>();
+            foreach (var project in DataFixture.CreateMany<ProjectListDto>())
+            {
+                accountProjects.AddProject(project);
+            }
 
             AssertSerializationOf(accountProjects);
         }

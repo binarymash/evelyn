@@ -23,9 +23,7 @@
             _eventMapper = new EventMapper();
         }
 
-#pragma warning disable SA1129 // Do not use default value type constructor
-        public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = new CancellationToken())
-#pragma warning restore SA1129 // Do not use default value type constructor
+        public async Task Save(IEnumerable<IEvent> events, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (events.Any())
             {

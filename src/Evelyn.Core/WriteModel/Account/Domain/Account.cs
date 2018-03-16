@@ -39,6 +39,7 @@
 
         private void Apply(AccountRegistered @event)
         {
+            this.Id = @event.Id;
         }
 
         private void Apply(ProjectCreated @event)

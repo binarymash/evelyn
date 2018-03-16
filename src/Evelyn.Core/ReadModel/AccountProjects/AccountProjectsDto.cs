@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using ProjectList;
 
     public class AccountProjectsDto
     {
@@ -17,7 +16,11 @@
 
         public Guid AccountId { get; private set; }
 
-        public IEnumerable<ProjectListDto> Projects => _projects.ToList();
+        public IEnumerable<ProjectListDto> Projects
+        {
+            get => _projects.ToList();
+            private set => _projects.AddRange(value.ToList());
+        } 
 
         public void AddProject(ProjectListDto project)
         {

@@ -16,7 +16,7 @@
             _repository = repository;
         }
 
-        public async Task<ToggleDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token)
+        public async Task<ToggleDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default(CancellationToken))
         {
             try
             {

@@ -31,8 +31,6 @@
         private Guid _project1Id;
         private Guid _project2Id;
 
-        private ProjectionBuilderRequest _request;
-
         private ProjectDetailsDto _dto;
 
         public ProjectionBuilderSpecs()
@@ -221,7 +219,7 @@
         {
             try
             {
-                _dto = await _builder.Invoke(request, new CancellationToken(false));
+                _dto = await _builder.Invoke(request);
             }
             catch (Exception ex)
             {

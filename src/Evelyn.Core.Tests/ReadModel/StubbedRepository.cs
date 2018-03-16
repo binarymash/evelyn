@@ -41,13 +41,13 @@
             }
         }
 
-        public Task Save<T>(T aggregate, int? expectedVersion = null, CancellationToken cancellationToken = new CancellationToken())
+        public Task Save<T>(T aggregate, int? expectedVersion = null, CancellationToken cancellationToken = default(CancellationToken))
             where T : AggregateRoot
         {
             throw new NotImplementedException();
         }
 
-        public Task<T> Get<T>(Guid aggregateId, CancellationToken cancellationToken = new CancellationToken())
+        public Task<T> Get<T>(Guid aggregateId, CancellationToken cancellationToken = default(CancellationToken))
             where T : AggregateRoot
         {
             var aggregate = _aggregateFactories[aggregateId]() as T;

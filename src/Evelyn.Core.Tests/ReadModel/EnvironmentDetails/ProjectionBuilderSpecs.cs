@@ -43,7 +43,7 @@
             try
             {
                 var request = new ProjectionBuilderRequest(_projectId, _environment1Key);
-                _dto = await _builder.Invoke(request, new CancellationToken(false));
+                _dto = await _builder.Invoke(request);
             }
             catch (Exception ex)
             {

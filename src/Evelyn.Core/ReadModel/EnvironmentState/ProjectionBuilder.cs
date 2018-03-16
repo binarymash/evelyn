@@ -15,7 +15,7 @@
             _repository = repository;
         }
 
-        public async Task<EnvironmentStateDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = new CancellationToken())
+        public async Task<EnvironmentStateDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default(CancellationToken))
         {
             try
             {

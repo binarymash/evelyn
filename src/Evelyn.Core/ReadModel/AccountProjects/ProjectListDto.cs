@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.ProjectList
+﻿namespace Evelyn.Core.ReadModel.AccountProjects
 {
     using System;
 

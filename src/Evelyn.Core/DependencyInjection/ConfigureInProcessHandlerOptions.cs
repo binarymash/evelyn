@@ -1,10 +1,6 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Evelyn.Core.ReadModel.AccountProjects;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
     using Evelyn.Core.WriteModel.Project;
     using Microsoft.Extensions.Options;
 
@@ -15,10 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Handlers.AddRange(new[]
             {
                 typeof(ProjectCommandHandler),
-                typeof(Evelyn.Core.ReadModel.ProjectDetails.Handler),
-                typeof(Evelyn.Core.ReadModel.AccountProjects.Handler),
-                typeof(Evelyn.Core.ReadModel.EnvironmentDetails.Handler),
-                typeof(Evelyn.Core.ReadModel.ToggleDetails.Handler)
+                typeof(Evelyn.Core.ReadModel.ProjectDetails.EventStreamPublisher),
+                typeof(Evelyn.Core.ReadModel.AccountProjects.EventStreamPublisher),
+                typeof(Evelyn.Core.ReadModel.EnvironmentDetails.EventStreamPublisher),
+                typeof(Evelyn.Core.ReadModel.ToggleDetails.EventStreamPublisher),
+                typeof(Evelyn.Core.ReadModel.ToggleDetails.EventStreamPublisher)
             });
         }
     }
