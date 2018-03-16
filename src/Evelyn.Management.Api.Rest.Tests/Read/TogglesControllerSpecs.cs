@@ -19,6 +19,7 @@
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
         private readonly TogglesController _controller;
+        private Guid _projectId;
         private ToggleDetailsDto _toggleReturnedByFacade;
         private string _keyOfToggleToGet;
         private ObjectResult _result;
@@ -28,6 +29,7 @@
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
             _controller = new TogglesController(_readModelFacade);
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
@@ -63,7 +65,7 @@
             _toggleReturnedByFacade = _fixture.Create<ToggleDetailsDto>();
             _keyOfToggleToGet = _toggleReturnedByFacade.Key;
             _readModelFacade
-                .GetToggleDetails(_keyOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Returns(_toggleReturnedByFacade);
         }
 
@@ -71,7 +73,7 @@
         {
             _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetToggleDetails(_keyOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Throws(_fixture.Create<NotFoundException>());
         }
 
@@ -79,13 +81,13 @@
         {
             _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetToggleDetails(_keyOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Throws(_fixture.Create<Exception>());
         }
 
         private async Task WhenWeGetTheToggle()
         {
-            _result = await _controller.Get(_keyOfToggleToGet);
+            _result = await _controller.Get(_projectId, _keyOfToggleToGet);
         }
 
         private void ThenStatusCode200IsReturned()

@@ -15,10 +15,10 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Handlers.AddRange(new[]
             {
                 typeof(ProjectCommandHandler),
-                typeof(ProjectDetailsHandler),
-                typeof(AccountProjectsHandler),
-                typeof(EnvironmentDetailsHandler),
-                typeof(ToggleDetailsHandler)
+                typeof(Evelyn.Core.ReadModel.ProjectDetails.Handler),
+                typeof(Evelyn.Core.ReadModel.AccountProjects.Handler),
+                typeof(Evelyn.Core.ReadModel.EnvironmentDetails.Handler),
+                typeof(Evelyn.Core.ReadModel.ToggleDetails.Handler)
             });
         }
     }

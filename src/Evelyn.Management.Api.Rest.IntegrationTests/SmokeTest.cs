@@ -1,7 +1,5 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -162,20 +160,20 @@
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
             var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count.Should().Be(0);
+            response.Projects.Count().Should().Be(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneProject()
         {
             var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count.Should().Be(1);
+            response.Projects.Count().Should().Be(1);
         }
 
         private void ThenTheProjectWeAddedIsInTheCollection()
         {
             var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            projectList.Projects[_createProjectMessage.ProjectId].Id.Should().Be(_createProjectMessage.ProjectId);
-            projectList.Projects[_createProjectMessage.ProjectId].Name.Should().Be(_createProjectMessage.Name);
+            var project = projectList.Projects.First(p => p.Id == _createProjectMessage.ProjectId);
+            project.Name.Should().Be(_createProjectMessage.Name);
         }
 
         private void ThenTheProjectContainsOneEnvironment()

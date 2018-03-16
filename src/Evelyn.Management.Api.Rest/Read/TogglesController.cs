@@ -22,11 +22,11 @@
         [HttpGet("{toggleKey}")]
         [ProducesResponseType(typeof(ToggleDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(string toggleKey)
+        public async Task<ObjectResult> Get(Guid projectId, string toggleKey)
         {
             try
             {
-                var result = await _readModelFacade.GetToggleDetails(toggleKey);
+                var result = await _readModelFacade.GetToggleDetails(projectId, toggleKey);
                 return Ok(result);
             }
             catch (NotFoundException)

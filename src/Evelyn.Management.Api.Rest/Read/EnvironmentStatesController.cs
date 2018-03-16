@@ -3,30 +3,30 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Core.ReadModel.EnvironmentState;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/projects/{projectId}/environments")]
+    [Route("api/state/{projectId}/{environmentName}")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class EnvironmentsController : Controller
+    public class EnvironmentStatesController : Controller
     {
         private readonly IReadModelFacade _readModelFacade;
 
-        public EnvironmentsController(IReadModelFacade readModelFacade)
+        public EnvironmentStatesController(IReadModelFacade readModelFacade)
         {
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{environmentKey}")]
-        [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
+        [HttpGet]
+        [ProducesResponseType(typeof(EnvironmentStateDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
+        public async Task<ObjectResult> Get(Guid projectId, string environmentName)
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentDetails(projectId, environmentKey);
+                var result = await _readModelFacade.GetEnvironmentState(projectId, environmentName);
                 return Ok(result);
             }
             catch (NotFoundException)

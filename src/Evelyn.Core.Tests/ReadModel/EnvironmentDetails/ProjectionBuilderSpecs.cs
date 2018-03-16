@@ -1,32 +1,36 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoFixture;
-    using Core.WriteModel.Project.Events;
-    using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentDetailsHandlerSpecs : HandlerSpecs
+    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
     {
+        private readonly ProjectionBuilder _builder;
+        private readonly Guid _projectId;
+
         private string _environment1Key;
+        private EnvironmentDetailsDto _dto;
+
+        public ProjectionBuilderSpecs()
+        {
+            _builder = new ProjectionBuilder(StubbedRepository);
+            _projectId = DataFixture.Create<Guid>();
+        }
 
         [Fact]
         public void Environment1DoesNotExist()
         {
             this.Given(_ => GivenThatWeDontCreateEnvironment1())
-                .When(_ => WhenWeGetEnvironment1Details())
-                .Then(_ => ThenGettingEnvironment1ThrownsNotFoundException())
+                .When(_ => WhenWeInvokeTheProjectionBuilderForEnvironment1())
+                .Then(_ => ThenGettingEnvironment1ThrownsFailedToBuildProjectionException())
                 .BDDfy();
-        }
-
-        protected override void RegisterHandlers(Router router)
-        {
-            var handler = new EnvironmentDetailsHandler(EnvironmentDetailsStore);
-            router.RegisterHandler<EnvironmentAdded>(handler.Handle);
         }
 
         private void GivenThatWeDontCreateEnvironment1()
@@ -34,11 +38,12 @@
             _environment1Key = DataFixture.Create<string>();
         }
 
-        private void WhenWeGetEnvironment1Details()
+        private async Task WhenWeInvokeTheProjectionBuilderForEnvironment1()
         {
             try
             {
-                ReadModelFacade.GetEnvironmentDetails(_environment1Key).GetAwaiter().GetResult().Should().BeNull();
+                var request = new ProjectionBuilderRequest(_projectId, _environment1Key);
+                _dto = await _builder.Invoke(request, new CancellationToken(false));
             }
             catch (Exception ex)
             {
@@ -46,9 +51,9 @@
             }
         }
 
-        private void ThenGettingEnvironment1ThrownsNotFoundException()
+        private void ThenGettingEnvironment1ThrownsFailedToBuildProjectionException()
         {
-            ThrownException.Should().BeOfType<NotFoundException>();
+            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
         }
 
         ////[Fact]

@@ -1,10 +1,7 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Evelyn.Core.ReadModel.AccountProjects;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using Evelyn.Core.ReadModel;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 
@@ -21,10 +18,30 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void SynchronouslyInProcess(this EventPublisherOptions parentOptions)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.TryAddSingleton<AccountProjectsHandler>();
-            parentOptions.Services.TryAddSingleton<ProjectDetailsHandler>();
-            parentOptions.Services.TryAddSingleton<EnvironmentDetailsHandler>();
-            parentOptions.Services.TryAddSingleton<ToggleDetailsHandler>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.AccountProjects.Handler>();
+            parentOptions.Services.TryAddSingleton<
+                IProjectionBuilder<Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilderRequest, Evelyn.Core.ReadModel.AccountProjects.AccountProjectsDto>, 
+                Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilder>();
+
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ProjectDetails.Handler>();
+            parentOptions.Services.TryAddSingleton<
+                IProjectionBuilder<Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.ProjectDetails.ProjectDetailsDto>,
+                Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilder>();
+
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentDetails.Handler>();
+            parentOptions.Services.TryAddSingleton<
+                IProjectionBuilder<Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.EnvironmentDetails.EnvironmentDetailsDto>,
+                Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilder>();
+
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ToggleDetails.Handler>();
+            parentOptions.Services.TryAddSingleton<
+                IProjectionBuilder<Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.ToggleDetails.ToggleDetailsDto>,
+                Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilder>();
+
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentState.Handler>();
+            parentOptions.Services.TryAddSingleton<
+                IProjectionBuilder<Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilderRequest, Evelyn.Core.ReadModel.EnvironmentState.EnvironmentStateDto>,
+                Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
         }

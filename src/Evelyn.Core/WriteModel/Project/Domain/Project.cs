@@ -2,14 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using CQRSlite.Domain;
     using Events;
 
     public class Project : AggregateRoot
     {
-        private IList<Environment> _environments;
-        private IList<Toggle> _toggles;
+        private List<Environment> _environments;
+        private List<Toggle> _toggles;
+        private List<EnvironmentState> _environmentStates;
 
         public Project()
         {
@@ -21,6 +23,18 @@
         {
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name));
         }
+
+        public IEnumerable<Environment> Environments => _environments.ToList();
+
+        public IEnumerable<Toggle> Toggles => _toggles.ToList();
+
+        public IEnumerable<EnvironmentState> EnvironmentStates => _environmentStates.ToList();
+
+        public DateTimeOffset Created { get; private set; }
+
+        public DateTimeOffset LastModified { get; private set; }
+
+        public string Name { get; private set; }
 
         public void AddEnvironment(string userId, string key)
         {
@@ -71,22 +85,43 @@
         private void Apply(ProjectCreated e)
         {
             Id = e.Id;
+            Name = e.Name;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
+            _environmentStates = new List<EnvironmentState>();
+            Created = e.TimeStamp;
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(EnvironmentAdded e)
         {
-            _environments.Add(new Environment(e.Key));
+            _environments.Add(new Environment(e.Key, e.TimeStamp));
+
+            var toggleStates = Toggles.Select(t => new ToggleState(t.Key, t.DefaultValue, e.TimeStamp));
+
+            _environmentStates.Add(new EnvironmentState(e.Key, toggleStates, e.TimeStamp));
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(ToggleAdded e)
         {
-            _toggles.Add(new Toggle(e.Key, e.Name));
+            var toggle = new Toggle(e.Key, e.Name, e.TimeStamp);
+
+            _toggles.Add(toggle);
+
+            foreach (var environmentState in _environmentStates)
+            {
+                environmentState.AddToggleState(new ToggleState(e.Key, toggle.DefaultValue, e.TimeStamp));
+            }
+
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(ToggleStateChanged @event)
         {
+            var environmentState = _environmentStates.First(es => es.EnvironmentKey == @event.EnvironmentKey);
+            environmentState.SetToggleState(@event.ToggleKey, @event.Value, @event.TimeStamp);
+            LastModified = @event.TimeStamp;
         }
     }
 }
