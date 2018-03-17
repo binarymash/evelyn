@@ -5,12 +5,7 @@
 
     public class EnvironmentStateDto
     {
-        private readonly List<ToggleStateDto> _toggleStates;
-
-        public EnvironmentStateDto()
-        {
-            _toggleStates = new List<ToggleStateDto>();
-        }
+        private readonly List<ToggleStateDto> _toggleStates = new List<ToggleStateDto>();
 
         public EnvironmentStateDto(int version, IEnumerable<ToggleStateDto> toggleStates)
         {
@@ -18,8 +13,8 @@
             _toggleStates = toggleStates.ToList();
         }
 
-        public int Version { get; set; }
+        public int Version { get; private set; }
 
-        public IEnumerable<ToggleStateDto> Toggles => _toggleStates.AsEnumerable();
+        public IEnumerable<ToggleStateDto> ToggleStates => _toggleStates;
     }
 }

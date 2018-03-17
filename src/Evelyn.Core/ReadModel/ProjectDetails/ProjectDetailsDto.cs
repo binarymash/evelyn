@@ -30,8 +30,8 @@
 
         public DateTimeOffset LastModified { get; private set; }
 
-        public IEnumerable<EnvironmentListDto> Environments => _environments.ToList();
+        public IEnumerable<EnvironmentListDto> Environments => _environments;
 
-        public IEnumerable<ToggleListDto> Toggles => _toggles.ToList();
+        public IEnumerable<ToggleListDto> Toggles => _toggles;
     }
 }

@@ -2,11 +2,6 @@
 {
     public class ToggleStateDto
     {
-        public ToggleStateDto()
-        {
-            Version = -1;
-        }
-
         public ToggleStateDto(int version, string key, string value)
         {
             Version = version;
