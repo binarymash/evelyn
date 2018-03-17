@@ -15,7 +15,7 @@
             _eventStream = eventStreamFactory.GetEventStream<EnvironmentDetailsDto>();
         }
 
-        public Task Handle(EnvironmentAdded message, CancellationToken token)
+        public Task Handle(EnvironmentAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

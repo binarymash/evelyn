@@ -16,7 +16,7 @@
             _eventStream = eventStreamFactory.GetEventStream<ToggleDetailsDto>();
         }
 
-        public Task Handle(ToggleAdded message, CancellationToken token)
+        public Task Handle(ToggleAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

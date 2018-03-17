@@ -18,19 +18,19 @@
             _eventStream = eventStreamFactory.GetEventStream<ProjectDetailsDto>();
         }
 
-        public Task Handle(ProjectCreated message, CancellationToken token)
+        public Task Handle(ProjectCreated message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
 
-        public Task Handle(EnvironmentAdded message, CancellationToken token)
+        public Task Handle(EnvironmentAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
 
-        public Task Handle(ToggleAdded message, CancellationToken token)
+        public Task Handle(ToggleAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
