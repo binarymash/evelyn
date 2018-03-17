@@ -9,7 +9,7 @@
 
     public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, ToggleDetailsDto>
     {
-        private IDatabase<string, ToggleDetailsDto> _db;
+        private readonly IDatabase<string, ToggleDetailsDto> _db;
 
         public EventStreamHandler(
             IProjectionBuilder<ProjectionBuilderRequest, ToggleDetailsDto> projectionBuilder,
@@ -34,7 +34,7 @@
         protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
         {
             var dto = await ProjectionBuilder.Invoke(request, token);
-            await _db.AddOrUpdate($"{request.ProjectId}-{request.ToggleKey}", dto);
+            await _db.AddOrUpdate($"{dto.ProjectId}-{dto.Key}", dto);
         }
     }
 }

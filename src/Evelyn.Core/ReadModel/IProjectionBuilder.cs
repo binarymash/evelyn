@@ -5,6 +5,6 @@
 
     public interface IProjectionBuilder<TRequest, TDto>
     {
-        Task<TDto> Invoke(TRequest request, CancellationToken token);
+        Task<TDto> Invoke(TRequest request, CancellationToken token = default(CancellationToken));
     }
 }

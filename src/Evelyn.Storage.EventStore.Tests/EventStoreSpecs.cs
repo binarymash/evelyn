@@ -1,7 +1,4 @@
-﻿using Xunit;
-
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
-namespace Evelyn.Storage.EventStore.Tests
+﻿namespace Evelyn.Storage.EventStore.Tests
 {
     extern alias EmbeddedES;
     extern alias NetCoreES;

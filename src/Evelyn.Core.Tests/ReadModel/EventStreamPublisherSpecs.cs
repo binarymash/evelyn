@@ -28,20 +28,5 @@
             eventStream.Count.Should().Be(1);
             eventStream.Should().Contain(Message);
         }
-
-        protected class StubbedEventStreamFactory : IEventStreamFactory
-        {
-            private readonly Queue<IEvent> _events;
-
-            public StubbedEventStreamFactory()
-            {
-                _events = new Queue<IEvent>();
-            }
-
-            public Queue<IEvent> GetEventStream<TDto>()
-            {
-                return _events;
-            }
-        }
     }
 }

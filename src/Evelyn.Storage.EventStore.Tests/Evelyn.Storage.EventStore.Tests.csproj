@@ -27,6 +27,12 @@
     <ProjectReference Include="..\Evelyn.Core\Evelyn.Core.csproj" />
     <ProjectReference Include="..\Evelyn.Storage.EventStore\Evelyn.Storage.EventStore.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   
   <Target Name="ChangeAssemblyAliases" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
     <ItemGroup>
