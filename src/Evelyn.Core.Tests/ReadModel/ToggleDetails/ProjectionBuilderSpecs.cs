@@ -10,7 +10,6 @@
     using Core.WriteModel.Project.Events;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.ToggleDetails;
     using FluentAssertions;
     using NSubstitute;
@@ -18,9 +17,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
+    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, ToggleDetailsDto>
     {
-        private readonly ProjectionBuilder _builder;
         private readonly List<IEvent> _projectEvents;
 
         private Guid _projectId;
@@ -29,12 +27,10 @@
         private string _toggleKey;
         private Toggle _expectedToggle;
 
-        private ToggleDetailsDto _dto;
-
         public ProjectionBuilderSpecs()
         {
             _projectEvents = new List<IEvent>();
-            _builder = new ProjectionBuilder(SubstituteRepository);
+            Builder = new ProjectionBuilder(SubstituteRepository);
         }
 
         [Fact]
@@ -127,7 +123,7 @@
             try
             {
                 var request = new ProjectionBuilderRequest(_projectId, _toggleKey);
-                _dto = await _builder.Invoke(request);
+                Dto = await Builder.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -135,34 +131,29 @@
             }
         }
 
-        private void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
-
         private void ThenTheCreatedDateIsSet()
         {
-            _dto.Created.Should().Be(_expectedToggle.Created);
+            Dto.Created.Should().Be(_expectedToggle.Created);
         }
 
         private void ThenTheLastModifiedDateIsSet()
         {
-            _dto.LastModified.Should().Be(_expectedToggle.LastModified);
+            Dto.LastModified.Should().Be(_expectedToggle.LastModified);
         }
 
         private void ThenTheProjectIdIsSet()
         {
-            _dto.ProjectId.Should().Be(_projectId);
+            Dto.ProjectId.Should().Be(_projectId);
         }
 
         private void ThenTheToggleKeyIsSet()
         {
-            _dto.Key.Should().Be(_expectedToggle.Key);
+            Dto.Key.Should().Be(_expectedToggle.Key);
         }
 
         private void ThenTheToggleNameIsSet()
         {
-            _dto.Name.Should().Be(_expectedToggle.Name);
+            Dto.Name.Should().Be(_expectedToggle.Name);
         }
     }
 }

@@ -11,27 +11,23 @@
     using Core.WriteModel.Project.Events;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel;
     using FluentAssertions;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
+    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, ProjectDetailsDto>
     {
-        private readonly ProjectionBuilder _builder;
         private readonly List<IEvent> _projectEvents;
 
         private Guid _projectId;
         private Project _project;
 
-        private ProjectDetailsDto _dto;
-
         public ProjectionBuilderSpecs()
         {
             _projectEvents = new List<IEvent>();
-            _builder = new ProjectionBuilder(SubstituteRepository);
+            Builder = new ProjectionBuilder(SubstituteRepository);
         }
 
         [Fact]
@@ -122,7 +118,7 @@
         {
             try
             {
-                _dto = await _builder.Invoke(new ProjectionBuilderRequest(_projectId));
+                Dto = await Builder.Invoke(new ProjectionBuilderRequest(_projectId));
             }
             catch (Exception ex)
             {
@@ -130,39 +126,34 @@
             }
         }
 
-        private void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
-
         private void ThenTheCreationDateIsSet()
         {
-            _dto.Created.Should().Be(_project.Created);
+            Dto.Created.Should().Be(_project.Created);
         }
 
         private void ThenTheLastModifiedDateIsSet()
         {
-            _dto.LastModified.Should().Be(_project.LastModified);
+            Dto.LastModified.Should().Be(_project.LastModified);
         }
 
         private void ThenTheVersionIsSet()
         {
-            _dto.Version.Should().Be(_project.Version);
+            Dto.Version.Should().Be(_project.Version);
         }
 
         private void ThenTheIdIsSet()
         {
-            _dto.Id.Should().Be(_project.Id);
+            Dto.Id.Should().Be(_project.Id);
         }
 
         private void ThenTheNameIsSet()
         {
-            _dto.Name.Should().Be(_project.Name);
+            Dto.Name.Should().Be(_project.Name);
         }
 
         private void ThenAllTheEnvironmentsAreSet()
         {
-            var environments = _dto.Environments.ToList();
+            var environments = Dto.Environments.ToList();
 
             environments.Count.Should().Be(_project.Environments.Count());
 
@@ -174,7 +165,7 @@
 
         private void ThenAllTheTogglesAreSet()
         {
-            var toggles = _dto.Toggles.ToList();
+            var toggles = Dto.Toggles.ToList();
 
             toggles.Count.Should().Be(_project.Toggles.Count());
 

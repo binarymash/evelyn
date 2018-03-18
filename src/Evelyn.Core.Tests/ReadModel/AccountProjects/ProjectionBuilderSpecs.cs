@@ -6,7 +6,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel;
     using Core.ReadModel.AccountProjects;
     using Core.WriteModel.Account.Domain;
     using Core.WriteModel.Project.Domain;
@@ -21,9 +20,8 @@
     using AccountEvents = Core.WriteModel.Account.Events;
     using ProjectEvents = Core.WriteModel.Project.Events;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
+    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs<ProjectionBuilder, AccountProjectsDto>
     {
-        private readonly ProjectionBuilder _builder;
         private readonly List<IEvent> _accountEvents;
         private readonly List<IEvent> _project1Events;
         private readonly List<IEvent> _project2Events;
@@ -37,11 +35,9 @@
         private Guid _project2Id;
         private Project _project2;
 
-        private AccountProjectsDto _dto;
-
         public ProjectionBuilderSpecs()
         {
-            _builder = new ProjectionBuilder(SubstituteRepository);
+            Builder = new ProjectionBuilder(SubstituteRepository);
             _accountEvents = new List<IEvent>();
             _project1Events = new List<IEvent>();
             _project2Events = new List<IEvent>();
@@ -166,7 +162,7 @@
             try
             {
                 var request = new ProjectionBuilderRequest(_accountId);
-                _dto = await _builder.Invoke(request);
+                Dto = await Builder.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -174,19 +170,14 @@
             }
         }
 
-        private void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
-
         private void ThenTheAccountIdIsSet()
         {
-            _dto.AccountId.Should().Be(_accountId);
+            Dto.AccountId.Should().Be(_accountId);
         }
 
         private void ThenAllTheProjectsAreSet()
         {
-            var projects = _dto.Projects.ToList();
+            var projects = Dto.Projects.ToList();
 
             projects.Count.Should().Be(_account.Projects.Count());
 

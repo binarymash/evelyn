@@ -6,7 +6,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel;
     using Core.ReadModel.EnvironmentState;
     using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
@@ -18,9 +17,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
+    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, EnvironmentStateDto>
     {
-        private readonly ProjectionBuilder _builder;
         private readonly List<IEvent> _projectEvents;
 
         private Guid _projectId;
@@ -29,11 +27,9 @@
         private string _environmentKey;
         private EnvironmentState _expectedEnvironmentState;
 
-        private EnvironmentStateDto _dto;
-
         public ProjectionBuilderSpecs()
         {
-            _builder = new ProjectionBuilder(SubstituteRepository);
+            Builder = new ProjectionBuilder(SubstituteRepository);
             _projectEvents = new List<IEvent>();
         }
 
@@ -149,7 +145,7 @@
         {
             try
             {
-                _dto = await _builder.Invoke(request);
+                Dto = await Builder.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -157,23 +153,18 @@
             }
         }
 
-        private void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
-
         private void ThenTheEnvironmentVersionIsSet()
         {
-            _dto.Version.Should().Be(_expectedEnvironmentState.Version);
+            Dto.Version.Should().Be(_expectedEnvironmentState.Version);
         }
 
         private void ThenAllTheToggleStatesAreSet()
         {
-            _dto.ToggleStates.Count().Should().Be(_expectedEnvironmentState.ToggleStates.Count());
+            Dto.ToggleStates.Count().Should().Be(_expectedEnvironmentState.ToggleStates.Count());
 
             foreach (var toggleState in _expectedEnvironmentState.ToggleStates)
             {
-                _dto.ToggleStates.ToList().Exists(MatchingToggleState(toggleState)).Should().BeTrue();
+                Dto.ToggleStates.ToList().Exists(MatchingToggleState(toggleState)).Should().BeTrue();
             }
         }
 

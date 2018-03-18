@@ -10,7 +10,6 @@
     using Core.WriteModel.Project.Events;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
-    using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using FluentAssertions;
     using NSubstitute;
@@ -19,9 +18,8 @@
     using Xunit;
     using Environment = Core.WriteModel.Project.Domain.Environment;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
+    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, EnvironmentDetailsDto>
     {
-        private readonly ProjectionBuilder _builder;
         private readonly List<IEvent> _projectEvents;
 
         private Guid _projectId;
@@ -30,12 +28,10 @@
         private string _environmentKey;
         private Environment _expectedEnvironment;
 
-        private EnvironmentDetailsDto _dto;
-
         public ProjectionBuilderSpecs()
         {
             _projectEvents = new List<IEvent>();
-            _builder = new ProjectionBuilder(SubstituteRepository);
+            Builder = new ProjectionBuilder(SubstituteRepository);
         }
 
         [Fact]
@@ -127,7 +123,7 @@
             try
             {
                 var request = new ProjectionBuilderRequest(_projectId, _environmentKey);
-                _dto = await _builder.Invoke(request);
+                Dto = await Builder.Invoke(request);
             }
             catch (Exception ex)
             {
@@ -135,29 +131,24 @@
             }
         }
 
-        private void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
-
         private void ThenTheCreatedDateIsSet()
         {
-            _dto.Created.Should().Be(_expectedEnvironment.Created);
+            Dto.Created.Should().Be(_expectedEnvironment.Created);
         }
 
         private void ThenTheLastModifiedDateIsSet()
         {
-            _dto.LastModified.Should().Be(_expectedEnvironment.LastModified);
+            Dto.LastModified.Should().Be(_expectedEnvironment.LastModified);
         }
 
         private void ThenTheProjectIdIsSet()
         {
-            _dto.ProjectId.Should().Be(_projectId);
+            Dto.ProjectId.Should().Be(_projectId);
         }
 
         private void ThenTheEnvironmentKeyIsSet()
         {
-            _dto.Key.Should().Be(_expectedEnvironment.Key);
+            Dto.Key.Should().Be(_expectedEnvironment.Key);
         }
     }
 }
