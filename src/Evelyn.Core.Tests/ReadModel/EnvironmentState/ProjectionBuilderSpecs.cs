@@ -10,7 +10,6 @@
     using Core.ReadModel.EnvironmentState;
     using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
-    using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
     using FluentAssertions;
@@ -22,7 +21,6 @@
     public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
     {
         private readonly ProjectionBuilder _builder;
-        private readonly IRepository _repository;
         private readonly List<IEvent> _projectEvents;
 
         private Guid _projectId;
@@ -35,8 +33,7 @@
 
         public ProjectionBuilderSpecs()
         {
-            _repository = Substitute.For<IRepository>();
-            _builder = new ProjectionBuilder(_repository);
+            _builder = new ProjectionBuilder(SubstituteRepository);
             _projectEvents = new List<IEvent>();
         }
 
@@ -74,14 +71,15 @@
         private void GivenTheProjectDoesNotExistInTheRepository()
         {
             _projectId = DataFixture.Create<Guid>();
-            _repository
+
+            SubstituteRepository
                 .Get<Project>(_projectId, Arg.Any<CancellationToken>())
                 .Throws(new AggregateNotFoundException(typeof(Project), _projectId));
         }
 
         private void GivenTheProjectIsInTheRepository()
         {
-            _repository
+            SubstituteRepository
                 .Get<Project>(_projectId, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(_project));
         }
@@ -93,7 +91,7 @@
 
             _projectEvents.Add(DataFixture.Build<ProjectCreated>()
                 .With(ev => ev.Version, 0)
-                .With(pc => pc.Id, _projectId)
+                .With(ev => ev.Id, _projectId)
                 .Create());
 
             _project = new Project();
@@ -107,28 +105,28 @@
 
             _projectEvents.Add(DataFixture.Build<ProjectCreated>()
                 .With(ev => ev.Version, 0)
-                .With(pc => pc.Id, _projectId)
+                .With(ev => ev.Id, _projectId)
                 .Create());
 
             _projectEvents.Add(DataFixture.Build<EnvironmentAdded>()
                 .With(ev => ev.Version, 1)
-                .With(ea => ea.Id, _projectId)
-                .With(ea => ea.Key, _environmentKey)
+                .With(ev => ev.Id, _projectId)
+                .With(ev => ev.Key, _environmentKey)
                 .Create());
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 2)
-                .With(ta => ta.Id, _projectId)
+                .With(ev => ev.Id, _projectId)
                 .Create());
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 3)
-                .With(ta => ta.Id, _projectId)
+                .With(ev => ev.Id, _projectId)
                 .Create());
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 4)
-                .With(ta => ta.Id, _projectId)
+                .With(ev => ev.Id, _projectId)
                 .Create());
 
             _project = new Project();
@@ -175,14 +173,14 @@
 
             foreach (var toggleState in _expectedEnvironmentState.ToggleStates)
             {
-                _dto.ToggleStates.ToList().Exists(MatchingToggleState(toggleState));
+                _dto.ToggleStates.ToList().Exists(MatchingToggleState(toggleState)).Should().BeTrue();
             }
         }
 
         private Predicate<ToggleStateDto> MatchingToggleState(ToggleState toggleState)
         {
             return ts =>
-                ts.Key == toggleState.Key && 
+                ts.Key == toggleState.Key &&
                 ts.Value == toggleState.Value;
         }
     }

@@ -1,48 +1,132 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel.Project.Domain;
+    using Core.WriteModel.Project.Events;
+    using CQRSlite.Domain.Exception;
+    using CQRSlite.Events;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using FluentAssertions;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using TestStack.BDDfy;
     using Xunit;
+    using Environment = Core.WriteModel.Project.Domain.Environment;
 
     public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
     {
         private readonly ProjectionBuilder _builder;
-        private readonly Guid _projectId;
+        private readonly List<IEvent> _projectEvents;
 
-        private string _environment1Key;
+        private Guid _projectId;
+        private Project _project;
+
+        private string _environmentKey;
+        private Environment _expectedEnvironment;
+
         private EnvironmentDetailsDto _dto;
 
         public ProjectionBuilderSpecs()
         {
-            _builder = new ProjectionBuilder(StubbedRepository);
-            _projectId = DataFixture.Create<Guid>();
+            _projectEvents = new List<IEvent>();
+            _builder = new ProjectionBuilder(SubstituteRepository);
         }
 
         [Fact]
-        public void Environment1DoesNotExist()
+        public void ProjectDoesntExist()
         {
-            this.Given(_ => GivenThatWeDontCreateEnvironment1())
-                .When(_ => WhenWeInvokeTheProjectionBuilderForEnvironment1())
-                .Then(_ => ThenGettingEnvironment1ThrownsFailedToBuildProjectionException())
+            this.Given(_ => GivenTheProjectDoesNotExistInTheRepository())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
-        private void GivenThatWeDontCreateEnvironment1()
+        [Fact]
+        public void EnvironmentDoesNotExist()
         {
-            _environment1Key = DataFixture.Create<string>();
+            this.Given(_ => GivenWeHaveAProjectButItDoesntHaveOurEnvironment())
+                .And(_ => GivenTheProjectIsInTheRepository())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .BDDfy();
         }
 
-        private async Task WhenWeInvokeTheProjectionBuilderForEnvironment1()
+        [Fact]
+        public void EnvironmentExists()
+        {
+            this.Given(_ => GivenWeHaveAProjectWithEnvironments())
+                .And(_ => GivenTheProjectIsInTheRepository())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheLastModifiedDateIsSet())
+                .And(_ => ThenTheProjectIdIsSet())
+                .And(_ => ThenTheEnvironmentKeyIsSet())
+                .BDDfy();
+        }
+
+        private void GivenTheProjectDoesNotExistInTheRepository()
+        {
+            _projectId = DataFixture.Create<Guid>();
+
+            SubstituteRepository
+                .Get<Project>(_projectId, Arg.Any<CancellationToken>())
+                .Throws(new AggregateNotFoundException(typeof(Project), _projectId));
+        }
+
+        private void GivenTheProjectIsInTheRepository()
+        {
+            SubstituteRepository
+                .Get<Project>(_projectId, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(_project));
+        }
+
+        private void GivenWeHaveAProjectButItDoesntHaveOurEnvironment()
+        {
+            _projectId = DataFixture.Create<Guid>();
+            _environmentKey = DataFixture.Create<string>();
+
+            _projectEvents.Add(DataFixture.Build<ProjectCreated>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _projectId)
+                .Create());
+
+            _project = new Project();
+            _project.LoadFromHistory(_projectEvents);
+        }
+
+        private void GivenWeHaveAProjectWithEnvironments()
+        {
+            _projectId = DataFixture.Create<Guid>();
+            _environmentKey = DataFixture.Create<string>();
+
+            _projectEvents.Add(DataFixture.Build<ProjectCreated>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _projectId)
+                .Create());
+
+            _projectEvents.Add(DataFixture.Build<EnvironmentAdded>()
+                .With(ev => ev.Version, 1)
+                .With(ev => ev.Id, _projectId)
+                .With(ev => ev.Key, _environmentKey)
+                .Create());
+
+            _project = new Project();
+            _project.LoadFromHistory(_projectEvents);
+
+            _expectedEnvironment = _project.Environments.First(es => es.Key == _environmentKey);
+        }
+
+        private async Task WhenWeInvokeTheProjectionBuilder()
         {
             try
             {
-                var request = new ProjectionBuilderRequest(_projectId, _environment1Key);
+                var request = new ProjectionBuilderRequest(_projectId, _environmentKey);
                 _dto = await _builder.Invoke(request);
             }
             catch (Exception ex)
@@ -51,184 +135,29 @@
             }
         }
 
-        private void ThenGettingEnvironment1ThrownsFailedToBuildProjectionException()
+        private void ThenAFailedToBuildProjectionExceptionIsThrown()
         {
             ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
         }
 
-        ////[Fact]
-        ////public void ProjectCreated()
-        ////{
-        ////    this.Given(_ => GivenAnProjectIsCreated())
-        ////        .When(_ => WhenTheEventsArePublished())
-        ////        .And(_ => ThenTheProjectDetailsCanBeRetrieved())
-        ////        .BDDfy();
-        ////}
+        private void ThenTheCreatedDateIsSet()
+        {
+            _dto.Created.Should().Be(_expectedEnvironment.Created);
+        }
 
-        ////[Fact]
-        ////public void MultipleProjectCreated()
-        ////{
-        ////    this.Given(_ => GivenAnProjectIsCreated())
-        ////        .And(_ => GivenAnotherProjectIsCreated())
-        ////        .When(_ => WhenTheEventsArePublished())
-        ////        .And(_ => ThenBothProjectDetailsCanBeRetrieved())
-        ////        .BDDfy();
-        ////}
+        private void ThenTheLastModifiedDateIsSet()
+        {
+            _dto.LastModified.Should().Be(_expectedEnvironment.LastModified);
+        }
 
-        ////[Fact]
-        ////public void AddingEnvironmentsToProject()
-        ////{
-        ////    this.Given(_ => GivenAnProjectIsCreated())
-        ////        .And(_ => GivenAnotherProjectIsCreated())
-        ////        .And(_ => GivenWeAddAnEnvironmentToTheFirstProject())
-        ////        .And(_ => GivenWeAddAnEnvironmentToTheSecondProject())
-        ////        .And(_ => GivenWeAddAnotherEnvironmentToTheFirstProject())
-        ////        .When(_ => WhenTheEventsArePublished())
-        ////        .And(_ => ThenTheFirstAndThirdEnvironmentsAreAddedToTheFirstProject())
-        ////        .And(_ => ThenTheVersionOfTheFirstProjectHasBeenUpdated())
-        ////        .And(_ => ThenTheLastModifiedTimeOfTheFirstProjectHasBeenUpdated())
-        ////        .And(_ => ThenTheSecondEnvironmentIsAddedToTheSecondProject())
-        ////        .And(_ => ThenTheVersionOfTheSecondProjectHasBeenUpdated())
-        ////        .And(_ => ThenTheLastModifiedTimeOfTheSecondProjectHasBeenUpdated())
-        ////        .BDDfy();
-        ////}
+        private void ThenTheProjectIdIsSet()
+        {
+            _dto.ProjectId.Should().Be(_projectId);
+        }
 
-        ////private void GivenAnProjectIsCreated()
-        ////{
-        ////    _event1 = DataFixture.Create<ProjectCreated>();
-        ////    _event1.Version = _eventsProject1.Count + 1;
-        ////    _event1.TimeStamp = DateTimeOffset.UtcNow;
-
-        ////    _project1Id = _event1.Id;
-        ////    _eventsProject1.Add(_event1);
-        ////    _events.Add(_event1);
-        ////}
-
-        ////private void GivenAnotherProjectIsCreated()
-        ////{
-        ////    _event2 = DataFixture.Create<ProjectCreated>();
-        ////    _event2.Version = _eventsProject2.Count + 1;
-        ////    _event2.TimeStamp = DateTimeOffset.UtcNow;
-
-        ////    _project2Id = _event2.Id;
-        ////    _eventsProject2.Add(_event2);
-        ////    _events.Add(_event2);
-        ////}
-
-        ////private void GivenWeAddAnEnvironmentToTheFirstProject()
-        ////{
-        ////    _environmentAdded1 = DataFixture.Create<EnvironmentAdded>();
-        ////    _environmentAdded1.Id = _project1Id;
-        ////    _environmentAdded1.Version = _eventsProject1.Count() + 1;
-        ////    _environmentAdded1.TimeStamp = DateTimeOffset.UtcNow;
-
-        ////    _eventsProject1.Add(_environmentAdded1);
-        ////    _events.Add(_environmentAdded1);
-        ////}
-
-        ////private void GivenWeAddAnEnvironmentToTheSecondProject()
-        ////{
-        ////    _environmentAdded2 = DataFixture.Create<EnvironmentAdded>();
-        ////    _environmentAdded2.Id = _project2Id;
-        ////    _environmentAdded2.Version = _eventsProject2.Count() + 1;
-        ////    _environmentAdded2.TimeStamp = DateTimeOffset.UtcNow;
-
-        ////    _eventsProject2.Add(_environmentAdded2);
-        ////    _events.Add(_environmentAdded2);
-        ////}
-
-        ////private void GivenWeAddAnotherEnvironmentToTheFirstProject()
-        ////{
-        ////    _environmentAdded3 = DataFixture.Create<EnvironmentAdded>();
-        ////    _environmentAdded3.Id = _project1Id;
-        ////    _environmentAdded3.Version = _eventsProject1.Count() + 1;
-        ////    _environmentAdded3.TimeStamp = DateTimeOffset.UtcNow;
-
-        ////    _eventsProject1.Add(_environmentAdded3);
-        ////    _events.Add(_environmentAdded3);
-        ////}
-
-        ////private void WhenTheEventsArePublished()
-        ////{
-        ////    foreach (var ev in _events)
-        ////    {
-        ////        _publisher.Publish(ev).GetAwaiter().GetResult();
-        ////    }
-        ////}
-
-        ////private void ThenTheProjectDetailsCanBeRetrieved()
-        ////{
-        ////    ThenProjectDetailsCanBeRetrievedFor(_event1);
-        ////}
-
-        ////private void ThenBothProjectDetailsCanBeRetrieved()
-        ////{
-        ////    ThenProjectDetailsCanBeRetrievedFor(_event1);
-        ////    ThenProjectDetailsCanBeRetrievedFor(_event2);
-        ////}
-
-        ////private void ThenProjectDetailsCanBeRetrievedFor(ProjectCreated ev)
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(ev.Id);
-        ////    projectDetails.Id.Should().Be(ev.Id);
-        ////    projectDetails.Key.Should().Be(ev.Key);
-        ////    projectDetails.Version.Should().Be(ev.Version);
-        ////    projectDetails.Environments.Count().Should().Be(0);
-        ////    projectDetails.Created.Should().Be(ev.TimeStamp);
-        ////    projectDetails.LastModified.Should().Be(ev.TimeStamp);
-        ////}
-
-        ////private void ThenTheFirstAndThirdEnvironmentsAreAddedToTheFirstProject()
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(_project1Id);
-        ////    projectDetails.Environments.Count().Should().Be(2);
-        ////    ThenTheEnvironmentIsAdded(_project1Id, _environmentAdded1);
-        ////    ThenTheEnvironmentIsAdded(_project1Id, _environmentAdded3);
-        ////}
-
-        ////private void ThenTheSecondEnvironmentIsAddedToTheSecondProject()
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(_project2Id);
-        ////    ThenTheEnvironmentIsAdded(_project2Id, _environmentAdded2);
-        ////}
-
-        ////private void ThenTheVersionOfTheFirstProjectHasBeenUpdated()
-        ////{
-        ////    ThenTheVersionOfTheProjectHasBeenUpdated(_project1Id, _environmentAdded3);
-        ////}
-
-        ////private void ThenTheVersionOfTheSecondProjectHasBeenUpdated()
-        ////{
-        ////    ThenTheVersionOfTheProjectHasBeenUpdated(_project2Id, _environmentAdded2);
-        ////}
-
-        ////private void ThenTheLastModifiedTimeOfTheFirstProjectHasBeenUpdated()
-        ////{
-        ////    ThenTheLastModifiedTimeOfTheProjectHasBeenUpdated(_project1Id, _environmentAdded3);
-        ////}
-
-        ////private void ThenTheLastModifiedTimeOfTheSecondProjectHasBeenUpdated()
-        ////{
-        ////    ThenTheLastModifiedTimeOfTheProjectHasBeenUpdated(_project2Id, _environmentAdded2);
-        ////}
-
-        ////private void ThenTheEnvironmentIsAdded(Guid ProjectId, EnvironmentAdded environmentAdded)
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(projectId);
-        ////    projectDetails.Environments.ShouldContain(environment =>
-        ////        environment.Key == environmentAdded.Key);
-        ////}
-
-        ////private void ThenTheVersionOfTheProjectHasBeenUpdated(Guid ProjectId, EnvironmentAdded environmentAdded)
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(projectId);
-        ////    projectDetails.Version.Should().Be(environmentAdded.Version);
-        ////}
-
-        ////private void ThenTheLastModifiedTimeOfTheProjectHasBeenUpdated(Guid ProjectId, EnvironmentAdded environmentAdded)
-        ////{
-        ////    var projectDetails = _readModelFacade.GetProjectDetails(projectId);
-        ////    projectDetails.LastModified.Should().Be(environmentAdded.TimeStamp);
-        ////}
+        private void ThenTheEnvironmentKeyIsSet()
+        {
+            _dto.Key.Should().Be(_expectedEnvironment.Key);
+        }
     }
 }

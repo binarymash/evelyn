@@ -1,14 +1,20 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.ReadModel;
     using Core.ReadModel.AccountProjects;
     using Core.WriteModel.Account.Domain;
     using Core.WriteModel.Project.Domain;
+    using CQRSlite.Domain.Exception;
+    using CQRSlite.Events;
     using FluentAssertions;
+    using NSubstitute;
+    using NSubstitute.ExceptionExtensions;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -18,88 +24,141 @@
     public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs
     {
         private readonly ProjectionBuilder _builder;
+        private readonly List<IEvent> _accountEvents;
+        private readonly List<IEvent> _project1Events;
+        private readonly List<IEvent> _project2Events;
 
         private Guid _accountId;
+        private Account _account;
 
-        private ProjectEvents.ProjectCreated _project1CreatedEvent;
-        private ProjectEvents.ProjectCreated _project2CreatedEvent;
+        private Guid _project1Id;
+        private Project _project1;
+
+        private Guid _project2Id;
+        private Project _project2;
 
         private AccountProjectsDto _dto;
 
         public ProjectionBuilderSpecs()
         {
-            _builder = new ProjectionBuilder(StubbedRepository);
+            _builder = new ProjectionBuilder(SubstituteRepository);
+            _accountEvents = new List<IEvent>();
+            _project1Events = new List<IEvent>();
+            _project2Events = new List<IEvent>();
         }
 
         [Fact]
-        public void ProjectCreated()
+        public void AccountDoesNotExist()
         {
-            this.Given(_ => GivenAnAccountIsRegistered())
-                .And(_ => GivenAnProjectIsCreated())
+            this.Given(_ => GivenTheAccountIsNotInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenTheProjectIsAddedToTheProjectList())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
-        public void MultipleProjectsCreated()
+        public void ProjectDoesNotExist()
         {
-            this.Given(_ => GivenAnAccountIsRegistered())
-                .And(_ => GivenAnProjectIsCreated())
-                .And(_ => GivenAnotherProjectIsCreated())
+            this.Given(_ => GivenWeHaveAnAccountWithProjects())
+                .And(_ => GivenTheAccountIsInTheRepository())
+                .And(_ => GivenTheProjectsAreNotInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenBothProjectsAreInTheProjectList())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
-        private void GivenAnAccountIsRegistered()
+        [Fact]
+        public void AccountAndProjectsExist()
         {
-            var accountRegisteredEvent = DataFixture.Create<AccountEvents.AccountRegistered>();
-            accountRegisteredEvent.Version = StubbedRepository.NextVersionFor(accountRegisteredEvent.Id);
-
-            _accountId = accountRegisteredEvent.Id;
-
-            StubbedRepository.AddEvent(accountRegisteredEvent, () => new Account());
+            this.Given(_ => GivenWeHaveAnAccountWithProjects())
+                .And(_ => GivenTheAccountIsInTheRepository())
+                .And(_ => GivenTheProjectsAreInTheRepository())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenTheAccountIdIsSet())
+                .And(_ => ThenAllTheProjectsAreSet())
+                .BDDfy();
         }
 
-        private void GivenAnProjectIsCreated()
+        private void GivenTheAccountIsNotInTheRepository()
         {
-            var projectCreatedOnAccount = DataFixture.Build<AccountEvents.ProjectCreated>()
-                .With(pc => pc.Id, _accountId)
-                .With(pc => pc.Version, StubbedRepository.NextVersionFor(_accountId))
-                .Create();
+            _accountId = DataFixture.Create<Guid>();
 
-            StubbedRepository.AddEvent(projectCreatedOnAccount);
-
-            _project1CreatedEvent = new ProjectEvents.ProjectCreated(
-                projectCreatedOnAccount.UserId,
-                projectCreatedOnAccount.Id,
-                projectCreatedOnAccount.ProjectId,
-                DataFixture.Create<string>());
-
-            _project1CreatedEvent.Version = StubbedRepository.NextVersionFor(_project1CreatedEvent.Id);
-
-            StubbedRepository.AddEvent(_project1CreatedEvent, () => new Project());
+            SubstituteRepository
+                .Get<Account>(_accountId, Arg.Any<CancellationToken>())
+                .Throws(new AggregateNotFoundException(typeof(Account), _accountId));
         }
 
-        private void GivenAnotherProjectIsCreated()
+        private void GivenTheAccountIsInTheRepository()
         {
-            var projectCreatedOnAccount = DataFixture.Build<AccountEvents.ProjectCreated>()
-                .With(pc => pc.Id, _accountId)
-                .With(pc => pc.Version, StubbedRepository.NextVersionFor(_accountId))
-                .Create();
+            SubstituteRepository
+                .Get<Account>(_accountId, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(_account));
+        }
 
-            StubbedRepository.AddEvent(projectCreatedOnAccount);
+        private void GivenWeHaveAnAccountWithProjects()
+        {
+            _accountId = DataFixture.Create<Guid>();
 
-            _project2CreatedEvent = new ProjectEvents.ProjectCreated(
-                projectCreatedOnAccount.UserId,
-                projectCreatedOnAccount.Id,
-                projectCreatedOnAccount.ProjectId,
-                DataFixture.Create<string>());
+            _project1Id = DataFixture.Create<Guid>();
+            _project2Id = DataFixture.Create<Guid>();
 
-            _project2CreatedEvent.Version = StubbedRepository.NextVersionFor(_project2CreatedEvent.Id);
+            _accountEvents.Add(DataFixture.Build<AccountEvents.AccountRegistered>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _accountId)
+                .Create());
 
-            StubbedRepository.AddEvent(_project2CreatedEvent, () => new Project());
+            _accountEvents.Add(DataFixture.Build<AccountEvents.ProjectCreated>()
+                .With(ev => ev.Version, 1)
+                .With(ev => ev.Id, _accountId)
+                .With(ev => ev.ProjectId, _project1Id)
+                .Create());
+
+            _accountEvents.Add(DataFixture.Build<AccountEvents.ProjectCreated>()
+                .With(ev => ev.Version, 2)
+                .With(ev => ev.Id, _accountId)
+                .With(ev => ev.ProjectId, _project2Id)
+                .Create());
+
+            _account = new Account();
+            _account.LoadFromHistory(_accountEvents);
+
+            _project1Events.Add(DataFixture.Build<ProjectEvents.ProjectCreated>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _project1Id)
+                .Create());
+
+            _project1 = new Project();
+            _project1.LoadFromHistory(_project1Events);
+
+            _project2Events.Add(DataFixture.Build<ProjectEvents.ProjectCreated>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _project2Id)
+                .Create());
+
+            _project2 = new Project();
+            _project2.LoadFromHistory(_project2Events);
+        }
+
+        private void GivenTheProjectsAreNotInTheRepository()
+        {
+            SubstituteRepository
+                .Get<Project>(_project1Id, Arg.Any<CancellationToken>())
+                .Throws(new AggregateNotFoundException(typeof(Account), _project1Id));
+
+            SubstituteRepository
+                .Get<Project>(_project2Id, Arg.Any<CancellationToken>())
+                .Throws(new AggregateNotFoundException(typeof(Account), _project2Id));
+        }
+
+        private void GivenTheProjectsAreInTheRepository()
+        {
+            SubstituteRepository
+                .Get<Project>(_project1Id, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(_project1));
+
+            SubstituteRepository
+                .Get<Project>(_project2Id, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(_project2));
         }
 
         private async Task WhenWeInvokeTheProjectionBuilder()
@@ -115,24 +174,24 @@
             }
         }
 
-        private void ThenTheProjectIsAddedToTheProjectList()
+        private void ThenAFailedToBuildProjectionExceptionIsThrown()
         {
-            _dto.Projects.Count().Should().Be(1);
-            ThenThereIsAnProjectInTheListFor(_project1CreatedEvent);
+            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
         }
 
-        private void ThenBothProjectsAreInTheProjectList()
+        private void ThenTheAccountIdIsSet()
         {
-            _dto.Projects.Count().Should().Be(2);
-
-            ThenThereIsAnProjectInTheListFor(_project1CreatedEvent);
-            ThenThereIsAnProjectInTheListFor(_project2CreatedEvent);
+            _dto.AccountId.Should().Be(_accountId);
         }
 
-        private void ThenThereIsAnProjectInTheListFor(ProjectEvents.ProjectCreated ev)
+        private void ThenAllTheProjectsAreSet()
         {
-            var project = _dto.Projects.First(p => p.Id == ev.Id);
-            project.Name.Should().Be(ev.Name);
+            var projects = _dto.Projects.ToList();
+
+            projects.Count.Should().Be(_account.Projects.Count());
+
+            projects.Exists(p => p.Id == _project1.Id && p.Name == _project1.Name).Should().BeTrue();
+            projects.Exists(p => p.Id == _project2.Id && p.Name == _project2.Name).Should().BeTrue();
         }
     }
 }

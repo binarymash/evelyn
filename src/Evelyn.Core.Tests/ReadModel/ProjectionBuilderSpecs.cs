@@ -2,18 +2,20 @@
 {
     using System;
     using AutoFixture;
+    using CQRSlite.Domain;
+    using NSubstitute;
 
     public abstract class ProjectionBuilderSpecs
     {
         protected ProjectionBuilderSpecs()
         {
             DataFixture = new Fixture();
-            StubbedRepository = new StubbedRepository();
+            SubstituteRepository = Substitute.For<IRepository>();
         }
 
         protected Fixture DataFixture { get; }
 
-        protected StubbedRepository StubbedRepository { get; set; }
+        protected IRepository SubstituteRepository { get; }
 
         protected Exception ThrownException { get; set; }
     }
