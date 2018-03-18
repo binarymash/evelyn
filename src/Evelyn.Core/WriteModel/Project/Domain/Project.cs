@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using CQRSlite.Domain;
     using Events;
@@ -16,6 +15,9 @@
         public Project()
         {
             Version = -1;
+            _environments = new List<Environment>();
+            _toggles = new List<Toggle>();
+            _environmentStates = new List<EnvironmentState>();
         }
 
         public Project(string userId, Guid accountId, Guid projectId, string name)
