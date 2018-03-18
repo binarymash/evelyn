@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 typeof(Evelyn.Core.ReadModel.ProjectDetails.EventStreamPublisher),
                 typeof(Evelyn.Core.ReadModel.AccountProjects.EventStreamPublisher),
                 typeof(Evelyn.Core.ReadModel.EnvironmentDetails.EventStreamPublisher),
+                typeof(Evelyn.Core.ReadModel.EnvironmentState.EventStreamPublisher),
                 typeof(Evelyn.Core.ReadModel.ToggleDetails.EventStreamPublisher),
-                typeof(Evelyn.Core.ReadModel.ToggleDetails.EventStreamPublisher)
             });
         }
     }
