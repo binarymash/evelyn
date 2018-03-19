@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.ReadModel.AccountProjects
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Domain;
@@ -21,13 +22,14 @@
             {
                 var account = await _repository.Get<Account>(request.AccountId, token).ConfigureAwait(false);
 
-                var dto = new AccountProjectsDto(account.Id);
-
+                var projects = new List<ProjectListDto>();
                 foreach (var projectId in account.Projects)
                 {
                     var project = await _repository.Get<Project>(projectId, token).ConfigureAwait(false);
-                    dto.AddProject(new ProjectListDto(project.Id, project.Name));
+                    projects.Add(new ProjectListDto(project.Id, project.Name));
                 }
+
+                var dto = new AccountProjectsDto(account.Id, account.Created, account.LastModified, projects);
 
                 return dto;
             }

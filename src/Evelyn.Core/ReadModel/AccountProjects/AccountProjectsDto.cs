@@ -8,23 +8,20 @@
     {
         private readonly List<ProjectListDto> _projects;
 
-        public AccountProjectsDto(Guid accountId)
+        public AccountProjectsDto(Guid accountId, DateTimeOffset created, DateTimeOffset lastModified, IEnumerable<ProjectListDto> projects)
         {
             AccountId = accountId;
-            _projects = new List<ProjectListDto>();
+            Created = created;
+            LastModified = lastModified;
+            _projects = projects?.ToList() ?? new List<ProjectListDto>();
         }
 
         public Guid AccountId { get; private set; }
 
-        public IEnumerable<ProjectListDto> Projects
-        {
-            get => _projects.ToList();
-            private set => _projects.AddRange(value.ToList());
-        }
+        public DateTimeOffset Created { get; private set; }
 
-        public void AddProject(ProjectListDto project)
-        {
-            _projects.Add(project);
-        }
+        public DateTimeOffset LastModified { get; private set; }
+
+        public IEnumerable<ProjectListDto> Projects => _projects.ToList();
     }
 }

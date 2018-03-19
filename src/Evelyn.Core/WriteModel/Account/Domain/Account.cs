@@ -23,6 +23,10 @@
             ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
 
+        public DateTimeOffset Created { get; private set; }
+
+        public DateTimeOffset LastModified { get; private set; }
+
         public IEnumerable<Guid> Projects => _projects.ToList();
 
         public Project CreateProject(string userId, Guid projectId, string name)
@@ -40,11 +44,14 @@
         private void Apply(AccountRegistered @event)
         {
             this.Id = @event.Id;
+            Created = @event.OccurredAt;
+            LastModified = @event.OccurredAt;
         }
 
         private void Apply(ProjectCreated @event)
         {
             _projects.Add(@event.ProjectId);
+            LastModified = @event.OccurredAt;
         }
     }
 }

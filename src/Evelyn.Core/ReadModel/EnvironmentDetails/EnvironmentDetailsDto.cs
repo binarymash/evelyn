@@ -16,7 +16,7 @@
 
         public string Key { get; private set; }
 
-        public DateTimeOffset Created { get; }
+        public DateTimeOffset Created { get; private set; }
 
         public DateTimeOffset LastModified { get; private set; }
     }
