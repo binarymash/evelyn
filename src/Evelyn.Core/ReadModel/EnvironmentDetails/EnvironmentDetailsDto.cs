@@ -4,8 +4,8 @@
 
     public class EnvironmentDetailsDto : DtoRoot
     {
-        public EnvironmentDetailsDto(Guid projectId, string key, DateTimeOffset created, DateTimeOffset lastModified)
-            : base(created, string.Empty, lastModified, string.Empty)
+        public EnvironmentDetailsDto(Guid projectId, string key, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+            : base(created, createdBy, lastModified, lastModifiedBy)
         {
             Key = key;
             ProjectId = projectId;

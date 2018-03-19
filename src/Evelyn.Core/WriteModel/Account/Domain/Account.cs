@@ -3,11 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CQRSlite.Domain;
     using Events;
     using Project.Domain;
 
-    public class Account : AggregateRoot
+    public class Account : EvelynAggregateRoot
     {
         private readonly List<Guid> _projects;
 
@@ -22,14 +21,6 @@
         {
             ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
-
-        public DateTimeOffset Created { get; private set; }
-
-        public string CreatedBy { get; private set; }
-
-        public DateTimeOffset LastModified { get; private set; }
-
-        public string LastModifiedBy { get; private set; }
 
         public IEnumerable<Guid> Projects => _projects.ToList();
 

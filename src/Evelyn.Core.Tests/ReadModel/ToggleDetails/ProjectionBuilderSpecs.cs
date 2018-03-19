@@ -59,7 +59,9 @@
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
+                .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenTheProjectIdIsSet())
                 .And(_ => ThenTheToggleKeyIsSet())
                 .And(_ => ThenTheToggleNameIsSet())
@@ -136,9 +138,19 @@
             Dto.Created.Should().Be(_expectedToggle.Created);
         }
 
+        private void ThenTheCreatedByIsSet()
+        {
+            Dto.CreatedBy.Should().Be(_expectedToggle.CreatedBy);
+        }
+
         private void ThenTheLastModifiedDateIsSet()
         {
             Dto.LastModified.Should().Be(_expectedToggle.LastModified);
+        }
+
+        private void ThenTheLastModifiedByIsSet()
+        {
+            Dto.LastModifiedBy.Should().Be(_expectedToggle.LastModifiedBy);
         }
 
         private void ThenTheProjectIdIsSet()

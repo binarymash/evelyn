@@ -9,14 +9,16 @@
             Version = -1;
         }
 
-        public ToggleState(string key, string value, DateTimeOffset created)
+        public ToggleState(string key, string value, DateTimeOffset occurredAt, string userId)
             : this()
         {
             Key = key;
             Value = value;
             Version = 0;
-            Created = created;
-            LastModified = created;
+            Created = occurredAt;
+            CreatedBy = userId;
+            LastModified = occurredAt;
+            LastModifiedBy = userId;
         }
 
         public string Key { get; private set; }
@@ -27,12 +29,17 @@
 
         public DateTimeOffset Created { get; private set; }
 
+        public string CreatedBy { get; private set; }
+
         public DateTimeOffset LastModified { get; private set; }
 
-        public void SetState(string value, DateTimeOffset modified)
+        public string LastModifiedBy { get; private set; }
+
+        public void SetState(string value, DateTimeOffset occurredAt, string userId)
         {
             Value = value;
-            LastModified = modified;
+            LastModified = occurredAt;
+            LastModifiedBy = userId;
             Version++;
         }
     }

@@ -9,8 +9,8 @@
         private readonly IList<EnvironmentListDto> _environments;
         private readonly IList<ToggleListDto> _toggles;
 
-        public ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, int version, DateTimeOffset created, DateTimeOffset lastModified)
-            : base(created, string.Empty, lastModified, string.Empty)
+        public ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+            : base(created, createdBy, lastModified, lastModifiedBy)
         {
             Id = id;
             Name = name;

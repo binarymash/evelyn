@@ -46,7 +46,9 @@
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
+                .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenTheVersionIsSet())
                 .And(_ => ThenTheIdIsSet())
                 .And(_ => ThenTheNameIsSet())
@@ -131,9 +133,19 @@
             Dto.Created.Should().Be(_project.Created);
         }
 
+        private void ThenTheCreatedByIsSet()
+        {
+            Dto.CreatedBy.Should().Be(_project.CreatedBy);
+        }
+
         private void ThenTheLastModifiedDateIsSet()
         {
             Dto.LastModified.Should().Be(_project.LastModified);
+        }
+
+        private void ThenTheLastModifiedByIsSet()
+        {
+            Dto.LastModifiedBy.Should().Be(_project.LastModifiedBy);
         }
 
         private void ThenTheVersionIsSet()

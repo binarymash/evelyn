@@ -8,18 +8,24 @@
         {
         }
 
-        public Environment(string key, DateTimeOffset created)
+        public Environment(string key, DateTimeOffset occurredAt, string userId)
             : this()
         {
             Key = key;
-            Created = created;
-            LastModified = created;
+            Created = occurredAt;
+            CreatedBy = userId;
+            LastModified = occurredAt;
+            LastModifiedBy = CreatedBy;
         }
 
         public string Key { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 
+        public string CreatedBy { get; private set; }
+
         public DateTimeOffset LastModified { get; private set; }
+
+        public string LastModifiedBy { get; private set; }
     }
 }
