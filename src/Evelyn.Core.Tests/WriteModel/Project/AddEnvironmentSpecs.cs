@@ -51,14 +51,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleKey = DataFixture.Create<string>();
             _toggleName = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveAddedAnEnvironment()
         {
             _existingEnvironmentKey = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAnEnvironment()

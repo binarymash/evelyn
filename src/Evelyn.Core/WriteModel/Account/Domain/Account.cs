@@ -20,7 +20,7 @@
         public Account(string userId, Guid accountId)
             : this()
         {
-            ApplyChange(new AccountRegistered(userId, accountId));
+            ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
 
         public IEnumerable<Guid> Projects => _projects.ToList();
@@ -32,7 +32,7 @@
                 throw new InvalidOperationException($"There is already a project with the id {projectId}");
             }
 
-            ApplyChange(new ProjectCreated(userId, Id, projectId));
+            ApplyChange(new ProjectCreated(userId, Id, projectId, DateTimeOffset.UtcNow));
 
             return new Project(userId, this.Id, projectId, name);
         }

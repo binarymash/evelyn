@@ -46,7 +46,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account
         {
             _accountId = DataFixture.Create<Guid>();
 
-            HistoricalEvents.Add(new AccountEvent.AccountRegistered(UserId, _accountId) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new AccountEvent.AccountRegistered(UserId, _accountId, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeCreateAProjectOnTheAccount()

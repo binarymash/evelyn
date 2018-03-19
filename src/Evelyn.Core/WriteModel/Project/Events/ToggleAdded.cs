@@ -4,8 +4,8 @@
 
     public class ToggleAdded : Event
     {
-        public ToggleAdded(string userId, Guid projectId, string key, string name)
-            : base(userId, projectId)
+        public ToggleAdded(string userId, Guid projectId, string key, string name, DateTimeOffset occurredAt)
+            : base(userId, projectId, occurredAt)
         {
             Name = name;
             Key = key;

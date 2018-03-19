@@ -4,12 +4,12 @@
 
     public class ToggleDetailsDto
     {
-        public ToggleDetailsDto(Guid projectId, string key, string name, DateTimeOffset created)
+        public ToggleDetailsDto(Guid projectId, string key, string name, DateTimeOffset created, DateTimeOffset lastModified)
         {
             Key = key;
             Name = name;
             Created = created;
-            LastModified = created;
+            LastModified = lastModified;
             ProjectId = projectId;
         }
 

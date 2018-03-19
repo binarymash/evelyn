@@ -41,6 +41,7 @@
                 DataFixture.Create<string>(),
                 projectId,
                 environmentKey,
+                DateTime.UtcNow,
                 toggleStates)
             {
                 Version = HistoricalEvents.Count

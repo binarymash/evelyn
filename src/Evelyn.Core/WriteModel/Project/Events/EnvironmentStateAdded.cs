@@ -8,8 +8,8 @@
     {
         private readonly List<KeyValuePair<string, string>> _toggleStates;
 
-        public EnvironmentStateAdded(string userId, Guid projectId, string environmentKey, IEnumerable<KeyValuePair<string, string>> toggleStates = null)
-            : base(userId, projectId)
+        public EnvironmentStateAdded(string userId, Guid projectId, string environmentKey, DateTimeOffset occurredAt, IEnumerable<KeyValuePair<string, string>> toggleStates = null)
+            : base(userId, projectId, occurredAt)
         {
             EnvironmentKey = environmentKey;
             _toggleStates = toggleStates?.ToList() ?? new List<KeyValuePair<string, string>>();

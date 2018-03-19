@@ -4,8 +4,8 @@
 
     public class ToggleStateAdded : Event
     {
-        public ToggleStateAdded(string userId, Guid projectId, string environmentKey, string toggleKey, string value)
-            : base(userId, projectId)
+        public ToggleStateAdded(string userId, Guid projectId, string environmentKey, string toggleKey, string value, DateTimeOffset occurredAt)
+            : base(userId, projectId, occurredAt)
         {
             EnvironmentKey = environmentKey;
             ToggleKey = toggleKey;

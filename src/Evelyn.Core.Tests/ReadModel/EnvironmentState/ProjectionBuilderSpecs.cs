@@ -120,7 +120,8 @@
             _projectEvents.Add(new EnvironmentStateAdded(
                 DataFixture.Create<string>(),
                 _projectId,
-                _environmentKey) { Version = 2 });
+                _environmentKey,
+                DateTimeOffset.UtcNow) { Version = 2 });
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 3)
@@ -133,7 +134,8 @@
                 _projectId,
                 _environmentKey,
                 _toggle1Key,
-                DataFixture.Create<bool>().ToString())
+                DataFixture.Create<bool>().ToString(),
+                DateTimeOffset.UtcNow)
                 {
                     Version = 4
                 });
@@ -149,7 +151,8 @@
                 _projectId,
                 _environmentKey,
                 _toggle1Key,
-                DataFixture.Create<bool>().ToString())
+                DataFixture.Create<bool>().ToString(),
+                DateTimeOffset.UtcNow)
             {
                 Version = 6
             });

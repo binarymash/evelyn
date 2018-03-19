@@ -4,8 +4,8 @@
 
     public class EnvironmentAdded : Event
     {
-        public EnvironmentAdded(string userId, Guid projectId, string key)
-            : base(userId, projectId)
+        public EnvironmentAdded(string userId, Guid projectId, string key, DateTimeOffset occurredAt)
+            : base(userId, projectId, occurredAt)
         {
             Key = key;
         }

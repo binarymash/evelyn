@@ -41,12 +41,12 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
 
         private void GivenWeHaveCreatedTheSystem()
         {
-            HistoricalEvents.Add(new EvelynEvent.SystemCreated(UserId, Constants.EvelynSystem) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EvelynEvent.SystemCreated(UserId, Constants.EvelynSystem, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveRegisteredAnAccount()
         {
-            HistoricalEvents.Add(new EvelynEvent.AccountRegistered(UserId, Constants.EvelynSystem, _accountId) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EvelynEvent.AccountRegistered(UserId, Constants.EvelynSystem, _accountId, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeRegisterAnAccount()

@@ -4,8 +4,8 @@
 
     public class AccountRegistered : Event
     {
-        public AccountRegistered(string userId, Guid evelynId, Guid accountId)
-            : base(userId, evelynId)
+        public AccountRegistered(string userId, Guid evelynId, Guid accountId, DateTimeOffset occurredAt)
+            : base(userId, evelynId, occurredAt)
         {
             AccountId = accountId;
         }

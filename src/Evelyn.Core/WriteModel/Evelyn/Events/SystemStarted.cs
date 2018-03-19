@@ -4,8 +4,8 @@
 
     public class SystemStarted : Event
     {
-        public SystemStarted(string userId, Guid id)
-            : base(userId, id)
+        public SystemStarted(string userId, Guid id, DateTimeOffset occurredAt)
+            : base(userId, id, occurredAt)
         {
         }
     }
