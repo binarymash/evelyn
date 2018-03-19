@@ -71,6 +71,8 @@
                 .And(_ => GivenTheProjectsAreInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheAccountIdIsSet())
+                .And(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenAllTheProjectsAreSet())
                 .BDDfy();
         }
@@ -173,6 +175,16 @@
         private void ThenTheAccountIdIsSet()
         {
             Dto.AccountId.Should().Be(_accountId);
+        }
+
+        private void ThenTheCreatedDateIsSet()
+        {
+            Dto.Created.Should().Be(_account.Created);
+        }
+
+        private void ThenTheLastModifiedDateIsSet()
+        {
+            Dto.LastModified.Should().Be(_account.LastModified);
         }
 
         private void ThenAllTheProjectsAreSet()

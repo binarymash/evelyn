@@ -64,6 +64,8 @@
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
                 .Then(_ => ThenTheEnvironmentVersionIsSet())
+                .And(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenAllTheToggleStatesAreSet())
                 .BDDfy();
         }
@@ -188,6 +190,16 @@
         private void ThenTheEnvironmentVersionIsSet()
         {
             Dto.Version.Should().Be(_expectedEnvironmentState.Version);
+        }
+
+        private void ThenTheCreatedDateIsSet()
+        {
+            Dto.Created.Should().Be(_expectedEnvironmentState.Created);
+        }
+
+        private void ThenTheLastModifiedDateIsSet()
+        {
+            Dto.LastModified.Should().Be(_expectedEnvironmentState.LastModified);
         }
 
         private void ThenAllTheToggleStatesAreSet()
