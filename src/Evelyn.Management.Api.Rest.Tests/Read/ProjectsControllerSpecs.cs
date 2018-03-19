@@ -6,7 +6,6 @@
     using Core;
     using Core.ReadModel.AccountProjects;
     using Core.ReadModel.ProjectDetails;
-    using Core.ReadModel.ProjectList;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
@@ -90,7 +89,7 @@
             var projects = _fixture.CreateMany<ProjectListDto>();
             foreach (var project in projects)
             {
-                _accountProjectsReturnedByFacade.Projects.Add(project.Id, project);
+                _accountProjectsReturnedByFacade.AddProject(project);
             }
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);

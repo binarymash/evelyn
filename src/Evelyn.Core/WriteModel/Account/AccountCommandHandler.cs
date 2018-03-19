@@ -17,10 +17,10 @@
 
         public async Task Handle(CreateProject message)
         {
-            var account = await _session.Get<Domain.Account>(message.Id, message.ExpectedVersion);
+            var account = await _session.Get<Domain.Account>(message.Id, message.ExpectedVersion).ConfigureAwait(false);
             var project = account.CreateProject(message.UserId, message.ProjectId, message.Name);
-            await _session.Add(project);
-            await _session.Commit();
+            await _session.Add(project).ConfigureAwait(false);
+            await _session.Commit().ConfigureAwait(false);
         }
     }
 }

@@ -4,11 +4,11 @@
 
     public class EnvironmentDetailsDto
     {
-        public EnvironmentDetailsDto(Guid projectId, string key, DateTimeOffset created)
+        public EnvironmentDetailsDto(Guid projectId, string key, DateTimeOffset created, DateTimeOffset modified)
         {
             Key = key;
             Created = created;
-            LastModified = created;
+            LastModified = modified;
             ProjectId = projectId;
         }
 

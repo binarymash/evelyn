@@ -19,6 +19,8 @@
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
         private readonly EnvironmentsController _controller;
+        private readonly Guid _projectId;
+
         private EnvironmentDetailsDto _environmentReturnedByFacade;
         private string _keyOfEnvironmentToGet;
         private ObjectResult _result;
@@ -28,6 +30,7 @@
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
             _controller = new EnvironmentsController(_readModelFacade);
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
@@ -63,7 +66,7 @@
             _environmentReturnedByFacade = _fixture.Create<EnvironmentDetailsDto>();
             _keyOfEnvironmentToGet = _environmentReturnedByFacade.Key;
             _readModelFacade
-                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
+                .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
                 .Returns(_environmentReturnedByFacade);
         }
 
@@ -71,7 +74,7 @@
         {
             _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
+                .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
                 .Throws(_fixture.Create<NotFoundException>());
         }
 
@@ -79,13 +82,13 @@
         {
             _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetEnvironmentDetails(_keyOfEnvironmentToGet)
+                .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
                 .Throws(_fixture.Create<Exception>());
         }
 
         private async Task WhenWeGetTheEnvironment()
         {
-            _result = await _controller.Get(_keyOfEnvironmentToGet);
+            _result = await _controller.Get(_projectId, _keyOfEnvironmentToGet);
         }
 
         private void ThenStatusCode200IsReturned()

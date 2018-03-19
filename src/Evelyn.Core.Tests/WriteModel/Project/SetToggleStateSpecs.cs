@@ -1,9 +1,11 @@
 namespace Evelyn.Core.Tests.WriteModel.Project
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
     using Core.WriteModel.Project.Commands;
+    using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -16,6 +18,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private string _toggleKey;
         private string _toggleName;
         private string _toggleState;
+        private string _toggleValue;
 
         [Fact]
         public void EnvironmentDoesntExist()
@@ -78,14 +81,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _environmentKey = DataFixture.Create<string>();
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environmentKey);
+            GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environmentKey);
         }
 
         private void GivenWeHaveAddedAToggle()
         {
             _toggleName = DataFixture.Create<string>();
             _toggleKey = DataFixture.Create<string>();
+            _toggleValue = DataFixture.Create<bool>().ToString();
 
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleStateAdded(UserId, _projectId, _environmentKey, _toggleKey, _toggleValue) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()

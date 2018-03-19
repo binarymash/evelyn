@@ -12,20 +12,20 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     public class AddEnvironmentSpecs : ProjectCommandHandlerSpecs<AddEnvironment>
     {
         private Guid _projectId;
-
         private string _newEnvironmentKey;
-
         private string _existingEnvironmentKey;
+        private string _toggleKey;
+        private string _toggleName;
 
         [Fact]
         public void EnvironmentDoesntExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggleToTheProject())
                 .When(_ => WhenWeAddAnEnvironment())
-                .Then(_ => ThenOneEventIsPublished())
-                .And(_ => ThenThePublishedEventIsEnvironmentAdded())
-                .And(_ => ThenTheUserIdIsSaved())
-                .And(_ => ThenTheNameIsSaved())
+                .Then(_ => ThenTwoEventsArePublished())
+                .And(_ => ThenAnEnvironmentAddedEventIsPublished())
+                .And(_ => ThenAnEnvironmentStateAddedEventIsPublished())
                 .BDDfy();
         }
 
@@ -44,6 +44,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             _projectId = DataFixture.Create<Guid>();
             GivenWeHaveCreatedAProjectWith(_projectId);
+        }
+
+        private void GivenWeHaveAddedAToggleToTheProject()
+        {
+            _toggleKey = DataFixture.Create<string>();
+            _toggleName = DataFixture.Create<string>();
+
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveAddedAnEnvironment()
@@ -69,19 +77,19 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             WhenWeHandle(command);
         }
 
-        private void ThenThePublishedEventIsEnvironmentAdded()
+        private void ThenAnEnvironmentAddedEventIsPublished()
         {
-            PublishedEvents.First().Should().BeOfType<EnvironmentAdded>();
+            var @event = (EnvironmentAdded)PublishedEvents.First(ev => ev is EnvironmentAdded);
+            @event.UserId.Should().Be(UserId);
+            @event.Key.Should().Be(_newEnvironmentKey);
         }
 
-        private void ThenTheUserIdIsSaved()
+        private void ThenAnEnvironmentStateAddedEventIsPublished()
         {
-            ((EnvironmentAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
-        }
-
-        private void ThenTheNameIsSaved()
-        {
-            ((EnvironmentAdded)PublishedEvents.First()).Key.Should().Be(_newEnvironmentKey);
+            var @event = (EnvironmentStateAdded)PublishedEvents.First(ev => ev is EnvironmentStateAdded);
+            @event.UserId.Should().Be(UserId);
+            @event.EnvironmentKey.Should().Be(_newEnvironmentKey);
+            @event.ToggleStates.ToList().Exists(ts => ts.Key == _toggleKey && ts.Value == default(bool).ToString());
         }
 
         private void ThenADuplicateEnvironmentKeyExceptionIsThrown()

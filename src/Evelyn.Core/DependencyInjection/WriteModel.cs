@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // session
             services.TryAddScoped<ISession, Session>();
-            services.TryAddScoped<IRepository>(CacheRepositoryFactory);
+            services.TryAddSingleton<IRepository>(CacheRepositoryFactory);
             services.TryAddSingleton<ICache, MemoryCache>();
 
             return services;

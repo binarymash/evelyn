@@ -2,13 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using CQRSlite.Domain;
     using Events;
     using Project.Domain;
 
     public class Account : AggregateRoot
     {
-        private readonly IList<Guid> _projects;
+        private readonly List<Guid> _projects;
 
         public Account()
         {
@@ -21,6 +22,8 @@
         {
             ApplyChange(new AccountRegistered(userId, accountId));
         }
+
+        public IEnumerable<Guid> Projects => _projects.ToList();
 
         public Project CreateProject(string userId, Guid projectId, string name)
         {
@@ -36,6 +39,7 @@
 
         private void Apply(AccountRegistered @event)
         {
+            this.Id = @event.Id;
         }
 
         private void Apply(ProjectCreated @event)

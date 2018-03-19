@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Evelyn.Core\Evelyn.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

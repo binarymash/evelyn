@@ -8,12 +8,16 @@
 
     public class Project : AggregateRoot
     {
-        private IList<Environment> _environments;
-        private IList<Toggle> _toggles;
+        private List<Environment> _environments;
+        private List<Toggle> _toggles;
+        private List<EnvironmentState> _environmentStates;
 
         public Project()
         {
             Version = -1;
+            _environments = new List<Environment>();
+            _toggles = new List<Toggle>();
+            _environmentStates = new List<EnvironmentState>();
         }
 
         public Project(string userId, Guid accountId, Guid projectId, string name)
@@ -21,6 +25,18 @@
         {
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name));
         }
+
+        public IEnumerable<Environment> Environments => _environments.ToList();
+
+        public IEnumerable<Toggle> Toggles => _toggles.ToList();
+
+        public IEnumerable<EnvironmentState> EnvironmentStates => _environmentStates.ToList();
+
+        public DateTimeOffset Created { get; private set; }
+
+        public DateTimeOffset LastModified { get; private set; }
+
+        public string Name { get; private set; }
 
         public void AddEnvironment(string userId, string key)
         {
@@ -30,6 +46,9 @@
             }
 
             ApplyChange(new EnvironmentAdded(userId, Id, key));
+            var toggleStates = Toggles.Select(t => new KeyValuePair<string, string>(t.Key, t.DefaultValue));
+
+            ApplyChange(new EnvironmentStateAdded(userId, Id, key, toggleStates));
         }
 
         public void AddToggle(string userId, string key, string name)
@@ -45,6 +64,11 @@
             }
 
             ApplyChange(new ToggleAdded(userId, Id, key, name));
+
+            foreach (var environmentState in _environmentStates)
+            {
+                ApplyChange(new ToggleStateAdded(userId, Id, environmentState.EnvironmentKey, key, default(bool).ToString()));
+            }
         }
 
         public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value)
@@ -71,22 +95,49 @@
         private void Apply(ProjectCreated e)
         {
             Id = e.Id;
+            Name = e.Name;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
+            _environmentStates = new List<EnvironmentState>();
+            Created = e.TimeStamp;
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(EnvironmentAdded e)
         {
-            _environments.Add(new Environment(e.Key));
+            _environments.Add(new Environment(e.Key, e.TimeStamp));
+            LastModified = e.TimeStamp;
+        }
+
+        private void Apply(EnvironmentStateAdded e)
+        {
+            var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.TimeStamp));
+            var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.TimeStamp);
+            _environmentStates.Add(environmentState);
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(ToggleAdded e)
         {
-            _toggles.Add(new Toggle(e.Key, e.Name));
+            var toggle = new Toggle(e.Key, e.Name, e.TimeStamp);
+            _toggles.Add(toggle);
+            LastModified = e.TimeStamp;
+        }
+
+        private void Apply(ToggleStateAdded e)
+        {
+            var toggleState = new ToggleState(e.ToggleKey, e.Value, e.TimeStamp);
+
+            var environmentState = _environmentStates.First(es => es.EnvironmentKey == e.EnvironmentKey);
+            environmentState.AddToggleState(toggleState);
+            LastModified = e.TimeStamp;
         }
 
         private void Apply(ToggleStateChanged @event)
         {
+            var environmentState = _environmentStates.First(es => es.EnvironmentKey == @event.EnvironmentKey);
+            environmentState.SetToggleState(@event.ToggleKey, @event.Value, @event.TimeStamp);
+            LastModified = @event.TimeStamp;
         }
     }
 }

@@ -22,11 +22,11 @@
         [HttpGet("{environmentKey}")]
         [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(string environmentKey)
+        public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentDetails(environmentKey);
+                var result = await _readModelFacade.GetEnvironmentDetails(projectId, environmentKey);
                 return Ok(result);
             }
             catch (NotFoundException)

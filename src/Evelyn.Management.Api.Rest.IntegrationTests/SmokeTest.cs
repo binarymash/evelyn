@@ -1,12 +1,12 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
+    using Core.ReadModel.EnvironmentState;
     using Core.ReadModel.ProjectDetails;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.ToggleDetails;
@@ -35,7 +35,7 @@
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsAnEmptyCollection())
 
-            // writing...
+                // writing...
                 .When(_ => WhenWeAddAProject())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
 
@@ -45,7 +45,9 @@
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
 
-            // reading...
+                // reading...
+                .Given(_ => GivenweWaitAFewSecondsForEventualConsistency())
+
                 .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
@@ -65,16 +67,26 @@
                 .When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheToggleWeAddedIsReturned())
+
+                .When(_ => WhenWeGetTheStateForTheEnvironmentWeAdded())
+                .Then(_ => ThenTheResponseHasStatusCode200Ok())
+                .And(_ => ThenTheEnvironmentStateContainsOurToggleStates())
+
                 .BDDfy();
+        }
+
+        private async Task GivenweWaitAFewSecondsForEventualConsistency()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         private async Task WhenGetProjects()
         {
             _response = await Client
                 .Request("/api/projects")
-                .GetAsync();
+                .GetAsync().ConfigureAwait(false);
 
-            _responseContent = await _response.Content.ReadAsStringAsync();
+            _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         private async Task WhenWeAddAProject()
@@ -83,9 +95,9 @@
 
             _response = await Client
                 .Request("/api/projects")
-                .PostJsonAsync(_createProjectMessage);
+                .PostJsonAsync(_createProjectMessage).ConfigureAwait(false);
 
-            _responseContent = await _response.Content.ReadAsStringAsync();
+            _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         private async Task WhenWeAddAnEnvironment()
@@ -103,7 +115,7 @@
         private async Task WhenWeAddAToggle()
         {
             _addToggleMessage = DataFixture.Create<AddToggle>();
-            _addToggleMessage.ExpectedVersion = 1;
+            _addToggleMessage.ExpectedVersion = 2;
 
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles")
@@ -139,6 +151,15 @@
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
+        private async Task WhenWeGetTheStateForTheEnvironmentWeAdded()
+        {
+            _response = await Client
+                .Request($"/api/states/{_createProjectMessage.ProjectId}/{_addEnvironmentMessage.Key}")
+                .GetAsync();
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
+        }
+
         private void ThenTheResponseHasStatusCode200Ok()
         {
             ThenTheResponseHasStatusCode(StatusCodes.Status200OK);
@@ -162,20 +183,20 @@
         private void ThenTheResponseContentIsAnEmptyCollection()
         {
             var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count.Should().Be(0);
+            response.Projects.Count().Should().Be(0);
         }
 
         private void ThenTheResponseContentIsACollectionWithOneProject()
         {
             var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count.Should().Be(1);
+            response.Projects.Count().Should().Be(1);
         }
 
         private void ThenTheProjectWeAddedIsInTheCollection()
         {
             var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            projectList.Projects[_createProjectMessage.ProjectId].Id.Should().Be(_createProjectMessage.ProjectId);
-            projectList.Projects[_createProjectMessage.ProjectId].Name.Should().Be(_createProjectMessage.Name);
+            var project = projectList.Projects.First(p => p.Id == _createProjectMessage.ProjectId);
+            project.Name.Should().Be(_createProjectMessage.Name);
         }
 
         private void ThenTheProjectContainsOneEnvironment()
@@ -218,6 +239,14 @@
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
             toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
+        }
+
+        private void ThenTheEnvironmentStateContainsOurToggleStates()
+        {
+            var environmentState = JsonConvert.DeserializeObject<EnvironmentStateDto>(_responseContent, DeserializeWithPrivateSetters);
+            var toggleStates = environmentState.ToggleStates.ToList();
+            toggleStates.Count.Should().Be(1);
+            toggleStates.Exists(ts => ts.Key == _addToggleMessage.Key && ts.Value == default(bool).ToString()).Should().BeTrue();
         }
     }
 }
