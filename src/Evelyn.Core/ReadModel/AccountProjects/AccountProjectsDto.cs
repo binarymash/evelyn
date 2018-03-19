@@ -8,8 +8,8 @@
     {
         private readonly List<ProjectListDto> _projects;
 
-        public AccountProjectsDto(Guid accountId, DateTimeOffset created, DateTimeOffset lastModified, IEnumerable<ProjectListDto> projects)
-            : base(created, lastModified)
+        public AccountProjectsDto(Guid accountId, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ProjectListDto> projects)
+            : base(created, createdBy, lastModified, lastModifiedBy)
         {
             AccountId = accountId;
             _projects = projects?.ToList() ?? new List<ProjectListDto>();

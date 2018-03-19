@@ -25,7 +25,11 @@
 
         public DateTimeOffset Created { get; private set; }
 
+        public string CreatedBy { get; private set; }
+
         public DateTimeOffset LastModified { get; private set; }
+
+        public string LastModifiedBy { get; private set; }
 
         public IEnumerable<Guid> Projects => _projects.ToList();
 
@@ -43,15 +47,18 @@
 
         private void Apply(AccountRegistered @event)
         {
-            this.Id = @event.Id;
+            Id = @event.Id;
             Created = @event.OccurredAt;
+            CreatedBy = @event.UserId;
             LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
 
         private void Apply(ProjectCreated @event)
         {
             _projects.Add(@event.ProjectId);
             LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
     }
 }

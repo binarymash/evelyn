@@ -9,7 +9,7 @@
         private readonly List<ToggleStateDto> _toggleStates;
 
         public EnvironmentStateDto(int version, DateTimeOffset created, DateTimeOffset lastModified, IEnumerable<ToggleStateDto> toggleStates)
-            : base(created, lastModified)
+            : base(created, string.Empty, lastModified, string.Empty)
         {
             Version = version;
             _toggleStates = toggleStates.ToList();

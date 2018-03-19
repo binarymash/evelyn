@@ -10,7 +10,7 @@
         private readonly IList<ToggleListDto> _toggles;
 
         public ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, int version, DateTimeOffset created, DateTimeOffset lastModified)
-            : base(created, lastModified)
+            : base(created, string.Empty, lastModified, string.Empty)
         {
             Id = id;
             Name = name;
