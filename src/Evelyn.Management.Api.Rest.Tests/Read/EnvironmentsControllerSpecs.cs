@@ -19,7 +19,8 @@
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
         private readonly EnvironmentsController _controller;
-        private Guid _projectId;
+        private readonly Guid _projectId;
+
         private EnvironmentDetailsDto _environmentReturnedByFacade;
         private string _keyOfEnvironmentToGet;
         private ObjectResult _result;

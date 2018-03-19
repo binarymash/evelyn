@@ -17,7 +17,7 @@
         [Fact]
         public void EnvironmentAdded()
         {
-            this.When(_ => WhenEnvironmentAddedEventIsHandled())
+            this.When(_ => WhenEnvironmentStateAddedEventIsHandled())
                 .Then(_ => ThenTheEventIsAddedToTheStreamFor<EnvironmentStateDto>())
                 .BDDfy();
         }
@@ -25,7 +25,7 @@
         [Fact]
         public void ToggleAdded()
         {
-            this.When(_ => WhenToggleAddedEventIsHandled())
+            this.When(_ => WhenToggleStateAddedEventIsHandled())
                 .Then(_ => ThenTheEventIsAddedToTheStreamFor<EnvironmentStateDto>())
                 .BDDfy();
         }
@@ -38,16 +38,16 @@
                 .BDDfy();
         }
 
-        private async Task WhenEnvironmentAddedEventIsHandled()
+        private async Task WhenEnvironmentStateAddedEventIsHandled()
         {
-            var message = Fixture.Create<EnvironmentAdded>();
+            var message = Fixture.Create<EnvironmentStateAdded>();
             await Publisher.Handle(message);
             Message = message;
         }
 
-        private async Task WhenToggleAddedEventIsHandled()
+        private async Task WhenToggleStateAddedEventIsHandled()
         {
-            var message = Fixture.Create<ToggleAdded>();
+            var message = Fixture.Create<ToggleStateAdded>();
             await Publisher.Handle(message);
             Message = message;
         }

@@ -22,8 +22,8 @@
         private readonly IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> _projectionBuilder;
         private readonly IDatabase<string, EnvironmentStateDto> _db;
 
-        private EnvironmentAdded _event1;
-        private ToggleAdded _event2;
+        private EnvironmentStateAdded _event1;
+        private ToggleStateAdded _event2;
         private EnvironmentStateDto _projection1;
         private EnvironmentStateDto _projection2;
 
@@ -100,13 +100,13 @@
 
         private void WhenEvent1IsAddedToTheEventStream()
         {
-            _event1 = _fixture.Create<EnvironmentAdded>();
+            _event1 = _fixture.Create<EnvironmentStateAdded>();
             _eventStreamFactory.GetEventStream<EnvironmentStateDto>().Enqueue(_event1);
         }
 
         private void WhenEvent2IsAddedToTheEventStream()
         {
-            _event2 = _fixture.Create<ToggleAdded>();
+            _event2 = _fixture.Create<ToggleStateAdded>();
             _eventStreamFactory.GetEventStream<EnvironmentStateDto>().Enqueue(_event2);
         }
 
@@ -137,12 +137,12 @@
 
         private void ThenTheProjectionIsCachedForEvent1()
         {
-            _db.Received().AddOrUpdate($"{_event1.Id}-{_event1.Key}", _projection1);
+            _db.Received().AddOrUpdate($"{_event1.Id}-{_event1.EnvironmentKey}", _projection1);
         }
 
         private void ThenTheProjectionIsCachedForEvent2()
         {
-            _db.Received().AddOrUpdate($"{_event2.Id}-{_event2.Key}", _projection2);
+            _db.Received().AddOrUpdate($"{_event2.Id}-{_event2.EnvironmentKey}", _projection2);
         }
 
         private void ThenEvent1IsRemovedFromTheStream()

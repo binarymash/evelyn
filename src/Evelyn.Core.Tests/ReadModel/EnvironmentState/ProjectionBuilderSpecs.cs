@@ -27,6 +27,10 @@
         private string _environmentKey;
         private EnvironmentState _expectedEnvironmentState;
 
+        private string _toggle1Key;
+        private string _toggle2Key;
+        private string _toggle3Key;
+
         public ProjectionBuilderSpecs()
         {
             Builder = new ProjectionBuilder(SubstituteRepository);
@@ -98,6 +102,9 @@
         {
             _projectId = DataFixture.Create<Guid>();
             _environmentKey = DataFixture.Create<string>();
+            _toggle1Key = DataFixture.Create<string>();
+            _toggle2Key = DataFixture.Create<string>();
+            _toggle3Key = DataFixture.Create<string>();
 
             _projectEvents.Add(DataFixture.Build<ProjectCreated>()
                 .With(ev => ev.Version, 0)
@@ -110,20 +117,42 @@
                 .With(ev => ev.Key, _environmentKey)
                 .Create());
 
-            _projectEvents.Add(DataFixture.Build<ToggleAdded>()
-                .With(ev => ev.Version, 2)
-                .With(ev => ev.Id, _projectId)
-                .Create());
+            _projectEvents.Add(new EnvironmentStateAdded(
+                DataFixture.Create<string>(),
+                _projectId,
+                _environmentKey) { Version = 2 });
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 3)
                 .With(ev => ev.Id, _projectId)
+                .With(ev => ev.Key, _toggle1Key)
                 .Create());
 
+            _projectEvents.Add(new ToggleStateAdded(
+                DataFixture.Create<string>(),
+                _projectId,
+                _environmentKey,
+                _toggle1Key,
+                DataFixture.Create<bool>().ToString())
+                {
+                    Version = 4
+                });
+
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
-                .With(ev => ev.Version, 4)
+                .With(ev => ev.Version, 5)
                 .With(ev => ev.Id, _projectId)
+                .With(ev => ev.Key, _toggle1Key)
                 .Create());
+
+            _projectEvents.Add(new ToggleStateAdded(
+                DataFixture.Create<string>(),
+                _projectId,
+                _environmentKey,
+                _toggle1Key,
+                DataFixture.Create<bool>().ToString())
+            {
+                Version = 6
+            });
 
             _project = new Project();
             _project.LoadFromHistory(_projectEvents);

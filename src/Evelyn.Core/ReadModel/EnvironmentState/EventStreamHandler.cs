@@ -24,10 +24,10 @@
         {
             switch (@event)
             {
-                case EnvironmentAdded ea:
-                    return new ProjectionBuilderRequest(ea.Id, ea.Key);
-                case ToggleAdded ta:
-                    return new ProjectionBuilderRequest(ta.Id, ta.Key);
+                case EnvironmentStateAdded esa:
+                    return new ProjectionBuilderRequest(esa.Id, esa.EnvironmentKey);
+                case ToggleStateAdded tsa:
+                    return new ProjectionBuilderRequest(tsa.Id, tsa.EnvironmentKey);
                 case ToggleStateChanged tsc:
                     return new ProjectionBuilderRequest(tsc.Id, tsc.EnvironmentKey);
                 default:

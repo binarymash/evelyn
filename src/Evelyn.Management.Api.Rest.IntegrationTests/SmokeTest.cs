@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel.AccountProjects;
+    using Core.ReadModel.EnvironmentState;
     using Core.ReadModel.ProjectDetails;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.ToggleDetails;
@@ -66,6 +67,11 @@
                 .When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheToggleWeAddedIsReturned())
+
+                .When(_ => WhenWeGetTheStateForTheEnvironmentWeAdded())
+                .Then(_ => ThenTheResponseHasStatusCode200Ok())
+                .And(_ => ThenTheEnvironmentStateContainsOurToggleStates())
+
                 .BDDfy();
         }
 
@@ -109,7 +115,7 @@
         private async Task WhenWeAddAToggle()
         {
             _addToggleMessage = DataFixture.Create<AddToggle>();
-            _addToggleMessage.ExpectedVersion = 1;
+            _addToggleMessage.ExpectedVersion = 2;
 
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles")
@@ -140,6 +146,15 @@
         {
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}")
+                .GetAsync();
+
+            _responseContent = await _response.Content.ReadAsStringAsync();
+        }
+
+        private async Task WhenWeGetTheStateForTheEnvironmentWeAdded()
+        {
+            _response = await Client
+                .Request($"/api/states/{_createProjectMessage.ProjectId}/{_addEnvironmentMessage.Key}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -224,6 +239,14 @@
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
             toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
+        }
+
+        private void ThenTheEnvironmentStateContainsOurToggleStates()
+        {
+            var environmentState = JsonConvert.DeserializeObject<EnvironmentStateDto>(_responseContent, DeserializeWithPrivateSetters);
+            var toggleStates = environmentState.ToggleStates.ToList();
+            toggleStates.Count.Should().Be(1);
+            toggleStates.Exists(ts => ts.Key == _addToggleMessage.Key && ts.Value == default(bool).ToString()).Should().BeTrue();
         }
     }
 }

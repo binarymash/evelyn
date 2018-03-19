@@ -7,8 +7,8 @@
     using WriteModel.Project.Events;
 
     public class EventStreamPublisher :
-          ICancellableEventHandler<EnvironmentAdded>,
-          ICancellableEventHandler<ToggleAdded>,
+          ICancellableEventHandler<EnvironmentStateAdded>,
+          ICancellableEventHandler<ToggleStateAdded>,
           ICancellableEventHandler<ToggleStateChanged>
     {
         private readonly Queue<IEvent> _eventStream;
@@ -18,13 +18,13 @@
             _eventStream = eventStreamFactory.GetEventStream<EnvironmentStateDto>();
         }
 
-        public Task Handle(EnvironmentAdded message, CancellationToken token = default(CancellationToken))
+        public Task Handle(EnvironmentStateAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
 
-        public Task Handle(ToggleAdded message, CancellationToken token = default(CancellationToken))
+        public Task Handle(ToggleStateAdded message, CancellationToken token = default(CancellationToken))
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
