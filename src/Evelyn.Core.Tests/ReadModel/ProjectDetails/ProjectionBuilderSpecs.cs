@@ -45,7 +45,7 @@
             this.Given(_ => GivenWeHaveAProjectWithEnvironmentsAndToggles())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenTheCreationDateIsSet())
+                .Then(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenTheVersionIsSet())
                 .And(_ => ThenTheIdIsSet())
@@ -126,7 +126,7 @@
             }
         }
 
-        private void ThenTheCreationDateIsSet()
+        private void ThenTheCreatedDateIsSet()
         {
             Dto.Created.Should().Be(_project.Created);
         }

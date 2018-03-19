@@ -4,8 +4,8 @@
 
     public class ProjectCreated : Event
     {
-        public ProjectCreated(string userId, Guid accountId, Guid projectId)
-            : base(userId, accountId)
+        public ProjectCreated(string userId, Guid accountId, Guid projectId, DateTimeOffset occurredAt)
+            : base(userId, accountId, occurredAt)
         {
             ProjectId = projectId;
         }

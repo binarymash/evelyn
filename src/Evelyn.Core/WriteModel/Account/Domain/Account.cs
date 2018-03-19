@@ -20,8 +20,12 @@
         public Account(string userId, Guid accountId)
             : this()
         {
-            ApplyChange(new AccountRegistered(userId, accountId));
+            ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
+
+        public DateTimeOffset Created { get; private set; }
+
+        public DateTimeOffset LastModified { get; private set; }
 
         public IEnumerable<Guid> Projects => _projects.ToList();
 
@@ -32,7 +36,7 @@
                 throw new InvalidOperationException($"There is already a project with the id {projectId}");
             }
 
-            ApplyChange(new ProjectCreated(userId, Id, projectId));
+            ApplyChange(new ProjectCreated(userId, Id, projectId, DateTimeOffset.UtcNow));
 
             return new Project(userId, this.Id, projectId, name);
         }
@@ -40,11 +44,14 @@
         private void Apply(AccountRegistered @event)
         {
             this.Id = @event.Id;
+            Created = @event.OccurredAt;
+            LastModified = @event.OccurredAt;
         }
 
         private void Apply(ProjectCreated @event)
         {
             _projects.Add(@event.ProjectId);
+            LastModified = @event.OccurredAt;
         }
     }
 }

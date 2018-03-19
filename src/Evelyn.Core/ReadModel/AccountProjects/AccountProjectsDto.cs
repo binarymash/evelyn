@@ -4,27 +4,19 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class AccountProjectsDto
+    public class AccountProjectsDto : DtoRoot
     {
         private readonly List<ProjectListDto> _projects;
 
-        public AccountProjectsDto(Guid accountId)
+        public AccountProjectsDto(Guid accountId, DateTimeOffset created, DateTimeOffset lastModified, IEnumerable<ProjectListDto> projects)
+            : base(created, lastModified)
         {
             AccountId = accountId;
-            _projects = new List<ProjectListDto>();
+            _projects = projects?.ToList() ?? new List<ProjectListDto>();
         }
 
         public Guid AccountId { get; private set; }
 
-        public IEnumerable<ProjectListDto> Projects
-        {
-            get => _projects.ToList();
-            private set => _projects.AddRange(value.ToList());
-        }
-
-        public void AddProject(ProjectListDto project)
-        {
-            _projects.Add(project);
-        }
+        public IEnumerable<ProjectListDto> Projects => _projects.ToList();
     }
 }

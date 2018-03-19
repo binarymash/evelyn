@@ -64,6 +64,8 @@
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
                 .Then(_ => ThenTheEnvironmentVersionIsSet())
+                .And(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenAllTheToggleStatesAreSet())
                 .BDDfy();
         }
@@ -120,7 +122,8 @@
             _projectEvents.Add(new EnvironmentStateAdded(
                 DataFixture.Create<string>(),
                 _projectId,
-                _environmentKey) { Version = 2 });
+                _environmentKey,
+                DateTimeOffset.UtcNow) { Version = 2 });
 
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 3)
@@ -133,7 +136,8 @@
                 _projectId,
                 _environmentKey,
                 _toggle1Key,
-                DataFixture.Create<bool>().ToString())
+                DataFixture.Create<bool>().ToString(),
+                DateTimeOffset.UtcNow)
                 {
                     Version = 4
                 });
@@ -149,7 +153,8 @@
                 _projectId,
                 _environmentKey,
                 _toggle1Key,
-                DataFixture.Create<bool>().ToString())
+                DataFixture.Create<bool>().ToString(),
+                DateTimeOffset.UtcNow)
             {
                 Version = 6
             });
@@ -185,6 +190,16 @@
         private void ThenTheEnvironmentVersionIsSet()
         {
             Dto.Version.Should().Be(_expectedEnvironmentState.Version);
+        }
+
+        private void ThenTheCreatedDateIsSet()
+        {
+            Dto.Created.Should().Be(_expectedEnvironmentState.Created);
+        }
+
+        private void ThenTheLastModifiedDateIsSet()
+        {
+            Dto.LastModified.Should().Be(_expectedEnvironmentState.LastModified);
         }
 
         private void ThenAllTheToggleStatesAreSet()

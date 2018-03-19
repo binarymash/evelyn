@@ -90,8 +90,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleKey = DataFixture.Create<string>();
             _toggleValue = DataFixture.Create<bool>().ToString();
 
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName) { Version = HistoricalEvents.Count });
-            HistoricalEvents.Add(new ToggleStateAdded(UserId, _projectId, _environmentKey, _toggleKey, _toggleValue) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleStateAdded(UserId, _projectId, _environmentKey, _toggleKey, _toggleValue, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()

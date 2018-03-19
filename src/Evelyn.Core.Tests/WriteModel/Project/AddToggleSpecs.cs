@@ -66,7 +66,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _existingToggleKey = DataFixture.Create<string>();
             _existingToggleName = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleKey, _existingToggleName) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleKey, _existingToggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeAddAToggle()

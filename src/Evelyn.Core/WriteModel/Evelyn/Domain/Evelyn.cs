@@ -19,7 +19,7 @@
         public Evelyn(string userId, Guid id)
             : this()
         {
-            ApplyChange(new SystemCreated(userId, id));
+            ApplyChange(new SystemCreated(userId, id, DateTimeOffset.UtcNow));
         }
 
         public IEnumerable<Guid> Accounts => _accounts;
@@ -31,13 +31,13 @@
                 throw new InvalidOperationException($"There is already an account with the ID {accountId}");
             }
 
-            ApplyChange(new AccountRegistered(userId, this.Id, accountId));
+            ApplyChange(new AccountRegistered(userId, this.Id, accountId, DateTimeOffset.UtcNow));
             return new Account(userId, accountId);
         }
 
         public void StartSystem(string userId)
         {
-            ApplyChange(new SystemStarted(userId, this.Id));
+            ApplyChange(new SystemStarted(userId, this.Id, DateTimeOffset.UtcNow));
         }
 
         private void Apply(SystemCreated @event)

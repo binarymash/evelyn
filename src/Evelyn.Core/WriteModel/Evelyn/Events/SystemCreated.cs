@@ -4,8 +4,8 @@
 
     public class SystemCreated : Event
     {
-        public SystemCreated(string userId, Guid id)
-            : base(userId, id)
+        public SystemCreated(string userId, Guid id, DateTimeOffset occurredAt)
+            : base(userId, id, occurredAt)
         {
             Version = -1;
         }

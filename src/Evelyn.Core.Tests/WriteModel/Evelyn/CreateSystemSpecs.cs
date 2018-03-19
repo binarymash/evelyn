@@ -1,5 +1,6 @@
 namespace Evelyn.Core.Tests.WriteModel.Evelyn
 {
+    using System;
     using System.Linq;
     using Core.WriteModel.Evelyn.Commands;
     using FluentAssertions;
@@ -32,7 +33,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
 
         private void GivenWeHaveAlreadyCreatedTheSystem()
         {
-            HistoricalEvents.Add(new EvelynEvent.SystemCreated(UserId, Constants.EvelynSystem) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EvelynEvent.SystemCreated(UserId, Constants.EvelynSystem, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void WhenWeCreateTheSystem()

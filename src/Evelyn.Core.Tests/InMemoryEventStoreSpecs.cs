@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading;
     using AutoFixture;
+    using Core.WriteModel;
     using CQRSlite.Events;
     using FluentAssertions;
     using NSubstitute;
@@ -196,20 +197,13 @@
             _retrievedEvents.Should().Contain(_eventToSave2);
         }
 
-        private class MyEvent : IEvent
+        private class MyEvent : Event
         {
-            public MyEvent(Guid id, int version, DateTimeOffset timeStamp)
+            public MyEvent(string userId, Guid id, int version, DateTimeOffset occurredAt)
+                : base(userId, id, occurredAt)
             {
-                Id = id;
                 Version = version;
-                TimeStamp = timeStamp;
             }
-
-            public Guid Id { get; set; }
-
-            public int Version { get; set; }
-
-            public DateTimeOffset TimeStamp { get; set; }
         }
     }
 }

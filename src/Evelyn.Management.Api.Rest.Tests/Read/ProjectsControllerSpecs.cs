@@ -84,13 +84,7 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = new AccountProjectsDto(_accountId);
-
-            var projects = _fixture.CreateMany<ProjectListDto>();
-            foreach (var project in projects)
-            {
-                _accountProjectsReturnedByFacade.AddProject(project);
-            }
+            _accountProjectsReturnedByFacade = new AccountProjectsDto(_accountId, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, _fixture.CreateMany<ProjectListDto>());
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
         }
