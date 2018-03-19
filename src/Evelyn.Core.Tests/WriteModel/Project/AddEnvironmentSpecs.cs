@@ -82,6 +82,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var @event = (EnvironmentAdded)PublishedEvents.First(ev => ev is EnvironmentAdded);
             @event.UserId.Should().Be(UserId);
             @event.Key.Should().Be(_newEnvironmentKey);
+            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow);
         }
 
         private void ThenAnEnvironmentStateAddedEventIsPublished()
@@ -90,6 +91,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             @event.UserId.Should().Be(UserId);
             @event.EnvironmentKey.Should().Be(_newEnvironmentKey);
             @event.ToggleStates.ToList().Exists(ts => ts.Key == _toggleKey && ts.Value == default(bool).ToString());
+            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow);
         }
 
         private void ThenADuplicateEnvironmentKeyExceptionIsThrown()
