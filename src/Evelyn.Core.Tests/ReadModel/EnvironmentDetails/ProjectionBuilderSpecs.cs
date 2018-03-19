@@ -60,7 +60,9 @@
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
+                .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenTheProjectIdIsSet())
                 .And(_ => ThenTheEnvironmentKeyIsSet())
                 .BDDfy();
@@ -136,9 +138,19 @@
             Dto.Created.Should().Be(_expectedEnvironment.Created);
         }
 
+        private void ThenTheCreatedByIsSet()
+        {
+            Dto.CreatedBy.Should().Be(_expectedEnvironment.CreatedBy);
+        }
+
         private void ThenTheLastModifiedDateIsSet()
         {
             Dto.LastModified.Should().Be(_expectedEnvironment.LastModified);
+        }
+
+        private void ThenTheLastModifiedByIsSet()
+        {
+            Dto.LastModifiedBy.Should().Be(_expectedEnvironment.LastModifiedBy);
         }
 
         private void ThenTheProjectIdIsSet()

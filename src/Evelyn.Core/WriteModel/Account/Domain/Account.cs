@@ -3,11 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CQRSlite.Domain;
     using Events;
     using Project.Domain;
 
-    public class Account : AggregateRoot
+    public class Account : EvelynAggregateRoot
     {
         private readonly List<Guid> _projects;
 
@@ -22,10 +21,6 @@
         {
             ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
-
-        public DateTimeOffset Created { get; private set; }
-
-        public DateTimeOffset LastModified { get; private set; }
 
         public IEnumerable<Guid> Projects => _projects.ToList();
 
@@ -43,15 +38,18 @@
 
         private void Apply(AccountRegistered @event)
         {
-            this.Id = @event.Id;
+            Id = @event.Id;
             Created = @event.OccurredAt;
+            CreatedBy = @event.UserId;
             LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
 
         private void Apply(ProjectCreated @event)
         {
             _projects.Add(@event.ProjectId);
             LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
     }
 }

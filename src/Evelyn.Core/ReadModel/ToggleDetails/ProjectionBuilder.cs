@@ -21,7 +21,7 @@
             {
                 var project = await _repository.Get<Project>(request.ProjectId, token);
                 var toggle = project.Toggles.First(t => t.Key == request.ToggleKey);
-                var dto = new ToggleDetailsDto(request.ProjectId, toggle.Key, toggle.Name, toggle.Created, toggle.LastModified);
+                var dto = new ToggleDetailsDto(request.ProjectId, toggle.Key, toggle.Name, toggle.Created, toggle.CreatedBy, toggle.LastModified, toggle.LastModifiedBy);
 
                 return dto;
             }

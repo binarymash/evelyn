@@ -27,9 +27,7 @@
         private string _environmentKey;
         private EnvironmentState _expectedEnvironmentState;
 
-        private string _toggle1Key;
-        private string _toggle2Key;
-        private string _toggle3Key;
+        private string _toggleKey;
 
         public ProjectionBuilderSpecs()
         {
@@ -65,7 +63,9 @@
                 .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
                 .Then(_ => ThenTheEnvironmentVersionIsSet())
                 .And(_ => ThenTheCreatedDateIsSet())
+                .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
+                .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenAllTheToggleStatesAreSet())
                 .BDDfy();
         }
@@ -104,9 +104,7 @@
         {
             _projectId = DataFixture.Create<Guid>();
             _environmentKey = DataFixture.Create<string>();
-            _toggle1Key = DataFixture.Create<string>();
-            _toggle2Key = DataFixture.Create<string>();
-            _toggle3Key = DataFixture.Create<string>();
+            _toggleKey = DataFixture.Create<string>();
 
             _projectEvents.Add(DataFixture.Build<ProjectCreated>()
                 .With(ev => ev.Version, 0)
@@ -128,14 +126,14 @@
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 3)
                 .With(ev => ev.Id, _projectId)
-                .With(ev => ev.Key, _toggle1Key)
+                .With(ev => ev.Key, _toggleKey)
                 .Create());
 
             _projectEvents.Add(new ToggleStateAdded(
                 DataFixture.Create<string>(),
                 _projectId,
                 _environmentKey,
-                _toggle1Key,
+                _toggleKey,
                 DataFixture.Create<bool>().ToString(),
                 DateTimeOffset.UtcNow)
                 {
@@ -145,14 +143,14 @@
             _projectEvents.Add(DataFixture.Build<ToggleAdded>()
                 .With(ev => ev.Version, 5)
                 .With(ev => ev.Id, _projectId)
-                .With(ev => ev.Key, _toggle1Key)
+                .With(ev => ev.Key, _toggleKey)
                 .Create());
 
             _projectEvents.Add(new ToggleStateAdded(
                 DataFixture.Create<string>(),
                 _projectId,
                 _environmentKey,
-                _toggle1Key,
+                _toggleKey,
                 DataFixture.Create<bool>().ToString(),
                 DateTimeOffset.UtcNow)
             {
@@ -197,9 +195,19 @@
             Dto.Created.Should().Be(_expectedEnvironmentState.Created);
         }
 
+        private void ThenTheCreatedByIsSet()
+        {
+            Dto.CreatedBy.Should().Be(_expectedEnvironmentState.CreatedBy);
+        }
+
         private void ThenTheLastModifiedDateIsSet()
         {
             Dto.LastModified.Should().Be(_expectedEnvironmentState.LastModified);
+        }
+
+        private void ThenTheLastModifiedByIsSet()
+        {
+            Dto.LastModifiedBy.Should().Be(_expectedEnvironmentState.LastModifiedBy);
         }
 
         private void ThenAllTheToggleStatesAreSet()

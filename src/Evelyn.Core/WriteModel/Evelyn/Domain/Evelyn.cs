@@ -3,10 +3,9 @@
     using System;
     using System.Collections.Generic;
     using Account.Domain;
-    using CQRSlite.Domain;
     using Events;
 
-    public class Evelyn : AggregateRoot
+    public class Evelyn : EvelynAggregateRoot
     {
         private readonly IList<Guid> _accounts;
 
@@ -42,16 +41,24 @@
 
         private void Apply(SystemCreated @event)
         {
-            this.Id = @event.Id;
+            Id = @event.Id;
+            Created = @event.OccurredAt;
+            CreatedBy = @event.UserId;
+            LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
 
         private void Apply(SystemStarted @event)
         {
+            LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
 
         private void Apply(AccountRegistered @event)
         {
             _accounts.Add(@event.AccountId);
+            LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
         }
     }
 }

@@ -9,12 +9,14 @@
         {
         }
 
-        public Toggle(string key, string name, DateTimeOffset created)
+        public Toggle(string key, string name, DateTimeOffset occurredAt, string userId)
         {
             Name = name;
             Key = key;
-            Created = created;
-            LastModified = created;
+            Created = occurredAt;
+            CreatedBy = userId;
+            LastModified = occurredAt;
+            LastModifiedBy = userId;
         }
 
         public string Name { get; }
@@ -23,7 +25,11 @@
 
         public DateTimeOffset Created { get; private set; }
 
+        public string CreatedBy { get; private set; }
+
         public DateTimeOffset LastModified { get; private set; }
+
+        public string LastModifiedBy { get; private set; }
 
         public string DefaultValue => default(bool).ToString(CultureInfo.InvariantCulture);
     }
