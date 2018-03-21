@@ -117,7 +117,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var environment = NewAggregate.Environments.First(e => e.Key == _newEnvironmentKey);
 
-            environment.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environment.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environment.CreatedBy.Should().Be(UserId);
 
             environment.LastModified.Should().Be(environment.Created);
@@ -128,7 +128,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _newEnvironmentKey);
 
-            environmentState.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environmentState.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environmentState.CreatedBy.Should().Be(UserId);
 
             environmentState.LastModified.Should().Be(environmentState.Created);

@@ -157,7 +157,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             ev.EnvironmentKey.Should().Be(_environmentKey);
             ev.ToggleKey.Should().Be(_toggleKey);
             ev.Value.Should().Be(_newToggleValue);
-            ev.OccurredAt.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            ev.OccurredAt.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             ev.UserId.Should().Be(UserId);
         }
 
@@ -172,7 +172,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void ThenTheEnvironmentStateLastModifiedHasBeenUpdated()
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
-            environmentState.LastModified.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environmentState.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         private void ThenTheEnvironmentStateLastModifiedByHasBeenUpdated()
@@ -205,7 +205,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
             var toggleState = environmentState.ToggleStates.First(ts => ts.Key == _toggleKey);
 
-            toggleState.LastModified.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            toggleState.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         private void ThenTheToggleStateLastModifiedByHasBeenUpdated()

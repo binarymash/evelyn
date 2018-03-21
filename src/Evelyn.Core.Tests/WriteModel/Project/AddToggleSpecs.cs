@@ -177,7 +177,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
             ev.ToggleKey.Should().Be(_newToggleKey);
             ev.Value.Should().Be(NewAggregate.Toggles.First(t => t.Key == _newToggleKey).DefaultValue);
-            ev.OccurredAt.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            ev.OccurredAt.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             ev.UserId.Should().Be(UserId);
         }
 
@@ -197,7 +197,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
             toggle.Name.Should().Be(_newToggleName);
 
-            toggle.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            toggle.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             toggle.CreatedBy.Should().Be(UserId);
 
             toggle.LastModified.Should().Be(toggle.Created);
@@ -221,7 +221,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
             toggleState.Value.Should().Be(NewAggregate.Toggles.First(t => t.Key == _newToggleKey).DefaultValue);
 
-            toggleState.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            toggleState.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             toggleState.CreatedBy.Should().Be(UserId);
 
             toggleState.LastModified.Should().Be(toggleState.Created);
@@ -259,7 +259,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void ThenTheEnvironmentStateLastModifiedTimeHasBeenUpdated(string environmentKey)
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-            environmentState.LastModified.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environmentState.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         private void ThenTheFirstEnvironmentStateLastModifiedByHasBeenUpdated()

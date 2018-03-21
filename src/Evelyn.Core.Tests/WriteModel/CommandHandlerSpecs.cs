@@ -183,7 +183,7 @@
 
         protected void ThenTheAggregateRootLastModifiedTimeHasBeenUpdated()
         {
-            NewAggregate.LastModified.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            NewAggregate.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         protected void ThenTheAggregateRootLastModifiedByHasBeenUpdated()
