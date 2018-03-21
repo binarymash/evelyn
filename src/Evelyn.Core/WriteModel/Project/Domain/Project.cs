@@ -4,11 +4,17 @@
     using System.Collections.Generic;
     using System.Linq;
     using Events;
+    using Newtonsoft.Json;
 
     public class Project : EvelynAggregateRoot
     {
+        [JsonProperty("Environments")]
         private List<Environment> _environments;
+
+        [JsonProperty("Toggles")]
         private List<Toggle> _toggles;
+
+        [JsonProperty("EnvironmentStates")]
         private List<EnvironmentState> _environmentStates;
 
         public Project()
@@ -25,10 +31,13 @@
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name, DateTimeOffset.UtcNow));
         }
 
+        [JsonIgnore]
         public IEnumerable<Environment> Environments => _environments.ToList();
 
+        [JsonIgnore]
         public IEnumerable<Toggle> Toggles => _toggles.ToList();
 
+        [JsonIgnore]
         public IEnumerable<EnvironmentState> EnvironmentStates => _environmentStates.ToList();
 
         public string Name { get; private set; }

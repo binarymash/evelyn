@@ -2,7 +2,9 @@
 {
     using System;
     using System.Globalization;
+    using Newtonsoft.Json;
 
+    [JsonObject]
     public class Toggle
     {
         public Toggle()
@@ -19,9 +21,9 @@
             LastModifiedBy = userId;
         }
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public string Key { get; }
+        public string Key { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 

@@ -4,9 +4,11 @@
     using System.Collections.Generic;
     using Account.Domain;
     using Events;
+    using Newtonsoft.Json;
 
     public class Evelyn : EvelynAggregateRoot
     {
+        [JsonProperty("Accounts")]
         private readonly IList<Guid> _accounts;
 
         public Evelyn()
@@ -21,6 +23,7 @@
             ApplyChange(new SystemCreated(userId, id, DateTimeOffset.UtcNow));
         }
 
+        [JsonIgnore]
         public IEnumerable<Guid> Accounts => _accounts;
 
         public Account RegisterAccount(string userId, Guid accountId)

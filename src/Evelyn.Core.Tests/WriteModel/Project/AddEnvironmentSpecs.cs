@@ -26,6 +26,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .Then(_ => ThenTwoEventsArePublished())
                 .And(_ => ThenAnEnvironmentAddedEventIsPublished())
                 .And(_ => ThenAnEnvironmentStateAddedEventIsPublished())
+                .And(_ => ThenThereIsOneChangeOnTheAggregate())
+                .And(_ => ThenTheEnvironmentHasBeenAddedToTheAggregate())
+                .And(_ => ThenTheAggregateVersionHasBeenIncreased())
                 .BDDfy();
         }
 
@@ -36,7 +39,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => GivenWeHaveAddedAnEnvironment())
                 .When(_ => WhenWeAddAnotherEnvironmentWithTheSameKey())
                 .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
+                .And(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
 
@@ -82,7 +86,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var @event = (EnvironmentAdded)PublishedEvents.First(ev => ev is EnvironmentAdded);
             @event.UserId.Should().Be(UserId);
             @event.Key.Should().Be(_newEnvironmentKey);
-            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 100);
+            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 10000);
         }
 
         private void ThenAnEnvironmentStateAddedEventIsPublished()
@@ -91,12 +95,27 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             @event.UserId.Should().Be(UserId);
             @event.EnvironmentKey.Should().Be(_newEnvironmentKey);
             @event.ToggleStates.ToList().Exists(ts => ts.Key == _toggleKey && ts.Value == default(bool).ToString());
-            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 100);
+            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 10000);
         }
 
         private void ThenADuplicateEnvironmentKeyExceptionIsThrown()
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the key {_newEnvironmentKey}");
+        }
+
+        private void ThenTheEnvironmentHasBeenAddedToTheAggregate()
+        {
+            ComparisonResult.Differences
+                .Exists(d => d.PropertyName == "Environments")
+                .Should().BeTrue();
+
+            var environment = NewAggregate.Environments.First(e => e.Key == this._newEnvironmentKey);
+
+            environment.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environment.CreatedBy.Should().Be(UserId);
+
+            environment.LastModified.Should().Be(environment.Created);
+            environment.LastModifiedBy.Should().Be(environment.CreatedBy);
         }
     }
 }

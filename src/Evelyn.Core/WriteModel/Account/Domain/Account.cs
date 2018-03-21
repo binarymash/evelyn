@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using Events;
+    using Newtonsoft.Json;
     using Project.Domain;
 
     public class Account : EvelynAggregateRoot
     {
+        [JsonProperty("Projects")]
         private readonly List<Guid> _projects;
 
         public Account()
@@ -22,6 +24,7 @@
             ApplyChange(new AccountRegistered(userId, accountId, DateTimeOffset.UtcNow));
         }
 
+        [JsonIgnore]
         public IEnumerable<Guid> Projects => _projects.ToList();
 
         public Project CreateProject(string userId, Guid projectId, string name)

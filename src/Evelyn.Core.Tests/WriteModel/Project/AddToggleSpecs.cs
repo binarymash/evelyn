@@ -26,9 +26,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsToggleAdded())
-                .And(_ => ThenTheUserIdIsSaved())
-                .And(_ => ThenTheNameIsSaved())
-                .And(_ => ThenTheKeyIsSaved())
+                .And(_ => ThenThereIsOneChangeOnTheAggregate())
+                .And(_ => ThenTheToggleHasBeenAddedToTheAggregate())
+                .And(_ => ThenTheAggregateVersionHasBeenIncreased())
                 .BDDfy();
         }
 
@@ -39,7 +39,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => GivenWeHaveAddedAToggle())
                 .When(_ => WhenWeAddAnotherToggleWithTheSameKey())
                 .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateToggleKeyExceptionIsThrown())
+                .And(_ => ThenADuplicateToggleKeyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
 
@@ -98,22 +99,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void ThenThePublishedEventIsToggleAdded()
         {
-            PublishedEvents.First().Should().BeOfType<ToggleAdded>();
-        }
+            var ev = (ToggleAdded)PublishedEvents.First();
 
-        private void ThenTheUserIdIsSaved()
-        {
-            ((ToggleAdded)PublishedEvents.First()).UserId.Should().Be(UserId);
-        }
-
-        private void ThenTheNameIsSaved()
-        {
-            ((ToggleAdded)PublishedEvents.First()).Name.Should().Be(_newToggleName);
-        }
-
-        private void ThenTheKeyIsSaved()
-        {
-            ((ToggleAdded)PublishedEvents.First()).Key.Should().Be(_newToggleKey);
+            ev.UserId.Should().Be(UserId);
+            ev.Name.Should().Be(_newToggleName);
+            ev.Key.Should().Be(_newToggleKey);
         }
 
         private void ThenADuplicateToggleKeyExceptionIsThrown()
@@ -124,6 +114,23 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void ThenADuplicateToggleNameExceptionIsThrown()
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already a toggle with the name {_newToggleName}");
+        }
+
+        private void ThenTheToggleHasBeenAddedToTheAggregate()
+        {
+            ComparisonResult.Differences
+                .Exists(d => d.PropertyName == "Toggles")
+                .Should().BeTrue();
+
+            var toggle = NewAggregate.Toggles.First(e => e.Key == _newToggleKey);
+
+            toggle.Name.Should().Be(_newToggleName);
+
+            toggle.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            toggle.CreatedBy.Should().Be(UserId);
+
+            toggle.LastModified.Should().Be(toggle.Created);
+            toggle.LastModifiedBy.Should().Be(toggle.CreatedBy);
         }
     }
 }
