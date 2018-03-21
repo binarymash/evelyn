@@ -42,20 +42,6 @@ namespace Evelyn.Core.Tests.WriteModel.Account
                 .BDDfy();
         }
 
-        private void ThenTheProjectIsCreated()
-        {
-            var project = Session.Get<Project>(_projectId).Result;
-            project.Name.Should().Be(_projectName);
-            project.EnvironmentStates.Count().Should().Be(0);
-            project.Environments.Count().Should().Be(0);
-            project.Toggles.Count().Should().Be(0);
-            project.Version.Should().Be(0);
-            project.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
-            project.CreatedBy.Should().Be(UserId);
-            project.LastModified.Should().Be(project.Created);
-            project.LastModifiedBy.Should().Be(project.CreatedBy);
-        }
-
         [Fact]
         public void ProjectedAlreadyExists()
         {
@@ -126,6 +112,20 @@ namespace Evelyn.Core.Tests.WriteModel.Account
         private void ThenTheAggregateRootHasHadTheProjectAdded()
         {
             NewAggregate.Projects.Should().Contain(_projectId);
+        }
+
+        private void ThenTheProjectIsCreated()
+        {
+            var project = Session.Get<Project>(_projectId).Result;
+            project.Name.Should().Be(_projectName);
+            project.EnvironmentStates.Count().Should().Be(0);
+            project.Environments.Count().Should().Be(0);
+            project.Toggles.Count().Should().Be(0);
+            project.Version.Should().Be(0);
+            project.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            project.CreatedBy.Should().Be(UserId);
+            project.LastModified.Should().Be(project.Created);
+            project.LastModifiedBy.Should().Be(project.CreatedBy);
         }
     }
 }
