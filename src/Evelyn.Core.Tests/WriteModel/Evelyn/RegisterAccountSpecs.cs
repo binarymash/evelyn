@@ -24,9 +24,18 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
         public void AccountHasNotAlreadyBeenRegistered()
         {
             this.When(_ => WhenWeRegisterAnAccount())
+
                 .Then(_ => ThenTwoEventsArePublished())
+
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnEvelyn())
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnTheAccount())
+
+                .And(_ => ThenThereAreFourChangesOnTheAggregate())
+
+                .And(_ => ThenTheAggregateRootHasHadTheAccountAdded())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByOne())
+                .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .BDDfy();
         }
 
@@ -36,7 +45,14 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
                 .When(_ => WhenWeRegisterAnAccount())
                 .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenADuplicateAccountExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
+        }
+
+        private void ThenADuplicateAccountExceptionIsThrown()
+        {
+            this.ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an account with the ID {_accountId}");
         }
 
         private void GivenWeHaveCreatedTheSystem()
@@ -51,6 +67,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
 
         private void WhenWeRegisterAnAccount()
         {
+            UserId = DataFixture.Create<string>();
             var command = new RegisterAccount(UserId, _accountId);
             WhenWeHandle(command);
         }
@@ -68,6 +85,11 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
             var @event = PublishedEvents.First(e => e.GetType() == typeof(AccountEvent.AccountRegistered)) as AccountEvent.AccountRegistered;
             @event.UserId.Should().Be(UserId);
             @event.Id.Should().Be(_accountId);
+        }
+
+        private void ThenTheAggregateRootHasHadTheAccountAdded()
+        {
+            NewAggregate.Accounts.Should().Contain(_accountId);
         }
     }
 }

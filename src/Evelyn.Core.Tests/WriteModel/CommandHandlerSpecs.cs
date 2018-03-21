@@ -2,11 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.WriteModel;
-    using Core.WriteModel.Account.Commands;
-    using Core.WriteModel.Project.Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
@@ -14,6 +13,10 @@
     using FluentAssertions;
     using KellermanSoftware.CompareNetObjects;
     using Newtonsoft.Json;
+
+    using AccountCommands = Core.WriteModel.Account.Commands;
+    using EvelynCommands = Core.WriteModel.Evelyn.Commands;
+    using ProjectCommands = Core.WriteModel.Project.Commands;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
         where TAggregate : EvelynAggregateRoot
@@ -146,6 +149,11 @@
             ComparisonResult.AreEqual.Should().BeTrue();
         }
 
+        protected void ThenThereIsOneChangeOnTheAggregate()
+        {
+            ComparisonResult.Differences.Count.Should().Be(1);
+        }
+
         protected void ThenThereAreFourChangesOnTheAggregate()
         {
             ComparisonResult.Differences.Count.Should().Be(4);
@@ -181,6 +189,21 @@
             NewAggregate.Version.Should().Be(OriginalAggregate.Version + 3);
         }
 
+        protected void ThenTheAggregateRootVersionIsOne()
+        {
+            NewAggregate.Version.Should().Be(1);
+        }
+
+        protected void ThenTheAggregateRootCreatedTimeHasBeenSet()
+        {
+            NewAggregate.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+        }
+
+        protected void ThenTheAggregateRootCreatedByHasBeenSet()
+        {
+            NewAggregate.LastModifiedBy.Should().Be(UserId);
+        }
+
         protected void ThenTheAggregateRootLastModifiedTimeHasBeenUpdated()
         {
             NewAggregate.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
@@ -191,29 +214,35 @@
             NewAggregate.LastModifiedBy.Should().Be(UserId);
         }
 
+        /// <summary>
+        /// TODO: This stinks!
+        /// </summary>
+        /// <param name="command">The command</param>
+        /// <returns>The aggregate root that the command is for</returns>
         private Guid ExtractAggregateId(TCommand command)
         {
-            if (command is CreateProject)
+            switch (command)
             {
-                return (command as CreateProject).Id;
-            }
+                case AccountCommands.CreateProject c:
+                    return c.Id;
 
-            if (command is AddEnvironment)
-            {
-                return (command as AddEnvironment).ProjectId;
-            }
+                case EvelynCommands.CreateSystem c:
+                    return Constants.EvelynSystem;
+                case EvelynCommands.RegisterAccount c:
+                    return Constants.EvelynSystem;
+                case EvelynCommands.StartSystem c:
+                    return Constants.EvelynSystem;
 
-            if (command is AddToggle)
-            {
-                return (command as AddToggle).ProjectId;
-            }
+                case ProjectCommands.AddToggle c:
+                    return c.ProjectId;
+                case ProjectCommands.AddEnvironment c:
+                    return c.ProjectId;
+                case ProjectCommands.ChangeToggleState c:
+                    return c.ProjectId;
 
-            if (command is ChangeToggleState)
-            {
-                return (command as ChangeToggleState).ProjectId;
+                default:
+                    throw new InvalidEnumArgumentException("Unrecognised command in test specs. Maybe you need to add it in CommandHandlerSpecs.ExtractAggregateId()");
             }
-
-            return Guid.Empty;
         }
 
         private TAggregate GetCopyOfAggregate(Guid id)

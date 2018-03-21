@@ -11,14 +11,29 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
 
     public class CreateSystemSpecs : EvelynCommandHandlerSpecs<CreateSystem>
     {
+        public CreateSystemSpecs()
+        {
+            UserId = Constants.SystemUser;
+        }
+
         [Fact]
         public void SystemHasNotYetBeenCreated()
         {
             this.When(_ => WhenWeCreateTheSystem())
+
                 .Then(_ => ThenThreeEventsArePublished())
+
                 .And(_ => ThenASystemCreatedEventIsPublishedOnEvelyn())
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnEvelyn())
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnTheDefaultAccount())
+
+                .And(_ => ThenTheAggregateRootVersionIsOne())
+                .And(_ => ThenTheAggregateRootCreatedTimeHasBeenSet())
+                .And(_ => ThenTheAggregateRootCreatedByHasBeenSet())
+                .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
+
+                .And(_ => ThenTheDefaultAccountHasBeenAddedToTheAggregateRoot())
                 .BDDfy();
         }
 
@@ -28,6 +43,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
             this.Given(_ => GivenWeHaveAlreadyCreatedTheSystem())
                 .When(_ => WhenWeCreateTheSystem())
                 .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
 
@@ -62,6 +78,12 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
             var @event = PublishedEvents.First(e => e.GetType() == typeof(AccountEvent.AccountRegistered)) as AccountEvent.AccountRegistered;
             @event.UserId.Should().Be(Constants.SystemUser);
             @event.Id.Should().Be(Constants.DefaultAccount);
+        }
+
+        private void ThenTheDefaultAccountHasBeenAddedToTheAggregateRoot()
+        {
+            NewAggregate.Accounts.Count().Should().Be(1);
+            NewAggregate.Accounts.First().Should().Be(Constants.DefaultAccount);
         }
     }
 }

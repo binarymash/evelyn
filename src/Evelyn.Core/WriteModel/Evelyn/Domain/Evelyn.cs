@@ -53,8 +53,6 @@
 
         private void Apply(SystemStarted @event)
         {
-            LastModified = @event.OccurredAt;
-            LastModifiedBy = @event.UserId;
         }
 
         private void Apply(AccountRegistered @event)
