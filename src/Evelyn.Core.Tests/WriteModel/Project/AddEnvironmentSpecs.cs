@@ -4,6 +4,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
     using System.Linq;
     using AutoFixture;
     using Core.WriteModel.Project.Commands;
+    using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -18,17 +19,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private string _toggleName;
 
         [Fact]
-        public void EnvironmentDoesntExist()
+        public void EnvironmentDoesNotExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggleToTheProject())
                 .When(_ => WhenWeAddAnEnvironment())
+
                 .Then(_ => ThenTwoEventsArePublished())
+
                 .And(_ => ThenAnEnvironmentAddedEventIsPublished())
                 .And(_ => ThenAnEnvironmentStateAddedEventIsPublished())
-                .And(_ => ThenThereIsOneChangeOnTheAggregate())
-                .And(_ => ThenTheEnvironmentHasBeenAddedToTheAggregate())
-                .And(_ => ThenTheAggregateVersionHasBeenIncreased())
+
+                .And(_ => ThenThereAreFiveChangesOnTheAggregate())
+
+                .And(_ => ThenTheAggregateRootHasHadAnEnvironmentAdded())
+                .And(_ => ThenTheAggregateRootHasHadAnEnvironmentStateAdded())
+                .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByTwo())
                 .BDDfy();
         }
 
@@ -68,6 +76,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void WhenWeAddAnEnvironment()
         {
             _newEnvironmentKey = DataFixture.Create<string>();
+            UserId = DataFixture.Create<string>();
 
             var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
@@ -76,6 +85,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private void WhenWeAddAnotherEnvironmentWithTheSameKey()
         {
             _newEnvironmentKey = _existingEnvironmentKey;
+            UserId = DataFixture.Create<string>();
 
             var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
             WhenWeHandle(command);
@@ -103,19 +113,47 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the key {_newEnvironmentKey}");
         }
 
-        private void ThenTheEnvironmentHasBeenAddedToTheAggregate()
+        private void ThenTheAggregateRootHasHadAnEnvironmentAdded()
         {
-            ComparisonResult.Differences
-                .Exists(d => d.PropertyName == "Environments")
-                .Should().BeTrue();
-
-            var environment = NewAggregate.Environments.First(e => e.Key == this._newEnvironmentKey);
+            var environment = NewAggregate.Environments.First(e => e.Key == _newEnvironmentKey);
 
             environment.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environment.CreatedBy.Should().Be(UserId);
 
             environment.LastModified.Should().Be(environment.Created);
             environment.LastModifiedBy.Should().Be(environment.CreatedBy);
+        }
+
+        private void ThenTheAggregateRootHasHadAnEnvironmentStateAdded()
+        {
+            var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _newEnvironmentKey);
+
+            environmentState.Created.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+            environmentState.CreatedBy.Should().Be(UserId);
+
+            environmentState.LastModified.Should().Be(environmentState.Created);
+            environmentState.LastModifiedBy.Should().Be(environmentState.CreatedBy);
+
+            environmentState.Version.Should().Be(0);
+            environmentState.ToggleStates.Count().Should().Be(OriginalAggregate.Toggles.Count());
+            foreach (var toggleState in NewAggregate.Toggles)
+            {
+                environmentState.ToggleStates.ToList()
+                    .Exists(ts => MatchingToggleState(environmentState, ts, toggleState))
+                    .Should().BeTrue();
+            }
+        }
+
+        private bool MatchingToggleState(EnvironmentState environmentState, ToggleState toggleState, Toggle toggle)
+        {
+            return
+                toggleState.Created == environmentState.Created &&
+                toggleState.CreatedBy == environmentState.CreatedBy &&
+                toggleState.LastModified == toggleState.Created &&
+                toggleState.LastModifiedBy == toggleState.CreatedBy &&
+                toggleState.Key == toggle.Key &&
+                toggleState.Value == toggle.DefaultValue &&
+                toggleState.Version == 0;
         }
     }
 }

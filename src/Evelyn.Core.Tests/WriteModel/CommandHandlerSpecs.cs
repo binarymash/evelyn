@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel;
     using Core.WriteModel.Account.Commands;
     using Core.WriteModel.Project.Commands;
     using CQRSlite.Commands;
@@ -15,7 +16,7 @@
     using Newtonsoft.Json;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
-        where TAggregate : AggregateRoot
+        where TAggregate : EvelynAggregateRoot
         where THandler : class
         where TCommand : ICommand
     {
@@ -30,7 +31,12 @@
             HistoricalEvents = new List<IEvent>();
             DataFixture = new Fixture();
             UserId = DataFixture.Create<string>();
-            _compareLogic = new CompareLogic();
+            var comparisonConfig = new ComparisonConfig
+            {
+                MaxDifferences = int.MaxValue,
+            };
+            _compareLogic = new CompareLogic(comparisonConfig);
+
             _serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new JsonPrivateResolver()
@@ -140,14 +146,49 @@
             ComparisonResult.AreEqual.Should().BeTrue();
         }
 
-        protected void ThenThereIsOneChangeOnTheAggregate()
+        protected void ThenThereAreFourChangesOnTheAggregate()
         {
-            ComparisonResult.Differences.Count.Should().Be(1);
+            ComparisonResult.Differences.Count.Should().Be(4);
         }
 
-        protected void ThenTheAggregateVersionHasBeenIncreased()
+        protected void ThenThereAreFiveChangesOnTheAggregate()
         {
-            NewAggregate.Version.Should().Be(OriginalAggregate.Version + PublishedEvents.Count);
+            ComparisonResult.Differences.Count.Should().Be(5);
+        }
+
+        protected void ThenThereAreEightChangesOnTheAggregate()
+        {
+            ComparisonResult.Differences.Count.Should().Be(8);
+        }
+
+        protected void ThenThereAreTwelveChangesOnTheAggregate()
+        {
+            ComparisonResult.Differences.Count.Should().Be(12);
+        }
+
+        protected void ThenTheAggregateRootVersionHasBeenIncreasedByOne()
+        {
+            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 1);
+        }
+
+        protected void ThenTheAggregateRootVersionHasBeenIncreasedByTwo()
+        {
+            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 2);
+        }
+
+        protected void ThenTheAggregateRootVersionHasBeenIncreasedByThree()
+        {
+            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 3);
+        }
+
+        protected void ThenTheAggregateRootLastModifiedTimeHasBeenUpdated()
+        {
+            NewAggregate.LastModified.Should().BeOnOrAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+        }
+
+        protected void ThenTheAggregateRootLastModifiedByHasBeenUpdated()
+        {
+            NewAggregate.LastModifiedBy.Should().Be(UserId);
         }
 
         private Guid ExtractAggregateId(TCommand command)
