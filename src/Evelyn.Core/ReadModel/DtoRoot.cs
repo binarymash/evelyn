@@ -4,8 +4,9 @@
 
     public abstract class DtoRoot
     {
-        protected DtoRoot(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+        protected DtoRoot(int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
         {
+            Version = version;
             Created = created;
             CreatedBy = createdBy;
             LastModified = lastModified;
@@ -19,5 +20,7 @@
         public DateTimeOffset LastModified { get; private set; }
 
         public string LastModifiedBy { get; private set; }
+
+        public int Version { get; private set; }
     }
 }

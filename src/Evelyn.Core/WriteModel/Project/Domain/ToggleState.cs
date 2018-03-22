@@ -6,7 +6,7 @@
     {
         public ToggleState()
         {
-            Version = -1;
+            ScopedVersion = -1;
         }
 
         public ToggleState(string key, string value, DateTimeOffset occurredAt, string userId)
@@ -14,7 +14,7 @@
         {
             Key = key;
             Value = value;
-            Version = 0;
+            ScopedVersion = 0;
             Created = occurredAt;
             CreatedBy = userId;
             LastModified = occurredAt;
@@ -25,7 +25,7 @@
 
         public string Value { get; private set; }
 
-        public int Version { get; private set; }
+        public int ScopedVersion { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 
@@ -37,10 +37,10 @@
 
         public void SetState(string value, DateTimeOffset occurredAt, string userId)
         {
+            ScopedVersion++;
             Value = value;
             LastModified = occurredAt;
             LastModifiedBy = userId;
-            Version++;
         }
     }
 }

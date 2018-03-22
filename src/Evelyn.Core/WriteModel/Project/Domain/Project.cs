@@ -3,17 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using CQRSlite.Domain.Exception;
     using Events;
+    using Newtonsoft.Json;
 
-    public class Project : EvelynAggregateRoot
+    public class Project : EvelynAggregateRoot, IScopedEntity
     {
+        [JsonProperty("Environments")]
         private List<Environment> _environments;
+
+        [JsonProperty("Toggles")]
         private List<Toggle> _toggles;
+
+        [JsonProperty("EnvironmentStates")]
         private List<EnvironmentState> _environmentStates;
 
         public Project()
         {
             Version = -1;
+            ScopedVersion = -1;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
             _environmentStates = new List<EnvironmentState>();
@@ -25,22 +33,32 @@
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name, DateTimeOffset.UtcNow));
         }
 
+        [JsonIgnore]
         public IEnumerable<Environment> Environments => _environments.ToList();
 
+        [JsonIgnore]
         public IEnumerable<Toggle> Toggles => _toggles.ToList();
 
+        [JsonIgnore]
         public IEnumerable<EnvironmentState> EnvironmentStates => _environmentStates.ToList();
 
         public string Name { get; private set; }
 
-        public void AddEnvironment(string userId, string key)
+        public int ScopedVersion { get; private set; }
+
+        public void AddEnvironment(string userId, string key, int expectedVersion)
         {
-            var now = DateTimeOffset.UtcNow;
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
 
             if (_environments.Any(e => e.Key == key))
             {
                 throw new InvalidOperationException($"There is already an environment with the key {key}");
             }
+
+            var now = DateTimeOffset.UtcNow;
 
             ApplyChange(new EnvironmentAdded(userId, Id, key, now));
             var toggleStates = Toggles.Select(t => new KeyValuePair<string, string>(t.Key, t.DefaultValue));
@@ -48,8 +66,13 @@
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
         }
 
-        public void AddToggle(string userId, string key, string name)
+        public void AddToggle(string userId, string key, string name, int expectedVersion)
         {
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
+
             if (_toggles.Any(t => t.Key == key))
             {
                 throw new InvalidOperationException($"There is already a toggle with the key {key}");
@@ -68,17 +91,23 @@
             }
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedVersion)
         {
-            var environment = _environments.FirstOrDefault(e => e.Key == environmentKey);
-            if (environment == null)
+            var environmentState = _environmentStates.FirstOrDefault(e => e.EnvironmentKey == environmentKey);
+            if (environmentState == null)
             {
                 throw new InvalidOperationException($"There is no environment with the key {environmentKey}");
             }
 
-            if (!_toggles.Any(t => t.Key == toggleKey))
+            var toggleState = environmentState.ToggleStates.FirstOrDefault(ts => ts.Key == toggleKey);
+            if (toggleState == null)
             {
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
+            }
+
+            if (toggleState.ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Guid.Empty);
             }
 
             if (!bool.TryParse(value, out var parsedValue))
@@ -102,10 +131,13 @@
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;
+            ScopedVersion = 0;
         }
 
         private void Apply(EnvironmentAdded e)
         {
+            ScopedVersion++;
+
             _environments.Add(new Environment(e.Key, e.OccurredAt, e.UserId));
 
             LastModified = e.OccurredAt;
@@ -114,6 +146,8 @@
 
         private void Apply(ToggleAdded e)
         {
+            ScopedVersion++;
+
             var toggle = new Toggle(e.Key, e.Name, e.OccurredAt, e.UserId);
             _toggles.Add(toggle);
 

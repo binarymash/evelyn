@@ -4,7 +4,7 @@
 
     public class ChangeToggleState : Command
     {
-        public ChangeToggleState(string userId, Guid projectId, string environmentKey, string toggleKey, string value, int? expectedVersion = null)
+        public ChangeToggleState(string userId, Guid projectId, string environmentKey, string toggleKey, string value, int expectedVersion)
             : base(userId)
         {
             ProjectId = projectId;
@@ -16,7 +16,7 @@
 
         public Guid ProjectId { get; set; }
 
-        public int? ExpectedVersion { get; set; }
+        public int ExpectedVersion { get; set; }
 
         public string EnvironmentKey { get; set; }
 

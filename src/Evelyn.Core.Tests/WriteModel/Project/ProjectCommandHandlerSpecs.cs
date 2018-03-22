@@ -7,6 +7,7 @@
     using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
+    using FluentAssertions;
 
     public abstract class ProjectCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Project, ProjectCommandHandler, TCommand>
         where TCommand : ICommand
@@ -48,6 +49,11 @@
             };
 
             HistoricalEvents.Add(environmentStateAdded);
+        }
+
+        protected void ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(int increment)
+        {
+            NewAggregate.ScopedVersion.Should().Be(OriginalAggregate.ScopedVersion + increment);
         }
     }
 }

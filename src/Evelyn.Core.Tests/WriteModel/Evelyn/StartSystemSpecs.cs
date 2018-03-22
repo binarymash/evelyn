@@ -27,6 +27,8 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
                 .When(_ => WhenWeStartTheSystem())
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenASystemStartedEventIsPublished())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(1))
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
                 .BDDfy();
         }
 

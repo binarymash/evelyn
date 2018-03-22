@@ -7,6 +7,14 @@
     <Version>0.0.0-dev</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.1.0" />
     <PackageReference Include="EventStore.Client.Embedded" Version="4.1.0" />

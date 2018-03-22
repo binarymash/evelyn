@@ -4,7 +4,7 @@
 
     public class AddEnvironment : Command
     {
-        public AddEnvironment(string userId, Guid projectId, string key, int? expectedVersion = null)
+        public AddEnvironment(string userId, Guid projectId, string key, int expectedVersion)
             : base(userId)
         {
             Key = key;
@@ -12,7 +12,7 @@
             ExpectedVersion = expectedVersion;
         }
 
-        public int? ExpectedVersion { get; set; }
+        public int ExpectedVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 

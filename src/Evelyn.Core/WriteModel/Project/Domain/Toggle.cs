@@ -2,8 +2,10 @@
 {
     using System;
     using System.Globalization;
+    using Newtonsoft.Json;
 
-    public class Toggle
+    [JsonObject]
+    public class Toggle : IScopedEntity
     {
         public Toggle()
         {
@@ -17,11 +19,12 @@
             CreatedBy = userId;
             LastModified = occurredAt;
             LastModifiedBy = userId;
+            ScopedVersion = 0;
         }
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public string Key { get; }
+        public string Key { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 
@@ -30,6 +33,8 @@
         public DateTimeOffset LastModified { get; private set; }
 
         public string LastModifiedBy { get; private set; }
+
+        public int ScopedVersion { get; private set; }
 
         public string DefaultValue => default(bool).ToString(CultureInfo.InvariantCulture);
     }

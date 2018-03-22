@@ -58,7 +58,8 @@
             this.Given(_ => GivenWeHaveAProjectWithToggles())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenTheCreatedDateIsSet())
+                .Then(_ => ThenTheVersionIsSet())
+                .And(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenTheLastModifiedByIsSet())
@@ -131,6 +132,11 @@
             {
                 ThrownException = ex;
             }
+        }
+
+        private void ThenTheVersionIsSet()
+        {
+            Dto.Version.Should().Be(_expectedToggle.ScopedVersion);
         }
 
         private void ThenTheCreatedDateIsSet()
