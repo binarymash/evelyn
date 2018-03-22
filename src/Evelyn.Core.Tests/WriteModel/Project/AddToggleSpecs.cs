@@ -22,6 +22,56 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private string _existingToggleName;
         private string _existingToggleKey;
 
+        private int _projectVersion = -1;
+
+        [Fact]
+        public void ToggleAlreadyExistWithSameKey()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .When(_ => WhenWeAddAnotherToggleWithTheSameKey())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenADuplicateToggleKeyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ToggleAlreadyExistWithSameName()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .When(_ => WhenWeAddAnotherToggleWithTheSameName())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenADuplicateToggleNameExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void StaleProjectVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
+                .When(_ => WhenWeAddAToggle())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void FutureProjectVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
+                .When(_ => WhenWeAddAToggle())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
         [Fact]
         public void ToggleDoesntExistAndThereAreNoEnvironments()
         {
@@ -58,7 +108,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
                 .And(_ => ThenTheAggregateRootHasHadAToggleAdded())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(3))
+                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
 
@@ -74,34 +124,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .BDDfy();
         }
 
-        [Fact]
-        public void ToggleAlreadyExistWithSameKey()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAToggle())
-                .When(_ => WhenWeAddAnotherToggleWithTheSameKey())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenADuplicateToggleKeyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ToggleAlreadyExistWithSameName()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAToggle())
-                .When(_ => WhenWeAddAnotherToggleWithTheSameName())
-                .Then(_ => ThenNoEventIsPublished())
-                .Then(_ => ThenADuplicateToggleNameExceptionIsThrown())
-                .BDDfy();
-        }
-
         private void GivenWeHaveCreatedAProject()
         {
             _projectId = DataFixture.Create<Guid>();
 
             GivenWeHaveCreatedAProjectWith(_projectId);
+            _projectVersion++;
         }
 
         private void GivenWeHaveAddedTwoEnvironments()
@@ -114,6 +142,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment2Key);
+            _projectVersion += 2;
         }
 
         private void GivenWeHaveAddedAToggle()
@@ -122,6 +151,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _existingToggleName = DataFixture.Create<string>();
 
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleKey, _existingToggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            _projectVersion++;
+        }
+
+        private void GivenTheProjectVersionForOurNextCommandIsStale()
+        {
+            _projectVersion--;
+        }
+
+        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
+        {
+            _projectVersion++;
         }
 
         private void WhenWeAddAToggle()
@@ -129,7 +169,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _newToggleKey = DataFixture.Create<string>();
             _newToggleName = DataFixture.Create<string>();
 
-            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName, _projectVersion);
             WhenWeHandle(command);
         }
 
@@ -138,7 +178,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _newToggleKey = _existingToggleKey;
             _newToggleName = DataFixture.Create<string>();
 
-            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName, _projectVersion);
             WhenWeHandle(command);
         }
 
@@ -147,7 +187,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _newToggleKey = DataFixture.Create<string>();
             _newToggleName = _existingToggleName;
 
-            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddToggle(UserId, _projectId, _newToggleKey, _newToggleName, _projectVersion);
             WhenWeHandle(command);
         }
 

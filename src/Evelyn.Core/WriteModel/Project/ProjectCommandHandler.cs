@@ -28,8 +28,8 @@
 
         public async Task Handle(AddToggle message)
         {
-            var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.AddToggle(message.UserId, message.Key, message.Name);
+            var project = await _session.Get<Project>(message.ProjectId);
+            project.AddToggle(message.UserId, message.Key, message.Name, message.ExpectedVersion);
             await _session.Commit();
         }
 

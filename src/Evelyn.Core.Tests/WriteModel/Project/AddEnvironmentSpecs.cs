@@ -76,7 +76,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(2))
+                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
                 .BDDfy();
         }
 

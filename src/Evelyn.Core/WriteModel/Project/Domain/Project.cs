@@ -48,17 +48,17 @@
 
         public void AddEnvironment(string userId, string key, int expectedVersion)
         {
-            var now = DateTimeOffset.UtcNow;
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
 
             if (_environments.Any(e => e.Key == key))
             {
                 throw new InvalidOperationException($"There is already an environment with the key {key}");
             }
 
-            if (ScopedVersion != expectedVersion)
-            {
-                throw new ConcurrencyException(Id);
-            }
+            var now = DateTimeOffset.UtcNow;
 
             ApplyChange(new EnvironmentAdded(userId, Id, key, now));
             var toggleStates = Toggles.Select(t => new KeyValuePair<string, string>(t.Key, t.DefaultValue));
@@ -66,8 +66,13 @@
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
         }
 
-        public void AddToggle(string userId, string key, string name)
+        public void AddToggle(string userId, string key, string name, int expectedVersion)
         {
+            if (this.ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
+
             if (_toggles.Any(t => t.Key == key))
             {
                 throw new InvalidOperationException($"There is already a toggle with the key {key}");
@@ -152,8 +157,6 @@
 
         private void Apply(EnvironmentStateAdded e)
         {
-            ScopedVersion++;
-
             var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.UserId));
             var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.OccurredAt, e.UserId);
             _environmentStates.Add(environmentState);
@@ -161,8 +164,6 @@
 
         private void Apply(ToggleStateAdded e)
         {
-            ScopedVersion++;
-
             var toggleState = new ToggleState(e.ToggleKey, e.Value, e.OccurredAt, e.UserId);
 
             var environmentState = _environmentStates.First(es => es.EnvironmentKey == e.EnvironmentKey);

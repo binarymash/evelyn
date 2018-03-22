@@ -4,7 +4,7 @@
 
     public class AddToggle : Command
     {
-        public AddToggle(string userId, Guid projectId, string key, string name, int? expectedVersion = null)
+        public AddToggle(string userId, Guid projectId, string key, string name, int expectedVersion)
             : base(userId)
         {
             Key = key;
@@ -13,7 +13,7 @@
             ExpectedVersion = expectedVersion;
         }
 
-        public int? ExpectedVersion { get; set; }
+        public int ExpectedVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 
