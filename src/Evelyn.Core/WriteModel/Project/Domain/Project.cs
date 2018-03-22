@@ -68,7 +68,7 @@
 
         public void AddToggle(string userId, string key, string name, int expectedVersion)
         {
-            if (this.ScopedVersion != expectedVersion)
+            if (ScopedVersion != expectedVersion)
             {
                 throw new ConcurrencyException(Id);
             }

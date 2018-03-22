@@ -115,7 +115,7 @@
         private async Task WhenWeAddAToggle()
         {
             _addToggleMessage = DataFixture.Create<AddToggle>();
-            _addToggleMessage.ExpectedVersion = 2;
+            _addToggleMessage.ExpectedVersion = 1;
 
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles")

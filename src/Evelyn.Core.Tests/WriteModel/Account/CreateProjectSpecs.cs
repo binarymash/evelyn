@@ -18,6 +18,43 @@ namespace Evelyn.Core.Tests.WriteModel.Account
         private Guid _existingProjectId;
         private Guid _projectId;
         private string _projectName;
+        private int _accountVersion = -1;
+
+        [Fact]
+        public void ProjectedAlreadyExists()
+        {
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveAlreadyCreatedAProject())
+                .When(_ => WhenWeAddAnotherProjectWithTheSameId())
+                .Then(_ => ThenADuplicateProjectExceptionIsThrown())
+                .And(_ => ThenNoEventIsPublished())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void StaleAccountVersion()
+        {
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenTheAccountVersionForOurNextCommandIsStale())
+                .When(_ => WhenWeCreateAProjectOnTheAccount())
+                .Then(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenNoEventIsPublished())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void FutureAccountVersion()
+        {
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenTheAccountVersionForOurNextCommandIsInTheFuture())
+                .When(_ => WhenWeCreateAProjectOnTheAccount())
+                .Then(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenNoEventIsPublished())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
 
         [Fact]
         public void ProjectDoesNotExist()
@@ -42,23 +79,12 @@ namespace Evelyn.Core.Tests.WriteModel.Account
                 .BDDfy();
         }
 
-        [Fact]
-        public void ProjectedAlreadyExists()
-        {
-            this.Given(_ => GivenWeHaveRegisteredAnAccount())
-                .And(_ => GivenWeHaveAlreadyCreatedAProject())
-                .When(_ => WhenWeAddAnotherProjectWithTheSameId())
-                .Then(_ => ThenADuplicateProjectExceptionIsThrown())
-                .And(_ => ThenNoEventIsPublished())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
         private void GivenWeHaveRegisteredAnAccount()
         {
             _accountId = DataFixture.Create<Guid>();
 
             HistoricalEvents.Add(new AccountEvent.AccountRegistered(UserId, _accountId, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            _accountVersion++;
         }
 
         private void GivenWeHaveAlreadyCreatedAProject()
@@ -66,6 +92,17 @@ namespace Evelyn.Core.Tests.WriteModel.Account
             _existingProjectId = DataFixture.Create<Guid>();
 
             HistoricalEvents.Add(new AccountEvent.ProjectCreated(UserId, _accountId, _existingProjectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
+            _accountVersion++;
+        }
+
+        private void GivenTheAccountVersionForOurNextCommandIsStale()
+        {
+            _accountVersion--;
+        }
+
+        private void GivenTheAccountVersionForOurNextCommandIsInTheFuture()
+        {
+            _accountVersion++;
         }
 
         private void WhenWeCreateAProjectOnTheAccount()
@@ -74,7 +111,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account
             _projectId = DataFixture.Create<Guid>();
             _projectName = DataFixture.Create<string>();
 
-            var command = new CreateProject(UserId, _accountId, _projectId, _projectName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new CreateProject(UserId, _accountId, _projectId, _projectName, _accountVersion);
             WhenWeHandle(command);
         }
 
@@ -84,7 +121,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account
             _projectId = _existingProjectId;
             _projectName = DataFixture.Create<string>();
 
-            var command = new CreateProject(UserId, _accountId, _existingProjectId, _projectName) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new CreateProject(UserId, _accountId, _existingProjectId, _projectName, _accountVersion);
             WhenWeHandle(command);
         }
 
