@@ -17,9 +17,48 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private string _existingEnvironmentKey;
         private string _toggleKey;
         private string _toggleName;
+        private int _projectVersion = -1;
 
         [Fact]
-        public void EnvironmentDoesNotExist()
+        public void EnvironmentAlreadyExistWithSameKey()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAnEnvironment())
+                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameKey())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void StaleProjectVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggleToTheProject())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
+                .When(_ => WhenWeAddAnEnvironment())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void FutureProjectVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggleToTheProject())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
+                .When(_ => WhenWeAddAnEnvironment())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void EnvironmentCanBeAdded()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggleToTheProject())
@@ -41,22 +80,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .BDDfy();
         }
 
-        [Fact]
-        public void EnvironmentAlreadyExistWithSameKey()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameKey())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
         private void GivenWeHaveCreatedAProject()
         {
             _projectId = DataFixture.Create<Guid>();
             GivenWeHaveCreatedAProjectWith(_projectId);
+            _projectVersion++;
         }
 
         private void GivenWeHaveAddedAToggleToTheProject()
@@ -65,6 +93,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleName = DataFixture.Create<string>();
 
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName, DateTime.UtcNow) { Version = HistoricalEvents.Count });
+            _projectVersion++;
         }
 
         private void GivenWeHaveAddedAnEnvironment()
@@ -72,6 +101,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _existingEnvironmentKey = DataFixture.Create<string>();
 
             HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey, DateTime.UtcNow) { Version = HistoricalEvents.Count });
+            _projectVersion++;
+        }
+
+        private void GivenTheProjectVersionForOurNextCommandIsStale()
+        {
+            _projectVersion--;
+        }
+
+        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
+        {
+            _projectVersion++;
         }
 
         private void WhenWeAddAnEnvironment()
@@ -79,7 +119,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _newEnvironmentKey = DataFixture.Create<string>();
             UserId = DataFixture.Create<string>();
 
-            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey, _projectVersion);
             WhenWeHandle(command);
         }
 
@@ -88,7 +128,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _newEnvironmentKey = _existingEnvironmentKey;
             UserId = DataFixture.Create<string>();
 
-            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new AddEnvironment(UserId, _projectId, _newEnvironmentKey, _projectVersion);
             WhenWeHandle(command);
         }
 

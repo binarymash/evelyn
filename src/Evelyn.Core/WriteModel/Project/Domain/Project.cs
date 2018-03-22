@@ -46,13 +46,18 @@
 
         public int ScopedVersion { get; private set; }
 
-        public void AddEnvironment(string userId, string key)
+        public void AddEnvironment(string userId, string key, int expectedVersion)
         {
             var now = DateTimeOffset.UtcNow;
 
             if (_environments.Any(e => e.Key == key))
             {
                 throw new InvalidOperationException($"There is already an environment with the key {key}");
+            }
+
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Id);
             }
 
             ApplyChange(new EnvironmentAdded(userId, Id, key, now));

@@ -21,8 +21,8 @@
 
         public async Task Handle(AddEnvironment message)
         {
-            var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.AddEnvironment(message.UserId, message.Key);
+            var project = await _session.Get<Project>(message.ProjectId);
+            project.AddEnvironment(message.UserId, message.Key, message.ExpectedVersion);
             await _session.Commit();
         }
 
