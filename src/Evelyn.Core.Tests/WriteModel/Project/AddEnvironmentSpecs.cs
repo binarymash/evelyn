@@ -37,6 +37,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
+                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(2))
                 .BDDfy();
         }
 
@@ -117,6 +118,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var environment = NewAggregate.Environments.First(e => e.Key == _newEnvironmentKey);
 
+            environment.ScopedVersion.Should().Be(0);
+
             environment.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environment.CreatedBy.Should().Be(UserId);
 
@@ -134,7 +137,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             environmentState.LastModified.Should().Be(environmentState.Created);
             environmentState.LastModifiedBy.Should().Be(environmentState.CreatedBy);
 
-            environmentState.Version.Should().Be(0);
+            environmentState.ScopedVersion.Should().Be(0);
             environmentState.ToggleStates.Count().Should().Be(OriginalAggregate.Toggles.Count());
             foreach (var toggleState in NewAggregate.Toggles)
             {
@@ -153,7 +156,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 toggleState.LastModifiedBy == toggleState.CreatedBy &&
                 toggleState.Key == toggle.Key &&
                 toggleState.Value == toggle.DefaultValue &&
-                toggleState.Version == 0;
+                toggleState.ScopedVersion == 0;
         }
     }
 }

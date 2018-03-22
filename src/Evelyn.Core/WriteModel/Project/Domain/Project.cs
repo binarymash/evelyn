@@ -6,7 +6,7 @@
     using Events;
     using Newtonsoft.Json;
 
-    public class Project : EvelynAggregateRoot
+    public class Project : EvelynAggregateRoot, IScopedEntity
     {
         [JsonProperty("Environments")]
         private List<Environment> _environments;
@@ -20,6 +20,7 @@
         public Project()
         {
             Version = -1;
+            ScopedVersion = -1;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
             _environmentStates = new List<EnvironmentState>();
@@ -41,6 +42,8 @@
         public IEnumerable<EnvironmentState> EnvironmentStates => _environmentStates.ToList();
 
         public string Name { get; private set; }
+
+        public int ScopedVersion { get; private set; }
 
         public void AddEnvironment(string userId, string key)
         {
@@ -111,10 +114,13 @@
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;
+            ScopedVersion = 0;
         }
 
         private void Apply(EnvironmentAdded e)
         {
+            ScopedVersion++;
+
             _environments.Add(new Environment(e.Key, e.OccurredAt, e.UserId));
 
             LastModified = e.OccurredAt;
@@ -123,6 +129,8 @@
 
         private void Apply(ToggleAdded e)
         {
+            ScopedVersion++;
+
             var toggle = new Toggle(e.Key, e.Name, e.OccurredAt, e.UserId);
             _toggles.Add(toggle);
 
@@ -132,6 +140,8 @@
 
         private void Apply(EnvironmentStateAdded e)
         {
+            ScopedVersion++;
+
             var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.UserId));
             var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.OccurredAt, e.UserId);
             _environmentStates.Add(environmentState);
@@ -139,6 +149,8 @@
 
         private void Apply(ToggleStateAdded e)
         {
+            ScopedVersion++;
+
             var toggleState = new ToggleState(e.ToggleKey, e.Value, e.OccurredAt, e.UserId);
 
             var environmentState = _environmentStates.First(es => es.EnvironmentKey == e.EnvironmentKey);

@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class EnvironmentState
+    public class EnvironmentState : IScopedEntity
     {
         private readonly IList<ToggleState> _toggleStates;
 
         public EnvironmentState()
         {
             _toggleStates = new List<ToggleState>();
-            Version = -1;
+            ScopedVersion = -1;
         }
 
         public EnvironmentState(string environmentKey, IEnumerable<ToggleState> toggleStates, DateTimeOffset occurredAt, string userId)
@@ -19,7 +19,7 @@
         {
             EnvironmentKey = environmentKey;
             _toggleStates = toggleStates.ToList();
-            Version = 0;
+            ScopedVersion = 0;
             Created = occurredAt;
             CreatedBy = userId;
             LastModified = occurredAt;
@@ -30,7 +30,7 @@
 
         public IEnumerable<ToggleState> ToggleStates => _toggleStates;
 
-        public int Version { get; private set; }
+        public int ScopedVersion { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 
@@ -45,7 +45,7 @@
             _toggleStates.Add(toggleState);
             LastModified = occurredAt;
             LastModifiedBy = userId;
-            Version++;
+            ScopedVersion++;
         }
 
         public void SetToggleState(string key, string value, DateTimeOffset occurredAt, string userId)
@@ -54,7 +54,7 @@
             toggleState.SetState(value, occurredAt, userId);
             LastModified = occurredAt;
             LastModifiedBy = userId;
-            Version++;
+            ScopedVersion++;
         }
     }
 }

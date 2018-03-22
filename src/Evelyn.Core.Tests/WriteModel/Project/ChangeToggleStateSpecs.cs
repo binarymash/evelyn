@@ -166,7 +166,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
             var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
 
-            newEnvironmentState.Version.Should().Be(oldEnvironmentState.Version + 1);
+            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + 1);
         }
 
         private void ThenTheEnvironmentStateLastModifiedHasBeenUpdated()
@@ -197,7 +197,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
             var oldToggleState = oldEnvironmentState.ToggleStates.First(ts => ts.Key == _toggleKey);
 
-            newToggleState.Version.Should().Be(oldToggleState.Version + 1);
+            newToggleState.ScopedVersion.Should().Be(oldToggleState.ScopedVersion + 1);
         }
 
         private void ThenTheToggleStateLastModifiedHasBeenUpdated()

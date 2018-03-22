@@ -37,6 +37,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
                 .BDDfy();
         }
 
@@ -57,6 +58,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
                 .And(_ => ThenTheAggregateRootHasHadAToggleAdded())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
+                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(3))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
 
@@ -230,20 +232,20 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void ThenTheFirstEnvironmentStateVersionHasBeenIncremented()
         {
-            ThenTheEnvironmentStateVersionHasBeenIncremented(_environment1Key);
+            ThenTheEnvironmentStateScopedVersionHasBeenIncremented(_environment1Key);
         }
 
         private void ThenTheSecondEnvironmentStateVersionHasBeenIncremented()
         {
-            ThenTheEnvironmentStateVersionHasBeenIncremented(_environment2Key);
+            ThenTheEnvironmentStateScopedVersionHasBeenIncremented(_environment2Key);
         }
 
-        private void ThenTheEnvironmentStateVersionHasBeenIncremented(string environmentKey)
+        private void ThenTheEnvironmentStateScopedVersionHasBeenIncremented(string environmentKey)
         {
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
             var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
 
-            newEnvironmentState.Version.Should().Be(oldEnvironmentState.Version + 1);
+            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + 1);
         }
 
         private void ThenTheFirstEnvironmentStateLastModifiedTimeHasBeenUpdated()
