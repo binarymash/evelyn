@@ -184,6 +184,11 @@
             NewAggregate.LastModifiedBy.Should().Be(UserId);
         }
 
+        protected void ThenAConcurrencyExceptionIsThrown()
+        {
+            ThrownException.Should().BeOfType<ConcurrencyException>();
+        }
+
         /// <summary>
         /// TODO: This stinks!
         /// </summary>

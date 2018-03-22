@@ -17,6 +17,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         private string _toggleName;
         private string _toggleValue;
         private string _newToggleValue;
+        private int _toggleStateVersion = -1;
 
         [Fact]
         public void EnvironmentDoesntExist()
@@ -55,7 +56,35 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         }
 
         [Fact]
-        public void ValidToggleState()
+        public void StaleToggleStateVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveCreatedAnEnvironment())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsStale())
+                .When(_ => WhenWeChangeTheToggleState())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void FutureToggleStateVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveCreatedAnEnvironment())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsInTheFuture())
+                .When(_ => WhenWeChangeTheToggleState())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void Nominal()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
@@ -104,6 +133,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
             HistoricalEvents.Add(new ToggleStateAdded(UserId, _projectId, _environmentKey, _toggleKey, _toggleValue, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+
+            _toggleStateVersion++;
+        }
+
+        private void GivenTheToggleStateVersionForOurNextCommandIsStale()
+        {
+            _toggleStateVersion--;
+        }
+
+        private void GivenTheToggleStateVersionForOurNextCommandIsInTheFuture()
+        {
+            _toggleStateVersion++;
         }
 
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
@@ -112,7 +153,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleKey = DataFixture.Create<string>();
             _newToggleValue = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, _toggleStateVersion);
             WhenWeHandle(command);
         }
 
@@ -121,7 +162,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             UserId = DataFixture.Create<string>();
             _newToggleValue = DataFixture.Create<string>();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, _toggleStateVersion);
             WhenWeHandle(command);
         }
 
@@ -130,7 +171,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             UserId = DataFixture.Create<string>();
             _newToggleValue = DataFixture.Create<bool>().ToString();
 
-            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue) { ExpectedVersion = HistoricalEvents.Count - 1 };
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, _toggleStateVersion);
             WhenWeHandle(command);
         }
 

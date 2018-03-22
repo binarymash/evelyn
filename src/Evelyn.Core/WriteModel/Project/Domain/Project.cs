@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using CQRSlite.Domain.Exception;
     using Events;
     using Newtonsoft.Json;
 
@@ -80,17 +81,23 @@
             }
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedVersion)
         {
-            var environment = _environments.FirstOrDefault(e => e.Key == environmentKey);
-            if (environment == null)
+            var environmentState = _environmentStates.FirstOrDefault(e => e.EnvironmentKey == environmentKey);
+            if (environmentState == null)
             {
                 throw new InvalidOperationException($"There is no environment with the key {environmentKey}");
             }
 
-            if (!_toggles.Any(t => t.Key == toggleKey))
+            var toggleState = environmentState.ToggleStates.FirstOrDefault(ts => ts.Key == toggleKey);
+            if (toggleState == null)
             {
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
+            }
+
+            if (toggleState.ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(Guid.Empty);
             }
 
             if (!bool.TryParse(value, out var parsedValue))

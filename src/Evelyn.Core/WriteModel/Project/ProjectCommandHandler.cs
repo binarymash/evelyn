@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.WriteModel.Project
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Commands;
     using CQRSlite.Commands;
@@ -34,8 +35,8 @@
 
         public async Task Handle(ChangeToggleState message)
         {
-            var project = await _session.Get<Project>(message.ProjectId, message.ExpectedVersion);
-            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value);
+            var project = await _session.Get<Project>(message.ProjectId);
+            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value, message.ExpectedVersion);
             await _session.Commit();
         }
     }
