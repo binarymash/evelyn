@@ -71,6 +71,7 @@
                 .And(_ => GivenTheProjectsAreInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheAccountIdIsSet())
+                .And(_ => ThenTheVersionIsSet())
                 .And(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
@@ -177,6 +178,11 @@
         private void ThenTheAccountIdIsSet()
         {
             Dto.AccountId.Should().Be(_accountId);
+        }
+
+        private void ThenTheVersionIsSet()
+        {
+            Dto.Version.Should().Be(_account.Version);
         }
 
         private void ThenTheCreatedDateIsSet()

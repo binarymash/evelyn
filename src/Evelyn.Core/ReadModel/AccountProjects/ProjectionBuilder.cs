@@ -29,7 +29,7 @@
                     projects.Add(new ProjectListDto(project.Id, project.Name));
                 }
 
-                var dto = new AccountProjectsDto(account.Id, account.Created, account.CreatedBy, account.LastModified, account.LastModifiedBy, projects);
+                var dto = new AccountProjectsDto(account.Id, account.Version, account.Created, account.CreatedBy, account.LastModified, account.LastModifiedBy, projects);
 
                 return dto;
             }

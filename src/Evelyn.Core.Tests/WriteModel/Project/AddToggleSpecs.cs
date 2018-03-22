@@ -63,14 +63,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
 
                 .And(_ => ThenTheFirstEnvironmentStateHasANewToggleState())
-                .And(_ => ThenTheFirstEnvironmentStateVersionHasBeenIncremented())
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedByHasBeenUpdated())
+                .And(_ => ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(1))
 
                 .And(_ => ThenTheSecondEnvironmentStateHasANewToggleState())
-                .And(_ => ThenTheSecondEnvironmentStateVersionHasBeenIncremented())
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedByHasBeenUpdated())
+                .And(_ => ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(1))
                 .BDDfy();
         }
 
@@ -197,6 +197,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var toggle = NewAggregate.Toggles.First(e => e.Key == _newToggleKey);
 
+            toggle.ScopedVersion.Should().Be(0);
+
             toggle.Name.Should().Be(_newToggleName);
 
             toggle.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
@@ -230,24 +232,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             toggleState.LastModifiedBy.Should().Be(toggleState.CreatedBy);
         }
 
-        private void ThenTheFirstEnvironmentStateVersionHasBeenIncremented()
-        {
-            ThenTheEnvironmentStateScopedVersionHasBeenIncremented(_environment1Key);
-        }
-
-        private void ThenTheSecondEnvironmentStateVersionHasBeenIncremented()
-        {
-            ThenTheEnvironmentStateScopedVersionHasBeenIncremented(_environment2Key);
-        }
-
-        private void ThenTheEnvironmentStateScopedVersionHasBeenIncremented(string environmentKey)
-        {
-            var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-
-            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + 1);
-        }
-
         private void ThenTheFirstEnvironmentStateLastModifiedTimeHasBeenUpdated()
         {
             ThenTheEnvironmentStateLastModifiedTimeHasBeenUpdated(_environment1Key);
@@ -278,6 +262,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
             environmentState.LastModifiedBy.Should().Be(UserId);
+        }
+
+        private void ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        {
+            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment1Key, increment);
+        }
+
+        private void ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        {
+            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment2Key, increment);
+        }
+
+        private void ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(string environmentKey, int increment)
+        {
+            var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
+            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
+
+            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + increment);
         }
     }
 }

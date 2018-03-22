@@ -61,7 +61,7 @@
             this.Given(_ => GivenWeHaveAProjectWithEnvironmentsAndToggles())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
-                .Then(_ => ThenTheEnvironmentScopedVersionIsSet())
+                .Then(_ => ThenTheVersionIsSet())
                 .And(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
@@ -185,7 +185,7 @@
             }
         }
 
-        private void ThenTheEnvironmentScopedVersionIsSet()
+        private void ThenTheVersionIsSet()
         {
             Dto.Version.Should().Be(_expectedEnvironmentState.ScopedVersion);
         }

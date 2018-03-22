@@ -59,6 +59,7 @@
             this.Given(_ => GivenWeHaveAProjectWithEnvironments())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenTheVersionIsSet())
                 .Then(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
@@ -131,6 +132,11 @@
             {
                 ThrownException = ex;
             }
+        }
+
+        private void ThenTheVersionIsSet()
+        {
+            Dto.Version.Should().Be(_expectedEnvironment.ScopedVersion);
         }
 
         private void ThenTheCreatedDateIsSet()

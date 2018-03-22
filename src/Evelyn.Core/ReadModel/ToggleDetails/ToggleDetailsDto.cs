@@ -4,8 +4,8 @@
 
     public class ToggleDetailsDto : DtoRoot
     {
-        public ToggleDetailsDto(Guid projectId, string key, string name, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
-            : base(-1, created, createdBy, lastModified, lastModifiedBy)
+        public ToggleDetailsDto(Guid projectId, int version, string key, string name, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+            : base(version, created, createdBy, lastModified, lastModifiedBy)
         {
             Key = key;
             Name = name;

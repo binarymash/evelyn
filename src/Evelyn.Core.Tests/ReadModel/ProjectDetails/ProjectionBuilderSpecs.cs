@@ -150,7 +150,7 @@
 
         private void ThenTheVersionIsSet()
         {
-            Dto.Version.Should().Be(_project.Version);
+            Dto.Version.Should().Be(_project.ScopedVersion);
         }
 
         private void ThenTheIdIsSet()

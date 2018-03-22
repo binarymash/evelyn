@@ -97,7 +97,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             var @event = (EnvironmentAdded)PublishedEvents.First(ev => ev is EnvironmentAdded);
             @event.UserId.Should().Be(UserId);
             @event.Key.Should().Be(_newEnvironmentKey);
-            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 10000);
+            @event.OccurredAt.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         private void ThenAnEnvironmentStateAddedEventIsPublished()
@@ -106,7 +106,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             @event.UserId.Should().Be(UserId);
             @event.EnvironmentKey.Should().Be(_newEnvironmentKey);
             @event.ToggleStates.ToList().Exists(ts => ts.Key == _toggleKey && ts.Value == default(bool).ToString());
-            @event.OccurredAt.Should().BeCloseTo(DateTimeOffset.UtcNow, 10000);
+            @event.OccurredAt.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
         }
 
         private void ThenADuplicateEnvironmentKeyExceptionIsThrown()
@@ -131,13 +131,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _newEnvironmentKey);
 
+            environmentState.ScopedVersion.Should().Be(0);
+
             environmentState.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environmentState.CreatedBy.Should().Be(UserId);
 
             environmentState.LastModified.Should().Be(environmentState.Created);
             environmentState.LastModifiedBy.Should().Be(environmentState.CreatedBy);
 
-            environmentState.ScopedVersion.Should().Be(0);
             environmentState.ToggleStates.Count().Should().Be(OriginalAggregate.Toggles.Count());
             foreach (var toggleState in NewAggregate.Toggles)
             {
