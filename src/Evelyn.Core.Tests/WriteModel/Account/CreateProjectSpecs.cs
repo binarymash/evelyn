@@ -30,12 +30,12 @@ namespace Evelyn.Core.Tests.WriteModel.Account
                 .And(_ => ThenAProjectAddedToAccountEventIsPublished())
                 .And(_ => ThenAProjectCreatedEventIsPublishedForAProject())
 
-                .And(_ => ThenThereAreFourChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(4))
 
                 .And(_ => ThenTheAggregateRootHasHadTheProjectAdded())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByOne())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
 
                 .And(_ => ThenTheProjectIsCreated())
 

@@ -65,9 +65,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenThePublishedEventIsToggledValueChanged())
 
-                .And(_ => ThenThereAreEightChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(8))
 
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByOne())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
 
                 .And(_ => ThenTheEnvironmentStateVersionHasIncreasedByOne())
                 .And(_ => ThenTheEnvironmentStateLastModifiedHasBeenUpdated())

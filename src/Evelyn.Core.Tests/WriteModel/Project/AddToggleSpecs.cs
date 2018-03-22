@@ -31,12 +31,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .Then(_ => ThenOneEventIsPublished())
                 .And(_ => ThenAToggleAddedEventIsPublished())
 
-                .And(_ => ThenThereAreFourChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(5))
 
                 .And(_ => ThenTheAggregateRootHasHadAToggleAdded())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByOne())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
                 .BDDfy();
         }
 
@@ -53,10 +53,10 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenAnToggleStateAddedEventsIsPublishedForEnvironment1())
                 .And(_ => ThenAnToggleStateAddedEventsIsPublishedForEnvironment2())
 
-                .And(_ => ThenThereAreTwelveChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(13))
 
                 .And(_ => ThenTheAggregateRootHasHadAToggleAdded())
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByThree())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
 

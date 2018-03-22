@@ -149,44 +149,14 @@
             ComparisonResult.AreEqual.Should().BeTrue();
         }
 
-        protected void ThenThereIsOneChangeOnTheAggregate()
+        protected void ThenTheNumberOfChangesOnTheAggregateIs(int numberOfChanges)
         {
-            ComparisonResult.Differences.Count.Should().Be(1);
+            ComparisonResult.Differences.Count.Should().Be(numberOfChanges);
         }
 
-        protected void ThenThereAreFourChangesOnTheAggregate()
+        protected void ThenTheAggregateRootVersionHasBeenIncreasedBy(int increment)
         {
-            ComparisonResult.Differences.Count.Should().Be(4);
-        }
-
-        protected void ThenThereAreFiveChangesOnTheAggregate()
-        {
-            ComparisonResult.Differences.Count.Should().Be(5);
-        }
-
-        protected void ThenThereAreEightChangesOnTheAggregate()
-        {
-            ComparisonResult.Differences.Count.Should().Be(8);
-        }
-
-        protected void ThenThereAreTwelveChangesOnTheAggregate()
-        {
-            ComparisonResult.Differences.Count.Should().Be(12);
-        }
-
-        protected void ThenTheAggregateRootVersionHasBeenIncreasedByOne()
-        {
-            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 1);
-        }
-
-        protected void ThenTheAggregateRootVersionHasBeenIncreasedByTwo()
-        {
-            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 2);
-        }
-
-        protected void ThenTheAggregateRootVersionHasBeenIncreasedByThree()
-        {
-            NewAggregate.Version.Should().Be(OriginalAggregate.Version + 3);
+            NewAggregate.Version.Should().Be(OriginalAggregate.Version + increment);
         }
 
         protected void ThenTheAggregateRootVersionIsOne()

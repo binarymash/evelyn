@@ -30,10 +30,10 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnEvelyn())
                 .And(_ => ThenAnAccountRegisteredEventIsPublishedOnTheAccount())
 
-                .And(_ => ThenThereAreFourChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(4))
 
                 .And(_ => ThenTheAggregateRootHasHadTheAccountAdded())
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByOne())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .BDDfy();

@@ -30,13 +30,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project
                 .And(_ => ThenAnEnvironmentAddedEventIsPublished())
                 .And(_ => ThenAnEnvironmentStateAddedEventIsPublished())
 
-                .And(_ => ThenThereAreFiveChangesOnTheAggregate())
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(6))
 
                 .And(_ => ThenTheAggregateRootHasHadAnEnvironmentAdded())
                 .And(_ => ThenTheAggregateRootHasHadAnEnvironmentStateAdded())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
-                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedByTwo())
+                .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
                 .BDDfy();
         }
 
