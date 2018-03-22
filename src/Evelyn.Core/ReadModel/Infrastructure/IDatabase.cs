@@ -1,15 +1,13 @@
 ﻿namespace Evelyn.Core.ReadModel.Infrastructure
 {
-    using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface IDatabase<T>
+    public interface IDatabase<TKey, TValue>
     {
-        Task<List<T>> Get();
+        Task<TValue> Get(TKey id);
 
-        Task<T> Get(Guid id);
+        Task AddOrUpdate(TKey key, TValue aggregate);
 
-        Task Add(Guid id, T aggregate);
+        Task Delete(TKey key);
     }
 }

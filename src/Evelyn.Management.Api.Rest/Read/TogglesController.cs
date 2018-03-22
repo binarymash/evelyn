@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/toggles")]
+    [Route("api/projects/{projectId}/toggles")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class TogglesController : Controller
     {
@@ -19,14 +19,14 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{toggleId}")]
+        [HttpGet("{toggleKey}")]
         [ProducesResponseType(typeof(ToggleDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(Guid toggleId)
+        public async Task<ObjectResult> Get(Guid projectId, string toggleKey)
         {
             try
             {
-                var result = await _readModelFacade.GetToggleDetails(toggleId);
+                var result = await _readModelFacade.GetToggleDetails(projectId, toggleKey);
                 return Ok(result);
             }
             catch (NotFoundException)

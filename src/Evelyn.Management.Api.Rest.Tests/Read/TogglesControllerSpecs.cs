@@ -19,8 +19,9 @@
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
         private readonly TogglesController _controller;
+        private Guid _projectId;
         private ToggleDetailsDto _toggleReturnedByFacade;
-        private Guid _idOfToggleToGet;
+        private string _keyOfToggleToGet;
         private ObjectResult _result;
 
         public TogglesControllerSpecs()
@@ -28,6 +29,7 @@
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
             _controller = new TogglesController(_readModelFacade);
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
@@ -61,31 +63,31 @@
         private void GivenTheToggleWeWantDoesExist()
         {
             _toggleReturnedByFacade = _fixture.Create<ToggleDetailsDto>();
-            _idOfToggleToGet = _toggleReturnedByFacade.Id;
+            _keyOfToggleToGet = _toggleReturnedByFacade.Key;
             _readModelFacade
-                .GetToggleDetails(_idOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Returns(_toggleReturnedByFacade);
         }
 
         private void GivenTheToggleWeWantDoesntExist()
         {
-            _idOfToggleToGet = _fixture.Create<Guid>();
+            _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetToggleDetails(_idOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Throws(_fixture.Create<NotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingToggle()
         {
-            _idOfToggleToGet = _fixture.Create<Guid>();
+            _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
-                .GetToggleDetails(_idOfToggleToGet)
+                .GetToggleDetails(_projectId, _keyOfToggleToGet)
                 .Throws(_fixture.Create<Exception>());
         }
 
         private async Task WhenWeGetTheToggle()
         {
-            _result = await _controller.Get(_idOfToggleToGet);
+            _result = await _controller.Get(_projectId, _keyOfToggleToGet);
         }
 
         private void ThenStatusCode200IsReturned()

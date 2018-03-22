@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Host
 {
+    using Core.WriteModel;
     using Evelyn.Management.Api.Rest;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -25,9 +26,17 @@
             {
                 api.WithWriteModel(wm =>
                 {
-                    wm.WithEventStore.InMemory(es =>
+                    ////wm.WithEventStore.InMemory(es =>
+                    ////{
+                    ////    es.WithEventPublisher.SynchronouslyInProcess();
+                    ////});
+                    wm.WithEventStore.UsingEventStoreDotOrg(es =>
                     {
-                        es.WithEventPublisher.SynchronouslyInProcess();
+                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://192.168.1.64:1113");
+                        es.WithEventPublisher.RunningInBackgroundService(p =>
+                        {
+                            p.PublishEvents.SynchronouslyInProcess();
+                        });
                     });
                 });
                 api.WithReadModel(rm =>
@@ -38,7 +47,7 @@
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStartUpCommands startUpCommands)
         {
             if (env.IsDevelopment())
             {
@@ -47,7 +56,7 @@
 
             app.UseMvc();
 
-            app.UseEvelynApi();
+            app.UseEvelynApi(startUpCommands);
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "Evelyn Management API"));

@@ -3,13 +3,15 @@
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
+    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -18,7 +20,7 @@
         private readonly Fixture _fixture;
         private readonly Rest.Write.Environments.Controller _controller;
         private readonly ICommandHandler<AddEnvironment> _handler;
-        private readonly Guid _applicationId;
+        private readonly Guid _projectId;
         private Rest.Write.Environments.Messages.AddEnvironment _message;
         private ObjectResult _result;
 
@@ -27,7 +29,7 @@
             _fixture = new Fixture();
             _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
             _controller = new Rest.Write.Environments.Controller(_handler);
-            _applicationId = _fixture.Create<Guid>();
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
@@ -83,7 +85,7 @@
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_applicationId, _message) as ObjectResult;
+            _result = await _controller.Post(_projectId, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
@@ -91,9 +93,9 @@
             _handler
                 .Received(1)
                 .Handle(Arg.Is<AddEnvironment>(command =>
-                    command.ApplicationId == _applicationId &&
-                    command.Id == _message.Id &&
-                    command.Name == _message.Name &&
+                    command.UserId == Constants.AnonymousUser &&
+                    command.ProjectId == _projectId &&
+                    command.Key == _message.Key &&
                     command.ExpectedVersion == _message.ExpectedVersion));
         }
 

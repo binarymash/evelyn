@@ -2,25 +2,17 @@
 {
     using System;
 
-    public class EnvironmentDetailsDto
+    public class EnvironmentDetailsDto : DtoRoot
     {
-        public EnvironmentDetailsDto(Guid applicationId, Guid environmentId, string name, DateTimeOffset created)
+        public EnvironmentDetailsDto(Guid projectId, int version, string key, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+            : base(version, created, createdBy, lastModified, lastModifiedBy)
         {
-            Id = environmentId;
-            Name = name;
-            Created = created;
-            LastModified = created;
-            ApplicationId = applicationId;
+            Key = key;
+            ProjectId = projectId;
         }
 
-        public Guid ApplicationId { get; private set; }
+        public Guid ProjectId { get; private set; }
 
-        public Guid Id { get; private set; }
-
-        public string Name { get; private set; }
-
-        public DateTimeOffset Created { get; }
-
-        public DateTimeOffset LastModified { get; private set; }
+        public string Key { get; private set; }
     }
 }

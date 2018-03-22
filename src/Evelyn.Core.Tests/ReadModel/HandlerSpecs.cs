@@ -2,12 +2,13 @@
 {
     using System;
     using AutoFixture;
+    using Core.ReadModel.AccountProjects;
+    using Core.ReadModel.EnvironmentState;
+    using Core.ReadModel.ProjectDetails;
     using Core.ReadModel.ToggleDetails;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
-    using Evelyn.Core.ReadModel.ApplicationList;
     using Evelyn.Core.ReadModel.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Infrastructure;
 
@@ -19,16 +20,20 @@
         {
             DataFixture = new Fixture();
 
-            ApplicationsStore = new InMemoryDatabase<ApplicationListDto>();
-            ApplicationDetailsStore = new InMemoryDatabase<ApplicationDetailsDto>();
-            EnvironmentDetailsStore = new InMemoryDatabase<EnvironmentDetailsDto>();
-            ToggleDetailsStore = new InMemoryDatabase<ToggleDetailsDto>();
+            AccountProjectsStore = new InMemoryDatabase<Guid, AccountProjectsDto>();
+            ProjectDetailsStore = new InMemoryDatabase<Guid, ProjectDetailsDto>();
+            EnvironmentDetailsStore = new InMemoryDatabase<string, EnvironmentDetailsDto>();
+            ToggleDetailsStore = new InMemoryDatabase<string, ToggleDetailsDto>();
+            EnvironmentStatesStore = new InMemoryDatabase<string, EnvironmentStateDto>();
+
+            StubbedRepository = new StubbedRepository();
 
             ReadModelFacade = new DatabaseReadModelFacade(
-                ApplicationsStore,
-                ApplicationDetailsStore,
+                AccountProjectsStore,
+                ProjectDetailsStore,
                 EnvironmentDetailsStore,
-                ToggleDetailsStore);
+                ToggleDetailsStore,
+                EnvironmentStatesStore);
 
             var router = new Router();
             RegisterHandlers(router);
@@ -39,13 +44,17 @@
 
         protected IReadModelFacade ReadModelFacade { get; }
 
-        protected IDatabase<ApplicationListDto> ApplicationsStore { get; }
+        protected IDatabase<Guid, AccountProjectsDto> AccountProjectsStore { get; }
 
-        protected IDatabase<ApplicationDetailsDto> ApplicationDetailsStore { get; }
+        protected IDatabase<Guid, ProjectDetailsDto> ProjectDetailsStore { get; }
 
-        protected IDatabase<EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
+        protected IDatabase<string, EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
 
-        protected IDatabase<ToggleDetailsDto> ToggleDetailsStore { get; set; }
+        protected IDatabase<string, ToggleDetailsDto> ToggleDetailsStore { get; set; }
+
+        protected IDatabase<string, EnvironmentStateDto> EnvironmentStatesStore { get; set; }
+
+        protected StubbedRepository StubbedRepository { get; set; }
 
         protected Exception ThrownException { get; set; }
 

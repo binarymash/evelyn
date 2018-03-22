@@ -2,36 +2,53 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
+    using System.ComponentModel;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Core.WriteModel;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
-    using CQRSlite.Snapshotting;
     using FluentAssertions;
+    using KellermanSoftware.CompareNetObjects;
+    using Newtonsoft.Json;
+
+    using AccountCommands = Core.WriteModel.Account.Commands;
+    using EvelynCommands = Core.WriteModel.Evelyn.Commands;
+    using ProjectCommands = Core.WriteModel.Project.Commands;
 
     public abstract class CommandHandlerSpecs<TAggregate, THandler, TCommand>
-        where TAggregate : AggregateRoot
+        where TAggregate : EvelynAggregateRoot
         where THandler : class
         where TCommand : ICommand
     {
+        private readonly JsonSerializerSettings _serializerSettings;
+        private readonly CompareLogic _compareLogic;
         private dynamic _handler;
-        private Snapshot _snapshot;
-        private SpecSnapShotStorage _snapshotStore;
         private SpecEventPublisher _eventPublisher;
-        private SpecEventStorage _eventStorage;
+        private SpecEventStore _eventStore;
 
-        public CommandHandlerSpecs()
+        protected CommandHandlerSpecs()
         {
             HistoricalEvents = new List<IEvent>();
             DataFixture = new Fixture();
+            UserId = DataFixture.Create<string>();
+            var comparisonConfig = new ComparisonConfig
+            {
+                MaxDifferences = int.MaxValue,
+            };
+            _compareLogic = new CompareLogic(comparisonConfig);
+
+            _serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new JsonPrivateResolver()
+            };
         }
 
-        protected Fixture DataFixture { get; }
+        protected string UserId { get; set; }
 
-        protected TAggregate Aggregate { get; set; }
+        protected Fixture DataFixture { get; }
 
         protected ISession Session { get; set; }
 
@@ -43,28 +60,38 @@
 
         protected Exception ThrownException { get; private set; }
 
+        protected TAggregate OriginalAggregate { get; private set; }
+
+        protected TAggregate NewAggregate { get; private set; }
+
+        protected DateTimeOffset TimeBeforeHandling { get; private set; }
+
+        protected DateTimeOffset TimeAfterHandling { get; private set; }
+
+        protected ComparisonResult ComparisonResult { get; private set; }
+
         protected abstract THandler BuildHandler();
 
         protected void WhenWeHandle(TCommand command)
         {
-            _eventPublisher = new SpecEventPublisher();
-            _eventStorage = new SpecEventStorage(_eventPublisher, HistoricalEvents);
-            _snapshotStore = new SpecSnapShotStorage(_snapshot);
+            var aggregateId = ExtractAggregateId(command);
 
-            var snapshotStrategy = new DefaultSnapshotStrategy();
-            var repository = new SnapshotRepository(_snapshotStore, snapshotStrategy, new Repository(_eventStorage), _eventStorage);
+            _eventPublisher = new SpecEventPublisher();
+            _eventStore = new SpecEventStore(_eventPublisher, HistoricalEvents);
+            var repository = new Repository(_eventStore);
+
             Session = new Session(repository);
-            Aggregate = GetAggregate().Result;
+            OriginalAggregate = GetCopyOfAggregate(aggregateId);
 
             _handler = BuildHandler();
 
             try
             {
+                TimeBeforeHandling = DateTimeOffset.UtcNow;
+
                 if (_handler is ICancellableCommandHandler<TCommand>)
                 {
-#pragma warning disable SA1129 // Do not use default value type constructor
-                    ((ICancellableCommandHandler<TCommand>)_handler).Handle(command, new CancellationToken()).GetAwaiter().GetResult();
-#pragma warning restore SA1129 // Do not use default value type constructor
+                    ((ICancellableCommandHandler<TCommand>)_handler).Handle(command).GetAwaiter().GetResult();
                 }
                 else if (_handler is ICommandHandler<TCommand>)
                 {
@@ -72,17 +99,23 @@
                 }
                 else
                 {
-                    throw new InvalidCastException($"{nameof(_handler)} is not a command handler of type {typeof(TCommand)}");
+                    throw new InvalidCastException(
+                        $"{nameof(_handler)} is not a command handler of type {typeof(TCommand)}");
                 }
+
+                TimeAfterHandling = DateTimeOffset.UtcNow;
             }
             catch (Exception ex)
             {
                 ThrownException = ex;
             }
-
-            _snapshot = _snapshotStore.Snapshot;
-            PublishedEvents = _eventPublisher.PublishedEvents;
-            EventDescriptors = _eventStorage.Events;
+            finally
+            {
+                NewAggregate = GetAggregate(aggregateId).Result;
+                ComparisonResult = _compareLogic.Compare(OriginalAggregate, NewAggregate);
+                PublishedEvents = _eventPublisher.PublishedEvents;
+                EventDescriptors = _eventStore.Events;
+            }
         }
 
         protected void ThenNoEventIsPublished()
@@ -95,17 +128,110 @@
             PublishedEvents.Count.Should().Be(1);
         }
 
+        protected void ThenTwoEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(2);
+        }
+
+        protected void ThenThreeEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(3);
+        }
+
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)
         {
             ThrownException.Should().BeOfType<InvalidOperationException>();
             ThrownException.Message.Should().Be(expectedMessage);
         }
 
-        private async Task<TAggregate> GetAggregate()
+        protected void ThenThereAreNoChangesOnTheAggregate()
+        {
+            ComparisonResult.AreEqual.Should().BeTrue();
+        }
+
+        protected void ThenTheNumberOfChangesOnTheAggregateIs(int numberOfChanges)
+        {
+            ComparisonResult.Differences.Count.Should().Be(numberOfChanges);
+        }
+
+        protected void ThenTheAggregateRootVersionHasBeenIncreasedBy(int increment)
+        {
+            NewAggregate.Version.Should().Be(OriginalAggregate.Version + increment);
+        }
+
+        protected void ThenTheAggregateRootVersionIsOne()
+        {
+            NewAggregate.Version.Should().Be(1);
+        }
+
+        protected void ThenTheAggregateRootCreatedTimeHasBeenSet()
+        {
+            NewAggregate.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+        }
+
+        protected void ThenTheAggregateRootCreatedByHasBeenSet()
+        {
+            NewAggregate.LastModifiedBy.Should().Be(UserId);
+        }
+
+        protected void ThenTheAggregateRootLastModifiedTimeHasBeenUpdated()
+        {
+            NewAggregate.LastModified.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
+        }
+
+        protected void ThenTheAggregateRootLastModifiedByHasBeenUpdated()
+        {
+            NewAggregate.LastModifiedBy.Should().Be(UserId);
+        }
+
+        protected void ThenAConcurrencyExceptionIsThrown()
+        {
+            ThrownException.Should().BeOfType<ConcurrencyException>();
+        }
+
+        /// <summary>
+        /// TODO: This stinks!
+        /// </summary>
+        /// <param name="command">The command</param>
+        /// <returns>The aggregate root that the command is for</returns>
+        private Guid ExtractAggregateId(TCommand command)
+        {
+            switch (command)
+            {
+                case AccountCommands.CreateProject c:
+                    return c.Id;
+
+                case EvelynCommands.CreateSystem c:
+                    return Constants.EvelynSystem;
+                case EvelynCommands.RegisterAccount c:
+                    return Constants.EvelynSystem;
+                case EvelynCommands.StartSystem c:
+                    return Constants.EvelynSystem;
+
+                case ProjectCommands.AddToggle c:
+                    return c.ProjectId;
+                case ProjectCommands.AddEnvironment c:
+                    return c.ProjectId;
+                case ProjectCommands.ChangeToggleState c:
+                    return c.ProjectId;
+
+                default:
+                    throw new InvalidEnumArgumentException("Unrecognised command in test specs. Maybe you need to add it in CommandHandlerSpecs.ExtractAggregateId()");
+            }
+        }
+
+        private TAggregate GetCopyOfAggregate(Guid id)
+        {
+            var serialized = JsonConvert.SerializeObject(GetAggregate(id).Result);
+            return JsonConvert.DeserializeObject<TAggregate>(serialized, _serializerSettings);
+        }
+
+        private async Task<TAggregate> GetAggregate(Guid id)
         {
             try
             {
-                return await Session.Get<TAggregate>(Guid.Empty);
+                var aggregate = await Session.Get<TAggregate>(id);
+                return aggregate;
             }
             catch (AggregateNotFoundException)
             {

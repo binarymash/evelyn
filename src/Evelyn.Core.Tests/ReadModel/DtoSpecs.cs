@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel
 {
     using AutoFixture;
-    using Evelyn.Core.ReadModel.ApplicationDetails;
     using FluentAssertions;
     using Newtonsoft.Json;
 

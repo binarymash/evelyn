@@ -8,29 +8,26 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/toggles")]
+    [Route("api/projects/{projectId}/toggles")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class Controller : Microsoft.AspNetCore.Mvc.Controller
+    public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.AddToggle> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.AddToggle> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> handler)
         {
             _handler = handler;
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Toggles.Messages.AddToggle message)
+        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Toggles.Messages.AddToggle message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddToggle(applicationId, message.Id, message.Name, message.Key)
-                {
-                    ExpectedVersion = message.ExpectedVersion
-                };
+                var command = new Core.WriteModel.Project.Commands.AddToggle(UserId, projectId, message.Key, message.Name, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

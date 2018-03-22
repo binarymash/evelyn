@@ -8,29 +8,26 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/environments")]
+    [Route("api/projects/{projectId}/environments")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class Controller : Microsoft.AspNetCore.Mvc.Controller
+    public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Commands.AddEnvironment> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Commands.AddEnvironment> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> handler)
         {
             _handler = handler;
         }
 
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid applicationId, [FromBody]Messages.AddEnvironment message)
+        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Messages.AddEnvironment message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Commands.AddEnvironment(applicationId, message.Id, message.Name)
-                {
-                    ExpectedVersion = message.ExpectedVersion
-                };
+                var command = new Core.WriteModel.Project.Commands.AddEnvironment(UserId, projectId, message.Key, message.ExpectedVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

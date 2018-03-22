@@ -2,28 +2,20 @@
 {
     using System;
 
-    public class ToggleDetailsDto
+    public class ToggleDetailsDto : DtoRoot
     {
-        public ToggleDetailsDto(Guid applicationId, Guid toggleId, string name, string key, DateTimeOffset created)
+        public ToggleDetailsDto(Guid projectId, int version, string key, string name, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+            : base(version, created, createdBy, lastModified, lastModifiedBy)
         {
-            Id = toggleId;
-            Name = name;
             Key = key;
-            Created = created;
-            LastModified = created;
-            ApplicationId = applicationId;
+            Name = name;
+            ProjectId = projectId;
         }
 
-        public Guid ApplicationId { get; private set; }
-
-        public Guid Id { get; private set; }
-
-        public string Name { get; private set; }
+        public Guid ProjectId { get; private set; }
 
         public string Key { get; private set; }
 
-        public DateTimeOffset Created { get; }
-
-        public DateTimeOffset LastModified { get; private set; }
+        public string Name { get; private set; }
     }
 }

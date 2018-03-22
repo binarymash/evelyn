@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/applications/{applicationId}/environments")]
+    [Route("api/projects/{projectId}/environments")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class EnvironmentsController : Controller
     {
@@ -19,14 +19,14 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{environmentId}")]
+        [HttpGet("{environmentKey}")]
         [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(Guid environmentId)
+        public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentDetails(environmentId);
+                var result = await _readModelFacade.GetEnvironmentDetails(projectId, environmentKey);
                 return Ok(result);
             }
             catch (NotFoundException)

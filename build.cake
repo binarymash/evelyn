@@ -4,7 +4,8 @@
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
 #addin "nuget:?package=Cake.Json"
-#addin nuget:?package=Newtonsoft.Json&version=9.0.1
+#addin "nuget:?package=Newtonsoft.Json&version=9.0.1"
+#tool "nuget:?package=xunit.runner.console"
 #tool coveralls.net
 #addin Cake.Coveralls
 
@@ -22,8 +23,12 @@ var unitTestAssemblies = new []
 	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
 	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
 };
+var netFrameworkUnitTestAssemblies = new []
+{
+	@"./src/Evelyn.Storage.EventStore.Tests/bin/"+compileConfig+"/net461/Evelyn.Storage.EventStore.Tests.dll",
+};
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage = 88d;
+var minCodeCoverage = 91d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // integration testing
@@ -134,6 +139,8 @@ Task("RunUnitTestsCoverageReport")
         
 		foreach(var testAssembly in unitTestAssemblies)
 		{
+			Information("Running test task for " + testAssembly);
+			
 			OpenCover(tool => 
 				{
 					tool.DotNetCoreTest(testAssembly);
@@ -147,9 +154,31 @@ Task("RunUnitTestsCoverageReport")
 				.WithFilter("+[Evelyn.*]Evelyn.*")
 				.WithFilter("-[xunit*]*")
 				.WithFilter("-[Evelyn.*.Tests]*")
+				.WithFilter("-[Evelyn.*]*.BackgroundService")
 			);
 		}
         
+		foreach(var testAssembly in netFrameworkUnitTestAssemblies)
+		{
+			Information("Running test task for " + testAssembly);
+			
+			if (IsRunningOnWindows())
+			{
+				XUnit2(testAssembly, new XUnit2Settings 
+				{
+					Parallelism = ParallelismOption.None,
+					ShadowCopy = false,
+					XmlReport = true,
+					HtmlReport = true,
+					OutputDirectory = artifactsForUnitTestsDir
+				});
+			}
+			else
+			{
+				Warning($"The tests for {testAssembly} can only run on Windows");
+			}
+		}
+
 		Information($"writing to {artifactsForUnitTestsDir}"); 
         ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);
 		

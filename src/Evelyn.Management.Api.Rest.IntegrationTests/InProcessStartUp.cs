@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Management.Api.Rest.IntegrationTests
 {
+    using Core.WriteModel;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -36,10 +37,10 @@
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStartUpCommands startUpCommands)
         {
             app.UseMvc();
-            app.UseEvelynApi();
+            app.UseEvelynApi(startUpCommands);
         }
     }
 }

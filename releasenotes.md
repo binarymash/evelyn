@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 0.7.0 (2018-03-22)
+
+
+ - [#86](https://github.com/binarymash/evelyn/pull/86) - Feature/#84 refactor versioning contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#85](https://github.com/binarymash/evelyn/pull/85) - [#83](https://github.com/binarymash/evelyn/issues/83) - Add user information to DTOs contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#82](https://github.com/binarymash/evelyn/pull/82) - [#81](https://github.com/binarymash/evelyn/issues/81) - Dates not set correctly on DTOs contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#80](https://github.com/binarymash/evelyn/pull/80) - [#79](https://github.com/binarymash/evelyn/issues/79) - Add client endpoint to get toggle state for an environment contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#78](https://github.com/binarymash/evelyn/pull/78) - [#76](https://github.com/binarymash/evelyn/issues/76) - EventStore read-side implementation contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#75](https://github.com/binarymash/evelyn/pull/75) - [#26](https://github.com/binarymash/evelyn/issues/26) - Split existing context contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#73](https://github.com/binarymash/evelyn/pull/73) - [#69](https://github.com/binarymash/evelyn/issues/69) - Remove unnecessary properties from entities contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#72](https://github.com/binarymash/evelyn/pull/72) - Tweak database implementation and retrieval of project list contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#71](https://github.com/binarymash/evelyn/issues/71) - Refactor read model processing
+ - [#70](https://github.com/binarymash/evelyn/pull/70) - Rename application to project contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#68](https://github.com/binarymash/evelyn/pull/68)  - [#59](https://github.com/binarymash/evelyn/issues/59) - Add account/user to events contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#63](https://github.com/binarymash/evelyn/issues/63) - Refactor current write model
+ - [#58](https://github.com/binarymash/evelyn/pull/58) - [#57](https://github.com/binarymash/evelyn/issues/57) - Write to https://eventstore.org/ contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#56](https://github.com/binarymash/evelyn/pull/56) - [#43](https://github.com/binarymash/evelyn/issues/43) flip toggle via api contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#55](https://github.com/binarymash/evelyn/pull/55) - [#54](https://github.com/binarymash/evelyn/issues/54) - Package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#53](https://github.com/binarymash/evelyn/pull/53) - Use new handler registration code in CQRSLite contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#52](https://github.com/binarymash/evelyn/issues/52) - Simplify handler registration
+ - [#49](https://github.com/binarymash/evelyn/pull/49) - [#36](https://github.com/binarymash/evelyn/issues/36) - Document startup classes contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 3bfa81be44...bdda348489
+
 ## Version 0.6.0 (2018-01-07)
 
  - [#48](https://github.com/binarymash/evelyn/pull/48) - [#46](https://github.com/binarymash/evelyn/issues/46) - get toggle details via api +enhancement contributed by Philip Wood ([binarymash](https://github.com/binarymash))
