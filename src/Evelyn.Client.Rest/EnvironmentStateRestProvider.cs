@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Client.Rest
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Generated;
 
@@ -21,11 +22,21 @@
                     .ApiStatesByProjectIdByEnvironmentNameGetAsync(projectId, environmentKey)
                     .GetAwaiter().GetResult();
 
-                return new EnvironmentState(dto.Version.Value, dto.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value)));
+                var toggleStates = new List<ToggleState>();
+
+                foreach (var toggleState in dto.ToggleStates)
+                {
+                    if (bool.TryParse(toggleState.Value, out var value))
+                    {
+                        toggleStates.Add(new ToggleState(toggleState.Key, value));
+                    }
+                }
+
+                return new EnvironmentState(dto.Version.Value, toggleStates);
             }
             catch (SwaggerException ex)
             {
-                throw new SynchronizationException(string.Empty, ex);
+                throw new SynchronizationException("FailedToGetEnvironmentState", ex);
             }
         }
     }

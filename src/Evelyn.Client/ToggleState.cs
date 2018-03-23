@@ -2,7 +2,7 @@
 {
     public class ToggleState
     {
-        public ToggleState(string key, string value)
+        public ToggleState(string key, bool value)
         {
             Key = key;
             Value = value;
@@ -10,6 +10,6 @@
 
         public string Key { get; private set; }
 
-        public string Value { get; private set; }
+        public bool Value { get; private set; }
     }
 }

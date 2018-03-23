@@ -11,9 +11,9 @@
             _repo = repo;
         }
 
-        public async Task<bool> GetToggleState(string toggleKey)
+        public bool GetToggleState(string toggleKey)
         {
-            return await _repo.Get(toggleKey);
+            return _repo.Get(toggleKey);
         }
     }
 }

@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
 
     public class InMemoryEnvironmentStateRepository : IEnvironmentStateRepository, IDisposable
     {
@@ -18,8 +17,13 @@
             _environmentState = new EnvironmentState(-1, new List<ToggleState>());
         }
 
-        public Task Set(EnvironmentState environmentState)
+        public void Set(EnvironmentState environmentState)
         {
+            if (environmentState?.ToggleStates == null)
+            {
+                throw new InvalidEnvironmentStateException();
+            }
+
             _lock.EnterWriteLock();
             try
             {
@@ -29,28 +33,22 @@
             {
                 _lock.ExitWriteLock();
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task<bool> Get(string toggleKey)
+        public bool Get(string toggleKey)
         {
             _lock.EnterReadLock();
             try
             {
-                var value = _environmentState.ToggleStates.FirstOrDefault(ts => ts.Key == toggleKey).Value;
-                return Task.FromResult(bool.Parse(value));
-            }
-            catch (Exception)
-            {
-                // TODO: logging
+                return _environmentState
+                           ?.ToggleStates
+                           ?.FirstOrDefault(ts => ts.Key == toggleKey)
+                           ?.Value ?? default;
             }
             finally
             {
                 _lock.ExitReadLock();
             }
-
-            return Task.FromResult(default(bool));
         }
 
         public void Dispose()

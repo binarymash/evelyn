@@ -29,7 +29,7 @@
             bool? lastValue = null;
             while (true)
             {
-                var toggleState = evelyn.GetToggleState("my-first-toggle").Result;
+                var toggleState = evelyn.GetToggleState("my-first-toggle");
                 if (!lastValue.HasValue || lastValue.Value != toggleState)
                 {
                     Console.WriteLine($"Toggle state is now {toggleState}");
