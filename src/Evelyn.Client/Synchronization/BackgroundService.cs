@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Client
+﻿namespace Evelyn.Client.Synchronization
 {
     using System;
     using System.Threading;

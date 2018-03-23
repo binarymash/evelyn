@@ -1,9 +1,10 @@
-﻿namespace Evelyn.Client
+﻿namespace Evelyn.Client.Repository
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Domain;
 
     public class InMemoryEnvironmentStateRepository : IEnvironmentStateRepository, IDisposable
     {

@@ -1,9 +1,10 @@
-﻿namespace Evelyn.Client.Tests
+﻿namespace Evelyn.Client.Tests.Repository
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using AutoFixture;
+    using Client.Repository;
+    using Domain;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
@@ -120,11 +121,6 @@
             }
 
             return null;
-        }
-
-        private void ThenANoEnvironmentStateExceptionIsThrown()
-        {
-            _thrownException.Should().BeOfType<NoEnvironmentStateException>();
         }
 
         private void ThenAnInvalidEnvironmentStateExceptionIsThrown()

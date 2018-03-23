@@ -1,8 +1,10 @@
-﻿namespace Evelyn.Client
+﻿namespace Evelyn.Client.Synchronization
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Provider;
+    using Repository;
 
     public class EnvironmentStateSynchronizer : BackgroundService
     {

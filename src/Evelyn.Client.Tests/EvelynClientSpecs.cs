@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Client.Tests
 {
     using AutoFixture;
+    using Client.Repository;
     using FluentAssertions;
     using NSubstitute;
     using TestStack.BDDfy;

@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Client
+﻿namespace Evelyn.Client.Domain
 {
     using System;
 

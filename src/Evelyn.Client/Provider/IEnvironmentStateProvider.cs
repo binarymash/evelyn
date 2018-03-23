@@ -1,6 +1,7 @@
-﻿namespace Evelyn.Client
+﻿namespace Evelyn.Client.Provider
 {
     using System;
+    using Domain;
 
     public interface IEnvironmentStateProvider
     {

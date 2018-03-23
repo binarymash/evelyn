@@ -5,7 +5,10 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Provider;
+    using Repository;
     using Rest;
+    using Synchronization;
 
     public class Program
     {
