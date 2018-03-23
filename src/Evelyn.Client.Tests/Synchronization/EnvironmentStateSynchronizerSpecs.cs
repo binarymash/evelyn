@@ -2,13 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
     using Client.Repository;
     using Client.Synchronization;
     using Domain;
     using FluentAssertions;
+    using Microsoft.Extensions.Options;
     using NSubstitute;
     using NSubstitute.Core;
     using Provider;
@@ -21,7 +21,7 @@
         private readonly EnvironmentStateSynchronizer _synchronizer;
         private readonly IEnvironmentStateProvider _provider;
         private readonly IEnvironmentStateRepository _repo;
-        private readonly IList<Tuple<DateTimeOffset, Guid, string>> _callsToProvider;
+        private readonly IOptions<EnvironmentStateSynchronizerOptions> _options;
         private readonly IList<EnvironmentState> _expectedEnvironmentStates;
         private readonly IList<EnvironmentState> _storedEnvironmentStates;
 
@@ -30,14 +30,10 @@
             _fixture = new Fixture();
             _provider = Substitute.For<IEnvironmentStateProvider>();
             _repo = Substitute.For<IEnvironmentStateRepository>();
-
-            _repo.WhenForAnyArgs(repo => repo.Set(Arg.Any<EnvironmentState>()))
-                .Do(StoreCallInfo);
-
-            _synchronizer = new EnvironmentStateSynchronizer(_provider, _repo);
-
             _expectedEnvironmentStates = new List<EnvironmentState>();
             _storedEnvironmentStates = new List<EnvironmentState>();
+            _options = Options.Create(_fixture.Create<EnvironmentStateSynchronizerOptions>());
+            _synchronizer = new EnvironmentStateSynchronizer(_provider, _repo, _options);
         }
 
         private void StoreCallInfo(CallInfo callInfo)

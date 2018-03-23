@@ -4,15 +4,16 @@
     using System.Collections.Generic;
     using Domain;
     using Generated;
+    using Microsoft.Extensions.Options;
     using Provider;
 
     public class EnvironmentStateRestProvider : IEnvironmentStateProvider
     {
         private readonly Client _client;
 
-        public EnvironmentStateRestProvider()
+        public EnvironmentStateRestProvider(IOptions<EnvironmentStateRestProviderOptions> options)
         {
-            _client = new Client("http://localhost:2316");
+            _client = new Client(options.Value.BaseUrl);
         }
 
         public EnvironmentState Invoke(Guid projectId, string environmentKey)

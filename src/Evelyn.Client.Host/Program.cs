@@ -16,10 +16,28 @@
         {
             // setup the service dependencies...
             IServiceCollection services = new ServiceCollection();
+
+            // register client
             services.AddSingleton<IEvelynClient, EvelynClient>();
+
+            //register synchronization
             services.AddSingleton<IHostedService, EnvironmentStateSynchronizer>();
-            services.AddSingleton<IEnvironmentStateProvider, EnvironmentStateRestProvider>();
+            services.Configure<EnvironmentStateSynchronizerOptions>(options =>
+            {
+                options.Environment = "development";
+                options.ProjectId = Guid.Parse("{222649E0-1E2D-4A1A-B986-3400CEC08B49}");
+                options.SynchronizationPeriod = TimeSpan.FromSeconds(5);
+            });
+
+            //register repository
             services.AddSingleton<IEnvironmentStateRepository, InMemoryEnvironmentStateRepository>();
+
+            //register provider
+            services.AddSingleton<IEnvironmentStateProvider, EnvironmentStateRestProvider>();
+            services.Configure<EnvironmentStateRestProviderOptions>(options =>
+            {
+                options.BaseUrl = "http://localhost:2316";
+            });
 
             var serviceProvider = services.BuildServiceProvider();
 
