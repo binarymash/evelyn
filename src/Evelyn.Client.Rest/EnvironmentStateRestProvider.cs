@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using Generated;
 
     public class EnvironmentStateRestProvider : IEnvironmentStateProvider
     {
@@ -9,7 +10,7 @@
 
         public EnvironmentStateRestProvider()
         {
-            _client = new Client("http://localhost:2316");            
+            _client = new Client("http://localhost:2316");
         }
 
         public EnvironmentState Invoke(Guid projectId, string environmentKey)

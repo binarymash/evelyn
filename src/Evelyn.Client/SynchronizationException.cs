@@ -6,7 +6,7 @@
     {
         public SynchronizationException(string message, Exception innerException)
             : base(message, innerException)
-        {         
+        {
         }
     }
 }

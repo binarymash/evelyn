@@ -20,6 +20,7 @@ var artifactsDir = Directory("artifacts");
 var artifactsForUnitTestsDir = artifactsDir + Directory("UnitTests");
 var unitTestAssemblies = new []
 {
+	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
 	@"./src/Evelyn.Core.Tests/Evelyn.Core.Tests.csproj",
 	@"./src/Evelyn.Management.Api.Rest.Tests/Evelyn.Management.Api.Rest.Tests.csproj",
 };

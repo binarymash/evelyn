@@ -9,7 +9,7 @@
 
     public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // setup the service dependencies...
             IServiceCollection services = new ServiceCollection();
@@ -17,11 +17,11 @@
             services.AddSingleton<IHostedService, EnvironmentStateSynchronizer>();
             services.AddSingleton<IEnvironmentStateProvider, EnvironmentStateRestProvider>();
             services.AddSingleton<IEnvironmentStateRepository, InMemoryEnvironmentStateRepository>();
-            
+
             var serviceProvider = services.BuildServiceProvider();
 
             // our actual program...
-            var token = new CancellationToken();
+            var token = new CancellationToken(false);
             serviceProvider.GetService<IHostedService>().StartAsync(token);
 
             var evelyn = serviceProvider.GetService<IEvelynClient>();

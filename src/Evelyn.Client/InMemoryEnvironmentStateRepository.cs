@@ -18,7 +18,7 @@
             _environmentState = new EnvironmentState(-1, new List<ToggleState>());
         }
 
-        public Task Set(EnvironmentState environmentState, CancellationToken cancelletionToken = default(CancellationToken))
+        public Task Set(EnvironmentState environmentState)
         {
             _lock.EnterWriteLock();
             try
@@ -33,7 +33,7 @@
             return Task.CompletedTask;
         }
 
-        public Task<bool> Get(string toggleKey, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> Get(string toggleKey)
         {
             _lock.EnterReadLock();
             try
@@ -41,7 +41,7 @@
                 var value = _environmentState.ToggleStates.FirstOrDefault(ts => ts.Key == toggleKey).Value;
                 return Task.FromResult(bool.Parse(value));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: logging
             }

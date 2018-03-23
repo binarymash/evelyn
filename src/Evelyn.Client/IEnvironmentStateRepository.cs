@@ -5,7 +5,8 @@
 
     public interface IEnvironmentStateRepository
     {
-        Task Set(EnvironmentState environmentState, CancellationToken cancellationToken = default(CancellationToken));
-        Task<bool> Get(string environmentKey, CancellationToken cancellationToken = default(CancellationToken));
+        Task Set(EnvironmentState environmentState);
+
+        Task<bool> Get(string environmentKey);
     }
 }
