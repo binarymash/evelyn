@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.WriteModel.Project
 {
-    using System.Linq;
     using System.Threading.Tasks;
     using Commands;
     using CQRSlite.Commands;
@@ -10,7 +9,8 @@
     public class ProjectCommandHandler :
         ICommandHandler<AddEnvironment>,
         ICommandHandler<AddToggle>,
-        ICommandHandler<ChangeToggleState>
+        ICommandHandler<ChangeToggleState>,
+        ICommandHandler<DeleteToggle>
     {
         private readonly ISession _session;
 
@@ -37,6 +37,13 @@
         {
             var project = await _session.Get<Project>(message.ProjectId);
             project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value, message.ExpectedVersion);
+            await _session.Commit();
+        }
+
+        public async Task Handle(DeleteToggle message)
+        {
+            var project = await _session.Get<Project>(message.ProjectId);
+            project.DeleteToggle(message.UserId, message.Key, message.ExpectedVersion);
             await _session.Commit();
         }
     }
