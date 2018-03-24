@@ -18,10 +18,11 @@
     public class EnvironmentStateSynchronizerSpecs
     {
         private readonly Fixture _fixture;
-        private readonly EnvironmentStateSynchronizer _synchronizer;
+        private readonly EnvironmentStatePollingSynchronizer _synchronizer;
         private readonly IEnvironmentStateProvider _provider;
         private readonly IEnvironmentStateRepository _repo;
-        private readonly IOptions<EnvironmentStateSynchronizerOptions> _options;
+        private readonly IOptions<EnvironmentStatePollingSynchronizerOptions> _pollingOptions;
+        private readonly IOptions<EnvironmentOptions> _environmentOptions;
         private readonly IList<EnvironmentState> _expectedEnvironmentStates;
         private readonly IList<EnvironmentState> _storedEnvironmentStates;
 
@@ -33,12 +34,15 @@
             _expectedEnvironmentStates = new List<EnvironmentState>();
             _storedEnvironmentStates = new List<EnvironmentState>();
 
-            _options = Options.Create(_fixture
-                .Build<EnvironmentStateSynchronizerOptions>()
-                .With(o => o.PollingPeriod, TimeSpan.FromSeconds(1))
-                .Create());
+            _pollingOptions = Options.Create(
+                new EnvironmentStatePollingSynchronizerOptions
+                {
+                    PollingPeriod = TimeSpan.FromSeconds(1)
+                });
 
-            _synchronizer = new EnvironmentStateSynchronizer(_provider, _repo, _options);
+            _environmentOptions = Options.Create(_fixture.Create<EnvironmentOptions>());
+
+            _synchronizer = new EnvironmentStatePollingSynchronizer(_provider, _repo, _pollingOptions, _environmentOptions);
 
             _repo.WhenForAnyArgs(repo => repo.Set(Arg.Any<EnvironmentState>()))
                 .Do(StoreCallInfo);

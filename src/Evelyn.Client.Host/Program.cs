@@ -13,18 +13,17 @@
             // setup the service dependencies...
             IServiceCollection services = new ServiceCollection();
 
-            services.AddEvelynClient(eve =>
+            services.AddEvelynClient(clientConfig =>
             {
-                eve.SynchronizationOptions(config =>
+                clientConfig.ProjectId = Guid.Parse("222649E0-1E2D-4A1A-B986-3400CEC08B49");
+                clientConfig.Environment = "development";
+                clientConfig.SynchronizeEnvironmentStateUsing.Polling(pollingConfig =>
                 {
-                    config.Environment = "development";
-                    config.ProjectId = Guid.Parse("{222649E0-1E2D-4A1A-B986-3400CEC08B49}");
-                    config.PollingPeriod = TimeSpan.FromSeconds(5);
-                });
-
-                eve.RetrieveEnvironmentStateUsing.RestProvider(config =>
-                {
-                    config.BaseUrl = "http://localhost:2316";
+                    pollingConfig.PollingPeriod = TimeSpan.FromSeconds(1);
+                    pollingConfig.RetrieveEnvironmentStateUsing.RestProvider(restConfig =>
+                    {
+                        restConfig.BaseUrl = "http://localhost:2316";
+                    });
                 });
             });
 

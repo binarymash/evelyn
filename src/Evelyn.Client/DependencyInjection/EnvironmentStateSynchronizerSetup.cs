@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class EnvironmentStateProviderOptions : EvelynComponentOptions
+    public class EnvironmentStateSynchronizerSetup : EvelynComponentSetup
     {
-        public EnvironmentStateProviderOptions(IServiceCollection services)
+        public EnvironmentStateSynchronizerSetup(IServiceCollection services)
             : base(services)
         {
         }
