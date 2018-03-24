@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using NSubstitute.Core;
+    using NSubstitute.ExceptionExtensions;
     using Provider;
     using TestStack.BDDfy;
     using Xunit;
@@ -51,10 +52,20 @@
         [Fact]
         public void SynchronizingEnvironmentStates()
         {
-            this.Given(_ => GivenTheEnvironmentStateProviderReturnsSomeStates())
+            this.Given(_ => GivenTheProviderWillReturnsSomeStates())
                 .When(_ => WhenWeStartTheSynchronizer())
                 .And(_ => WhenWeWaitAFewSecondsAndThenStopTheSynchronizer())
                 .And(_ => ThenTheSynchronizerStoresTheReturnedEnvironmentStatesInTheRepo())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void SynchronizationExceptionFromProvider()
+        {
+            this.Given(_ => GivenTheProviderThrowsASynchronizationException())
+                .When(_ => WhenWeStartTheSynchronizer())
+                .And(_ => WhenWeWaitAFewSecondsAndThenStopTheSynchronizer())
+                .Then(_ => ThenNothingIsSavedToTheRepo())
                 .BDDfy();
         }
 
@@ -63,7 +74,7 @@
             _storedEnvironmentStates.Add(callInfo.ArgAt<EnvironmentState>(0));
         }
 
-        private void GivenTheEnvironmentStateProviderReturnsSomeStates()
+        private void GivenTheProviderWillReturnsSomeStates()
         {
             for (var i = 0; i < 3; i++)
             {
@@ -74,6 +85,13 @@
                 .Returns(_expectedEnvironmentStates[0], _expectedEnvironmentStates[1], _expectedEnvironmentStates[2]);
         }
 
+        private void GivenTheProviderThrowsASynchronizationException()
+        {
+            _provider
+                .Invoke(Arg.Any<Guid>(), Arg.Any<string>())
+                .ThrowsForAnyArgs(_fixture.Create<SynchronizationException>());
+        }
+
         private async Task WhenWeStartTheSynchronizer()
         {
             await _synchronizer.StartAsync(default);
@@ -81,7 +99,8 @@
 
         private async Task WhenWeWaitAFewSecondsAndThenStopTheSynchronizer()
         {
-            while (_storedEnvironmentStates.Count < 3)
+            var timeToStopWaiting = DateTime.UtcNow.AddSeconds(4);
+            while (_storedEnvironmentStates.Count < 3 && DateTime.UtcNow < timeToStopWaiting)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
@@ -92,6 +111,11 @@
         private void ThenTheSynchronizerStoresTheReturnedEnvironmentStatesInTheRepo()
         {
             _storedEnvironmentStates.Should().BeEquivalentTo(_expectedEnvironmentStates);
+        }
+
+        private void ThenNothingIsSavedToTheRepo()
+        {
+            _storedEnvironmentStates.Count.Should().Be(0);
         }
     }
 }
