@@ -25,7 +25,7 @@
             while (!stoppingToken.IsCancellationRequested)
             {
                 SynchronizeEnvironmentStates();
-                await Task.Delay(_options.SynchronizationPeriod, stoppingToken);
+                await Task.Delay(_options.PollingPeriod, stoppingToken);
             }
         }
 

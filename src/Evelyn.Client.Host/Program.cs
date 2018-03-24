@@ -5,10 +5,6 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Provider;
-    using Repository;
-    using Rest;
-    using Synchronization;
 
     public class Program
     {
@@ -17,26 +13,19 @@
             // setup the service dependencies...
             IServiceCollection services = new ServiceCollection();
 
-            // register client
-            services.AddSingleton<IEvelynClient, EvelynClient>();
-
-            //register synchronization
-            services.AddSingleton<IHostedService, EnvironmentStateSynchronizer>();
-            services.Configure<EnvironmentStateSynchronizerOptions>(options =>
+            services.AddEvelynClient(eve =>
             {
-                options.Environment = "development";
-                options.ProjectId = Guid.Parse("{222649E0-1E2D-4A1A-B986-3400CEC08B49}");
-                options.SynchronizationPeriod = TimeSpan.FromSeconds(5);
-            });
+                eve.SynchronizationOptions(config =>
+                {
+                    config.Environment = "development";
+                    config.ProjectId = Guid.Parse("{222649E0-1E2D-4A1A-B986-3400CEC08B49}");
+                    config.PollingPeriod = TimeSpan.FromSeconds(5);
+                });
 
-            //register repository
-            services.AddSingleton<IEnvironmentStateRepository, InMemoryEnvironmentStateRepository>();
-
-            //register provider
-            services.AddSingleton<IEnvironmentStateProvider, EnvironmentStateRestProvider>();
-            services.Configure<EnvironmentStateRestProviderOptions>(options =>
-            {
-                options.BaseUrl = "http://localhost:2316";
+                eve.RetrieveEnvironmentStateUsing.RestProvider(config =>
+                {
+                    config.BaseUrl = "http://localhost:2316";
+                });
             });
 
             var serviceProvider = services.BuildServiceProvider();

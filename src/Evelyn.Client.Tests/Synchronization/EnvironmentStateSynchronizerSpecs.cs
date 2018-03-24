@@ -32,13 +32,16 @@
             _repo = Substitute.For<IEnvironmentStateRepository>();
             _expectedEnvironmentStates = new List<EnvironmentState>();
             _storedEnvironmentStates = new List<EnvironmentState>();
-            _options = Options.Create(_fixture.Create<EnvironmentStateSynchronizerOptions>());
-            _synchronizer = new EnvironmentStateSynchronizer(_provider, _repo, _options);
-        }
 
-        private void StoreCallInfo(CallInfo callInfo)
-        {
-            _storedEnvironmentStates.Add(callInfo.ArgAt<EnvironmentState>(0));
+            _options = Options.Create(_fixture
+                .Build<EnvironmentStateSynchronizerOptions>()
+                .With(o => o.PollingPeriod, TimeSpan.FromSeconds(1))
+                .Create());
+
+            _synchronizer = new EnvironmentStateSynchronizer(_provider, _repo, _options);
+
+            _repo.WhenForAnyArgs(repo => repo.Set(Arg.Any<EnvironmentState>()))
+                .Do(StoreCallInfo);
         }
 
         [Fact]
@@ -49,6 +52,11 @@
                 .And(_ => WhenWeWaitAFewSecondsAndThenStopTheSynchronizer())
                 .And(_ => ThenTheSynchronizerStoresTheReturnedEnvironmentStatesInTheRepo())
                 .BDDfy();
+        }
+
+        private void StoreCallInfo(CallInfo callInfo)
+        {
+            _storedEnvironmentStates.Add(callInfo.ArgAt<EnvironmentState>(0));
         }
 
         private void GivenTheEnvironmentStateProviderReturnsSomeStates()

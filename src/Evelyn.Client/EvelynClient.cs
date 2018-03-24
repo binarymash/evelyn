@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Client
 {
-    using System.Threading.Tasks;
     using Repository;
 
     public class EvelynClient : IEvelynClient
