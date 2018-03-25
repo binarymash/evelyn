@@ -70,7 +70,7 @@
 
         private async Task WhenEnvironmentDeletedEventIsHandled()
         {
-            var message = Fixture.Create<EnvironmentAdded>();
+            var message = Fixture.Create<EnvironmentDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }
@@ -84,7 +84,7 @@
 
         private async Task WhenToggleDeletedEventIsHandled()
         {
-            var message = Fixture.Create<ToggleAdded>();
+            var message = Fixture.Create<ToggleDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }
