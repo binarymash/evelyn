@@ -21,13 +21,14 @@
             _handler = handler;
         }
 
+        [Route("change-state")]
         [HttpPost]
         public async Task<ObjectResult> Post(Guid projectId, string environmentKey, string toggleKey, [FromBody]Messages.ChangeToggleState message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Project.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedVersion);
+                var command = new Core.WriteModel.Project.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedToggleStateVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

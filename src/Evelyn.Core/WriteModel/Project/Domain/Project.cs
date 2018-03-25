@@ -46,9 +46,9 @@
 
         public int ScopedVersion { get; private set; }
 
-        public void AddEnvironment(string userId, string key, int expectedVersion)
+        public void AddEnvironment(string userId, string key, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedVersion)
+            if (ScopedVersion != expectedProjectVersion)
             {
                 throw new ConcurrencyException(Id);
             }
@@ -66,9 +66,9 @@
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
         }
 
-        public void AddToggle(string userId, string key, string name, int expectedVersion)
+        public void AddToggle(string userId, string key, string name, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedVersion)
+            if (ScopedVersion != expectedProjectVersion)
             {
                 throw new ConcurrencyException(Id);
             }
@@ -91,7 +91,7 @@
             }
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedVersion)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedToggleStateVersion)
         {
             var environmentState = _environmentStates.FirstOrDefault(e => e.EnvironmentKey == environmentKey);
             if (environmentState == null)
@@ -105,7 +105,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
             }
 
-            if (toggleState.ScopedVersion != expectedVersion)
+            if (toggleState.ScopedVersion != expectedToggleStateVersion)
             {
                 throw new ConcurrencyException(Guid.Empty);
             }
@@ -118,7 +118,7 @@
             ApplyChange(new ToggleStateChanged(userId, Id, environmentKey, toggleKey, value, DateTimeOffset.UtcNow));
         }
 
-        public void DeleteToggle(string userId, string key, int expectedVersion)
+        public void DeleteToggle(string userId, string key, int expectedToggleVersion)
         {
             var toggle = _toggles.FirstOrDefault(t => t.Key == key);
             if (toggle == null)
@@ -126,7 +126,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {key}");
             }
 
-            if (toggle.ScopedVersion != expectedVersion)
+            if (toggle.ScopedVersion != expectedToggleVersion)
             {
                 throw new ConcurrencyException(Id);
             }

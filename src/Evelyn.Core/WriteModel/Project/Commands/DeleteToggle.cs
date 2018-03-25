@@ -4,15 +4,15 @@
 
     public class DeleteToggle : Command
     {
-        public DeleteToggle(string userId, Guid projectId, string key, int expectedVersion)
+        public DeleteToggle(string userId, Guid projectId, string key, int expectedToggleVersion)
             : base(userId)
         {
             Key = key;
             ProjectId = projectId;
-            ExpectedVersion = expectedVersion;
+            ExpectedToggleVersion = expectedToggleVersion;
         }
 
-        public int ExpectedVersion { get; set; }
+        public int ExpectedToggleVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 

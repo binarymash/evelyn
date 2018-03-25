@@ -2,13 +2,13 @@
 {
     public class ChangeToggleState
     {
-        public ChangeToggleState(int expectedVersion, string state)
+        public ChangeToggleState(int expectedToggleStateVersion, string state)
         {
-            ExpectedVersion = expectedVersion;
+            ExpectedToggleStateVersion = expectedToggleStateVersion;
             State = state;
         }
 
-        public int ExpectedVersion { get; set; }
+        public int ExpectedToggleStateVersion { get; set; }
 
         public string State { get; set; }
     }

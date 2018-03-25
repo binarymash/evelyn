@@ -4,15 +4,15 @@
 
     public class AddEnvironment : Command
     {
-        public AddEnvironment(string userId, Guid projectId, string key, int expectedVersion)
+        public AddEnvironment(string userId, Guid projectId, string key, int expectedProjectVersion)
             : base(userId)
         {
             Key = key;
             ProjectId = projectId;
-            ExpectedVersion = expectedVersion;
+            ExpectedProjectVersion = expectedProjectVersion;
         }
 
-        public int ExpectedVersion { get; set; }
+        public int ExpectedProjectVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 

@@ -21,6 +21,7 @@
             _handler = handler;
         }
 
+        [Route("create")]
         [HttpPost]
         public async Task<ObjectResult> Post([FromBody]Messages.CreateProject message)
         {

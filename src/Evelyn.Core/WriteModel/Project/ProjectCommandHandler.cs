@@ -22,28 +22,28 @@
         public async Task Handle(AddEnvironment message)
         {
             var project = await _session.Get<Project>(message.ProjectId);
-            project.AddEnvironment(message.UserId, message.Key, message.ExpectedVersion);
+            project.AddEnvironment(message.UserId, message.Key, message.ExpectedProjectVersion);
             await _session.Commit();
         }
 
         public async Task Handle(AddToggle message)
         {
             var project = await _session.Get<Project>(message.ProjectId);
-            project.AddToggle(message.UserId, message.Key, message.Name, message.ExpectedVersion);
+            project.AddToggle(message.UserId, message.Key, message.Name, message.ExpectedProjectVersion);
             await _session.Commit();
         }
 
         public async Task Handle(ChangeToggleState message)
         {
             var project = await _session.Get<Project>(message.ProjectId);
-            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value, message.ExpectedVersion);
+            project.ChangeToggleState(message.UserId, message.EnvironmentKey, message.ToggleKey, message.Value, message.ExpectedToggleStateVersion);
             await _session.Commit();
         }
 
         public async Task Handle(DeleteToggle message)
         {
             var project = await _session.Get<Project>(message.ProjectId);
-            project.DeleteToggle(message.UserId, message.Key, message.ExpectedVersion);
+            project.DeleteToggle(message.UserId, message.Key, message.ExpectedToggleVersion);
             await _session.Commit();
         }
     }

@@ -22,7 +22,7 @@
                 var project = await _repository.Get<Project>(request.ProjectId, token).ConfigureAwait(false);
                 var environments = project.Environments.Select(e => new EnvironmentListDto(e.Key));
                 var toggles = project.Toggles.Select(t => new ToggleListDto(t.Key, t.Name));
-                var dto = new ProjectDetailsDto(project.Id, project.Name, environments, toggles, project.Version, project.Created, project.CreatedBy, project.LastModified, project.LastModifiedBy);
+                var dto = new ProjectDetailsDto(project.Id, project.Name, environments, toggles, project.ScopedVersion, project.Created, project.CreatedBy, project.LastModified, project.LastModifiedBy);
 
                 return dto;
             }

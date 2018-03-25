@@ -2,17 +2,17 @@
 {
     public class AddToggle
     {
-        public AddToggle(string key, string name, int expectedVersion)
+        public AddToggle(string key, string name, int expectedProjectVersion)
         {
             Key = key;
             Name = name;
-            ExpectedVersion = expectedVersion;
+            ExpectedProjectVersion = expectedProjectVersion;
         }
 
         public string Key { get; set; }
 
         public string Name { get; set; }
 
-        public int ExpectedVersion { get; set; }
+        public int ExpectedProjectVersion { get; set; }
     }
 }
