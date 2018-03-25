@@ -2,17 +2,17 @@
 {
     using System;
 
-    public class AddEnvironment : Command
+    public class DeleteToggle : Command
     {
-        public AddEnvironment(string userId, Guid projectId, string key, int expectedProjectVersion)
+        public DeleteToggle(string userId, Guid projectId, string key, int expectedToggleVersion)
             : base(userId)
         {
             Key = key;
             ProjectId = projectId;
-            ExpectedProjectVersion = expectedProjectVersion;
+            ExpectedToggleVersion = expectedToggleVersion;
         }
 
-        public int ExpectedProjectVersion { get; set; }
+        public int ExpectedToggleVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 

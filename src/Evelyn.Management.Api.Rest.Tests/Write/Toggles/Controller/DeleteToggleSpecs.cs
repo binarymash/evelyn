@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Write.Environments.Controller
+﻿namespace Evelyn.Management.Api.Rest.Tests.Write.Toggles.Controller
 {
     using System;
     using System.Threading.Tasks;
@@ -11,31 +11,32 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
-    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AddEnvironmentSpecs
+    public class DeleteToggleSpecs
     {
         private readonly Fixture _fixture;
-        private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
+        private readonly Rest.Write.Toggles.Controller _controller;
+        private readonly ICommandHandler<DeleteToggle> _handler;
         private readonly Guid _projectId;
-        private Rest.Write.Environments.Messages.AddEnvironment _message;
+        private readonly string _toggleKey;
+        private Rest.Write.Toggles.Messages.DeleteToggle _message;
         private ObjectResult _result;
 
-        public AddEnvironmentSpecs()
+        public DeleteToggleSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
-            _controller = new Rest.Write.Environments.Controller(_handler);
+            _handler = Substitute.For<ICommandHandler<DeleteToggle>>();
+            _controller = new Rest.Write.Toggles.Controller(null, _handler);
             _projectId = _fixture.Create<Guid>();
+            _toggleKey = _fixture.Create<string>();
         }
 
         [Fact]
-        public void SuccessfulAddEnvironment()
+        public void SuccessfulDeleteToggle()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteToggleMessage())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
@@ -45,7 +46,7 @@
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -56,7 +57,7 @@
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteToggleMessage())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -64,39 +65,39 @@
                 .BDDfy();
         }
 
-        private void GivenAValidAddEnvironmentCommand()
+        private void GivenAValidDeleteToggleMessage()
         {
-            _message = _fixture.Create<Rest.Write.Environments.Messages.AddEnvironment>();
+            _message = _fixture.Create<Rest.Write.Toggles.Messages.DeleteToggle>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<DeleteToggle>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<DeleteToggle>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_projectId, _message);
+            _result = await _controller.Post(_projectId, _toggleKey, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
+                .Handle(Arg.Is<DeleteToggle>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
-                    command.Key == _message.Key &&
-                    command.ExpectedProjectVersion == _message.ExpectedProjectVersion));
+                    command.Key == _toggleKey &&
+                    command.ExpectedToggleVersion == _message.ExpectedToggleVersion));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

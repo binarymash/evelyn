@@ -21,13 +21,14 @@
             _handler = handler;
         }
 
+        [Route("add")]
         [HttpPost]
         public async Task<ObjectResult> Post(Guid projectId, [FromBody]Messages.AddEnvironment message)
         {
             // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Project.Commands.AddEnvironment(UserId, projectId, message.Key, message.ExpectedVersion);
+                var command = new Core.WriteModel.Project.Commands.AddEnvironment(UserId, projectId, message.Key, message.ExpectedProjectVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

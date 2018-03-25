@@ -46,9 +46,9 @@
 
         public int ScopedVersion { get; private set; }
 
-        public void AddEnvironment(string userId, string key, int expectedVersion)
+        public void AddEnvironment(string userId, string key, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedVersion)
+            if (ScopedVersion != expectedProjectVersion)
             {
                 throw new ConcurrencyException(Id);
             }
@@ -66,9 +66,9 @@
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
         }
 
-        public void AddToggle(string userId, string key, string name, int expectedVersion)
+        public void AddToggle(string userId, string key, string name, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedVersion)
+            if (ScopedVersion != expectedProjectVersion)
             {
                 throw new ConcurrencyException(Id);
             }
@@ -91,7 +91,7 @@
             }
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedVersion)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedToggleStateVersion)
         {
             var environmentState = _environmentStates.FirstOrDefault(e => e.EnvironmentKey == environmentKey);
             if (environmentState == null)
@@ -105,7 +105,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
             }
 
-            if (toggleState.ScopedVersion != expectedVersion)
+            if (toggleState.ScopedVersion != expectedToggleStateVersion)
             {
                 throw new ConcurrencyException(Guid.Empty);
             }
@@ -116,6 +116,27 @@
             }
 
             ApplyChange(new ToggleStateChanged(userId, Id, environmentKey, toggleKey, value, DateTimeOffset.UtcNow));
+        }
+
+        public void DeleteToggle(string userId, string key, int expectedToggleVersion)
+        {
+            var toggle = _toggles.FirstOrDefault(t => t.Key == key);
+            if (toggle == null)
+            {
+                throw new InvalidOperationException($"There is no toggle with the key {key}");
+            }
+
+            if (toggle.ScopedVersion != expectedToggleVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
+
+            ApplyChange(new ToggleDeleted(userId, Id, key, DateTimeOffset.UtcNow));
+
+            foreach (var environmentState in _environmentStates)
+            {
+                ApplyChange(new ToggleStateDeleted(userId, Id, environmentState.EnvironmentKey, key, DateTimeOffset.UtcNow));
+            }
         }
 
         private void Apply(ProjectCreated e)
@@ -155,6 +176,17 @@
             LastModifiedBy = e.UserId;
         }
 
+        private void Apply(ToggleDeleted e)
+        {
+            ScopedVersion++;
+
+            var toggle = _toggles.First(t => t.Key == e.Key);
+            _toggles.Remove(toggle);
+
+            LastModified = e.OccurredAt;
+            LastModifiedBy = e.UserId;
+        }
+
         private void Apply(EnvironmentStateAdded e)
         {
             var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.UserId));
@@ -174,6 +206,13 @@
         {
             var environmentState = _environmentStates.First(es => es.EnvironmentKey == @event.EnvironmentKey);
             environmentState.SetToggleState(@event.ToggleKey, @event.Value, @event.OccurredAt, @event.UserId);
+        }
+
+        private void Apply(ToggleStateDeleted e)
+        {
+            _environmentStates
+                .First(es => es.EnvironmentKey == e.EnvironmentKey)
+                .DeleteToggleState(e.ToggleKey, e.OccurredAt, e.UserId);
         }
     }
 }

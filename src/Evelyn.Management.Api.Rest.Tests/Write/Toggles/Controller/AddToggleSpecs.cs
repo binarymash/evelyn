@@ -11,7 +11,6 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
-    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -28,7 +27,7 @@
         {
             _fixture = new Fixture();
             _handler = Substitute.For<ICommandHandler<AddToggle>>();
-            _controller = new Rest.Write.Toggles.Controller(_handler);
+            _controller = new Rest.Write.Toggles.Controller(_handler, null);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -97,7 +96,7 @@
                     command.ProjectId == _projectId &&
                     command.Key == _message.Key &&
                     command.Name == _message.Name &&
-                    command.ExpectedVersion == _message.ExpectedVersion));
+                    command.ExpectedProjectVersion == _message.ExpectedProjectVersion));
         }
 
         private void ThenA202AcceptedStatusIsReturned()
