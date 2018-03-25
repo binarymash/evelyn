@@ -154,7 +154,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             GivenWeHaveAddedAnEnvironmentStateWith(
                 _projectId,
                 _environment1Key,
-                new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>(_toggle1Key, default), new KeyValuePair<string, string>(_toggle2Key, default) });
+                new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(_toggle1Key, default), new KeyValuePair<string, string>(_toggle2Key, default) });
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
             GivenWeHaveAddedAnEnvironmentStateWith(
