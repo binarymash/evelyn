@@ -139,6 +139,23 @@
             }
         }
 
+        public void DeleteEnvironment(string userId, string key, int expectedEnvironmentVersion)
+        {
+            var environment = _environments.FirstOrDefault(t => t.Key == key);
+            if (environment == null)
+            {
+                throw new InvalidOperationException($"There is no environment with the key {key}");
+            }
+
+            if (environment.ScopedVersion != expectedEnvironmentVersion)
+            {
+                throw new ConcurrencyException(Id);
+            }
+
+            ApplyChange(new EnvironmentDeleted(userId, Id, key, DateTimeOffset.UtcNow));
+            ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow));
+        }
+
         private void Apply(ProjectCreated e)
         {
             Id = e.Id;
@@ -160,6 +177,17 @@
             ScopedVersion++;
 
             _environments.Add(new Environment(e.Key, e.OccurredAt, e.UserId));
+
+            LastModified = e.OccurredAt;
+            LastModifiedBy = e.UserId;
+        }
+
+        private void Apply(EnvironmentDeleted e)
+        {
+            ScopedVersion++;
+
+            var environment = _environments.First(t => t.Key == e.Key);
+            _environments.Remove(environment);
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;
@@ -192,6 +220,12 @@
             var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.UserId));
             var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.OccurredAt, e.UserId);
             _environmentStates.Add(environmentState);
+        }
+
+        private void Apply(EnvironmentStateDeleted e)
+        {
+            var environmentState = _environmentStates.First(es => es.EnvironmentKey == e.EnvironmentKey);
+            _environmentStates.Remove(environmentState);
         }
 
         private void Apply(ToggleStateAdded e)
