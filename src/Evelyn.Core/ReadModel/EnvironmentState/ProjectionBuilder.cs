@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Domain;
+    using CQRSlite.Domain.Exception;
     using WriteModel.Project.Domain;
 
     public class ProjectionBuilder : IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto>
@@ -15,7 +16,7 @@
             _repository = repository;
         }
 
-        public async Task<EnvironmentStateDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default(CancellationToken))
+        public async Task<EnvironmentStateDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default)
         {
             try
             {
@@ -25,6 +26,10 @@
                 var environmentStateDto = new EnvironmentStateDto(environmentState.ScopedVersion, environmentState.Created, environmentState.CreatedBy, environmentState.LastModified, environmentState.LastModifiedBy, toggleStates);
 
                 return environmentStateDto;
+            }
+            catch (AggregateNotFoundException)
+            {
+                return null;
             }
             catch
             {

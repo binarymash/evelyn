@@ -38,7 +38,7 @@
         {
             this.Given(_ => GivenTheProjectDoesNotExistInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -48,7 +48,7 @@
             this.Given(_ => GivenWeHaveAProjectButItDoesntHaveOurToggle())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -66,6 +66,15 @@
                 .And(_ => ThenTheProjectIdIsSet())
                 .And(_ => ThenTheToggleKeyIsSet())
                 .And(_ => ThenTheToggleNameIsSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void SomeOtherExceptionFromEventStore()
+        {
+            this.Given(_ => GivenTheEventStoreThrowsSomeOtherException())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -119,6 +128,13 @@
             _project.LoadFromHistory(_projectEvents);
 
             _expectedToggle = _project.Toggles.First(es => es.Key == _toggleKey);
+        }
+
+        private void GivenTheEventStoreThrowsSomeOtherException()
+        {
+            SubstituteRepository
+                .Get<Project>(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Throws(DataFixture.Create<Exception>());
         }
 
         private async Task WhenWeInvokeTheProjectionBuilder()

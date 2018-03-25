@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Domain;
+    using CQRSlite.Domain.Exception;
     using WriteModel.Project.Domain;
 
     public class ProjectionBuilder : IProjectionBuilder<ProjectionBuilderRequest, ToggleDetailsDto>
@@ -15,7 +16,7 @@
             _repository = repository;
         }
 
-        public async Task<ToggleDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default(CancellationToken))
+        public async Task<ToggleDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default)
         {
             try
             {
@@ -24,6 +25,10 @@
                 var dto = new ToggleDetailsDto(request.ProjectId, toggle.ScopedVersion, toggle.Key, toggle.Name, toggle.Created, toggle.CreatedBy, toggle.LastModified, toggle.LastModifiedBy);
 
                 return dto;
+            }
+            catch (AggregateNotFoundException)
+            {
+                return null;
             }
             catch
             {

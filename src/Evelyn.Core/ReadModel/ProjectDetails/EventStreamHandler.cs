@@ -26,8 +26,18 @@
 
         protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
         {
+            var projectionKey = request.ProjectId;
+
             var dto = await ProjectionBuilder.Invoke(request, token);
-            await _db.AddOrUpdate(request.ProjectId, dto);
+
+            if (dto == null)
+            {
+                await _db.Delete(projectionKey);
+            }
+            else
+            {
+                await _db.AddOrUpdate(projectionKey, dto);
+            }
         }
     }
 }

@@ -22,9 +22,24 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void EnvironmentDeleted()
+        {
+            this.When(_ => WhenEnvironmentDeletedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<EnvironmentDetailsDto>())
+                .BDDfy();
+        }
+
         private async Task WhenEnvironmentAddedEventIsHandled()
         {
             var message = Fixture.Create<EnvironmentAdded>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
+        private async Task WhenEnvironmentDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<EnvironmentDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }
