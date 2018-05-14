@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Domain;
+    using CQRSlite.Domain.Exception;
     using WriteModel.Project.Domain;
 
     public class ProjectionBuilder : IProjectionBuilder<ProjectionBuilderRequest, ProjectDetailsDto>
@@ -15,7 +16,7 @@
             _repository = repository;
         }
 
-        public async Task<ProjectDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default(CancellationToken))
+        public async Task<ProjectDetailsDto> Invoke(ProjectionBuilderRequest request, CancellationToken token = default)
         {
             try
             {
@@ -25,6 +26,10 @@
                 var dto = new ProjectDetailsDto(project.Id, project.Name, environments, toggles, project.ScopedVersion, project.Created, project.CreatedBy, project.LastModified, project.LastModifiedBy);
 
                 return dto;
+            }
+            catch (AggregateNotFoundException)
+            {
+                return null;
             }
             catch
             {

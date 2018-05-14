@@ -35,7 +35,7 @@
         {
             this.Given(_ => GivenTheProjectDoesNotExistInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -54,6 +54,15 @@
                 .And(_ => ThenTheNameIsSet())
                 .And(_ => ThenAllTheEnvironmentsAreSet())
                 .And(_ => ThenAllTheTogglesAreSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void SomeOtherExceptionFromEventStore()
+        {
+            this.Given(_ => GivenTheEventStoreThrowsSomeOtherException())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -114,6 +123,13 @@
 
             _project = new Project();
             _project.LoadFromHistory(_projectEvents);
+        }
+
+        private void GivenTheEventStoreThrowsSomeOtherException()
+        {
+            SubstituteRepository
+                .Get<Project>(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Throws(DataFixture.Create<Exception>());
         }
 
         private async Task WhenWeInvokeTheProjectionBuilder()

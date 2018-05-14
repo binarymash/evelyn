@@ -26,6 +26,8 @@
             {
                 case ToggleAdded ta:
                     return new ProjectionBuilderRequest(ta.Id, ta.Key);
+                case ToggleDeleted td:
+                    return new ProjectionBuilderRequest(td.Id, td.Key);
                 default:
                     throw new InvalidOperationException();
             }
@@ -33,8 +35,18 @@
 
         protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
         {
+            var projectionKey = $"{request.ProjectId}-{request.ToggleKey}";
+
             var dto = await ProjectionBuilder.Invoke(request, token);
-            await _db.AddOrUpdate($"{dto.ProjectId}-{dto.Key}", dto);
+
+            if (dto == null)
+            {
+                await _db.Delete(projectionKey);
+            }
+            else
+            {
+                await _db.AddOrUpdate(projectionKey, dto);
+            }
         }
     }
 }

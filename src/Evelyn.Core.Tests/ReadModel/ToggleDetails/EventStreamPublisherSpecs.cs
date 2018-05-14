@@ -22,9 +22,24 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void ToggleDeleted()
+        {
+            this.When(_ => WhenToggleDeletedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<ToggleDetailsDto>())
+                .BDDfy();
+        }
+
         private async Task WhenToggleAddedEventIsHandled()
         {
             var message = Fixture.Create<ToggleAdded>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
+        private async Task WhenToggleDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<ToggleDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }

@@ -25,6 +25,11 @@
 
         protected Exception ThrownException { get; set; }
 
+        protected void ThenANullProjectionIsReturned()
+        {
+            Dto.Should().BeNull();
+        }
+
         protected void ThenAFailedToBuildProjectionExceptionIsThrown()
         {
             ThrownException.Should().BeOfType<FailedToBuildProjectionException>();

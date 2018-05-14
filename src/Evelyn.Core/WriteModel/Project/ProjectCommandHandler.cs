@@ -10,7 +10,8 @@
         ICommandHandler<AddEnvironment>,
         ICommandHandler<AddToggle>,
         ICommandHandler<ChangeToggleState>,
-        ICommandHandler<DeleteToggle>
+        ICommandHandler<DeleteToggle>,
+        ICommandHandler<DeleteEnvironment>
     {
         private readonly ISession _session;
 
@@ -44,6 +45,13 @@
         {
             var project = await _session.Get<Project>(message.ProjectId);
             project.DeleteToggle(message.UserId, message.Key, message.ExpectedToggleVersion);
+            await _session.Commit();
+        }
+
+        public async Task Handle(DeleteEnvironment message)
+        {
+            var project = await _session.Get<Project>(message.ProjectId);
+            project.DeleteEnvironment(message.UserId, message.Key, message.ExpectedEnvironmentVersion);
             await _session.Commit();
         }
     }

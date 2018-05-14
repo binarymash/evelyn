@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Domain;
+    using CQRSlite.Domain.Exception;
     using WriteModel.Account.Domain;
     using WriteModel.Project.Domain;
 
@@ -32,6 +33,10 @@
                 var dto = new AccountProjectsDto(account.Id, account.Version, account.Created, account.CreatedBy, account.LastModified, account.LastModifiedBy, projects);
 
                 return dto;
+            }
+            catch (AggregateNotFoundException)
+            {
+                return null;
             }
             catch
             {

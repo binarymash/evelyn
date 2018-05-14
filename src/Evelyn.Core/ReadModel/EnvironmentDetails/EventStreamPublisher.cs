@@ -6,7 +6,9 @@
     using CQRSlite.Events;
     using WriteModel.Project.Events;
 
-    public class EventStreamPublisher : ICancellableEventHandler<EnvironmentAdded>
+    public class EventStreamPublisher :
+        ICancellableEventHandler<EnvironmentAdded>,
+        ICancellableEventHandler<EnvironmentDeleted>
     {
         private readonly Queue<IEvent> _eventStream;
 
@@ -15,7 +17,13 @@
             _eventStream = eventStreamFactory.GetEventStream<EnvironmentDetailsDto>();
         }
 
-        public Task Handle(EnvironmentAdded message, CancellationToken token = default(CancellationToken))
+        public Task Handle(EnvironmentAdded message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(EnvironmentDeleted message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

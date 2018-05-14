@@ -14,11 +14,13 @@
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> _addHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment> _deleteHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> addHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment> deleteHandler)
         {
-            _handler = handler;
+            _addHandler = addHandler;
+            _deleteHandler = deleteHandler;
         }
 
         [Route("add")]
@@ -29,7 +31,31 @@
             try
             {
                 var command = new Core.WriteModel.Project.Commands.AddEnvironment(UserId, projectId, message.Key, message.ExpectedProjectVersion);
-                await _handler.Handle(command);
+                await _addHandler.Handle(command);
+                return Accepted();
+            }
+            catch (ConcurrencyException)
+            {
+                // TODO: error handling
+                var value = new Dictionary<string, string>();
+                return new BadRequestObjectResult(value);
+            }
+            catch (Exception)
+            {
+                // TODO: error handling
+                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
+            }
+        }
+
+        [Route("{environmentKey}/delete")]
+        [HttpPost]
+        public async Task<ObjectResult> Post(Guid projectId, string environmentKey, [FromBody]Messages.DeleteEnvironment message)
+        {
+            // TODO: validation
+            try
+            {
+                var command = new Core.WriteModel.Project.Commands.DeleteEnvironment(UserId, projectId, environmentKey, message.ExpectedEnvironmentVersion);
+                await _deleteHandler.Handle(command);
                 return Accepted();
             }
             catch (ConcurrencyException)

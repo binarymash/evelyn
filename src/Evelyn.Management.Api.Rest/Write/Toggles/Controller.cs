@@ -47,7 +47,7 @@
             }
         }
 
-        [Route("{toggleId}/delete")]
+        [Route("{toggleKey}/delete")]
         [HttpPost]
         public async Task<ObjectResult> Post(Guid projectId, string toggleKey, [FromBody]Messages.DeleteToggle message)
         {

@@ -21,6 +21,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddCors();
 
             services.AddEvelynApi(api =>
             {
@@ -32,7 +33,7 @@
                     ////});
                     wm.WithEventStore.UsingEventStoreDotOrg(es =>
                     {
-                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://192.168.1.64:1113");
+                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://macos:1113");
                         es.WithEventPublisher.RunningInBackgroundService(p =>
                         {
                             p.PublishEvents.SynchronouslyInProcess();
@@ -53,6 +54,11 @@
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseMvc();
 

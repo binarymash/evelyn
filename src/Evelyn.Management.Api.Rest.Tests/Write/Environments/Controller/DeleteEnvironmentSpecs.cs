@@ -14,27 +14,29 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AddEnvironmentSpecs
+    public class DeleteEnvironmentSpecs
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
+        private readonly ICommandHandler<DeleteEnvironment> _handler;
         private readonly Guid _projectId;
-        private Rest.Write.Environments.Messages.AddEnvironment _message;
+        private readonly string _environmentKey;
+        private Rest.Write.Environments.Messages.DeleteEnvironment _message;
         private ObjectResult _result;
 
-        public AddEnvironmentSpecs()
+        public DeleteEnvironmentSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
-            _controller = new Rest.Write.Environments.Controller(_handler, null);
+            _handler = Substitute.For<ICommandHandler<DeleteEnvironment>>();
+            _controller = new Rest.Write.Environments.Controller(null, _handler);
             _projectId = _fixture.Create<Guid>();
+            _environmentKey = _fixture.Create<string>();
         }
 
         [Fact]
-        public void SuccessfulAddEnvironment()
+        public void SuccessfulDeleteEnvironment()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteEnvironmentCommand())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
@@ -44,7 +46,7 @@
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteEnvironmentCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -55,7 +57,7 @@
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidAddEnvironmentCommand())
+            this.Given(_ => GivenAValidDeleteEnvironmentCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
@@ -63,39 +65,39 @@
                 .BDDfy();
         }
 
-        private void GivenAValidAddEnvironmentCommand()
+        private void GivenAValidDeleteEnvironmentCommand()
         {
-            _message = _fixture.Create<Rest.Write.Environments.Messages.AddEnvironment>();
+            _message = _fixture.Create<Rest.Write.Environments.Messages.DeleteEnvironment>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<DeleteEnvironment>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<DeleteEnvironment>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_projectId, _message);
+            _result = await _controller.Post(_projectId, _environmentKey, _message);
         }
 
         private void ThenACommandIsPassedToTheCommandHandler()
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
+                .Handle(Arg.Is<DeleteEnvironment>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
-                    command.Key == _message.Key &&
-                    command.ExpectedProjectVersion == _message.ExpectedProjectVersion));
+                    command.Key == _environmentKey &&
+                    command.ExpectedEnvironmentVersion == _message.ExpectedEnvironmentVersion));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

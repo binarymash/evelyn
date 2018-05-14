@@ -230,6 +230,8 @@
                     return c.ProjectId;
                 case ProjectCommands.AddEnvironment c:
                     return c.ProjectId;
+                case ProjectCommands.DeleteEnvironment c:
+                    return c.ProjectId;
                 case ProjectCommands.ChangeToggleState c:
                     return c.ProjectId;
 

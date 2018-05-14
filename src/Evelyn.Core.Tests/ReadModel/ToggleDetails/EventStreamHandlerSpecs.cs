@@ -22,8 +22,8 @@
         private readonly IProjectionBuilder<ProjectionBuilderRequest, ToggleDetailsDto> _projectionBuilder;
         private readonly IDatabase<string, ToggleDetailsDto> _db;
 
-        private IEvent _event1;
-        private IEvent _event2;
+        private ToggleAdded _event1;
+        private ToggleAdded _event2;
         private ToggleDetailsDto _projection1;
         private ToggleDetailsDto _projection2;
 
@@ -77,6 +77,18 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void NullProjection()
+        {
+            this.Given(_ => GivenANullProjectionWillBeBuiltForEvent1())
+                .When(_ => WhenEvent1IsAddedToTheEventStream())
+                .And(_ => WhenWeWaitAMoment())
+                .Then(_ => ThenAProjectionWasBuiltForEvent1())
+                .And(_ => ThenTheProjectionCacheIdDeletedForEvent1())
+                .And(_ => ThenEvent1IsRemovedFromTheStream())
+                .BDDfy();
+        }
+
         private void GivenNothing()
         {
         }
@@ -84,6 +96,12 @@
         private void GivenAProjectionCanBeBuiltForEvent1()
         {
             _projection1 = _fixture.Create<ToggleDetailsDto>();
+            _projectionBuilder.Invoke(Arg.Any<ProjectionBuilderRequest>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(_projection1));
+        }
+
+        private void GivenANullProjectionWillBeBuiltForEvent1()
+        {
+            _projection1 = null;
             _projectionBuilder.Invoke(Arg.Any<ProjectionBuilderRequest>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(_projection1));
         }
 
@@ -137,12 +155,17 @@
 
         private void ThenTheProjectionIsCachedForEvent1()
         {
-            _db.Received().AddOrUpdate($"{_projection1.ProjectId}-{_projection1.Key}", _projection1);
+            _db.Received().AddOrUpdate($"{_event1.Id}-{_event1.Key}", _projection1);
         }
 
         private void ThenTheProjectionIsCachedForEvent2()
         {
-            _db.Received().AddOrUpdate($"{_projection2.ProjectId}-{_projection2.Key}", _projection2);
+            _db.Received().AddOrUpdate($"{_event2.Id}-{_event2.Key}", _projection2);
+        }
+
+        private void ThenTheProjectionCacheIdDeletedForEvent1()
+        {
+            _db.Received().Delete($"{_event1.Id}-{_event1.Key}");
         }
 
         private void ThenEvent1IsRemovedFromTheStream()

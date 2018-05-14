@@ -39,8 +39,8 @@
         public void ProjectDoesntExist()
         {
             this.Given(_ => GivenTheProjectDoesNotExistInTheRepository())
-                .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -50,8 +50,8 @@
             this.Given(_ => GivenWeHaveAProjectButItDoesntHaveOurEnvironment())
                 .And(_ => GivenTheProjectIsInTheRepository())
                 .And(_ => GivenTheEnvironmentDoesNotExistInTheRepository())
-                .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -60,13 +60,22 @@
         {
             this.Given(_ => GivenWeHaveAProjectWithEnvironmentsAndToggles())
                 .And(_ => GivenTheProjectIsInTheRepository())
-                .When(_ => WhenWeInvokeTheProjectionBuilderForTheEnvironmentState())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
                 .Then(_ => ThenTheVersionIsSet())
                 .And(_ => ThenTheCreatedDateIsSet())
                 .And(_ => ThenTheCreatedByIsSet())
                 .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenAllTheToggleStatesAreSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void SomeOtherExceptionFromEventStore()
+        {
+            this.Given(_ => GivenTheEventStoreThrowsSomeOtherException())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -168,15 +177,18 @@
             _environmentKey = DataFixture.Create<string>();
         }
 
-        private async Task WhenWeInvokeTheProjectionBuilderForTheEnvironmentState()
+        private void GivenTheEventStoreThrowsSomeOtherException()
         {
-            await WhenWeInvokeTheProjectionBuilderFor(new ProjectionBuilderRequest(_projectId, _environmentKey));
+            SubstituteRepository
+                .Get<Project>(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Throws(DataFixture.Create<Exception>());
         }
 
-        private async Task WhenWeInvokeTheProjectionBuilderFor(ProjectionBuilderRequest request)
+        private async Task WhenWeInvokeTheProjectionBuilder()
         {
             try
             {
+                var request = new ProjectionBuilderRequest(_projectId, _environmentKey);
                 Dto = await Builder.Invoke(request);
             }
             catch (Exception ex)

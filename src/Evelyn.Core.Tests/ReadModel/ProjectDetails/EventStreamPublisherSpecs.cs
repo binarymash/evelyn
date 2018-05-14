@@ -31,9 +31,25 @@
         }
 
         [Fact]
+        public void EnvironmentDeleted()
+        {
+            this.When(_ => WhenEnvironmentDeletedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<ProjectDetailsDto>())
+                .BDDfy();
+        }
+
+        [Fact]
         public void ToggleAdded()
         {
             this.When(_ => WhenToggleAddedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<ProjectDetailsDto>())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ToggleDeleted()
+        {
+            this.When(_ => WhenToggleDeletedEventIsHandled())
                 .Then(_ => ThenTheEventIsAddedToTheStreamFor<ProjectDetailsDto>())
                 .BDDfy();
         }
@@ -52,9 +68,23 @@
             Message = message;
         }
 
+        private async Task WhenEnvironmentDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<EnvironmentDeleted>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
         private async Task WhenToggleAddedEventIsHandled()
         {
             var message = Fixture.Create<ToggleAdded>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
+        private async Task WhenToggleDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<ToggleDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }

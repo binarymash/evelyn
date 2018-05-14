@@ -17,7 +17,7 @@
             _eventStream = eventStreamFactory.GetEventStream<AccountProjectsDto>();
         }
 
-        public Task Handle(AccountEvents.AccountRegistered message, CancellationToken token = default(CancellationToken))
+        public Task Handle(AccountEvents.AccountRegistered message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
