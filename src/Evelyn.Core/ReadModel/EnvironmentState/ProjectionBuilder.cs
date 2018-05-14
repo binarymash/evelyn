@@ -22,7 +22,7 @@
             {
                 var project = await _repository.Get<Project>(request.ProjectId, token);
                 var environmentState = project.EnvironmentStates.First(es => es.EnvironmentKey == request.EnvironmentKey);
-                var toggleStates = environmentState.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value));
+                var toggleStates = environmentState.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, ts.ScopedVersion));
                 var environmentStateDto = new EnvironmentStateDto(environmentState.ScopedVersion, environmentState.Created, environmentState.CreatedBy, environmentState.LastModified, environmentState.LastModifiedBy, toggleStates);
 
                 return environmentStateDto;
