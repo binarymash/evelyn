@@ -21,7 +21,12 @@
             try
             {
                 var project = await _repository.Get<Project>(request.ProjectId, token);
-                var environment = project.Environments.First(e => e.Key == request.EnvironmentKey);
+                var environment = project.Environments.FirstOrDefault(e => e.Key == request.EnvironmentKey);
+                if (environment == null)
+                {
+                    return null;
+                }
+
                 var dto = new EnvironmentDetailsDto(project.Id, environment.ScopedVersion, environment.Key, environment.Created, environment.CreatedBy, environment.LastModified, environment.LastModifiedBy);
 
                 return dto;

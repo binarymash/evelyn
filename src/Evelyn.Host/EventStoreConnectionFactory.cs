@@ -15,6 +15,7 @@
             _connectionSettings = ConnectionSettings.Create()
                 .EnableVerboseLogging()
                 .UseConsoleLogger()
+                .KeepReconnecting()
                 .Build();
             _uri = new Uri(uri);
             _connectionName = connectionName;
