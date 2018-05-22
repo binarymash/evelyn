@@ -27,6 +27,7 @@
 
         private Action<EventStoreCatchUpSubscription, SubscriptionDropReason, Exception> OnSubscriptionDropped => (s, r, e) =>
         {
+            System.Diagnostics.Trace.WriteLine($"Subscription dropped. Subscription: {s.StreamId}; Reason:{r}; Exception: {e}");
         };
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
