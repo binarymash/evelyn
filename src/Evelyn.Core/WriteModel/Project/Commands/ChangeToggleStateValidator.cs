@@ -24,7 +24,13 @@
 
             RuleFor(command => command.Value)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.KeyNotSet);
+                .WithErrorCode(ValidationErrorCodes.ValueNotSet);
+
+            RuleFor(command => command.Value)
+                .Must(a => a == bool.TrueString || a == bool.FalseString)
+                .WithErrorCode(ValidationErrorCodes.ValueHasIncorrectFormat)
+                .WithMessage("'{PropertyName}' is not in the correct format.");
+
         }
     }
 }

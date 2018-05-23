@@ -24,7 +24,7 @@
 
             RuleFor(command => command.Key)
                 .Matches(@"^[a-z0-9_-]*$")
-                .WithErrorCode(ValidationErrorCodes.KeyHasInvalidCharacters);
+                .WithErrorCode(ValidationErrorCodes.KeyHasIncorrectFormat);
         }
     }
 }

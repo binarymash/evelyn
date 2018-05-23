@@ -114,7 +114,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyHasInvalidCharacters &&
+                error.ErrorCode == ValidationErrorCodes.KeyHasIncorrectFormat &&
                 error.ErrorMessage == "'Key' is not in the correct format.");
         }
 
