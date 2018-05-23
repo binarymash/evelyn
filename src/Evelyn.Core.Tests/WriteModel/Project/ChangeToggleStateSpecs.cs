@@ -23,7 +23,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         public void EnvironmentDoesntExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
-                .When(_ => WhenWeChangeTheValueOfAToggleThatDoesntExist())
+                .When(_ => WhenWeChangeTheValueOfAToggleOnAnEnvironmentThatDoesntExist())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAnEnvironmentDoesNotExistExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
@@ -61,6 +61,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenWeHaveChangedTheToggleState())
                 .And(_ => GivenTheToggleStateVersionForOurNextCommandIsStale())
                 .When(_ => WhenWeChangeTheToggleState())
                 .Then(_ => ThenNoEventIsPublished())
@@ -119,7 +120,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
 
         private void GivenWeHaveCreatedAnEnvironment()
         {
-            _environmentKey = DataFixture.Create<string>();
+            _environmentKey = TestUtilities.CreateKey(30);
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environmentKey);
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environmentKey);
@@ -137,6 +138,15 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleStateVersion++;
         }
 
+        private void GivenWeHaveChangedTheToggleState()
+        {
+            UserId = DataFixture.Create<string>();
+            _newToggleValue = DataFixture.Create<bool>().ToString();
+
+            HistoricalEvents.Add(new ToggleStateChanged(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            _toggleStateVersion++;
+        }
+
         private void GivenTheToggleStateVersionForOurNextCommandIsStale()
         {
             _toggleStateVersion--;
@@ -147,11 +157,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project
             _toggleStateVersion++;
         }
 
+        private void WhenWeChangeTheValueOfAToggleOnAnEnvironmentThatDoesntExist()
+        {
+            UserId = DataFixture.Create<string>();
+            _environmentKey = TestUtilities.CreateKey(30);
+            _toggleKey = TestUtilities.CreateKey(30);
+            _newToggleValue = DataFixture.Create<bool>().ToString();
+            _toggleStateVersion = 0;
+
+            var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, _toggleStateVersion);
+            WhenWeHandle(command);
+        }
+
         private void WhenWeChangeTheValueOfAToggleThatDoesntExist()
         {
             UserId = DataFixture.Create<string>();
-            _toggleKey = DataFixture.Create<string>();
+            _toggleKey = TestUtilities.CreateKey(30);
             _newToggleValue = DataFixture.Create<bool>().ToString();
+            _toggleStateVersion = 0;
 
             var command = new ChangeToggleState(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, _toggleStateVersion);
             WhenWeHandle(command);

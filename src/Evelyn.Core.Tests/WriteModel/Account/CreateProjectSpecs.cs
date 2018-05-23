@@ -36,6 +36,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account
         public void StaleAccountVersion()
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveAlreadyCreatedAProject())
                 .And(_ => GivenTheAccountVersionForOurNextCommandIsStale())
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
                 .Then(_ => ThenAConcurrencyExceptionIsThrown())

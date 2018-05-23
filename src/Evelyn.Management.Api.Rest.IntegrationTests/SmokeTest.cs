@@ -102,8 +102,10 @@
 
         private async Task WhenWeAddAnEnvironment()
         {
-            _addEnvironmentMessage = DataFixture.Create<AddEnvironment>();
-            _addEnvironmentMessage.ExpectedProjectVersion = 0;
+            _addEnvironmentMessage = DataFixture.Build<AddEnvironment>()
+                .With(e => e.Key, TestUtilities.CreateKey(30))
+                .With(e => e.ExpectedProjectVersion, 0)
+                .Create();
 
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments/add")
@@ -114,8 +116,10 @@
 
         private async Task WhenWeAddAToggle()
         {
-            _addToggleMessage = DataFixture.Create<AddToggle>();
-            _addToggleMessage.ExpectedProjectVersion = 1;
+            _addToggleMessage = DataFixture.Build<AddToggle>()
+                .With(e => e.Key, TestUtilities.CreateKey(30))
+                .With(e => e.ExpectedProjectVersion, 1)
+                .Create();
 
             _response = await Client
                 .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/add")

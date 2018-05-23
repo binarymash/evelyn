@@ -52,6 +52,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         public void StaleProjectVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenNoEventIsPublished())

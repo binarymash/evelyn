@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,10 @@
                 var command = new Core.WriteModel.Account.Commands.CreateProject(UserId, AccountId, message.ProjectId, message.Name);
                 await _handler.Handle(command);
                 return Accepted();
+            }
+            catch (ValidationException ex)
+            {
+                return new BadRequestObjectResult(ex);
             }
             catch (ConcurrencyException ex)
             {
