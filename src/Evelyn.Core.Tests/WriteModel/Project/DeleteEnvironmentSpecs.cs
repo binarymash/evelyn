@@ -40,21 +40,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         }
 
         [Fact]
-        public void StaleToggleVersion()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAnotherEnvironment())
-                .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
-                .And(_ => GivenTheEnvironmentVersionForOurNextCommandIsStale())
-                .When(_ => WhenWeDeleteTheEnvironment())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
         public void FutureProjectVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())

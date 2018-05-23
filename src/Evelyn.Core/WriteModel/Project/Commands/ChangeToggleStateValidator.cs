@@ -30,7 +30,6 @@
                 .Must(a => a == bool.TrueString || a == bool.FalseString)
                 .WithErrorCode(ValidationErrorCodes.ValueHasIncorrectFormat)
                 .WithMessage("'{PropertyName}' is not in the correct format.");
-
         }
     }
 }

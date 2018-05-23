@@ -221,6 +221,5 @@
                 error.ErrorCode == ValidationErrorCodes.NameTooLong &&
                 error.ErrorMessage == "The length of 'Name' must be 128 characters or fewer. You entered 129 characters.");
         }
-
     }
 }

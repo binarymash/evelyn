@@ -44,21 +44,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         }
 
         [Fact]
-        public void StaleToggleVersion()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenWeHaveAddedAnotherToggle())
-                .And(_ => GivenWeWillBeDeletingTheFirstToggle())
-                .And(_ => GivenTheToggleVersionForOurNextCommandIsStale())
-                .When(_ => WhenWeDeleteTheToggle())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
         public void FutureProjectVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())

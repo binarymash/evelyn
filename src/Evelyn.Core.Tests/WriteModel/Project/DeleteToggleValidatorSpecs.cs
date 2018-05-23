@@ -9,21 +9,21 @@
     using FluentValidation.TestHelper;
     using Xunit;
 
-    public class DeleteEnvironmentValidatorSpecs
+    public class DeleteToggleValidatorSpecs
     {
         private readonly Fixture _fixture;
-        private readonly DeleteEnvironmentValidator _validator;
+        private readonly DeleteToggleValidator _validator;
 
-        public DeleteEnvironmentValidatorSpecs()
+        public DeleteToggleValidatorSpecs()
         {
             _fixture = new Fixture();
-            _validator = new DeleteEnvironmentValidator();
+            _validator = new DeleteToggleValidator();
         }
 
         [Fact]
         public void ProjectIdWhenNominalGuidIsValid()
         {
-            var command = _fixture.Create<DeleteEnvironment>();
+            var command = _fixture.Create<DeleteToggle>();
 
             _validator.ShouldNotHaveValidationErrorFor(c => c.ProjectId, command);
         }
@@ -32,7 +32,7 @@
         public void ProjectIdWhenEmptyGuidIsInvalid()
         {
             var projectId = Guid.Empty;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.ProjectId, projectId).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.ProjectId, projectId).Create();
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
@@ -44,7 +44,7 @@
         public void KeyWhenNominalIsValid()
         {
             var key = TestUtilities.CreateKey(30);
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.Key, key).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.Key, key).Create();
 
             _validator.ShouldNotHaveValidationErrorFor(c => c.Key, command);
         }
@@ -53,7 +53,7 @@
         public void KeyWhenNullIsInvalid()
         {
             var key = (string)null;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.Key, key).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.Key, key).Create();
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
@@ -65,7 +65,7 @@
         public void KeyWhenEmptyIsInvalid()
         {
             var key = string.Empty;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.Key, key).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.Key, key).Create();
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
@@ -77,7 +77,7 @@
         public void KeyWhenWhitespaceIsInvalid()
         {
             var key = "   ";
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.Key, key).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.Key, key).Create();
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
@@ -86,42 +86,42 @@
         }
 
         [Fact]
-        public void ExpectedEnvironmentVersionWhenNullIsValid()
+        public void ExpectedToggleVersionWhenNullIsValid()
         {
-            var expectedVersion = (int?)null;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.ExpectedEnvironmentVersion, expectedVersion).Create();
+            var expectedVersopm = (int?)null;
+            var command = _fixture.Build<DeleteToggle>().With(c => c.ExpectedToggleVersion, expectedVersopm).Create();
 
-            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedEnvironmentVersion, command);
+            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedToggleVersion, command);
         }
 
         [Fact]
-        public void ExpectedEnvironmentVersionWhenPositiveIsValid()
+        public void ExpectedToggleVersionWhenPositiveIsValid()
         {
             var expectedVersion = _fixture.Create<int>();
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.ExpectedEnvironmentVersion, expectedVersion).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.ExpectedToggleVersion, expectedVersion).Create();
 
-            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedEnvironmentVersion, command);
+            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedToggleVersion, command);
         }
 
         [Fact]
-        public void ExpectedEnvironmentVersionWhenMaxIntIsValid()
+        public void ExpectedToggleVersionWhenMaxIntIsValid()
         {
             var expectedVersion = int.MaxValue;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.ExpectedEnvironmentVersion, expectedVersion).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.ExpectedToggleVersion, expectedVersion).Create();
 
-            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedEnvironmentVersion, command);
+            _validator.ShouldNotHaveValidationErrorFor(c => c.ExpectedToggleVersion, command);
         }
 
         [Fact]
-        public void ExpectedEnvironmentVersionWhenNegativeIsInvalid()
+        public void ExpectedToggleVersionWhenNegativeIsInvalid()
         {
             var expectedVersion = _fixture.Create<int>() * -1;
-            var command = _fixture.Build<DeleteEnvironment>().With(c => c.ExpectedEnvironmentVersion, expectedVersion).Create();
+            var command = _fixture.Build<DeleteToggle>().With(c => c.ExpectedToggleVersion, expectedVersion).Create();
 
-            var errors = _validator.ShouldHaveValidationErrorFor(c => c.ExpectedEnvironmentVersion, command).ToList();
+            var errors = _validator.ShouldHaveValidationErrorFor(c => c.ExpectedToggleVersion, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.ExpectedEnvironmentVersionInvalid &&
-                error.ErrorMessage == "'Expected Environment Version' must be greater than or equal to '0'.");
+                error.ErrorCode == ValidationErrorCodes.ExpectedToggleVersionInvalid &&
+                error.ErrorMessage == "'Expected Toggle Version' must be greater than or equal to '0'.");
         }
     }
 }
