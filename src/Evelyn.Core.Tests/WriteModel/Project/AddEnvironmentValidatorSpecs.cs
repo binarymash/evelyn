@@ -37,7 +37,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -49,7 +49,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -61,7 +61,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -82,7 +82,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyTooLong &&
+                error.ErrorCode == ErrorCodes.PropertyTooLong &&
                 error.ErrorMessage == "The length of 'Key' must be 128 characters or fewer. You entered 129 characters.");
         }
 
@@ -94,7 +94,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyHasIncorrectFormat &&
+                error.ErrorCode == ErrorCodes.PropertyIncorrectFormat &&
                 error.ErrorMessage == "'Key' is not in the correct format.");
         }
 
@@ -133,7 +133,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ExpectedProjectVersion, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.ExpectedProjectVersionInvalid &&
+                error.ErrorCode == ErrorCodes.PropertyOutOfRange &&
                 error.ErrorMessage == "'Expected Project Version' must be greater than or equal to '0'.");
         }
 
@@ -153,7 +153,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.ProjectIdNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Project Id' should not be empty.");
         }
     }

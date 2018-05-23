@@ -8,27 +8,27 @@
         {
             RuleFor(command => command.ProjectId)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.ProjectIdNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.ExpectedToggleStateVersion)
                 .GreaterThanOrEqualTo(0)
-                .WithErrorCode(ValidationErrorCodes.ExpectedToggleStateVersionInvalid);
+                .WithErrorCode(ErrorCodes.PropertyOutOfRange);
 
             RuleFor(command => command.ToggleKey)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.KeyNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.EnvironmentKey)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.KeyNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Value)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.ValueNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Value)
                 .Must(a => a == bool.TrueString || a == bool.FalseString)
-                .WithErrorCode(ValidationErrorCodes.ValueHasIncorrectFormat)
+                .WithErrorCode(ErrorCodes.PropertyIncorrectFormat)
                 .WithMessage("'{PropertyName}' is not in the correct format.");
         }
     }

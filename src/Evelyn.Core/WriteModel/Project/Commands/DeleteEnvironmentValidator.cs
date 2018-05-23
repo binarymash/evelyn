@@ -8,15 +8,15 @@
         {
             RuleFor(command => command.ExpectedEnvironmentVersion)
                 .GreaterThanOrEqualTo(0)
-                .WithErrorCode(ValidationErrorCodes.ExpectedEnvironmentVersionInvalid);
+                .WithErrorCode(ErrorCodes.PropertyOutOfRange);
 
             RuleFor(command => command.ProjectId)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.ProjectIdNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Key)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.KeyNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
         }
     }
 }

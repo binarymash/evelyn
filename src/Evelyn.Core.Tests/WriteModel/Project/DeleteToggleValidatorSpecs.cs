@@ -36,7 +36,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.ProjectIdNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Project Id' should not be empty.");
         }
 
@@ -57,7 +57,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -69,7 +69,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -81,7 +81,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.KeyNotSet &&
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Key' should not be empty.");
         }
 
@@ -120,7 +120,7 @@
 
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ExpectedToggleVersion, command).ToList();
             errors.Should().Contain(error =>
-                error.ErrorCode == ValidationErrorCodes.ExpectedToggleVersionInvalid &&
+                error.ErrorCode == ErrorCodes.PropertyOutOfRange &&
                 error.ErrorMessage == "'Expected Toggle Version' must be greater than or equal to '0'.");
         }
     }

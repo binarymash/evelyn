@@ -8,23 +8,23 @@
         {
             RuleFor(command => command.ExpectedProjectVersion)
                 .GreaterThanOrEqualTo(0)
-                .WithErrorCode(ValidationErrorCodes.ExpectedProjectVersionInvalid);
+                .WithErrorCode(ErrorCodes.PropertyOutOfRange);
 
             RuleFor(command => command.ProjectId)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.ProjectIdNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Key)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.KeyNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Key)
                 .MaximumLength(128)
-                .WithErrorCode(ValidationErrorCodes.KeyTooLong);
+                .WithErrorCode(ErrorCodes.PropertyTooLong);
 
             RuleFor(command => command.Key)
                 .Matches(@"^[a-z0-9_-]*$")
-                .WithErrorCode(ValidationErrorCodes.KeyHasIncorrectFormat);
+                .WithErrorCode(ErrorCodes.PropertyIncorrectFormat);
         }
     }
 }

@@ -9,19 +9,19 @@
             RuleFor(command => command.ExpectedVersion)
                 .GreaterThanOrEqualTo(0)
                 .When(command => command.ExpectedVersion != null)
-                .WithErrorCode(ValidationErrorCodes.ExpectedVersionInvalid);
+                .WithErrorCode(ErrorCodes.PropertyOutOfRange);
 
             RuleFor(command => command.Name)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.NameNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
 
             RuleFor(command => command.Name)
                 .MaximumLength(128)
-                .WithErrorCode(ValidationErrorCodes.NameTooLong);
+                .WithErrorCode(ErrorCodes.PropertyTooLong);
 
             RuleFor(command => command.ProjectId)
                 .NotEmpty()
-                .WithErrorCode(ValidationErrorCodes.ProjectIdNotSet);
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
         }
     }
 }
