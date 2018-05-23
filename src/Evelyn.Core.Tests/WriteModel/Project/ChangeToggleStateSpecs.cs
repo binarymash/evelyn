@@ -43,19 +43,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project
         }
 
         [Fact]
-        public void InvalidToggleState()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveCreatedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAToggle())
-                .When(_ => WhenWeChangeTheToggleStateToAnInvalidValue())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAnInvalidToggleStateExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
         public void StaleToggleStateVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())

@@ -13,6 +13,7 @@
         public const string ExpectedVersionInvalid = "ExpectedVersionInvalid";
         public const string ExpectedProjectVersionInvalid = "ExpectedProjectVersionInvalid";
         public const string ExpectedToggleStateVersionInvalid = "ExpectedToggleStateVersionInvalid";
+        public const string ExpectedEnvironmentVersionInvalid = "ExpectedEnvironmentVersionInvalid";
 
         public const string KeyHasIncorrectFormat = "KeyHasIncorrectFormat";
         public const string ValueHasIncorrectFormat = "ValueHasIncorrectFormat";
