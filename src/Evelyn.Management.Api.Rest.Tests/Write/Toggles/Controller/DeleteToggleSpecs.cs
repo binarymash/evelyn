@@ -6,7 +6,7 @@
     using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Project.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands.DeleteToggle;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Toggles.Controller _controller;
-        private readonly ICommandHandler<DeleteToggle> _handler;
+        private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
         private readonly string _toggleKey;
         private Rest.Write.Toggles.Messages.DeleteToggle _message;
@@ -27,7 +27,7 @@
         public DeleteToggleSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<DeleteToggle>>();
+            _handler = Substitute.For<ICommandHandler<Command>>();
             _controller = new Rest.Write.Toggles.Controller(null, _handler);
             _projectId = _fixture.Create<Guid>();
             _toggleKey = _fixture.Create<string>();
@@ -50,7 +50,7 @@
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
-                .And(_ => ThenA400BadRequestStatusIsReturned())
+                .And(_ => ThenA409ConflictStatusIsReturned())
                 .BDDfy();
         }
 
@@ -73,14 +73,14 @@
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<DeleteToggle>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<DeleteToggle>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -93,7 +93,7 @@
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<DeleteToggle>(command =>
+                .Handle(Arg.Is<Command>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
                     command.Key == _toggleKey &&
@@ -108,6 +108,11 @@
         private void ThenA400BadRequestStatusIsReturned()
         {
             _result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        private void ThenA409ConflictStatusIsReturned()
+        {
+            _result.StatusCode.Should().Be(StatusCodes.Status409Conflict);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()

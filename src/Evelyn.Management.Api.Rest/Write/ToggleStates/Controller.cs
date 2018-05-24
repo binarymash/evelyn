@@ -1,22 +1,25 @@
 ﻿namespace Evelyn.Management.Api.Rest.Write.ToggleStates
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using FluentValidation;
+    using Messages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Responses;
 
     [Route("api/projects/{projectId}/environments/{environmentKey}/toggles/{toggleKey}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(Response<ValidationError>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> handler)
         {
             _handler = handler;
         }
@@ -25,22 +28,23 @@
         [HttpPost]
         public async Task<ObjectResult> Post(Guid projectId, string environmentKey, string toggleKey, [FromBody]Messages.ChangeToggleState message)
         {
-            // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Project.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedToggleStateVersion);
+                var command = new Core.WriteModel.Project.Commands.ChangeToggleState.Command(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedToggleStateVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
             catch (ConcurrencyException ex)
             {
-                // TODO: error handling
-                return new BadRequestObjectResult(ex.Message);
+                return HandleConcurrencyException(ex);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // TODO: error handling
-                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
+                return HandleInternalError(ex);
             }
         }
     }

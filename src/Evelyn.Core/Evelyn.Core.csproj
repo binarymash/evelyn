@@ -19,6 +19,7 @@
   
   <ItemGroup>
     <PackageReference Include="CqrsLite" Version="0.21.0" />
+    <PackageReference Include="FluentValidation" Version="7.5.2" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

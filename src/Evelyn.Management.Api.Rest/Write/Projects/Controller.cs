@@ -5,18 +5,21 @@
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Responses;
 
     [Route("api/projects")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(Response<ValidationError>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Account.Commands.CreateProject> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Account.Commands.CreateProject> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> handler)
         {
             _handler = handler;
         }
@@ -25,22 +28,23 @@
         [HttpPost]
         public async Task<ObjectResult> Post([FromBody]Messages.CreateProject message)
         {
-            // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Account.Commands.CreateProject(UserId, AccountId, message.ProjectId, message.Name);
+                var command = new Core.WriteModel.Account.Commands.CreateProject.Command(UserId, AccountId, message.ProjectId, message.Name);
                 await _handler.Handle(command);
                 return Accepted();
             }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
             catch (ConcurrencyException ex)
             {
-                // TODO: error handling
-                return new BadRequestObjectResult(ex.Message);
+                return HandleConcurrencyException(ex);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // TODO: error handling
-                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
+                return HandleInternalError(ex);
             }
         }
     }
