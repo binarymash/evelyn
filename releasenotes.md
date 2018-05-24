@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 0.8.0 (2018-05-24)
+
+ - [#104](https://github.com/binarymash/evelyn/pull/104) - [#103](https://github.com/binarymash/evelyn/issues/103) - Feature/#103 update packages contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#99](https://github.com/binarymash/evelyn/pull/99) - [#96](https://github.com/binarymash/evelyn/issues/96) - Feature/#96 command validation contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#98](https://github.com/binarymash/evelyn/pull/98) - [#97](https://github.com/binarymash/evelyn/issues/97) - Always reconnect dropped connections. Handle missing aggregate depend… contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#95](https://github.com/binarymash/evelyn/pull/95) - [#67](https://github.com/binarymash/evelyn/issues/67) - Feature/#67 delete environment contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#94](https://github.com/binarymash/evelyn/pull/94) - [#90](https://github.com/binarymash/evelyn/issues/90) - Feature/#90 delete toggle contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#88](https://github.com/binarymash/evelyn/pull/88) - [#87](https://github.com/binarymash/evelyn/issues/87) - Feature/#87 create dot net client contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 08c9d79f57...172b8bc926
+
 ## Version 0.7.0 (2018-03-22)
 
 
