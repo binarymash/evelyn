@@ -22,15 +22,16 @@
             return new BadRequestObjectResult(response);
         }
 
-        protected BadRequestObjectResult HandleConcurrencyException(ConcurrencyException ex)
+        protected ObjectResult HandleConcurrencyException(ConcurrencyException ex)
         {
-            var response = new Response<Error>(new[] { new Error(ErrorCodes.ConcurrencyError, ex.Message) });
-            return new BadRequestObjectResult(response);
+            var response = new Response<Error>(new[] { new Error(ErrorCodes.ConcurrencyError, "The current version of the aggregate did not match the expected version.") });
+            return new ObjectResult(response) { StatusCode = StatusCodes.Status409Conflict };
         }
 
         protected ObjectResult HandleInternalError(Exception ex)
         {
-            return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
+            var response = new Response<Error>(new [] { new Error(ErrorCodes.SystemError, "An error occurred on the server") });
+            return new ObjectResult(response) { StatusCode = StatusCodes.Status500InternalServerError };
         }
     }
 }

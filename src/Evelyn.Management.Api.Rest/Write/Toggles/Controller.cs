@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Management.Api.Rest.Write.Toggles
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
