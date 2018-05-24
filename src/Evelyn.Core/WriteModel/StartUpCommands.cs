@@ -9,12 +9,12 @@
 
     public class StartUpCommands : IStartUpCommands
     {
-        private readonly ICommandHandler<CreateSystem> _createSystemHandler;
-        private readonly ICommandHandler<StartSystem> _startSystemHandler;
+        private readonly ICommandHandler<Evelyn.Commands.CreateSystem.Command> _createSystemHandler;
+        private readonly ICommandHandler<Evelyn.Commands.StartSystem.Command> _startSystemHandler;
 
         public StartUpCommands(
-            ICommandHandler<CreateSystem> createSystemHandler,
-            ICommandHandler<StartSystem> startSystemHandler)
+            ICommandHandler<Evelyn.Commands.CreateSystem.Command> createSystemHandler,
+            ICommandHandler<Evelyn.Commands.StartSystem.Command> startSystemHandler)
         {
             _createSystemHandler = createSystemHandler;
             _startSystemHandler = startSystemHandler;
@@ -22,8 +22,8 @@
 
         public async Task Execute()
         {
-            await _createSystemHandler.Handle(new CreateSystem(Constants.SystemUser, Constants.EvelynSystem));
-            await _startSystemHandler.Handle(new StartSystem(Constants.SystemUser, Constants.EvelynSystem));
+            await _createSystemHandler.Handle(new Evelyn.Commands.CreateSystem.Command(Constants.SystemUser, Constants.EvelynSystem));
+            await _startSystemHandler.Handle(new Evelyn.Commands.StartSystem.Command(Constants.SystemUser, Constants.EvelynSystem));
         }
     }
 }

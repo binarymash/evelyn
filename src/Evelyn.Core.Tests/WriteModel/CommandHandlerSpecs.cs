@@ -214,25 +214,25 @@
         {
             switch (command)
             {
-                case AccountCommands.CreateProject c:
+                case AccountCommands.CreateProject.Command c:
                     return c.Id;
 
-                case EvelynCommands.CreateSystem c:
+                case EvelynCommands.CreateSystem.Command c:
                     return Constants.EvelynSystem;
-                case EvelynCommands.RegisterAccount c:
+                case EvelynCommands.RegisterAccount.Command c:
                     return Constants.EvelynSystem;
-                case EvelynCommands.StartSystem c:
+                case EvelynCommands.StartSystem.Command c:
                     return Constants.EvelynSystem;
 
-                case ProjectCommands.AddToggle c:
+                case ProjectCommands.AddToggle.Command c:
                     return c.ProjectId;
-                case ProjectCommands.DeleteToggle c:
+                case ProjectCommands.DeleteToggle.Command c:
                     return c.ProjectId;
-                case ProjectCommands.AddEnvironment c:
+                case ProjectCommands.AddEnvironment.Command c:
                     return c.ProjectId;
-                case ProjectCommands.DeleteEnvironment c:
+                case ProjectCommands.DeleteEnvironment.Command c:
                     return c.ProjectId;
-                case ProjectCommands.ChangeToggleState c:
+                case ProjectCommands.ChangeToggleState.Command c:
                     return c.ProjectId;
 
                 default:

@@ -5,6 +5,7 @@
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
     using FluentValidation;
+    using Messages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Responses;
@@ -16,9 +17,9 @@
     [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> handler)
         {
             _handler = handler;
         }
@@ -29,7 +30,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.ChangeToggleState(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedToggleStateVersion);
+                var command = new Core.WriteModel.Project.Commands.ChangeToggleState.Command(UserId, projectId, environmentKey, toggleKey, message.State, message.ExpectedToggleStateVersion);
                 await _handler.Handle(command);
                 return Accepted();
             }

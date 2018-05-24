@@ -4,9 +4,9 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
+    using Core.WriteModel.Project.Commands.AddEnvironment;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Project.Commands;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Environments.Controller _controller;
-        private readonly ICommandHandler<AddEnvironment> _handler;
+        private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
         private Rest.Write.Environments.Messages.AddEnvironment _message;
         private ObjectResult _result;
@@ -26,7 +26,7 @@
         public AddEnvironmentSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddEnvironment>>();
+            _handler = Substitute.For<ICommandHandler<Command>>();
             _controller = new Rest.Write.Environments.Controller(_handler, null);
             _projectId = _fixture.Create<Guid>();
         }
@@ -48,7 +48,7 @@
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
-                .And(_ => ThenA400BadRequestStatusIsReturned())
+                .And(_ => ThenA409ConflictStatusIsReturned())
                 .BDDfy();
         }
 
@@ -71,14 +71,14 @@
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<AddEnvironment>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -91,7 +91,7 @@
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<AddEnvironment>(command =>
+                .Handle(Arg.Is<Command>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
                     command.Key == _message.Key &&
@@ -106,6 +106,11 @@
         private void ThenA400BadRequestStatusIsReturned()
         {
             _result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        private void ThenA409ConflictStatusIsReturned()
+        {
+            _result.StatusCode.Should().Be(StatusCodes.Status409Conflict);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()

@@ -3,31 +3,34 @@
     using System.Threading.Tasks;
     using Account.Commands;
     using Commands;
+    using Commands.CreateSystem;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
     using Domain;
     using FluentValidation;
+    using Command = global::Evelyn.Core.WriteModel.Evelyn.Commands.RegisterAccount.Command;
+    using Validator = global::Evelyn.Core.WriteModel.Evelyn.Commands.RegisterAccount.Validator;
 
     public class EvelynCommandHandler :
-        ICommandHandler<CreateSystem>,
-        ICommandHandler<StartSystem>,
-        ICommandHandler<RegisterAccount>
+        ICommandHandler<Commands.CreateSystem.Command>,
+        ICommandHandler<global::Evelyn.Core.WriteModel.Evelyn.Commands.StartSystem.Command>,
+        ICommandHandler<Command>
     {
         private readonly ISession _session;
-        private readonly AbstractValidator<CreateSystem> _createSystemValidator;
-        private readonly AbstractValidator<StartSystem> _startSystemValidator;
-        private readonly AbstractValidator<RegisterAccount> _registerAccountValidator;
+        private readonly AbstractValidator<Commands.CreateSystem.Command> _createSystemValidator;
+        private readonly AbstractValidator<global::Evelyn.Core.WriteModel.Evelyn.Commands.StartSystem.Command> _startSystemValidator;
+        private readonly AbstractValidator<Command> _registerAccountValidator;
 
         public EvelynCommandHandler(ISession session)
         {
             _session = session;
-            _createSystemValidator = new CreateSystemValidator();
-            _startSystemValidator = new StartSystemValidator();
-            _registerAccountValidator = new RegisterAccountValidator();
+            _createSystemValidator = new Commands.CreateSystem.Validator();
+            _startSystemValidator = new global::Evelyn.Core.WriteModel.Evelyn.Commands.StartSystem.Validator();
+            _registerAccountValidator = new Validator();
         }
 
-        public async Task Handle(CreateSystem message)
+        public async Task Handle(Commands.CreateSystem.Command message)
         {
             await _createSystemValidator.ValidateAndThrowAsync(message);
 
@@ -48,7 +51,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(StartSystem message)
+        public async Task Handle(global::Evelyn.Core.WriteModel.Evelyn.Commands.StartSystem.Command message)
         {
             await _startSystemValidator.ValidateAndThrowAsync(message);
 
@@ -57,7 +60,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(RegisterAccount message)
+        public async Task Handle(Command message)
         {
             await _registerAccountValidator.ValidateAndThrowAsync(message);
 

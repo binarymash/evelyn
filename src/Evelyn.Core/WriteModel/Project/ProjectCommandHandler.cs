@@ -1,37 +1,36 @@
 ﻿namespace Evelyn.Core.WriteModel.Project
 {
     using System.Threading.Tasks;
-    using Commands;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using Domain;
     using FluentValidation;
 
     public class ProjectCommandHandler :
-        ICommandHandler<AddEnvironment>,
-        ICommandHandler<AddToggle>,
-        ICommandHandler<ChangeToggleState>,
-        ICommandHandler<DeleteToggle>,
-        ICommandHandler<DeleteEnvironment>
+        ICommandHandler<Commands.AddEnvironment.Command>,
+        ICommandHandler<Commands.AddToggle.Command>,
+        ICommandHandler<Commands.ChangeToggleState.Command>,
+        ICommandHandler<Commands.DeleteToggle.Command>,
+        ICommandHandler<Commands.DeleteEnvironment.Command>
     {
         private readonly ISession _session;
-        private readonly AbstractValidator<AddEnvironment> _addEnvironmentValidator;
-        private readonly AbstractValidator<AddToggle> _addToggleValidator;
-        private readonly AbstractValidator<ChangeToggleState> _changeToggleStateValidator;
-        private readonly AbstractValidator<DeleteToggle> _deleteToggleValidator;
-        private readonly AbstractValidator<DeleteEnvironment> _deleteEnvironmentValidator;
+        private readonly AbstractValidator<Commands.AddEnvironment.Command> _addEnvironmentValidator;
+        private readonly AbstractValidator<Commands.AddToggle.Command> _addToggleValidator;
+        private readonly AbstractValidator<Commands.ChangeToggleState.Command> _changeToggleStateValidator;
+        private readonly AbstractValidator<Commands.DeleteToggle.Command> _deleteToggleValidator;
+        private readonly AbstractValidator<Commands.DeleteEnvironment.Command> _deleteEnvironmentValidator;
 
         public ProjectCommandHandler(ISession session)
         {
             _session = session;
-            _addEnvironmentValidator = new AddEnvironmentValidator();
-            _addToggleValidator = new AddToggleValidator();
-            _changeToggleStateValidator = new ChangeToggleStateValidator();
-            _deleteToggleValidator = new DeleteToggleValidator();
-            _deleteEnvironmentValidator = new DeleteEnvironmentValidator();
+            _addEnvironmentValidator = new Commands.AddEnvironment.Validator();
+            _addToggleValidator = new Commands.AddToggle.Validator();
+            _changeToggleStateValidator = new Commands.ChangeToggleState.Validator();
+            _deleteToggleValidator = new Commands.DeleteToggle.Validator();
+            _deleteEnvironmentValidator = new Commands.DeleteEnvironment.Validator();
         }
 
-        public async Task Handle(AddEnvironment message)
+        public async Task Handle(Commands.AddEnvironment.Command message)
         {
             await _addEnvironmentValidator.ValidateAndThrowAsync(message);
 
@@ -40,7 +39,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(AddToggle message)
+        public async Task Handle(Commands.AddToggle.Command message)
         {
             await _addToggleValidator.ValidateAndThrowAsync(message);
 
@@ -49,7 +48,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(ChangeToggleState message)
+        public async Task Handle(Commands.ChangeToggleState.Command message)
         {
             await _changeToggleStateValidator.ValidateAndThrowAsync(message);
 
@@ -58,7 +57,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(DeleteToggle message)
+        public async Task Handle(Commands.DeleteToggle.Command message)
         {
             await _deleteToggleValidator.ValidateAndThrowAsync(message);
 
@@ -67,7 +66,7 @@
             await _session.Commit();
         }
 
-        public async Task Handle(DeleteEnvironment message)
+        public async Task Handle(Commands.DeleteEnvironment.Command message)
         {
             await _deleteEnvironmentValidator.ValidateAndThrowAsync(message);
 

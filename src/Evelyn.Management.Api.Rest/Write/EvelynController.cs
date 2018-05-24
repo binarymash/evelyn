@@ -30,7 +30,7 @@
 
         protected ObjectResult HandleInternalError(Exception ex)
         {
-            var response = new Response<Error>(new [] { new Error(ErrorCodes.SystemError, "An error occurred on the server") });
+            var response = new Response<Error>(new[] { new Error(ErrorCodes.SystemError, "An error occurred on the server") });
             return new ObjectResult(response) { StatusCode = StatusCodes.Status500InternalServerError };
         }
     }

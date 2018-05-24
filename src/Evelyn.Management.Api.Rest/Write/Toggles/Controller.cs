@@ -16,10 +16,10 @@
     [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> _addToggleHandler;
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle> _deleteToggleHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> _addToggleHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> _deleteToggleHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> addToggleHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle> deleteToggleHandler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> addToggleHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> deleteToggleHandler)
         {
             _addToggleHandler = addToggleHandler;
             _deleteToggleHandler = deleteToggleHandler;
@@ -31,7 +31,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.AddToggle(UserId, projectId, message.Key, message.Name, message.ExpectedProjectVersion);
+                var command = new Core.WriteModel.Project.Commands.AddToggle.Command(UserId, projectId, message.Key, message.Name, message.ExpectedProjectVersion);
                 await _addToggleHandler.Handle(command);
                 return Accepted();
             }
@@ -55,7 +55,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.DeleteToggle(UserId, projectId, toggleKey, message.ExpectedToggleVersion);
+                var command = new Core.WriteModel.Project.Commands.DeleteToggle.Command(UserId, projectId, toggleKey, message.ExpectedToggleVersion);
                 await _deleteToggleHandler.Handle(command);
                 return Accepted();
             }

@@ -16,10 +16,10 @@
     [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> _addHandler;
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment> _deleteHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> _addHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment.Command> _deleteHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment> addHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment> deleteHandler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> addHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment.Command> deleteHandler)
         {
             _addHandler = addHandler;
             _deleteHandler = deleteHandler;
@@ -31,7 +31,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.AddEnvironment(UserId, projectId, message.Key, message.ExpectedProjectVersion);
+                var command = new Core.WriteModel.Project.Commands.AddEnvironment.Command(UserId, projectId, message.Key, message.ExpectedProjectVersion);
                 await _addHandler.Handle(command);
                 return Accepted();
             }
@@ -55,7 +55,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.DeleteEnvironment(UserId, projectId, environmentKey, message.ExpectedEnvironmentVersion);
+                var command = new Core.WriteModel.Project.Commands.DeleteEnvironment.Command(UserId, projectId, environmentKey, message.ExpectedEnvironmentVersion);
                 await _deleteHandler.Handle(command);
                 return Accepted();
             }
