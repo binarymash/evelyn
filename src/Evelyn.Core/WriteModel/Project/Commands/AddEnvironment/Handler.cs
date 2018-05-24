@@ -1,29 +1,20 @@
 ﻿namespace Evelyn.Core.WriteModel.Project.Commands.AddEnvironment
 {
     using System.Threading.Tasks;
-    using CQRSlite.Commands;
     using CQRSlite.Domain;
     using Domain;
-    using FluentValidation;
 
-    public class Handler : ICommandHandler<Command>
+    public class Handler : Handler<Command>
     {
-        private readonly ISession _session;
-        private readonly AbstractValidator<Command> _validator;
-
         public Handler(ISession session)
+            : base(session, new Validator())
         {
-            _session = session;
-            _validator = new Validator();
         }
 
-        public async Task Handle(Command message)
+        protected override async Task HandleImpl(Command message)
         {
-            await _validator.ValidateAndThrowAsync(message);
-
-            var project = await _session.Get<Project>(message.ProjectId);
+            var project = await Session.Get<Project>(message.ProjectId);
             project.AddEnvironment(message.UserId, message.Key, message.ExpectedProjectVersion);
-            await _session.Commit();
         }
     }
 }
