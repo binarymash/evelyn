@@ -22,8 +22,8 @@
         private readonly IProjectionBuilder<ProjectionBuilderRequest, EnvironmentDetailsDto> _projectionBuilder;
         private readonly IDatabase<string, EnvironmentDetailsDto> _db;
 
-        private IEvent _event1;
-        private IEvent _event2;
+        private EnvironmentAdded _event1;
+        private EnvironmentAdded _event2;
         private EnvironmentDetailsDto _projection1;
         private EnvironmentDetailsDto _projection2;
 
@@ -137,12 +137,12 @@
 
         private void ThenTheProjectionIsCachedForEvent1()
         {
-            _db.Received().AddOrUpdate($"{_projection1.ProjectId}-{_projection1.Key}", _projection1);
+            _db.Received().AddOrUpdate($"{_event1.Id}-{_event1.Key}", _projection1);
         }
 
         private void ThenTheProjectionIsCachedForEvent2()
         {
-            _db.Received().AddOrUpdate($"{_projection2.ProjectId}-{_projection2.Key}", _projection2);
+            _db.Received().AddOrUpdate($"{_event2.Id}-{_event2.Key}", _projection2);
         }
 
         private void ThenEvent1IsRemovedFromTheStream()

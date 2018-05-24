@@ -6,12 +6,11 @@
     using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Project.Commands;
+    using Evelyn.Core.WriteModel.Project.Commands.AddToggle;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using NSubstitute;
-    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -19,7 +18,7 @@
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Toggles.Controller _controller;
-        private readonly ICommandHandler<AddToggle> _handler;
+        private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
         private Rest.Write.Toggles.Messages.AddToggle _message;
         private ObjectResult _result;
@@ -27,8 +26,8 @@
         public AddToggleSpecs()
         {
             _fixture = new Fixture();
-            _handler = Substitute.For<ICommandHandler<AddToggle>>();
-            _controller = new Rest.Write.Toggles.Controller(_handler);
+            _handler = Substitute.For<ICommandHandler<Command>>();
+            _controller = new Rest.Write.Toggles.Controller(_handler, null);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -49,7 +48,7 @@
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenACommandIsPassedToTheCommandHandler())
-                .And(_ => ThenA400BadRequestStatusIsReturned())
+                .And(_ => ThenA409ConflictStatusIsReturned())
                 .BDDfy();
         }
 
@@ -72,14 +71,14 @@
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _handler
-                .Handle(Arg.Any<AddToggle>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _handler
-                .Handle(Arg.Any<AddToggle>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -92,12 +91,12 @@
         {
             _handler
                 .Received(1)
-                .Handle(Arg.Is<AddToggle>(command =>
+                .Handle(Arg.Is<Command>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.ProjectId == _projectId &&
                     command.Key == _message.Key &&
                     command.Name == _message.Name &&
-                    command.ExpectedVersion == _message.ExpectedVersion));
+                    command.ExpectedProjectVersion == _message.ExpectedProjectVersion));
         }
 
         private void ThenA202AcceptedStatusIsReturned()
@@ -108,6 +107,11 @@
         private void ThenA400BadRequestStatusIsReturned()
         {
             _result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        private void ThenA409ConflictStatusIsReturned()
+        {
+            _result.StatusCode.Should().Be(StatusCodes.Status409Conflict);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()

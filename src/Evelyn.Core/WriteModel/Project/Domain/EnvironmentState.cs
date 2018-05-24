@@ -56,5 +56,14 @@
             LastModifiedBy = userId;
             ScopedVersion++;
         }
+
+        public void DeleteToggleState(string key, DateTimeOffset occurredAt, string userId)
+        {
+            var toggleState = _toggleStates.First(ts => ts.Key == key);
+            _toggleStates.Remove(toggleState);
+            LastModified = occurredAt;
+            LastModifiedBy = userId;
+            ScopedVersion++;
+        }
     }
 }

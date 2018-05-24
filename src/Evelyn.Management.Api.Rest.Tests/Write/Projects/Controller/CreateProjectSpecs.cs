@@ -6,7 +6,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Account.Commands;
+    using Evelyn.Core.WriteModel.Account.Commands.CreateProject;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -18,14 +18,14 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Projects.Controller _controller;
-        private readonly ICommandHandler<CreateProject> _createProjectHandler;
+        private readonly ICommandHandler<Command> _createProjectHandler;
         private Rest.Write.Projects.Messages.CreateProject _message;
         private ObjectResult _result;
 
         public CreateProjectSpecs()
         {
             _fixture = new Fixture();
-            _createProjectHandler = Substitute.For<ICommandHandler<Core.WriteModel.Account.Commands.CreateProject>>();
+            _createProjectHandler = Substitute.For<ICommandHandler<Command>>();
             _controller = new Rest.Write.Projects.Controller(_createProjectHandler);
         }
 
@@ -46,7 +46,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
-                .And(_ => ThenA400BadRequestStatusIsReturned())
+                .And(_ => ThenA409ConflictStatusIsReturned())
                 .BDDfy();
         }
 
@@ -69,14 +69,14 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
             _createProjectHandler
-                .Handle(Arg.Any<CreateProject>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
             _createProjectHandler
-                .Handle(Arg.Any<CreateProject>())
+                .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
@@ -89,7 +89,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         {
             _createProjectHandler
                 .Received(1)
-                .Handle(Arg.Is<CreateProject>(command =>
+                .Handle(Arg.Is<Command>(command =>
                     command.UserId == Constants.AnonymousUser &&
                     command.Id == Constants.DefaultAccount &&
                     command.ProjectId == _message.ProjectId &&
@@ -105,6 +105,11 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         private void ThenA400BadRequestStatusIsReturned()
         {
             _result.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        private void ThenA409ConflictStatusIsReturned()
+        {
+            _result.StatusCode.Should().Be(StatusCodes.Status409Conflict);
         }
 
         private void ThenA500InternalServerErrorStatusIsReturned()

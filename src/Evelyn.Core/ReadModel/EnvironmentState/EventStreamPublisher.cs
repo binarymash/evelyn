@@ -8,8 +8,10 @@
 
     public class EventStreamPublisher :
           ICancellableEventHandler<EnvironmentStateAdded>,
+          ICancellableEventHandler<EnvironmentStateDeleted>,
           ICancellableEventHandler<ToggleStateAdded>,
-          ICancellableEventHandler<ToggleStateChanged>
+          ICancellableEventHandler<ToggleStateChanged>,
+          ICancellableEventHandler<ToggleStateDeleted>
     {
         private readonly Queue<IEvent> _eventStream;
 
@@ -18,19 +20,31 @@
             _eventStream = eventStreamFactory.GetEventStream<EnvironmentStateDto>();
         }
 
-        public Task Handle(EnvironmentStateAdded message, CancellationToken token = default(CancellationToken))
+        public Task Handle(EnvironmentStateAdded message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
 
-        public Task Handle(ToggleStateAdded message, CancellationToken token = default(CancellationToken))
+        public Task Handle(ToggleStateAdded message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
 
-        public Task Handle(ToggleStateChanged message, CancellationToken token = default(CancellationToken))
+        public Task Handle(ToggleStateChanged message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(ToggleStateDeleted message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(EnvironmentStateDeleted message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

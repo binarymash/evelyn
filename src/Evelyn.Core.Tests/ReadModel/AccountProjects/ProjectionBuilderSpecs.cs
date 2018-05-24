@@ -20,7 +20,7 @@
     using AccountEvents = Core.WriteModel.Account.Events;
     using ProjectEvents = Core.WriteModel.Project.Events;
 
-    public class ProjectionBuilderSpecs : ReadModel.ProjectionBuilderSpecs<ProjectionBuilder, AccountProjectsDto>
+    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, AccountProjectsDto>
     {
         private readonly List<IEvent> _accountEvents;
         private readonly List<IEvent> _project1Events;
@@ -48,7 +48,7 @@
         {
             this.Given(_ => GivenTheAccountIsNotInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -59,7 +59,7 @@
                 .And(_ => GivenTheAccountIsInTheRepository())
                 .And(_ => GivenTheProjectsAreNotInTheRepository())
                 .When(_ => WhenWeInvokeTheProjectionBuilder())
-                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
+                .Then(_ => ThenANullProjectionIsReturned())
                 .BDDfy();
         }
 
@@ -77,6 +77,15 @@
                 .And(_ => ThenTheLastModifiedDateIsSet())
                 .And(_ => ThenTheLastModifiedByIsSet())
                 .And(_ => ThenAllTheProjectsAreSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void SomeOtherExceptionFromEventStore()
+        {
+            this.Given(_ => GivenTheEventStoreThrowsSomeOtherException())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenAFailedToBuildProjectionExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -160,6 +169,13 @@
             SubstituteRepository
                 .Get<Project>(_project2Id, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(_project2));
+        }
+
+        private void GivenTheEventStoreThrowsSomeOtherException()
+        {
+            SubstituteRepository
+                .Get<Project>(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+                .Throws(DataFixture.Create<Exception>());
         }
 
         private async Task WhenWeInvokeTheProjectionBuilder()

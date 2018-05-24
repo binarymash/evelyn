@@ -94,7 +94,7 @@
             _createProjectMessage = DataFixture.Create<CreateProject>();
 
             _response = await Client
-                .Request("/api/projects")
+                .Request("/api/projects/create")
                 .PostJsonAsync(_createProjectMessage).ConfigureAwait(false);
 
             _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -102,11 +102,13 @@
 
         private async Task WhenWeAddAnEnvironment()
         {
-            _addEnvironmentMessage = DataFixture.Create<AddEnvironment>();
-            _addEnvironmentMessage.ExpectedVersion = 0;
+            _addEnvironmentMessage = DataFixture.Build<AddEnvironment>()
+                .With(e => e.Key, TestUtilities.CreateKey(30))
+                .With(e => e.ExpectedProjectVersion, 0)
+                .Create();
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments/add")
                 .PostJsonAsync(_addEnvironmentMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -114,11 +116,13 @@
 
         private async Task WhenWeAddAToggle()
         {
-            _addToggleMessage = DataFixture.Create<AddToggle>();
-            _addToggleMessage.ExpectedVersion = 1;
+            _addToggleMessage = DataFixture.Build<AddToggle>()
+                .With(e => e.Key, TestUtilities.CreateKey(30))
+                .With(e => e.ExpectedProjectVersion, 1)
+                .Create();
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles")
+                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/add")
                 .PostJsonAsync(_addToggleMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();

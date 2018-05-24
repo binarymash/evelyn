@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.WriteModel;
+    using Core.WriteModel.Project.Domain;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using CQRSlite.Domain.Exception;
@@ -15,6 +16,7 @@
     using Newtonsoft.Json;
 
     using AccountCommands = Core.WriteModel.Account.Commands;
+    using Environment = global::Evelyn.Core.WriteModel.Project.Domain.Environment;
     using EvelynCommands = Core.WriteModel.Evelyn.Commands;
     using ProjectCommands = Core.WriteModel.Project.Commands;
 
@@ -37,7 +39,16 @@
             var comparisonConfig = new ComparisonConfig
             {
                 MaxDifferences = int.MaxValue,
+                IgnoreCollectionOrder = true,
+                CollectionMatchingSpec = new Dictionary<Type, IEnumerable<string>>
+                {
+                    { typeof(Environment), new[] { "Key" } },
+                    { typeof(Toggle), new[] { "Key" } },
+                    { typeof(EnvironmentState), new[] { "EnvironmentKey" } },
+                    { typeof(ToggleState), new[] { "Key" } }
+                }
             };
+
             _compareLogic = new CompareLogic(comparisonConfig);
 
             _serializerSettings = new JsonSerializerSettings
@@ -67,6 +78,8 @@
         protected DateTimeOffset TimeBeforeHandling { get; private set; }
 
         protected DateTimeOffset TimeAfterHandling { get; private set; }
+
+        protected bool IgnoreCollectionOrderDuringComparison { get; set; }
 
         protected ComparisonResult ComparisonResult { get; private set; }
 
@@ -112,7 +125,10 @@
             finally
             {
                 NewAggregate = GetAggregate(aggregateId).Result;
+
+                _compareLogic.Config.IgnoreCollectionOrder = IgnoreCollectionOrderDuringComparison;
                 ComparisonResult = _compareLogic.Compare(OriginalAggregate, NewAggregate);
+
                 PublishedEvents = _eventPublisher.PublishedEvents;
                 EventDescriptors = _eventStore.Events;
             }
@@ -198,21 +214,25 @@
         {
             switch (command)
             {
-                case AccountCommands.CreateProject c:
+                case AccountCommands.CreateProject.Command c:
                     return c.Id;
 
-                case EvelynCommands.CreateSystem c:
+                case EvelynCommands.CreateSystem.Command c:
                     return Constants.EvelynSystem;
-                case EvelynCommands.RegisterAccount c:
+                case EvelynCommands.RegisterAccount.Command c:
                     return Constants.EvelynSystem;
-                case EvelynCommands.StartSystem c:
+                case EvelynCommands.StartSystem.Command c:
                     return Constants.EvelynSystem;
 
-                case ProjectCommands.AddToggle c:
+                case ProjectCommands.AddToggle.Command c:
                     return c.ProjectId;
-                case ProjectCommands.AddEnvironment c:
+                case ProjectCommands.DeleteToggle.Command c:
                     return c.ProjectId;
-                case ProjectCommands.ChangeToggleState c:
+                case ProjectCommands.AddEnvironment.Command c:
+                    return c.ProjectId;
+                case ProjectCommands.DeleteEnvironment.Command c:
+                    return c.ProjectId;
+                case ProjectCommands.ChangeToggleState.Command c:
                     return c.ProjectId;
 
                 default:

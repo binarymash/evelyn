@@ -1,46 +1,75 @@
 ﻿namespace Evelyn.Management.Api.Rest.Write.Toggles
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Responses;
 
     [Route("api/projects/{projectId}/toggles")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(Response<ValidationError>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> _addToggleHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> _deleteToggleHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> addToggleHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> deleteToggleHandler)
         {
-            _handler = handler;
+            _addToggleHandler = addToggleHandler;
+            _deleteToggleHandler = deleteToggleHandler;
         }
 
+        [Route("add")]
         [HttpPost]
-        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Toggles.Messages.AddToggle message)
+        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Messages.AddToggle message)
         {
-            // TODO: validation
             try
             {
-                var command = new Core.WriteModel.Project.Commands.AddToggle(UserId, projectId, message.Key, message.Name, message.ExpectedVersion);
-                await _handler.Handle(command);
+                var command = new Core.WriteModel.Project.Commands.AddToggle.Command(UserId, projectId, message.Key, message.Name, message.ExpectedProjectVersion);
+                await _addToggleHandler.Handle(command);
                 return Accepted();
             }
-            catch (ConcurrencyException)
+            catch (ValidationException ex)
             {
-                // TODO: error handling
-                var value = new Dictionary<string, string>();
-                return new BadRequestObjectResult(value);
+                return HandleValidationException(ex);
             }
-            catch (Exception)
+            catch (ConcurrencyException ex)
             {
-                // TODO: error handling
-                return new ObjectResult(null) { StatusCode = StatusCodes.Status500InternalServerError };
+                return HandleConcurrencyException(ex);
+            }
+            catch (Exception ex)
+            {
+                return HandleInternalError(ex);
+            }
+        }
+
+        [Route("{toggleKey}/delete")]
+        [HttpPost]
+        public async Task<ObjectResult> Post(Guid projectId, string toggleKey, [FromBody]Messages.DeleteToggle message)
+        {
+            try
+            {
+                var command = new Core.WriteModel.Project.Commands.DeleteToggle.Command(UserId, projectId, toggleKey, message.ExpectedToggleVersion);
+                await _deleteToggleHandler.Handle(command);
+                return Accepted();
+            }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
+            catch (ConcurrencyException ex)
+            {
+                return HandleConcurrencyException(ex);
+            }
+            catch (Exception ex)
+            {
+                return HandleInternalError(ex);
             }
         }
     }

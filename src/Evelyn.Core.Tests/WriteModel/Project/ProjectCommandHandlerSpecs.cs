@@ -3,20 +3,15 @@
     using System;
     using System.Collections.Generic;
     using AutoFixture;
-    using Core.WriteModel.Project;
     using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
     using FluentAssertions;
 
-    public abstract class ProjectCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Project, ProjectCommandHandler, TCommand>
+    public abstract class ProjectCommandHandlerSpecs<THandler, TCommand> : CommandHandlerSpecs<Project, THandler, TCommand>
+        where THandler : class
         where TCommand : ICommand
     {
-        protected override ProjectCommandHandler BuildHandler()
-        {
-            return new ProjectCommandHandler(Session);
-        }
-
         protected void GivenWeHaveCreatedAProjectWith(Guid id)
         {
             var projectCreated = DataFixture.Create<ProjectCreated>();
