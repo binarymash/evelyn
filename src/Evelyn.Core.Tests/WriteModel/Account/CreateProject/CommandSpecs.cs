@@ -11,7 +11,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
     using AccountEvent = Core.WriteModel.Account.Events;
     using ProjectEvent = Core.WriteModel.Project.Events;
 
-    public class CommandSpecs : AccountCommandHandlerSpecs<Command>
+    public class CommandSpecs : HandlerSpecs<Command>
     {
         private Guid _accountId;
 

@@ -10,7 +10,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CommandSpecs : ProjectCommandHandlerSpecs<Command>
+    public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
 
@@ -122,6 +122,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
 
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedAProject()

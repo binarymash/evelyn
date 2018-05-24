@@ -9,7 +9,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CommandSpecs : ProjectCommandHandlerSpecs<Command>
+    public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
 
@@ -123,6 +123,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(1))
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedAProject()

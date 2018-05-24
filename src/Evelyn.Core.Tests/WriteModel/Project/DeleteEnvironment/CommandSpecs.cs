@@ -9,7 +9,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CommandSpecs : ProjectCommandHandlerSpecs<Command>
+    public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
 
@@ -84,6 +84,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
 
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedAProject()

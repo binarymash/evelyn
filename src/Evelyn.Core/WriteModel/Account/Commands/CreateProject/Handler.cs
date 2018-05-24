@@ -1,24 +1,24 @@
-﻿namespace Evelyn.Core.WriteModel.Account
+﻿namespace Evelyn.Core.WriteModel.Account.Commands.CreateProject
 {
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
     using FluentValidation;
 
-    public class AccountCommandHandler : ICommandHandler<Commands.CreateProject.Command>
+    public class Handler : ICommandHandler<Command>
     {
         private readonly ISession _session;
-        private readonly AbstractValidator<Commands.CreateProject.Command> _createProjectValidator;
+        private readonly AbstractValidator<Command> _validator;
 
-        public AccountCommandHandler(ISession session)
+        public Handler(ISession session)
         {
             _session = session;
-            _createProjectValidator = new Commands.CreateProject.Validator();
+            _validator = new Validator();
         }
 
-        public async Task Handle(Commands.CreateProject.Command message)
+        public async Task Handle(Command message)
         {
-            await _createProjectValidator.ValidateAndThrowAsync(message);
+            await _validator.ValidateAndThrowAsync(message);
 
             var account = await _session.Get<Domain.Account>(message.Id, message.ExpectedVersion).ConfigureAwait(false);
             var project = account.CreateProject(message.UserId, message.ProjectId, message.Name);

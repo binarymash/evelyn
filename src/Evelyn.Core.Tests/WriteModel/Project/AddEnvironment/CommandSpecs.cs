@@ -10,7 +10,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CommandSpecs : ProjectCommandHandlerSpecs<Command>
+    public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
         private string _newEnvironmentKey;
@@ -78,6 +78,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
                 .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedAProject()

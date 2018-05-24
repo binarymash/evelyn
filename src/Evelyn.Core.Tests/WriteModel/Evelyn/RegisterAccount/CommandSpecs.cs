@@ -4,13 +4,14 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.RegisterAccount
     using System.Linq;
     using AutoFixture;
     using Core.WriteModel.Evelyn.Commands.RegisterAccount;
+    using Core.WriteModel.Evelyn.Domain;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
     using AccountEvent = Core.WriteModel.Account.Events;
     using EvelynEvent = Core.WriteModel.Evelyn.Events;
 
-    public class CommandSpecs : EvelynCommandHandlerSpecs<Command>
+    public class CommandSpecs : CommandHandlerSpecs<Evelyn, Handler, Command>
     {
         private readonly Guid _accountId;
 
@@ -48,6 +49,11 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.RegisterAccount
                 .And(_ => ThenADuplicateAccountExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void ThenADuplicateAccountExceptionIsThrown()

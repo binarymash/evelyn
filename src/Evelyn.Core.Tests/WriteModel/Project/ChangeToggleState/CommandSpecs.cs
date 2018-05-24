@@ -9,7 +9,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CommandSpecs : ProjectCommandHandlerSpecs<Command>
+    public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
         private string _environmentKey;
@@ -96,6 +96,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
                 .And(_ => ThenTheToggleStateLastModifiedByHasBeenUpdated())
 
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedAProject()

@@ -1,18 +1,18 @@
-﻿namespace Evelyn.Core.Tests.WriteModel.Account
+﻿namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
 {
     using System;
     using AutoFixture;
-    using Core.WriteModel.Account;
+    using Core.WriteModel.Account.Commands.CreateProject;
     using Core.WriteModel.Account.Domain;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
 
-    public abstract class AccountCommandHandlerSpecs<TCommand> : CommandHandlerSpecs<Account, AccountCommandHandler, TCommand>
+    public abstract class HandlerSpecs<TCommand> : CommandHandlerSpecs<Account, Handler, TCommand>
         where TCommand : ICommand
     {
-        protected override AccountCommandHandler BuildHandler()
+        protected override Handler BuildHandler()
         {
-            return new AccountCommandHandler(Session);
+            return new Handler(Session);
         }
 
         protected void GivenWeHaveCreatedAProjectWith(Guid id)

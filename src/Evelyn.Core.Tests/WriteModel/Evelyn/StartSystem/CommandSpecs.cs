@@ -3,13 +3,14 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.StartSystem
     using System;
     using System.Linq;
     using Core.WriteModel.Evelyn.Commands.StartSystem;
+    using Core.WriteModel.Evelyn.Domain;
     using CQRSlite.Domain.Exception;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
     using EvelynEvent = Core.WriteModel.Evelyn.Events;
 
-    public class CommandSpecs : EvelynCommandHandlerSpecs<Command>
+    public class CommandSpecs : CommandHandlerSpecs<Evelyn, Handler, Command>
     {
         [Fact]
         public void SystemHasNotYetBeenCreated()
@@ -30,6 +31,11 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.StartSystem
                 .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(1))
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveCreatedTheSystem()

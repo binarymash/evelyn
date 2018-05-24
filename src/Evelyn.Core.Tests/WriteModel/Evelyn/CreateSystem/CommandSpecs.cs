@@ -3,13 +3,14 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.CreateSystem
     using System;
     using System.Linq;
     using Core.WriteModel.Evelyn.Commands.CreateSystem;
+    using Core.WriteModel.Evelyn.Domain;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
     using AccountEvent = Core.WriteModel.Account.Events;
     using EvelynEvent = Core.WriteModel.Evelyn.Events;
 
-    public class CommandSpecs : EvelynCommandHandlerSpecs<Command>
+    public class CommandSpecs : CommandHandlerSpecs<Evelyn, Handler, Command>
     {
         public CommandSpecs()
         {
@@ -45,6 +46,11 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.CreateSystem
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
+        }
+
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Session);
         }
 
         private void GivenWeHaveAlreadyCreatedTheSystem()
