@@ -11,7 +11,7 @@ The Evelyn Stack consists of the following parts:
 
 - A REsT API server and client that expose this functionality over HTTP
 
-- A management user interface (see [https://github.com/binarymash/evelyn-management-ui](https://github.com/binarymash/evelyn-management-ui)
+- A management user interface (see [https://github.com/binarymash/evelyn-management-ui](https://github.com/binarymash/evelyn-management-ui))
 
 Evelyn has a modular architecture which allows for flexible deployment configurations and user extensibility. The core framework is built around CQRS and Event Sourcing: implementations are provided for an in-memory event store and for Greg Young's [Event Store](https://eventstore.org/); you can plug in your own event store imtegration.
 
