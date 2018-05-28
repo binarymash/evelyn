@@ -10,7 +10,7 @@ The Evelyn Stack consists of the following parts:
 
 - A core framework providing the underlying feature toggling functionality, written in C# and targetting .NET Standard 2.0 
 
-- A ReST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.0.
+- A REST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.0.
 
 - A management user interface, built on React/Redux/Node.
 
@@ -21,7 +21,7 @@ This project is pre-release: things might break at any moment; APIs might change
 
 ## This Repository
 
-This repository contains the source code for the core framework and the ReST API server and client. You can learn more about these at [Read the Docs](https://evelyn.readthedocs.io/en/latest/). 
+This repository contains the source code for the core framework and the REST API server and client. You can learn more about these at [Read the Docs](https://evelyn.readthedocs.io/en/latest/). 
 
 For more information on the management UI head over to [https://github.com/binarymash/evelyn-management-ui](https://github.com/binarymash/evelyn-management-ui)
 
