@@ -15,8 +15,8 @@
 
             services.AddEvelynClient(clientConfig =>
             {
-                clientConfig.ProjectId = Guid.Parse("222649E0-1E2D-4A1A-B986-3400CEC08B49");
-                clientConfig.Environment = "development";
+                clientConfig.ProjectId = Guid.Parse("8f73d020-96c4-407e-8602-74fd4e2ed08b");
+                clientConfig.Environment = "my-first-environment";
                 clientConfig.SynchronizeEnvironmentStateUsing.Polling(pollingConfig =>
                 {
                     pollingConfig.PollingPeriod = TimeSpan.FromSeconds(1);

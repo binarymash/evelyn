@@ -11,5 +11,7 @@
         public static Guid DefaultAccount => Guid.Parse("E70FD009-22C4-44E0-AB13-2B6EDAF0BBDB");
 
         public static string AnonymousUser => "AnonymousUser";
+
+        public static Guid SampleProject => Guid.Parse("{8F73D020-96C4-407E-8602-74FD4E2ED08B}");
     }
 }

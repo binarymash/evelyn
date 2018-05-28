@@ -33,7 +33,8 @@
         {
             this.When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
-                .And(_ => ThenTheResponseContentIsAnEmptyCollection())
+                .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
+                .And(_ => ThenTheDefaultSampleProjectWeAddedIsInTheCollection())
 
                 // writing...
                 .When(_ => WhenWeAddAProject())
@@ -50,7 +51,7 @@
 
                 .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
-                .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
+                .And(_ => ThenTheResponseContentIsACollectionWithTwoProjects())
                 .And(_ => ThenTheProjectWeAddedIsInTheCollection())
 
                 .When(_ => WhenWeGetTheDetailsForTheProjectWeAdded())
@@ -184,16 +185,22 @@
             ((int)_response.StatusCode).Should().Be(expectedStatusCode);
         }
 
-        private void ThenTheResponseContentIsAnEmptyCollection()
-        {
-            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count().Should().Be(0);
-        }
-
         private void ThenTheResponseContentIsACollectionWithOneProject()
         {
             var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
             response.Projects.Count().Should().Be(1);
+        }
+
+        private void ThenTheResponseContentIsACollectionWithTwoProjects()
+        {
+            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
+            response.Projects.Count().Should().Be(2);
+        }
+
+        private void ThenTheDefaultSampleProjectWeAddedIsInTheCollection()
+        {
+            var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
+            projectList.Projects.First(p => p.Id == Guid.Parse("{8F73D020-96C4-407E-8602-74FD4E2ED08B}"));
         }
 
         private void ThenTheProjectWeAddedIsInTheCollection()
