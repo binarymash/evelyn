@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
@@ -10,43 +9,14 @@
     {
         public static void Main(string[] args)
         {
-            // setup the service dependencies...
-            IServiceCollection services = new ServiceCollection();
+            var startup = new Startup();
+            var services = new ServiceCollection();
 
-            services.AddEvelynClient(clientConfig =>
-            {
-                clientConfig.ProjectId = Guid.Parse("8f73d020-96c4-407e-8602-74fd4e2ed08b");
-                clientConfig.Environment = "my-first-environment";
-                clientConfig.SynchronizeEnvironmentStateUsing.Polling(pollingConfig =>
-                {
-                    pollingConfig.PollingPeriod = TimeSpan.FromSeconds(1);
-                    pollingConfig.RetrieveEnvironmentStateUsing.RestProvider(restConfig =>
-                    {
-                        restConfig.BaseUrl = "http://localhost:2316";
-                    });
-                });
-            });
+            startup.ConfigureServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
 
-            // our actual program...
-            var token = new CancellationToken(false);
-            serviceProvider.GetService<IHostedService>().StartAsync(token);
-
-            var evelyn = serviceProvider.GetService<IEvelynClient>();
-
-            bool? lastValue = null;
-            while (true)
-            {
-                var toggleState = evelyn.GetToggleState("my-first-toggle");
-                if (!lastValue.HasValue || lastValue.Value != toggleState)
-                {
-                    Console.WriteLine($"Toggle state is now {toggleState}");
-                    lastValue = toggleState;
-                }
-
-                Task.Delay(TimeSpan.FromMilliseconds(50)).GetAwaiter().GetResult();
-            }
+            startup.OnStartup(serviceProvider);
         }
     }
 }
