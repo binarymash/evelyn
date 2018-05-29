@@ -2,6 +2,8 @@
 
 [![license](https://img.shields.io/github/license/binarymash/evelyn.svg)](https://github.com/binarymash/evelyn/blob/develop/LICENSE)  [![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/develop?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/develop) [![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=develop)](https://coveralls.io/github/binarymash/evelyn?branch=develop)
 
+For documentation [Read the Docs](https://evelyn.readthedocs.io/en/latest/). 
+
 ## Overview
 
 Evelyn is a [feature toggling](https://martinfowler.com/articles/feature-toggles.html) framework. It allows users to decouple software releases from the functional changes within, reducing the risk of deployment and providing rollback functionality. 
