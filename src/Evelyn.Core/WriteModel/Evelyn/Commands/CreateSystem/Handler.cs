@@ -14,18 +14,14 @@
 
         protected override async Task HandleImpl(Command message)
         {
-            Evelyn evelyn;
             try
             {
-                evelyn = await Session.Get<Evelyn>(Constants.EvelynSystem);
+                await Session.Get<Evelyn>(Constants.EvelynSystem);
+                throw new ConcurrencyException(Constants.EvelynSystem);
             }
             catch (AggregateNotFoundException)
             {
-                evelyn = new Evelyn(Constants.SystemUser, Constants.EvelynSystem);
-                await Session.Add(evelyn);
-
-                var defaultAccount = evelyn.RegisterAccount(Constants.SystemUser, Constants.DefaultAccount);
-                await Session.Add(defaultAccount);
+                await Session.Add(new Evelyn(Constants.SystemUser, Constants.EvelynSystem));
             }
         }
     }

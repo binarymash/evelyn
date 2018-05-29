@@ -16,8 +16,6 @@
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -27,19 +25,23 @@
             {
                 api.WithWriteModel(wm =>
                 {
-                    ////wm.WithEventStore.InMemory(es =>
-                    ////{
-                    ////    es.WithEventPublisher.SynchronouslyInProcess();
-                    ////});
-                    wm.WithEventStore.UsingEventStoreDotOrg(es =>
+                    // Use a simple in-memory event store...
+                    wm.WithEventStore.InMemory(es =>
                     {
-                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://macos:1113");
-                        es.WithEventPublisher.RunningInBackgroundService(p =>
-                        {
-                            p.PublishEvents.SynchronouslyInProcess();
-                        });
+                        es.WithEventPublisher.SynchronouslyInProcess();
                     });
+
+                    // ...or,  use Greg Young's EventStore
+                    ////wm.WithEventStore.UsingEventStoreDotOrg(es =>
+                    ////{
+                    ////    es.ConnectionFactory = new EventStoreConnectionFactory("tcp://eventstore:1113");
+                    ////    es.WithEventPublisher.RunningInBackgroundService(p =>
+                    ////    {
+                    ////        p.PublishEvents.SynchronouslyInProcess();
+                    ////    });
+                    ////});
                 });
+
                 api.WithReadModel(rm =>
                 {
                     rm.WithReadStrategy.ReadFromCache(c => c.InMemoryCache());

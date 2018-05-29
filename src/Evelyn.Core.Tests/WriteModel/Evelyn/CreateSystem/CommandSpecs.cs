@@ -22,19 +22,16 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.CreateSystem
         {
             this.When(_ => WhenWeCreateTheSystem())
 
-                .Then(_ => ThenThreeEventsArePublished())
+                .Then(_ => ThenOneEventIsPublished())
 
                 .And(_ => ThenASystemCreatedEventIsPublishedOnEvelyn())
-                .And(_ => ThenAnAccountRegisteredEventIsPublishedOnEvelyn())
-                .And(_ => ThenAnAccountRegisteredEventIsPublishedOnTheDefaultAccount())
 
-                .And(_ => ThenTheAggregateRootVersionIsOne())
+                .And(_ => ThenTheAggregateRootVersionIsZero())
                 .And(_ => ThenTheAggregateRootCreatedTimeHasBeenSet())
                 .And(_ => ThenTheAggregateRootCreatedByHasBeenSet())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
 
-                .And(_ => ThenTheDefaultAccountHasBeenAddedToTheAggregateRoot())
                 .BDDfy();
         }
 
@@ -45,6 +42,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.CreateSystem
                 .When(_ => WhenWeCreateTheSystem())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -69,27 +67,6 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.CreateSystem
             var @event = PublishedEvents.First(e => e.GetType() == typeof(EvelynEvent.SystemCreated)) as EvelynEvent.SystemCreated;
             @event.UserId.Should().Be(Constants.SystemUser);
             @event.Id.Should().Be(Constants.EvelynSystem);
-        }
-
-        private void ThenAnAccountRegisteredEventIsPublishedOnEvelyn()
-        {
-            var @event = PublishedEvents.First(e => e.GetType() == typeof(EvelynEvent.AccountRegistered)) as EvelynEvent.AccountRegistered;
-            @event.UserId.Should().Be(Constants.SystemUser);
-            @event.Id.Should().Be(Constants.EvelynSystem);
-            @event.AccountId.Should().Be(Constants.DefaultAccount);
-        }
-
-        private void ThenAnAccountRegisteredEventIsPublishedOnTheDefaultAccount()
-        {
-            var @event = PublishedEvents.First(e => e.GetType() == typeof(AccountEvent.AccountRegistered)) as AccountEvent.AccountRegistered;
-            @event.UserId.Should().Be(Constants.SystemUser);
-            @event.Id.Should().Be(Constants.DefaultAccount);
-        }
-
-        private void ThenTheDefaultAccountHasBeenAddedToTheAggregateRoot()
-        {
-            NewAggregate.Accounts.Count().Should().Be(1);
-            NewAggregate.Accounts.First().Should().Be(Constants.DefaultAccount);
         }
     }
 }

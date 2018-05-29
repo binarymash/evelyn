@@ -175,6 +175,11 @@
             NewAggregate.Version.Should().Be(OriginalAggregate.Version + increment);
         }
 
+        protected void ThenTheAggregateRootVersionIsZero()
+        {
+            NewAggregate.Version.Should().Be(0);
+        }
+
         protected void ThenTheAggregateRootVersionIsOne()
         {
             NewAggregate.Version.Should().Be(1);
@@ -212,7 +217,7 @@
         /// <returns>The aggregate root that the command is for</returns>
         private Guid ExtractAggregateId(TCommand command)
         {
-            switch (command)
+            switch (command as ICommand)
             {
                 case AccountCommands.CreateProject.Command c:
                     return c.Id;
