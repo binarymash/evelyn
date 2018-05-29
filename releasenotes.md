@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 0.9.0 (2018-05-29)
+
+ - [#112](https://github.com/binarymash/evelyn/pull/112) - Publish stable to nuget.org contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#111](https://github.com/binarymash/evelyn/pull/111) - Minor tweaks to docs contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#110](https://github.com/binarymash/evelyn/pull/110) - Refactored sample client app, added more docs. contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#109](https://github.com/binarymash/evelyn/pull/109) - Add some getting started docs. Create sample project, environment and… contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#107](https://github.com/binarymash/evelyn/pull/107) - Feature/#105 start to add documentation contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#106](https://github.com/binarymash/evelyn/pull/106) - Feature/#105 start to add documentation contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+
+Commits: b6e2b0d184...eb17ec0e39
+
 ## Version 0.8.0 (2018-05-24)
 
  - [#104](https://github.com/binarymash/evelyn/pull/104) - [#103](https://github.com/binarymash/evelyn/issues/103) - Feature/#103 update packages contributed by Philip Wood ([binarymash](https://github.com/binarymash))
