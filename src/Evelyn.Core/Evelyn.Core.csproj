@@ -4,7 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.0-dev</Version>    
+    <Version>0.0.0-dev</Version>
+    <Description>Core functionality for Evelyn</Description>
+    <PackageProjectUrl>https://github.com/binarymash/evelyn</PackageProjectUrl>
+    <Copyright>Philip Wood 2018</Copyright>
+    <Authors>Philip Wood</Authors>
+    <Company />
+    <RepositoryUrl>https://github.com/binarymash/evelyn</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/binarymash/evelyn/blob/master/LICENSE</PackageLicenseUrl>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
