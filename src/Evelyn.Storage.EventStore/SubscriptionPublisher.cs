@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using global::EventStore.ClientAPI;
+    using Microsoft.Extensions.Hosting;
 
     public class SubscriptionPublisher : BackgroundService
     {

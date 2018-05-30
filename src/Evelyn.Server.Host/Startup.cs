@@ -50,7 +50,6 @@
                     rm.WithReadStrategy.ReadFromCache(c => c.InMemoryCache());
                 });
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,15 +65,12 @@
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            //app.UseHsts();
-            //app.UseHttpsRedirection();
             app.UseMvc();
 
             app.UseEvelynApi(startUpCommands);
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "Evelyn Management API"));
-
         }
     }
 }
