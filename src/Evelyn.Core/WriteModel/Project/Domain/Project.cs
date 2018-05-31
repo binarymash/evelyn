@@ -46,7 +46,7 @@
 
         public int ScopedVersion { get; private set; }
 
-        public void AddEnvironment(string userId, string key, int expectedProjectVersion)
+        public void AddEnvironment(string userId, string key, string name, int expectedProjectVersion)
         {
             if (ScopedVersion != expectedProjectVersion)
             {
@@ -58,9 +58,14 @@
                 throw new InvalidOperationException($"There is already an environment with the key {key}");
             }
 
+            if (_environments.Any(e => e.Name == name))
+            {
+                throw new InvalidOperationException($"There is already an environment with the name {name}");
+            }
+
             var now = DateTimeOffset.UtcNow;
 
-            ApplyChange(new EnvironmentAdded(userId, Id, key, now));
+            ApplyChange(new EnvironmentAdded(userId, Id, key, name, now));
             var toggleStates = Toggles.Select(t => new KeyValuePair<string, string>(t.Key, t.DefaultValue));
 
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
@@ -78,16 +83,18 @@
                 throw new InvalidOperationException($"There is already a toggle with the key {key}");
             }
 
-            if (_toggles.Any(e => e.Name == name))
+            if (_toggles.Any(t => t.Name == name))
             {
                 throw new InvalidOperationException($"There is already a toggle with the name {name}");
             }
 
-            ApplyChange(new ToggleAdded(userId, Id, key, name, DateTimeOffset.UtcNow));
+            var now = DateTimeOffset.UtcNow;
+
+            ApplyChange(new ToggleAdded(userId, Id, key, name, now));
 
             foreach (var environmentState in _environmentStates)
             {
-                ApplyChange(new ToggleStateAdded(userId, Id, environmentState.EnvironmentKey, key, default(bool).ToString(), DateTimeOffset.UtcNow));
+                ApplyChange(new ToggleStateAdded(userId, Id, environmentState.EnvironmentKey, key, default(bool).ToString(), now));
             }
         }
 
@@ -176,7 +183,7 @@
         {
             ScopedVersion++;
 
-            _environments.Add(new Environment(e.Key, e.OccurredAt, e.UserId));
+            _environments.Add(new Environment(e.Key, e.Name, e.OccurredAt, e.UserId));
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;

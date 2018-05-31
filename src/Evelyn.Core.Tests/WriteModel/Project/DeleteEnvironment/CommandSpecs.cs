@@ -124,14 +124,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         private void GivenWeHaveAddedAnEnvironment()
         {
             _environment1Key = DataFixture.Create<string>();
-            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment1Key, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
             _environment1Version++;
         }
 
         private void GivenWeHaveAddedAnotherEnvironment()
         {
             _environment2Key = DataFixture.Create<string>();
-            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment2Key, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
             _environment2Version++;
         }
 

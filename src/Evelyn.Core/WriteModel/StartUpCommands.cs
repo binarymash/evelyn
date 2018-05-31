@@ -51,7 +51,7 @@
             {
                 await _registerAccountHandler.Handle(new Evelyn.Commands.RegisterAccount.Command(Constants.SystemUser, Constants.DefaultAccount));
                 await _createProjectHandler.Handle(new Account.Commands.CreateProject.Command(Constants.SystemUser, Constants.DefaultAccount, Constants.SampleProject, "My First Project"));
-                await _addEnvironmentHandler.Handle(new Project.Commands.AddEnvironment.Command(Constants.SystemUser, Constants.SampleProject, "my-first-environment", 0));
+                await _addEnvironmentHandler.Handle(new Project.Commands.AddEnvironment.Command(Constants.SystemUser, Constants.SampleProject, "my-first-environment", "My First Environment", 0));
                 await _addToggleHandler.Handle(new Project.Commands.AddToggle.Command(Constants.SystemUser, Constants.SampleProject, "my-first-toggle", "My First Toggle", 1));
             }
         }

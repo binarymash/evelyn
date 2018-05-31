@@ -31,7 +31,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.AddEnvironment.Command(UserId, projectId, message.Key, message.ExpectedProjectVersion);
+                var command = new Core.WriteModel.Project.Commands.AddEnvironment.Command(UserId, projectId, message.Key, message.Name, message.ExpectedProjectVersion);
                 await _addHandler.Handle(command);
                 return Accepted();
             }
