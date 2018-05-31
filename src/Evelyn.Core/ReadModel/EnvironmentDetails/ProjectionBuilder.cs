@@ -27,7 +27,7 @@
                     return null;
                 }
 
-                var dto = new EnvironmentDetailsDto(project.Id, environment.ScopedVersion, environment.Key, environment.Created, environment.CreatedBy, environment.LastModified, environment.LastModifiedBy);
+                var dto = new EnvironmentDetailsDto(project.Id, environment.ScopedVersion, environment.Key, environment.Name, environment.Created, environment.CreatedBy, environment.LastModified, environment.LastModifiedBy);
 
                 return dto;
             }
