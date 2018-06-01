@@ -156,5 +156,70 @@
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
                 error.ErrorMessage == "'Project Id' should not be empty.");
         }
+
+        [Fact]
+        public void NameWhenNominalIsValid()
+        {
+            var command = _fixture.Create<Command>();
+
+            _validator.ShouldNotHaveValidationErrorFor(c => c.Name, command);
+        }
+
+        [Fact]
+        public void NameWhenNullIsInvalid()
+        {
+            var name = (string)null;
+            var command = _fixture.Build<Command>().With(c => c.Name, name).Create();
+
+            var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
+            errors.Should().Contain(error =>
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
+                error.ErrorMessage == "'Name' should not be empty.");
+        }
+
+        [Fact]
+        public void NameWhenEmptyIsInvalid()
+        {
+            var name = string.Empty;
+            var command = _fixture.Build<Command>().With(c => c.Name, name).Create();
+
+            var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
+            errors.Should().Contain(error =>
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
+                error.ErrorMessage == "'Name' should not be empty.");
+        }
+
+        [Fact]
+        public void NameWhenWhitespaceIsInvalid()
+        {
+            var name = "   ";
+            var command = _fixture.Build<Command>().With(c => c.Name, name).Create();
+
+            var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
+            errors.Should().Contain(error =>
+                error.ErrorCode == ErrorCodes.PropertyNotSet &&
+                error.ErrorMessage == "'Name' should not be empty.");
+        }
+
+        [Fact]
+        public void NameWhen128CharactersIsValid()
+        {
+            var name = TestUtilities.CreateString(128);
+            var command = _fixture.Build<Command>().With(c => c.Name, name).Create();
+
+            _validator.ShouldNotHaveValidationErrorFor(c => c.Name, command);
+        }
+
+        [Fact]
+        public void NameWhen129CharactersIsInvalid()
+        {
+            var name = TestUtilities.CreateString(129);
+            var command = _fixture.Build<Command>().With(c => c.Name, name).Create();
+
+            var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
+            errors.Should().Contain(error =>
+                error.ErrorCode == ErrorCodes.PropertyTooLong &&
+                error.ErrorMessage == "The length of 'Name' must be 128 characters or fewer. You entered 129 characters.");
+        }
     }
 }

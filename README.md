@@ -34,16 +34,28 @@ This repository is built on [AppVeyor](https://ci.appveyor.com/project/binarymas
 
 #### Releases
 
-[![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/master)
+|                    | Build Status | Test Coverage |
+|--------------------|--------------------|-------------------|
+| Windows (AppVeyor) | [![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/master) | [![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=master)](https://coveralls.io/github/binarymash/evelyn?branch=master) |
+| Ubuntu (AppVeyor)  | [![Build status](https://ci.appveyor.com/api/projects/status/fya8g0lne2ru7j5c/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn-4lkyc/branch/master)                    | -                 |
 
-[![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=master)](https://coveralls.io/github/binarymash/evelyn?branch=master)
+Release builds are published to https://www.nuget.org/
 
-Release builds are published to https://www.myget.org/F/binarymash-stable/api/v3/index.json
+- [Evelyn.Core](https://www.nuget.org/packages/Evelyn.Core/)
+- [Evelyn.Management.Api.Rest](https://www.nuget.org/packages/Evelyn.Management.Api.Rest/)
+- [Evelyn.Storage.EventStore](https://www.nuget.org/packages/Evelyn.Storage.EventStore/)
+- [Evelyn.Client](https://www.nuget.org/packages/Evelyn.Client/)
+- [Evelyn.Client.Rest](https://www.nuget.org/packages/Evelyn.Client.Rest/)
 
 #### Development
 
-[![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/develop?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/develop)
+|                    | Build Status | Test Coverage |
+|--------------------|--------------------|-------------------|
+| Windows (AppVeyor) | [![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/develop?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/develop) | [![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=develop)](https://coveralls.io/github/binarymash/evelyn?branch=develop) |
+| Ubuntu (AppVeyor)  | [![Build status](https://ci.appveyor.com/api/projects/status/fya8g0lne2ru7j5c/branch/develop?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn-4lkyc/branch/develop)                   | -                 |
 
-[![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=develop)](https://coveralls.io/github/binarymash/evelyn?branch=develop)
+
+
+
 
 Development builds are published to https://www.myget.org/F/binarymash-unstable/api/v3/index.json

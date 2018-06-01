@@ -9,10 +9,11 @@
             ScopedVersion = -1;
         }
 
-        public Environment(string key, DateTimeOffset occurredAt, string userId)
+        public Environment(string key, string name, DateTimeOffset occurredAt, string userId)
             : this()
         {
             Key = key;
+            Name = name;
             Created = occurredAt;
             CreatedBy = userId;
             LastModified = occurredAt;
@@ -21,6 +22,8 @@
         }
 
         public string Key { get; private set; }
+
+        public string Name { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 
