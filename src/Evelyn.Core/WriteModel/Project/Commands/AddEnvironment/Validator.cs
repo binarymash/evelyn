@@ -14,6 +14,14 @@
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.PropertyNotSet);
 
+            RuleFor(command => command.Name)
+                .NotEmpty()
+                .WithErrorCode(ErrorCodes.PropertyNotSet);
+
+            RuleFor(command => command.Name)
+                .MaximumLength(128)
+                .WithErrorCode(ErrorCodes.PropertyTooLong);
+
             RuleFor(command => command.Key)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.PropertyNotSet);

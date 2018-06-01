@@ -13,8 +13,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
     public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
         private Guid _projectId;
+
+        private string _newEnvironmentName;
         private string _newEnvironmentKey;
+
+        private string _existingEnvironmentName;
         private string _existingEnvironmentKey;
+
         private string _toggleKey;
         private string _toggleName;
         private int _projectVersion = -1;
@@ -27,6 +32,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
                 .When(_ => WhenWeAddAnotherEnvironmentWithTheSameKey())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenADuplicateEnvironmentKeyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void EnvironmentAlreadyExistWithSameName()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAnEnvironment())
+                .When(_ => WhenWeAddAnotherEnvironmentWithTheSameName())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenADuplicateEnvironmentNameExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
@@ -104,8 +121,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         private void GivenWeHaveAddedAnEnvironment()
         {
             _existingEnvironmentKey = DataFixture.Create<string>();
+            _existingEnvironmentName = DataFixture.Create<string>();
 
-            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey, DateTime.UtcNow) { Version = HistoricalEvents.Count });
+            HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _existingEnvironmentKey, _existingEnvironmentName, DateTime.UtcNow) { Version = HistoricalEvents.Count });
             _projectVersion++;
         }
 
@@ -122,18 +140,30 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         private void WhenWeAddAnEnvironment()
         {
             _newEnvironmentKey = DataFixture.Create<string>();
+            _newEnvironmentName = DataFixture.Create<string>();
             UserId = DataFixture.Create<string>();
 
-            var command = new Command(UserId, _projectId, _newEnvironmentKey, _projectVersion);
+            var command = new Command(UserId, _projectId, _newEnvironmentKey, _newEnvironmentName, _projectVersion);
             WhenWeHandle(command);
         }
 
         private void WhenWeAddAnotherEnvironmentWithTheSameKey()
         {
             _newEnvironmentKey = _existingEnvironmentKey;
+            _newEnvironmentName = DataFixture.Create<string>();
             UserId = DataFixture.Create<string>();
 
-            var command = new Command(UserId, _projectId, _newEnvironmentKey, _projectVersion);
+            var command = new Command(UserId, _projectId, _newEnvironmentKey, _newEnvironmentName, _projectVersion);
+            WhenWeHandle(command);
+        }
+
+        private void WhenWeAddAnotherEnvironmentWithTheSameName()
+        {
+            _newEnvironmentKey = DataFixture.Create<string>();
+            _newEnvironmentName = _existingEnvironmentName;
+            UserId = DataFixture.Create<string>();
+
+            var command = new Command(UserId, _projectId, _newEnvironmentKey, _newEnvironmentName, _projectVersion);
             WhenWeHandle(command);
         }
 
@@ -157,6 +187,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         private void ThenADuplicateEnvironmentKeyExceptionIsThrown()
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the key {_newEnvironmentKey}");
+        }
+
+        private void ThenADuplicateEnvironmentNameExceptionIsThrown()
+        {
+            ThenAnInvalidOperationExceptionIsThrownWithMessage($"There is already an environment with the name {_newEnvironmentName}");
         }
 
         private void ThenTheAggregateRootHasHadAnEnvironmentAdded()

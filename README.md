@@ -38,7 +38,13 @@ This repository is built on [AppVeyor](https://ci.appveyor.com/project/binarymas
 
 [![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=master)](https://coveralls.io/github/binarymash/evelyn?branch=master)
 
-Release builds are published to https://www.myget.org/F/binarymash-stable/api/v3/index.json
+Release builds are published to https://www.nuget.org/
+
+- [Evelyn.Core](https://www.nuget.org/packages/Evelyn.Core/)
+- [Evelyn.Management.Api.Rest](https://www.nuget.org/packages/Evelyn.Management.Api.Rest/)
+- [Evelyn.Storage.EventStore](https://www.nuget.org/packages/Evelyn.Storage.EventStore/)
+- [Evelyn.Client](https://www.nuget.org/packages/Evelyn.Client/)
+- [Evelyn.Client.Rest](https://www.nuget.org/packages/Evelyn.Client.Rest/)
 
 #### Development
 

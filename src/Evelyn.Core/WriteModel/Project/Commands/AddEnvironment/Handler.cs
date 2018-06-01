@@ -14,7 +14,7 @@
         protected override async Task HandleImpl(Command message)
         {
             var project = await Session.Get<Project>(message.ProjectId);
-            project.AddEnvironment(message.UserId, message.Key, message.ExpectedProjectVersion);
+            project.AddEnvironment(message.UserId, message.Key, message.Name, message.ExpectedProjectVersion);
         }
     }
 }
