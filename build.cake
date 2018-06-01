@@ -10,7 +10,7 @@
 #addin Cake.Coveralls
 
 // compile
-var compileConfig = Argument("configuration", "Release");
+var compileConfig = ValidateConfig(Argument("configuration", "Release"));
 var slnFile = "./src/Evelyn.sln";
 
 // build artifacts
@@ -165,7 +165,7 @@ Task("RunUnitTestsCoverageReport")
 		{
 			Information("Running test task for " + testAssembly);
 			
-			if (IsRunningOnWindows())
+			if (!IsCrossPlatformConfig(compileConfig))
 			{
 				XUnit2(testAssembly, new XUnit2Settings 
 				{
@@ -185,7 +185,7 @@ Task("RunUnitTestsCoverageReport")
 		Information($"writing to {artifactsForUnitTestsDir}"); 
         ReportGenerator(coverageSummaryFile, artifactsForUnitTestsDir);
 		
-		if (AppVeyor.IsRunningOnAppVeyor)
+		if (IsAuthoritativeBuild())
 		{
 			var repoToken = EnvironmentVariable(coverallsRepoToken);
 			if (string.IsNullOrEmpty(repoToken))
@@ -201,7 +201,7 @@ Task("RunUnitTestsCoverageReport")
 		}
 		else
 		{
-			Information("We are not running on the build server so we won't publish the coverage report to coveralls.io");
+			Information("We are not running on the authoritative build server so we won't publish the coverage report to coveralls.io");
 		}
 
 		var sequenceCoverage = XmlPeek(coverageSummaryFile, "//CoverageSession/Summary/@sequenceCoverage");
@@ -278,9 +278,9 @@ Task("ReleasePackagesToUnstableFeed")
 Task("EnsureStableReleaseRequirements")
     .Does(() =>
     {
-        if (!AppVeyor.IsRunningOnAppVeyor)
+        if (!IsAuthoritativeBuild())
 		{
-           throw new Exception("Stable release should happen via appveyor");
+           throw new Exception("Stable release should happen via authoriative build server");
 		}
         
 		var isTag =
@@ -331,6 +331,34 @@ Task("Release")
     .IsDependentOn("ReleasePackagesToStableFeed");
 
 RunTarget(target);
+
+private bool IsAuthoritativeBuild()
+{
+	return AppVeyor.IsRunningOnAppVeyor && IsRunningOnWindows();
+}
+
+private string ValidateConfig(string config)
+{
+	if (IsRunningOnWindows())
+	{
+		return config;
+	}
+
+	if (IsCrossPlatformConfig(config))
+	{
+		return config;	
+	}
+
+	config += "-xPlatform";
+	Information("Not running on Windows, so switching build configuration to " + config);
+
+	return config;
+}
+
+private bool IsCrossPlatformConfig(string config)
+{
+	return config.EndsWith("-xPlatform");
+}
 
 /// Gets unique nuget version for this commit
 private GitVersion GetNuGetVersionForCommit()
