@@ -37,7 +37,7 @@ This repository is built on [AppVeyor](https://ci.appveyor.com/project/binarymas
 |                    | Build Status | Test Coverage |
 |--------------------|--------------------|-------------------|
 | Windows (AppVeyor) | [![Build status](https://ci.appveyor.com/api/projects/status/fe6ta6qtgyat5i6u/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn/branch/master) | [![Coverage Status](https://coveralls.io/repos/github/binarymash/evelyn/badge.svg?branch=master)](https://coveralls.io/github/binarymash/evelyn?branch=master) |
-| Ubuntu (AppVeyor)  | [![Build status](https://ci.appveyor.com/projects/status/fya8g0lne2ru7j5c/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn-4lkyc/branch/master)                    | -                 |
+| Ubuntu (AppVeyor)  | [![Build status](https://ci.appveyor.com/api/projects/status/fya8g0lne2ru7j5c/branch/master?svg=true)](https://ci.appveyor.com/project/binarymash/evelyn-4lkyc/branch/master)                    | -                 |
 
 Release builds are published to https://www.nuget.org/
 
