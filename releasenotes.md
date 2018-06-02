@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version 0.10.0 (2018-06-01)
+
+ - [#116](https://github.com/binarymash/evelyn/issues/116) - Linux build pipeline contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#115](https://github.com/binarymash/evelyn/pull/115) - Feature/#113 add name to environments contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 70cb7f43aa...e91a58bb7f
+
 ## Version 0.9.0 (2018-05-29)
 
  - [#112](https://github.com/binarymash/evelyn/pull/112) - Publish stable to nuget.org contributed by Philip Wood ([binarymash](https://github.com/binarymash))

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.0-dev</Version>   
+    <Version>0.0.0-dev</Version>
     <Description>Core functionality for Evelyn clients</Description>
     <PackageProjectUrl>https://github.com/binarymash/evelyn</PackageProjectUrl>
     <Copyright>Philip Wood 2018</Copyright>
@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/binarymash/evelyn</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageLicenseUrl>https://github.com/binarymash/evelyn/blob/master/LICENSE</PackageLicenseUrl>    
+    <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>   
   
   </PropertyGroup>
 
@@ -22,7 +23,17 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xPlatform|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-xPlatform|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 

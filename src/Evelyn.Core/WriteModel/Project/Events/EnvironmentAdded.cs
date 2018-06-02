@@ -4,11 +4,14 @@
 
     public class EnvironmentAdded : Event
     {
-        public EnvironmentAdded(string userId, Guid projectId, string key, DateTimeOffset occurredAt)
+        public EnvironmentAdded(string userId, Guid projectId, string key, string name, DateTimeOffset occurredAt)
             : base(userId, projectId, occurredAt)
         {
+            Name = name;
             Key = key;
         }
+
+        public string Name { get; set; }
 
         public string Key { get; set; }
     }
