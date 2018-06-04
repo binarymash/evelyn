@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Host
+﻿namespace Evelyn.Server.Host
 {
     using System;
     using EventStore.ClientAPI;
@@ -10,7 +10,7 @@
         private readonly Uri _uri;
         private readonly string _connectionName;
 
-        public EventStoreConnectionFactory(string uri, string connectionName = "Evelyn.Host")
+        public EventStoreConnectionFactory(string uri, string connectionName = "Evelyn.Server.Host")
         {
             _connectionSettings = ConnectionSettings.Create()
                 .EnableVerboseLogging()

@@ -1,10 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.0.0-dev</Version>
+    <Description>Core functionality for Evelyn</Description>
+    <PackageProjectUrl>https://github.com/binarymash/evelyn</PackageProjectUrl>
+    <Copyright>Philip Wood 2018</Copyright>
+    <Authors>Philip Wood</Authors>
+    <Company />
+    <RepositoryUrl>https://github.com/binarymash/evelyn</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/binarymash/evelyn/blob/master/LICENSE</PackageLicenseUrl>
     <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>    
   </PropertyGroup>
 
@@ -34,8 +42,8 @@
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.0.3" />    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.0" />    
     <PackageReference Include="Scrutor" Version="2.2.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>

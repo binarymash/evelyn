@@ -12,7 +12,7 @@ The Evelyn Stack consists of the following parts:
 
 - A core framework providing the underlying feature toggling functionality, written in C# and targetting .NET Standard 2.0 
 
-- A REST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.0.
+- A REST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.1.
 
 - A management user interface, built on React/Redux/Node.
 

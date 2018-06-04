@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
+    using Microsoft.Extensions.Hosting;
 
     public abstract class EventStreamHandler<TProjectionBuilderRequest, TDto> : BackgroundService
     {
