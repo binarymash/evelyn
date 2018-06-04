@@ -21,7 +21,7 @@ Evelyn is a `feature toggling <https://martinfowler.com/articles/feature-toggles
 The Evelyn Stack consists of the following parts:
 
 - A core framework providing the underlying feature toggling functionality, written in C# and targetting .NET Standard 2.0
-- A ReST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.0.
+- A ReST API server and client that expose this functionality over HTTP, written in C# and targetting .NET Standard 2.0. Sample hosts are provided for .NET Core 2.1.
 - A management user interface, built on React/Redux/Node.
 
 Evelyn has a modular architecture which allows for flexible deployment configurations and user extensibility. The core framework is built around CQRS and Event Sourcing: implementations are provided for an in-memory event store and for Greg Young's `Event Store <https://eventstore.org/>`_; you can plug in your own event store integration.
