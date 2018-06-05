@@ -38,11 +38,6 @@
 
         public async Task Delete(TKey key)
         {
-            if (_items.ContainsKey(key))
-            {
-                throw new NotFoundException();
-            }
-
             _items.Remove(key);
             await Task.CompletedTask;
         }
