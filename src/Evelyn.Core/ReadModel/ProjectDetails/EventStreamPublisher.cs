@@ -49,5 +49,11 @@
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
+
+        public Task Handle(ProjectDeleted message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
     }
 }

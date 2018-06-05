@@ -54,6 +54,14 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void ProjectDeleted()
+        {
+            this.When(_ => WhenProjectDeletedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<ProjectDetailsDto>())
+                .BDDfy();
+        }
+
         private async Task WhenProjectCreatedEventIsHandled()
         {
             var message = Fixture.Create<ProjectCreated>();
@@ -85,6 +93,13 @@
         private async Task WhenToggleDeletedEventIsHandled()
         {
             var message = Fixture.Create<ToggleDeleted>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
+        private async Task WhenProjectDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<ProjectDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }

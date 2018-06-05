@@ -58,6 +58,16 @@
         }
 
         [Fact]
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveAProjectThatHasBeenDeleted())
+                .And(_ => GivenTheProjectIsInTheRepository())
+                .When(_ => WhenWeInvokeTheProjectionBuilder())
+                .Then(_ => ThenANullProjectionIsReturned())
+                .BDDfy();
+        }
+
+        [Fact]
         public void SomeOtherExceptionFromEventStore()
         {
             this.Given(_ => GivenTheEventStoreThrowsSomeOtherException())
@@ -80,6 +90,24 @@
             SubstituteRepository
                 .Get<Project>(_projectId, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(_project));
+        }
+
+        private void GivenWeHaveAProjectThatHasBeenDeleted()
+        {
+            _projectId = DataFixture.Create<Guid>();
+
+            _projectEvents.Add(DataFixture.Build<ProjectCreated>()
+                .With(ev => ev.Version, 0)
+                .With(ev => ev.Id, _projectId)
+                .Create());
+
+            _projectEvents.Add(DataFixture.Build<ProjectDeleted>()
+                .With(ev => ev.Version, 1)
+                .With(ev => ev.Id, _projectId)
+                .Create());
+
+            _project = new Project();
+            _project.LoadFromHistory(_projectEvents);
         }
 
         private void GivenWeHaveAProjectWithEnvironmentsAndToggles()
