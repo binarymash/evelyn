@@ -3,7 +3,7 @@
     using System;
     using CQRSlite.Domain.Exception;
 
-    public class ToggleState
+    public class ToggleState : ScopedEntity
     {
         public ToggleState()
         {
@@ -22,19 +22,9 @@
             LastModifiedBy = userId;
         }
 
-        public void AssertVersion(int expectedVersion, Guid aggregateId)
-        {
-            if (ScopedVersion != expectedVersion)
-            {
-                throw new ConcurrencyException(aggregateId);
-            }
-        }
-
         public string Key { get; private set; }
 
         public string Value { get; private set; }
-
-        public int ScopedVersion { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 

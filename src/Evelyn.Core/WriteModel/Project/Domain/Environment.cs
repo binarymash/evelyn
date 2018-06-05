@@ -1,9 +1,8 @@
 ﻿namespace Evelyn.Core.WriteModel.Project.Domain
 {
     using System;
-    using CQRSlite.Domain.Exception;
 
-    public class Environment : IScopedEntity
+    public class Environment : ScopedEntity
     {
         public Environment()
         {
@@ -22,14 +21,6 @@
             ScopedVersion = 0;
         }
 
-        public void AssertVersion(int expectedVersion, Guid aggregateId)
-        {
-            if (ScopedVersion != expectedVersion)
-            {
-                throw new ConcurrencyException(aggregateId);
-            }
-        }
-
         public string Key { get; private set; }
 
         public string Name { get; private set; }
@@ -41,7 +32,5 @@
         public DateTimeOffset LastModified { get; private set; }
 
         public string LastModifiedBy { get; private set; }
-
-        public int ScopedVersion { get; private set; }
     }
 }

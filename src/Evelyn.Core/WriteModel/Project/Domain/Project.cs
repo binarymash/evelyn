@@ -7,7 +7,7 @@
     using Events;
     using Newtonsoft.Json;
 
-    public class Project : EvelynAggregateRoot, IScopedEntity
+    public class Project : EvelynAggregateRoot
     {
         [JsonProperty("Environments")]
         private List<Environment> _environments;
