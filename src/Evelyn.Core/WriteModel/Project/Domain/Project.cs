@@ -212,7 +212,6 @@
 
         private void Apply(EnvironmentDeleted e)
         {
-
             ScopedVersion++;
 
             var environment = _environments.First(t => t.Key == e.Key);

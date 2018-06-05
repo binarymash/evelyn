@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Management.Api.Rest.Write.Projects
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
@@ -17,11 +16,13 @@
     [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
-        private readonly ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> _handler;
+        private readonly ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> _createHandler;
+        private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteProject.Command> _deleteHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> handler)
+        public Controller(ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> createHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteProject.Command> deleteHandler)
         {
-            _handler = handler;
+            _createHandler = createHandler;
+            _deleteHandler = deleteHandler;
         }
 
         [Route("create")]
@@ -31,7 +32,31 @@
             try
             {
                 var command = new Core.WriteModel.Account.Commands.CreateProject.Command(UserId, AccountId, message.ProjectId, message.Name);
-                await _handler.Handle(command);
+                await _createHandler.Handle(command);
+                return Accepted();
+            }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
+            catch (ConcurrencyException ex)
+            {
+                return HandleConcurrencyException(ex);
+            }
+            catch (Exception ex)
+            {
+                return HandleInternalError(ex);
+            }
+        }
+
+        [Route("{projectId}/delete")]
+        [HttpPost]
+        public async Task<ObjectResult> Post(Guid projectId, [FromBody]Messages.DeleteProject message)
+        {
+            try
+            {
+                var command = new Core.WriteModel.Project.Commands.DeleteProject.Command(UserId, projectId, message.ExpectedProjectVersion);
+                await _deleteHandler.Handle(command);
                 return Accepted();
             }
             catch (ValidationException ex)
