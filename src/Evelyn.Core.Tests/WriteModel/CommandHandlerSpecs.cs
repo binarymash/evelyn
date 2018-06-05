@@ -154,6 +154,11 @@
             PublishedEvents.Count.Should().Be(3);
         }
 
+        protected void ThenSevenEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(7);
+        }
+
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)
         {
             ThrownException.Should().BeOfType<InvalidOperationException>();
@@ -238,6 +243,8 @@
                 case ProjectCommands.DeleteEnvironment.Command c:
                     return c.ProjectId;
                 case ProjectCommands.ChangeToggleState.Command c:
+                    return c.ProjectId;
+                case ProjectCommands.DeleteProject.Command c:
                     return c.ProjectId;
 
                 default:

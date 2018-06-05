@@ -54,5 +54,12 @@
             LastModified = @event.OccurredAt;
             LastModifiedBy = @event.UserId;
         }
+
+        private void Apply(ProjectDeleted @event)
+        {
+            _projects.Remove(@event.ProjectId);
+            LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
+        }
     }
 }
