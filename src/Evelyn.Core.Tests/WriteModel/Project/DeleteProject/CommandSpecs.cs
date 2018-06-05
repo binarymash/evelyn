@@ -34,7 +34,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
                 .And(_ => GivenWeHaveDeletedTheProject())
                 .When(_ => WhenWeDeleteTheProject())
                 .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAProjectDeletedExceptionIsThrown())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
@@ -227,11 +227,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
             ev.UserId.Should().Be(UserId);
             ev.OccurredAt.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
-        }
-
-        private void ThenAProjectDeletedExceptionIsThrown()
-        {
-            ThenAnInvalidOperationExceptionIsThrownWithMessage($"The project with id {_projectId} has already been deleted");
         }
 
         private void ThenTheAggregateRootIsMarkedAsDeleted()

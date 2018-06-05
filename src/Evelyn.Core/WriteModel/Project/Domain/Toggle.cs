@@ -2,6 +2,7 @@
 {
     using System;
     using System.Globalization;
+    using CQRSlite.Domain.Exception;
     using Newtonsoft.Json;
 
     [JsonObject]
@@ -20,6 +21,14 @@
             LastModified = occurredAt;
             LastModifiedBy = userId;
             ScopedVersion = 0;
+        }
+
+        public void AssertVersion(int expectedVersion, Guid aggregateId)
+        {
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(aggregateId);
+            }
         }
 
         public string Name { get; private set; }

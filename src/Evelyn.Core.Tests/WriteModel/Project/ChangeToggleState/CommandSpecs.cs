@@ -20,6 +20,20 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
         private int _toggleStateVersion = -1;
 
         [Fact]
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveCreatedAnEnvironment())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenWeHaveDeletedTheProject())
+                .When(_ => WhenWeChangeTheToggleState())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
         public void EnvironmentDoesntExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
@@ -108,6 +122,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             _projectId = DataFixture.Create<Guid>();
 
             GivenWeHaveCreatedAProjectWith(_projectId);
+        }
+
+        private void GivenWeHaveDeletedTheProject()
+        {
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveCreatedAnEnvironment()

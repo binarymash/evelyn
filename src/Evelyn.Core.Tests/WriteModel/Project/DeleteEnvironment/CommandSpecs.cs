@@ -28,6 +28,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         }
 
         [Fact]
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAnEnvironment())
+                .And(_ => GivenWeHaveAddedAnotherEnvironment())
+                .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
+                .And(_ => GivenWeHaveDeletedTheProject())
+
+                .When(_ => WhenWeDeleteTheEnvironment())
+
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
         public void EnvironmentDoesNotExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
@@ -119,6 +137,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         {
             _environmentToDeleteKey = _environment1Key;
             _environmentToDeleteVersion = _environment1Version;
+        }
+
+        private void GivenWeHaveDeletedTheProject()
+        {
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void GivenWeHaveAddedAnEnvironment()

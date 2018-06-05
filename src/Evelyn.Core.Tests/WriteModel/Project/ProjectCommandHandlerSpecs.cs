@@ -46,6 +46,11 @@
             HistoricalEvents.Add(environmentStateAdded);
         }
 
+        protected void ThenAProjectDeletedExceptionIsThrownFor(Guid id)
+        {
+            ThenAnInvalidOperationExceptionIsThrownWithMessage($"The project with id {id} has already been deleted");
+        }
+
         protected void ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(int increment)
         {
             NewAggregate.ScopedVersion.Should().Be(OriginalAggregate.ScopedVersion + increment);

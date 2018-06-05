@@ -25,6 +25,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         private int _projectVersion = -1;
 
         [Fact]
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveDeletedTheProject())
+                .When(_ => WhenWeAddAnEnvironment())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
         public void EnvironmentAlreadyExistWithSameKey()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
@@ -106,6 +118,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         {
             _projectId = DataFixture.Create<Guid>();
             GivenWeHaveCreatedAProjectWith(_projectId);
+            _projectVersion++;
+        }
+
+        private void GivenWeHaveDeletedTheProject()
+        {
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
             _projectVersion++;
         }
 

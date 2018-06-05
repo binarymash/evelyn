@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Core.WriteModel.Project.Domain
 {
     using System;
+    using CQRSlite.Domain.Exception;
 
     public class ToggleState
     {
@@ -19,6 +20,14 @@
             CreatedBy = userId;
             LastModified = occurredAt;
             LastModifiedBy = userId;
+        }
+
+        public void AssertVersion(int expectedVersion, Guid aggregateId)
+        {
+            if (ScopedVersion != expectedVersion)
+            {
+                throw new ConcurrencyException(aggregateId);
+            }
         }
 
         public string Key { get; private set; }
