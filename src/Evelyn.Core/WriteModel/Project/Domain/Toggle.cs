@@ -2,10 +2,11 @@
 {
     using System;
     using System.Globalization;
+    using CQRSlite.Domain.Exception;
     using Newtonsoft.Json;
 
     [JsonObject]
-    public class Toggle : IScopedEntity
+    public class Toggle : ScopedEntity
     {
         public Toggle()
         {
@@ -33,8 +34,6 @@
         public DateTimeOffset LastModified { get; private set; }
 
         public string LastModifiedBy { get; private set; }
-
-        public int ScopedVersion { get; private set; }
 
         public string DefaultValue => default(bool).ToString(CultureInfo.InvariantCulture);
     }

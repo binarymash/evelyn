@@ -6,7 +6,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using Core;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
-    using Evelyn.Core.WriteModel.Account.Commands.CreateProject;
+    using Evelyn.Core.WriteModel.Project.Commands.DeleteProject;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -14,25 +14,27 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using TestStack.BDDfy;
     using Xunit;
 
-    public class CreateProjectSpecs
+    public class DeleteProjectSpecs
     {
         private readonly Fixture _fixture;
         private readonly Rest.Write.Projects.Controller _controller;
-        private readonly ICommandHandler<Command> _createProjectHandler;
-        private Rest.Write.Projects.Messages.CreateProject _message;
+        private readonly ICommandHandler<Command> _deleteProjectHandler;
+        private Rest.Write.Projects.Messages.DeleteProject _message;
         private ObjectResult _result;
+        private Guid _projectId;
 
-        public CreateProjectSpecs()
+        public DeleteProjectSpecs()
         {
             _fixture = new Fixture();
-            _createProjectHandler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.Projects.Controller(_createProjectHandler, null);
+            _deleteProjectHandler = Substitute.For<ICommandHandler<Command>>();
+            _controller = new Rest.Write.Projects.Controller(null, _deleteProjectHandler);
+            _projectId = _fixture.Create<Guid>();
         }
 
         [Fact]
-        public void SuccessfulCreateProject()
+        public void SuccessfulDeleteProject()
         {
-            this.Given(_ => GivenAValidCreateProjectCommand())
+            this.Given(_ => GivenAValidDeleteProjectCommand())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
                 .And(_ => ThenA202AcceptedStatusIsReturned())
@@ -42,7 +44,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         [Fact]
         public void ConcurrencyExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidCreateProjectCommand())
+            this.Given(_ => GivenAValidDeleteProjectCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAConcurrencyException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
@@ -53,7 +55,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         [Fact]
         public void ExceptionThrownByCommandHandler()
         {
-            this.Given(_ => GivenAValidCreateProjectCommand())
+            this.Given(_ => GivenAValidDeleteProjectCommand())
                 .And(_ => GivenTheCommandHandlerWillThrowAnException())
                 .When(_ => WhenTheMessageIsPosted())
                 .Then(_ => ThenTheCommandIsPassedToTheCommandHandler())
@@ -61,40 +63,38 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
                 .BDDfy();
         }
 
-        private void GivenAValidCreateProjectCommand()
+        private void GivenAValidDeleteProjectCommand()
         {
-            _message = _fixture.Create<Rest.Write.Projects.Messages.CreateProject>();
+            _message = _fixture.Create<Rest.Write.Projects.Messages.DeleteProject>();
         }
 
         private void GivenTheCommandHandlerWillThrowAConcurrencyException()
         {
-            _createProjectHandler
+            _deleteProjectHandler
                 .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()
         {
-            _createProjectHandler
+            _deleteProjectHandler
                 .Handle(Arg.Any<Command>())
                 .Returns(cah => throw new System.Exception("boom!"));
         }
 
         private async Task WhenTheMessageIsPosted()
         {
-            _result = await _controller.Post(_message);
+            _result = await _controller.Post(_projectId, _message);
         }
 
         private void ThenTheCommandIsPassedToTheCommandHandler()
         {
-            _createProjectHandler
+            _deleteProjectHandler
                 .Received(1)
                 .Handle(Arg.Is<Command>(command =>
                     command.UserId == Constants.AnonymousUser &&
-                    command.Id == Constants.DefaultAccount &&
-                    command.ProjectId == _message.ProjectId &&
-                    command.Name == _message.Name &&
-                    command.ExpectedVersion == null));
+                    command.ProjectId == _projectId &&
+                    command.ExpectedProjectVersion == _message.ExpectedProjectVersion));
         }
 
         private void ThenA202AcceptedStatusIsReturned()

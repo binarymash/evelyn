@@ -8,7 +8,8 @@
 
     public class EventStreamPublisher :
         ICancellableEventHandler<AccountEvents.AccountRegistered>,
-        ICancellableEventHandler<AccountEvents.ProjectCreated>
+        ICancellableEventHandler<AccountEvents.ProjectCreated>,
+        ICancellableEventHandler<AccountEvents.ProjectDeleted>
     {
         private readonly Queue<IEvent> _eventStream;
 
@@ -23,7 +24,13 @@
             return Task.CompletedTask;
         }
 
-        public Task Handle(AccountEvents.ProjectCreated message, CancellationToken token = default(CancellationToken))
+        public Task Handle(AccountEvents.ProjectCreated message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(AccountEvents.ProjectDeleted message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

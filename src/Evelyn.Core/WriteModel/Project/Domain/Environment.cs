@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class Environment : IScopedEntity
+    public class Environment : ScopedEntity
     {
         public Environment()
         {
@@ -32,7 +32,5 @@
         public DateTimeOffset LastModified { get; private set; }
 
         public string LastModifiedBy { get; private set; }
-
-        public int ScopedVersion { get; private set; }
     }
 }
