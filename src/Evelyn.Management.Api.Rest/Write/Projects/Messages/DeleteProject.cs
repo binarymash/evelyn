@@ -2,11 +2,11 @@
 {
     public class DeleteProject
     {
-        public DeleteProject(int expectedProjectVersion)
+        public DeleteProject(int? expectedProjectVersion)
         {
             ExpectedProjectVersion = expectedProjectVersion;
         }
 
-        public int ExpectedProjectVersion { get; set; }
+        public int? ExpectedProjectVersion { get; set; }
     }
 }

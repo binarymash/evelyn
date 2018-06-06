@@ -159,7 +159,7 @@
             ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow));
         }
 
-        public void DeleteProject(string userId, int expectedProjectVersion)
+        public void DeleteProject(string userId, int? expectedProjectVersion)
         {
             AssertVersion(expectedProjectVersion);
             AssertNotDeleted();
@@ -284,11 +284,14 @@
             IsDeleted = true;
         }
 
-        private void AssertVersion(int expectedVersion)
+        private void AssertVersion(int? expectedVersion)
         {
-            if (ScopedVersion != expectedVersion)
+            if (expectedVersion.HasValue)
             {
-                throw new ConcurrencyException(Id);
+                if (ScopedVersion != expectedVersion.Value)
+                {
+                    throw new ConcurrencyException(Id);
+                }
             }
         }
 
