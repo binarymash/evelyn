@@ -55,7 +55,7 @@
         {
             try
             {
-                var command = new Core.WriteModel.Project.Commands.DeleteProject.Command(UserId, projectId, message.ExpectedProjectVersion);
+                var command = new Core.WriteModel.Project.Commands.DeleteProject.Command(UserId, AccountId, projectId, message.ExpectedProjectVersion);
                 await _deleteHandler.Handle(command);
                 return Accepted();
             }

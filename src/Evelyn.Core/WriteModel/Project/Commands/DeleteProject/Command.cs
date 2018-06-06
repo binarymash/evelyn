@@ -4,12 +4,15 @@
 
     public class Command : WriteModel.Command
     {
-        public Command(string userId, Guid projectId, int expectedProjectVersion)
+        public Command(string userId, Guid accountId, Guid projectId, int expectedProjectVersion)
             : base(userId)
         {
+            AccountId = accountId;
             ProjectId = projectId;
             ExpectedProjectVersion = expectedProjectVersion;
         }
+
+        public Guid AccountId { get; set; }
 
         public Guid ProjectId { get; set; }
 

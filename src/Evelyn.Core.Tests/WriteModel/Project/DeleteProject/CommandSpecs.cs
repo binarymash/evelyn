@@ -12,8 +12,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
     public class CommandSpecs : ProjectCommandHandlerSpecs<Handler, Command>
     {
+        private Guid _accountId;
+        private int _accountEventCount;
+
         private Guid _projectId;
-        private int _projectVersion;
+        private int _projectEventCount;
+        private int _scopedProjectVersion;
 
         private string _environment1Key;
         private string _environment2Key;
@@ -24,13 +28,16 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
         public CommandSpecs()
         {
             IgnoreCollectionOrderDuringComparison = true;
-            _projectVersion = -1;
+            _accountEventCount = 0;
+            _projectEventCount = 0;
+            _scopedProjectVersion = -1;
         }
 
         [Fact]
         public void AlreadyDeleted()
         {
-            this.Given(_ => GivenWeHaveCreatedAProject())
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveDeletedTheProject())
                 .When(_ => WhenWeDeleteTheProject())
                 .Then(_ => ThenNoEventIsPublished())
@@ -42,7 +49,8 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
         [Fact]
         public void FutureProjectVersion()
         {
-            this.Given(_ => GivenWeHaveCreatedAProject())
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
                 .When(_ => WhenWeDeleteTheProject())
                 .Then(_ => ThenNoEventIsPublished())
@@ -52,16 +60,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
         }
 
         [Fact]
-        public void ToggleExistsAndThereAreMultipleEnvironments()
+        public void ProjectExistsWithTogglesAndEnvironments()
         {
-            this.Given(_ => GivenWeHaveCreatedAProject())
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveAddedAnotherToggle())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
 
                 .When(_ => WhenWeDeleteTheProject())
 
-                .Then(_ => ThenSevenEventsArePublished())
+                .Then(_ => ThenEightEventsArePublished())
 
                 .And(_ => ThenAProjectDeletedEventIsPublished())
                 .And(_ => ThenAnEnvironmentDeletedEventIsPublishedForEnvironment1())
@@ -100,17 +109,31 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             return new Handler(Session);
         }
 
+        private void GivenWeHaveRegisteredAnAccount()
+        {
+            _accountId = DataFixture.Create<Guid>();
+
+            HistoricalEvents.Add(new Core.WriteModel.Account.Events.AccountRegistered(UserId, _accountId, DateTimeOffset.UtcNow) { Version = _accountEventCount });
+            _accountEventCount++;
+        }
+
         private void GivenWeHaveCreatedAProject()
         {
             _projectId = DataFixture.Create<Guid>();
-            GivenWeHaveCreatedAProjectWith(_projectId);
-            _projectVersion++;
+
+            HistoricalEvents.Add(new Core.WriteModel.Account.Events.ProjectCreated(UserId, _accountId, _projectId, DateTimeOffset.UtcNow) { Version = _accountEventCount });
+            _accountEventCount++;
+
+            GivenWeHaveCreatedAProjectWith(_projectId, _projectEventCount);
+            _projectEventCount++;
+            _scopedProjectVersion++;
         }
 
         private void GivenWeHaveDeletedTheProject()
         {
-            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _projectVersion++;
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTimeOffset.UtcNow) { Version = _projectEventCount });
+            _projectEventCount++;
+            _scopedProjectVersion++;
         }
 
         private void GivenWeHaveAddedTwoEnvironments()
@@ -118,44 +141,54 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _environment1Key = DataFixture.Create<string>();
             _environment2Key = DataFixture.Create<string>();
 
-            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment1Key);
+            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment1Key, _projectEventCount);
+            _projectEventCount++;
+            _scopedProjectVersion++;
+
             GivenWeHaveAddedAnEnvironmentStateWith(
                 _projectId,
                 _environment1Key,
+                _projectEventCount,
                 new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(_toggle1Key, default), new KeyValuePair<string, string>(_toggle2Key, default) });
+            _projectEventCount++;
 
-            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
+            GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key, _projectEventCount);
+            _projectEventCount++;
+            _scopedProjectVersion++;
+
             GivenWeHaveAddedAnEnvironmentStateWith(
                 _projectId,
                 _environment2Key,
+                _projectEventCount,
                 new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(_toggle1Key, default), new KeyValuePair<string, string>(_toggle2Key, default) });
-
-            _projectVersion += 2;
+            _projectEventCount++;
         }
 
         private void GivenWeHaveAddedAToggle()
         {
             _toggle1Key = DataFixture.Create<string>();
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _projectVersion++;
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = _projectEventCount });
+            _projectEventCount++;
+            _scopedProjectVersion++;
         }
 
         private void GivenWeHaveAddedAnotherToggle()
         {
             _toggle2Key = DataFixture.Create<string>();
-            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _projectVersion++;
+            HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = _projectEventCount });
+            _projectEventCount++;
+            _scopedProjectVersion++;
         }
 
         private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
         {
-            _projectVersion++;
+            _scopedProjectVersion++;
         }
 
         private void WhenWeDeleteTheProject()
         {
             UserId = DataFixture.Create<string>();
-            var command = new Command(UserId, _projectId, _projectVersion);
+            var command = new Command(UserId, _accountId, _projectId, _scopedProjectVersion);
             WhenWeHandle(command);
         }
 

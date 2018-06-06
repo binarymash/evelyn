@@ -159,6 +159,11 @@
             PublishedEvents.Count.Should().Be(7);
         }
 
+        protected void ThenEightEventsArePublished()
+        {
+            PublishedEvents.Count.Should().Be(8);
+        }
+
         protected void ThenAnInvalidOperationExceptionIsThrownWithMessage(string expectedMessage)
         {
             ThrownException.Should().BeOfType<InvalidOperationException>();

@@ -11,7 +11,8 @@
         ICancellableEventHandler<EnvironmentAdded>,
         ICancellableEventHandler<EnvironmentDeleted>,
         ICancellableEventHandler<ToggleAdded>,
-        ICancellableEventHandler<ToggleDeleted>
+        ICancellableEventHandler<ToggleDeleted>,
+        ICancellableEventHandler<ProjectDeleted>
     {
         private readonly Queue<IEvent> _eventStream;
 

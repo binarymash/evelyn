@@ -39,6 +39,14 @@
             return new Project(userId, this.Id, projectId, name);
         }
 
+        public void DeleteProject(string userId, Guid projectId)
+        {
+            if (_projects.Contains(projectId))
+            {
+                ApplyChange(new ProjectDeleted(userId, Id, projectId, DateTimeOffset.UtcNow));
+            }
+        }
+
         private void Apply(AccountRegistered @event)
         {
             Id = @event.Id;
