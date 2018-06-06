@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class EnvironmentState : IScopedEntity
+    public class EnvironmentState : ScopedEntity
     {
         private readonly IList<ToggleState> _toggleStates;
 
@@ -29,8 +29,6 @@
         public string EnvironmentKey { get; private set; }
 
         public IEnumerable<ToggleState> ToggleStates => _toggleStates;
-
-        public int ScopedVersion { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 

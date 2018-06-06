@@ -25,7 +25,19 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         private int _projectVersion = -1;
 
         [Fact]
-        public void ToggleAlreadyExistWithSameKey()
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveDeletedTheProject())
+                .When(_ => WhenWeAddAToggle())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ToggleAlreadyExistsWithSameKey()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
@@ -37,7 +49,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         }
 
         [Fact]
-        public void ToggleAlreadyExistWithSameName()
+        public void ToggleAlreadyExistsWithSameName()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
@@ -135,6 +147,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             _projectId = DataFixture.Create<Guid>();
 
             GivenWeHaveCreatedAProjectWith(_projectId);
+            _projectVersion++;
+        }
+
+        private void GivenWeHaveDeletedTheProject()
+        {
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
             _projectVersion++;
         }
 

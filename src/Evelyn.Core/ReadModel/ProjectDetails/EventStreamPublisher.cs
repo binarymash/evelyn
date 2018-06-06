@@ -11,7 +11,8 @@
         ICancellableEventHandler<EnvironmentAdded>,
         ICancellableEventHandler<EnvironmentDeleted>,
         ICancellableEventHandler<ToggleAdded>,
-        ICancellableEventHandler<ToggleDeleted>
+        ICancellableEventHandler<ToggleDeleted>,
+        ICancellableEventHandler<ProjectDeleted>
     {
         private readonly Queue<IEvent> _eventStream;
 
@@ -45,6 +46,12 @@
         }
 
         public Task Handle(ToggleDeleted message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
+        public Task Handle(ProjectDeleted message, CancellationToken token = default)
         {
             _eventStream.Enqueue(message);
             return Task.CompletedTask;

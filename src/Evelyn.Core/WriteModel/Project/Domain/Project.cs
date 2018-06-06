@@ -7,7 +7,7 @@
     using Events;
     using Newtonsoft.Json;
 
-    public class Project : EvelynAggregateRoot, IScopedEntity
+    public class Project : EvelynAggregateRoot
     {
         [JsonProperty("Environments")]
         private List<Environment> _environments;
@@ -25,6 +25,7 @@
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
             _environmentStates = new List<EnvironmentState>();
+            IsDeleted = false;
         }
 
         public Project(string userId, Guid accountId, Guid projectId, string name)
@@ -32,6 +33,8 @@
         {
             ApplyChange(new ProjectCreated(userId, accountId, projectId, name, DateTimeOffset.UtcNow));
         }
+
+        public bool IsDeleted { get; private set; }
 
         [JsonIgnore]
         public IEnumerable<Environment> Environments => _environments.ToList();
@@ -48,10 +51,8 @@
 
         public void AddEnvironment(string userId, string key, string name, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedProjectVersion)
-            {
-                throw new ConcurrencyException(Id);
-            }
+            AssertNotDeleted();
+            AssertVersion(expectedProjectVersion);
 
             if (_environments.Any(e => e.Key == key))
             {
@@ -73,10 +74,8 @@
 
         public void AddToggle(string userId, string key, string name, int expectedProjectVersion)
         {
-            if (ScopedVersion != expectedProjectVersion)
-            {
-                throw new ConcurrencyException(Id);
-            }
+            AssertNotDeleted();
+            AssertVersion(expectedProjectVersion);
 
             if (_toggles.Any(t => t.Key == key))
             {
@@ -100,6 +99,8 @@
 
         public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedToggleStateVersion)
         {
+            AssertNotDeleted();
+
             var environmentState = _environmentStates.FirstOrDefault(e => e.EnvironmentKey == environmentKey);
             if (environmentState == null)
             {
@@ -112,10 +113,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
             }
 
-            if (toggleState.ScopedVersion != expectedToggleStateVersion)
-            {
-                throw new ConcurrencyException(Guid.Empty);
-            }
+            toggleState.AssertVersion(expectedToggleStateVersion, Id);
 
             if (!bool.TryParse(value, out var parsedValue))
             {
@@ -127,16 +125,15 @@
 
         public void DeleteToggle(string userId, string key, int expectedToggleVersion)
         {
+            AssertNotDeleted();
+
             var toggle = _toggles.FirstOrDefault(t => t.Key == key);
             if (toggle == null)
             {
                 throw new InvalidOperationException($"There is no toggle with the key {key}");
             }
 
-            if (toggle.ScopedVersion != expectedToggleVersion)
-            {
-                throw new ConcurrencyException(Id);
-            }
+            toggle.AssertVersion(expectedToggleVersion, Id);
 
             ApplyChange(new ToggleDeleted(userId, Id, key, DateTimeOffset.UtcNow));
 
@@ -148,19 +145,43 @@
 
         public void DeleteEnvironment(string userId, string key, int expectedEnvironmentVersion)
         {
+            AssertNotDeleted();
+
             var environment = _environments.FirstOrDefault(t => t.Key == key);
             if (environment == null)
             {
                 throw new InvalidOperationException($"There is no environment with the key {key}");
             }
 
-            if (environment.ScopedVersion != expectedEnvironmentVersion)
-            {
-                throw new ConcurrencyException(Id);
-            }
+            environment.AssertVersion(expectedEnvironmentVersion, Id);
 
             ApplyChange(new EnvironmentDeleted(userId, Id, key, DateTimeOffset.UtcNow));
             ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow));
+        }
+
+        public void DeleteProject(string userId, int? expectedProjectVersion)
+        {
+            AssertVersion(expectedProjectVersion);
+            AssertNotDeleted();
+
+            var now = DateTime.UtcNow;
+
+            ApplyChange(new ProjectDeleted(userId, Id, now));
+
+            foreach (var toggle in Toggles)
+            {
+                ApplyChange(new ToggleDeleted(userId, Id, toggle.Key, DateTimeOffset.UtcNow));
+            }
+
+            foreach (var environment in Environments)
+            {
+                ApplyChange(new EnvironmentDeleted(userId, Id, environment.Key, now));
+            }
+
+            foreach (var environmentState in EnvironmentStates)
+            {
+                ApplyChange(new EnvironmentStateDeleted(userId, Id, environmentState.EnvironmentKey, now));
+            }
         }
 
         private void Apply(ProjectCreated e)
@@ -254,6 +275,32 @@
             _environmentStates
                 .First(es => es.EnvironmentKey == e.EnvironmentKey)
                 .DeleteToggleState(e.ToggleKey, e.OccurredAt, e.UserId);
+        }
+
+        private void Apply(ProjectDeleted e)
+        {
+            ScopedVersion++;
+
+            IsDeleted = true;
+        }
+
+        private void AssertVersion(int? expectedVersion)
+        {
+            if (expectedVersion.HasValue)
+            {
+                if (ScopedVersion != expectedVersion.Value)
+                {
+                    throw new ConcurrencyException(Id);
+                }
+            }
+        }
+
+        private void AssertNotDeleted()
+        {
+            if (IsDeleted)
+            {
+                throw new InvalidOperationException($"The project with id {Id} has already been deleted");
+            }
         }
     }
 }

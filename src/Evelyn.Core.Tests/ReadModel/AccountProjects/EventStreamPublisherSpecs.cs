@@ -30,6 +30,14 @@
                 .BDDfy();
         }
 
+        [Fact]
+        public void ProjectDeleted()
+        {
+            this.When(_ => WhenProjectDeletedEventIsHandled())
+                .Then(_ => ThenTheEventIsAddedToTheStreamFor<AccountProjectsDto>())
+                .BDDfy();
+        }
+
         private async Task WhenAccountRegisteredEventIsHandled()
         {
             var message = Fixture.Create<AccountRegistered>();
@@ -40,6 +48,13 @@
         private async Task WhenProjectCreatedEventIsHandled()
         {
             var message = Fixture.Create<ProjectCreated>();
+            await Publisher.Handle(message);
+            Message = message;
+        }
+
+        private async Task WhenProjectDeletedEventIsHandled()
+        {
+            var message = Fixture.Create<ProjectDeleted>();
             await Publisher.Handle(message);
             Message = message;
         }

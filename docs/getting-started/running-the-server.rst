@@ -1,25 +1,25 @@
 Running the REST Server
 =======================
 
-A sample server host is provide for the REST API - this can be found at ``./src/Evelyn.Host``. By default this will run with an in-memory event store. You won't want to run this host in a production environment, but it's useful for now because there are no dependencies to set up and nothing to configure.
+A sample server host is provide for the REST API - this can be found at ``./src/Evelyn.Server.Host``. By default this will run with an in-memory event store. You won't want to run this host in a production environment, but it's useful for now because there are no dependencies to set up and nothing to configure.
 
 You can run the sample host in Visual Studio or on the command line.
 
 Running in Visual Studio
 ------------------------
 
-Run the ``Samples\Evelyn.Host`` project
+Run the ``Samples\Evelyn.Server.Host`` project
 
 Running on the command line
 ---------------------------
 
-``dotnet .\src\Evelyn.Host\bin\Release\netcoreapp2.0\evelyn.host.dll``
+``dotnet .\src\Evelyn.Server.Host\bin\Release\netcoreapp2.1\evelyn.server.host.dll``
 
 
 Accessing the REST Server
 -------------------------
 
-By default, the sample server host will listen on localhost:2316 - this is configured in ``./src/Evelyn.Host/Properties/launchSettings.json``. 
+By default, the sample server host will listen on localhost:2316 - this is configured in ``./src/Evelyn.Server.Host/Properties/launchSettings.json``. 
 
 The Evelyn REST API endpoints are specified using `OpenAPI <https://www.openapis.org/>`_. The sample server host is configured to show us this specification using `Swagger UI <https://swagger.io/tools/swagger-ui/>`_. We can access the Swagger UI in a browser by navigating to ``/swagger/`` endpoint of the server. So, if we're using the default config, this will be at ``http://localhost:2316/swagger/``.
 

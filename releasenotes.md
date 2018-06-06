@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.11.0 (2018-06-06)
+
+ - [#123](https://github.com/binarymash/evelyn/pull/123) - [#65](https://github.com/binarymash/evelyn/issues/65) - delete projects contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#121](https://github.com/binarymash/evelyn/pull/121) - [#102](https://github.com/binarymash/evelyn/issues/102) - upgrade to dot net core2.1 contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 70cb7f43aa...2840def112
+
+
 ## Version 0.10.0 (2018-06-01)
 
  - [#116](https://github.com/binarymash/evelyn/issues/116) - Linux build pipeline contributed by Philip Wood ([binarymash](https://github.com/binarymash))

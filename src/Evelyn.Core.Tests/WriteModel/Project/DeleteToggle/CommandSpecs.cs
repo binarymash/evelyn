@@ -32,6 +32,23 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
         }
 
         [Fact]
+        public void ProjectHasBeenDeleted()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenWeHaveAddedAnotherToggle())
+                .And(_ => GivenWeWillBeDeletingTheFirstToggle())
+                .And(_ => GivenWeHaveDeletedTheProject())
+
+                .When(_ => WhenWeDeleteTheToggle())
+
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
         public void ToggleDoesNotExist()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
@@ -178,6 +195,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
             _toggle2Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
             _toggle2Version++;
+        }
+
+        private void GivenWeHaveDeletedTheProject()
+        {
+            HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
         private void GivenTheToggleVersionForOurNextCommandIsStale()

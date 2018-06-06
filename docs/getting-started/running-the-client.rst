@@ -13,7 +13,7 @@ Run the ``Samples\Evelyn.Client.Host`` project
 Running on the command line
 ---------------------------
 
-``dotnet .\src\Evelyn.Client.Host\bin\Release\netcoreapp2.0\evelyn.client.host.dll``
+``dotnet .\src\Evelyn.Client.Host\bin\Release\netcoreapp2.1\evelyn.client.host.dll``
 
 Using a toggle
 --------------

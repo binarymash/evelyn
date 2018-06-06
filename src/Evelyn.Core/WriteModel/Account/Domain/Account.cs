@@ -39,6 +39,14 @@
             return new Project(userId, this.Id, projectId, name);
         }
 
+        public void DeleteProject(string userId, Guid projectId)
+        {
+            if (_projects.Contains(projectId))
+            {
+                ApplyChange(new ProjectDeleted(userId, Id, projectId, DateTimeOffset.UtcNow));
+            }
+        }
+
         private void Apply(AccountRegistered @event)
         {
             Id = @event.Id;
@@ -51,6 +59,13 @@
         private void Apply(ProjectCreated @event)
         {
             _projects.Add(@event.ProjectId);
+            LastModified = @event.OccurredAt;
+            LastModifiedBy = @event.UserId;
+        }
+
+        private void Apply(ProjectDeleted @event)
+        {
+            _projects.Remove(@event.ProjectId);
             LastModified = @event.OccurredAt;
             LastModifiedBy = @event.UserId;
         }

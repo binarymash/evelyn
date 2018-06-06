@@ -1,8 +1,9 @@
 ﻿namespace Evelyn.Core.WriteModel.Project.Domain
 {
     using System;
+    using CQRSlite.Domain.Exception;
 
-    public class ToggleState
+    public class ToggleState : ScopedEntity
     {
         public ToggleState()
         {
@@ -24,8 +25,6 @@
         public string Key { get; private set; }
 
         public string Value { get; private set; }
-
-        public int ScopedVersion { get; private set; }
 
         public DateTimeOffset Created { get; private set; }
 

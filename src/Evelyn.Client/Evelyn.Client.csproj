@@ -1,11 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.0.0-dev</Version>
+    <Description>Core functionality for Evelyn clients</Description>
+    <PackageProjectUrl>https://github.com/binarymash/evelyn</PackageProjectUrl>
+    <Copyright>Philip Wood 2018</Copyright>
+    <Authors>Philip Wood</Authors>
+    <Company />
+    <RepositoryUrl>https://github.com/binarymash/evelyn</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/binarymash/evelyn/blob/master/LICENSE</PackageLicenseUrl>    
     <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>   
+  
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,8 +39,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
   </ItemGroup>
 
