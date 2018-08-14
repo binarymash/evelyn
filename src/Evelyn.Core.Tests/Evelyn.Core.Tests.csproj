@@ -26,8 +26,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.5.0" />
-    <PackageReference Include="CompareNETObjects" Version="4.53.0" />
-    <PackageReference Include="FluentAssertions" Version="5.3.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.55.0" />
+    <PackageReference Include="FluentAssertions" Version="5.4.1" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
