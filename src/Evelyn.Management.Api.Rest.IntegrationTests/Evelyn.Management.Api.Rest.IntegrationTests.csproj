@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.3.0" />
+    <PackageReference Include="AutoFixture" Version="4.5.0" />
     <PackageReference Include="FluentAssertions" Version="5.3.0" />
     <PackageReference Include="Flurl.Http" Version="2.3.1" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha" />    
