@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.12.0 (2018-08-14)
+
+ - [#127](https://github.com/binarymash/evelyn/pull/127) - [#126](https://github.com/binarymash/evelyn/issues/126) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#125](https://github.com/binarymash/evelyn/pull/125) - [#124](https://github.com/binarymash/evelyn/issues/124) - Fix build contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: daa48d721b...78a8454ff8
+
+
 ## Version 0.11.0 (2018-06-06)
 
  - [#123](https://github.com/binarymash/evelyn/pull/123) - [#65](https://github.com/binarymash/evelyn/issues/65) - delete projects contributed by Philip Wood ([binarymash](https://github.com/binarymash))
