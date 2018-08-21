@@ -6,3 +6,16 @@ services:
     build:
       context: .
       dockerfile: Evelyn.Server.Host/Dockerfile
+  eventstore:
+   image: eventstore/eventstore:release-4.1.0
+   environment:
+     EVENTSTORE_DISABLE_HTTP_CACHING: True
+     EVENTSTORE_START_STANDARD_PROJECTIONS: True
+   ports:
+     - 1113:1113 # external tcp port
+     - 2113:2113 # external http port
+   restart: always
+   healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:2113/stats || exit 1"]
+      interval: 5s
+      timeout: 2s
