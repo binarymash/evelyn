@@ -5,7 +5,8 @@
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>0.0.0-dev</Version>  
-    <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>
+    <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>  
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

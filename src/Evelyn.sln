@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Client.Tests", "Evel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evelyn.Server.Host", "Evelyn.Server.Host\Evelyn.Server.Host.csproj", "{941854DE-1C17-4C13-B82B-ED2CCB0559A3}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -341,6 +343,30 @@ Global
 		{941854DE-1C17-4C13-B82B-ED2CCB0559A3}.Release-xPlatform|x64.ActiveCfg = Release-xPlatform|Any CPU
 		{941854DE-1C17-4C13-B82B-ED2CCB0559A3}.Release-xPlatform|x64.Build.0 = Release-xPlatform|Any CPU
 		{941854DE-1C17-4C13-B82B-ED2CCB0559A3}.Release-xPlatform|x86.ActiveCfg = Release-xPlatform|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|x64.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug|x86.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|Any CPU.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|x64.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|x64.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|x86.ActiveCfg = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Debug-xPlatform|x86.Build.0 = Debug|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|x64.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|x64.Build.0 = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|x86.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release|x86.Build.0 = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|Any CPU.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|Any CPU.Build.0 = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|x64.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|x64.Build.0 = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|x86.ActiveCfg = Release|Any CPU
+		{E00A5214-1F80-4FAC-A968-1B1EAAF03EAA}.Release-xPlatform|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

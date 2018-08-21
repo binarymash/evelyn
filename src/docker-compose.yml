@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  evelyn.server.host:
+    image: ${DOCKER_REGISTRY}evelynserverhost
+    build:
+      context: .
+      dockerfile: Evelyn.Server.Host/Dockerfile
