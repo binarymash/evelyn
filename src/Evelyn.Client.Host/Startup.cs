@@ -25,8 +25,8 @@
             });
 
             // set up our other application dependencies
-            services.AddSingleton(typeof(OutputWriter));
-            services.AddSingleton(typeof(InputReader));
+            services.AddSingleton(typeof(ClassWithToggle));
+            services.AddSingleton(typeof(Application));
         }
 
         public void OnStartup(ServiceProvider serviceProvider)
@@ -36,7 +36,7 @@
             serviceProvider.GetService<IHostedService>().StartAsync(token);
 
             // ...and now lets kick off the rest of our application.
-            var inputReader = serviceProvider.GetService<InputReader>();
+            var inputReader = serviceProvider.GetService<Application>();
             inputReader.Run();
         }
     }

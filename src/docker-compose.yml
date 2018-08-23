@@ -5,9 +5,21 @@ services:
     image: ${DOCKER_REGISTRY}evelynserverhost
     depends_on:
       - eventstore
+    ports:
+      - "2316:80"
     build:
       context: .
       dockerfile: Evelyn.Server.Host/Dockerfile
+
+
+  evelyn.client.host:
+    image: ${DOCKER_REGISTRY}evelynclienthost
+    depends_on:
+      - evelyn.server.host
+    build:
+      context: .
+      dockerfile: Evelyn.Client.Host/Dockerfile
+
   eventstore:
    image: eventstore/eventstore:release-4.1.0
    environment:
