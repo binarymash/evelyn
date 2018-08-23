@@ -1,5 +1,5 @@
 ﻿#tool "nuget:?package=GitVersion.CommandLine"
-#tool "nuget:?package=OpenCover"
+#tool "nuget:?package=OpenCover&version=4.6.832"
 #tool "nuget:?package=ReportGenerator"
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
