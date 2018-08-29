@@ -19,7 +19,7 @@
                     pollingConfig.PollingPeriod = TimeSpan.FromSeconds(1);
                     pollingConfig.RetrieveEnvironmentStateUsing.RestProvider(restConfig =>
                     {
-                        restConfig.BaseUrl = "http://localhost:2316";
+                        restConfig.BaseUrl = "http://evelyn-server-host";
                     });
                 });
             });

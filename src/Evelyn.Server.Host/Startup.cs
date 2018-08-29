@@ -29,15 +29,15 @@
                 api.WithWriteModel(wm =>
                 {
                     // Use a simple in-memory event store...
-                    //wm.WithEventStore.InMemory(es =>
-                    //{
-                    //    es.WithEventPublisher.SynchronouslyInProcess();
-                    //});
+                    ////wm.WithEventStore.InMemory(es =>
+                    ////{
+                    ////    es.WithEventPublisher.SynchronouslyInProcess();
+                    ////});
 
                     // ...or,  use Greg Young's EventStore
                     wm.WithEventStore.UsingEventStoreDotOrg(es =>
                     {
-                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://localhost:1113");
+                        es.ConnectionFactory = new EventStoreConnectionFactory("tcp://eventstore:1113");
                         es.WithEventPublisher.RunningInBackgroundService(p =>
                         {
                             p.PublishEvents.SynchronouslyInProcess();

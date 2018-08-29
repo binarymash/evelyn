@@ -1,8 +1,6 @@
 version: '3.4'
 
 services:
-  evelyn.server.host:
+  evelyn-server-host:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "80"
