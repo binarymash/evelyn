@@ -13,7 +13,7 @@
         public EventStoreConnectionFactory(string uri, string connectionName = "Evelyn.Server.Host")
         {
             _connectionSettings = ConnectionSettings.Create()
-                .EnableVerboseLogging()
+                ////.EnableVerboseLogging()
                 .UseConsoleLogger()
                 .KeepReconnecting()
                 .Build();
