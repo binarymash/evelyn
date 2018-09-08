@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>0.0.0-dev</Version>  
     <Configurations>Debug;Release;Debug-xPlatform;Release-xPlatform</Configurations>  

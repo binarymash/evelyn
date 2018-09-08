@@ -44,10 +44,10 @@
         {
             try
             {
-                _logger.LogDebug("Synchronizing {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
+                _logger.LogTrace("Synchronizing {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
                 var environmentState = _provider.Invoke(_environmentOptions.ProjectId, _environmentOptions.Environment);
                 _repo.Set(environmentState);
-                _logger.LogDebug("Synchronized {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
+                _logger.LogTrace("Synchronized {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
             }
             catch (Exception ex)
             {
