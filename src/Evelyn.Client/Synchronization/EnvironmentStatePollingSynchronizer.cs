@@ -4,23 +4,27 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Provider;
     using Repository;
 
     public class EnvironmentStatePollingSynchronizer : BackgroundService
     {
+        private readonly ILogger<EnvironmentStatePollingSynchronizer> _logger;
         private readonly IEnvironmentStateProvider _provider;
         private readonly IEnvironmentStateRepository _repo;
         private readonly EnvironmentStatePollingSynchronizerOptions _pollingOptions;
         private readonly EnvironmentOptions _environmentOptions;
 
         public EnvironmentStatePollingSynchronizer(
+            ILogger<EnvironmentStatePollingSynchronizer> logger,
             IEnvironmentStateProvider provider,
             IEnvironmentStateRepository repo,
             IOptions<EnvironmentStatePollingSynchronizerOptions> pollingOptions,
             IOptions<EnvironmentOptions> environmentOptions)
         {
+            _logger = logger;
             _provider = provider;
             _repo = repo;
             _pollingOptions = pollingOptions.Value;
@@ -40,12 +44,14 @@
         {
             try
             {
+                _logger.LogDebug("Synchronizing {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
                 var environmentState = _provider.Invoke(_environmentOptions.ProjectId, _environmentOptions.Environment);
                 _repo.Set(environmentState);
+                _logger.LogDebug("Synchronized {@projectId} {@environmentKey}", _environmentOptions.ProjectId, _environmentOptions.Environment);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // TODO: log
+                _logger.LogWarning(ex, "Failed to synchronize {@projectId} {@environmentKey}. Toggle states might be stale.", _environmentOptions.ProjectId, _environmentOptions.Environment);
             }
         }
     }

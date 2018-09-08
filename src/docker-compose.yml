@@ -1,6 +1,14 @@
 version: '3.4'
 
 services:
+  evelyn-client-host:
+    image: ${DOCKER_REGISTRY}evelynclienthost
+    depends_on:
+      - evelyn-server-host
+    build:
+      context: .
+      dockerfile: Evelyn.Client.Host/Dockerfile
+
   evelyn-server-host:
     image: ${DOCKER_REGISTRY}evelynserverhost
     depends_on:
@@ -10,14 +18,11 @@ services:
     build:
       context: .
       dockerfile: Evelyn.Server.Host/Dockerfile
-
-  evelyn-client-host:
-    image: ${DOCKER_REGISTRY}evelynclienthost
-    depends_on:
-      - evelyn-server-host
-    build:
-      context: .
-      dockerfile: Evelyn.Client.Host/Dockerfile
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost/status/health || exit 1"]
+      interval: 5s
+      timeout: 2s
 
   eventstore:
     image: eventstore/eventstore:release-4.1.0
