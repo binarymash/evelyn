@@ -106,7 +106,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void GivenWeHaveCreatedAProject()

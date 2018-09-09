@@ -8,10 +8,16 @@ Evelyn
 
    getting-started/overview
    getting-started/getting-the-code
-   getting-started/building
-   getting-started/running-the-server
-   getting-started/running-the-client
-   getting-started/running-the-management-ui
+   getting-started/running
+   getting-started/using
+   getting-started/using-the-management-ui
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Contributing
+   
+   contributing/building
    
 Introduction
 ------------

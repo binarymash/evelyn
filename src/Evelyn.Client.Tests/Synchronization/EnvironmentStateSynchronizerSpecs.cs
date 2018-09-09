@@ -8,6 +8,7 @@
     using Client.Synchronization;
     using Domain;
     using FluentAssertions;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using NSubstitute.Core;
@@ -22,6 +23,7 @@
         private readonly EnvironmentStatePollingSynchronizer _synchronizer;
         private readonly IEnvironmentStateProvider _provider;
         private readonly IEnvironmentStateRepository _repo;
+        private readonly ILogger<EnvironmentStatePollingSynchronizer> _logger;
         private readonly IOptions<EnvironmentStatePollingSynchronizerOptions> _pollingOptions;
         private readonly IOptions<EnvironmentOptions> _environmentOptions;
         private readonly IList<EnvironmentState> _expectedEnvironmentStates;
@@ -32,6 +34,7 @@
             _fixture = new Fixture();
             _provider = Substitute.For<IEnvironmentStateProvider>();
             _repo = Substitute.For<IEnvironmentStateRepository>();
+            _logger = Substitute.For<ILogger<EnvironmentStatePollingSynchronizer>>();
             _expectedEnvironmentStates = new List<EnvironmentState>();
             _storedEnvironmentStates = new List<EnvironmentState>();
 
@@ -43,7 +46,7 @@
 
             _environmentOptions = Options.Create(_fixture.Create<EnvironmentOptions>());
 
-            _synchronizer = new EnvironmentStatePollingSynchronizer(_provider, _repo, _pollingOptions, _environmentOptions);
+            _synchronizer = new EnvironmentStatePollingSynchronizer(_logger, _provider, _repo, _pollingOptions, _environmentOptions);
 
             _repo.WhenForAnyArgs(repo => repo.Set(Arg.Any<EnvironmentState>()))
                 .Do(StoreCallInfo);

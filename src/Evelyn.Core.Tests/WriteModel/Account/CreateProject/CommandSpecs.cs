@@ -80,6 +80,11 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .BDDfy();
         }
 
+        protected override Handler BuildHandler()
+        {
+            return new Handler(Logger, Session);
+        }
+
         private void GivenWeHaveRegisteredAnAccount()
         {
             _accountId = DataFixture.Create<Guid>();

@@ -1,16 +1,39 @@
 version: '3.4'
 
 services:
+  evelyn-client-host:
+    image: ${DOCKER_REGISTRY}evelynclienthost
+    depends_on:
+      - evelyn-server-host
+    build:
+      context: .
+      dockerfile: Evelyn.Client.Host/Dockerfile
+
+  evelyn-server-host:
+    image: ${DOCKER_REGISTRY}evelynserverhost
+    depends_on:
+      - eventstore
+    ports:
+      - "2316:80"
+    build:
+      context: .
+      dockerfile: Evelyn.Server.Host/Dockerfile
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost/status/health || exit 1"]
+      interval: 5s
+      timeout: 2s
+
   eventstore:
-   image: eventstore/eventstore:release-4.1.0
-   environment:
-     - EVENTSTORE_DISABLE_HTTP_CACHING=True
-     - EVENTSTORE_START_STANDARD_PROJECTIONS=True
-   ports:
-     - 1113:1113 # external tcp port
-     - 2113:2113 # external http port
-   restart: always
-   healthcheck:
+    image: eventstore/eventstore:release-4.1.0
+    environment:
+      EVENTSTORE_DISABLE_HTTP_CACHING: "True"
+      EVENTSTORE_START_STANDARD_PROJECTIONS: "True"
+    ports:
+      - 1113:1113 # external tcp port
+      - 2113:2113 # external http port
+    restart: always
+    healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:2113/stats || exit 1"]
       interval: 5s
       timeout: 2s

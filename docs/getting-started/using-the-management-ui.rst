@@ -1,4 +1,4 @@
-Running the management UI
+Using the management UI
 =========================
 
 The Swagger UI is convenient for us as developers, but not particularly great for end users. Happily, Evelyn also has a management application that we can use to manage our toggles. 

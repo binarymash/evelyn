@@ -13,6 +13,7 @@
     using CQRSlite.Events;
     using FluentAssertions;
     using KellermanSoftware.CompareNetObjects;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     using AccountCommands = Core.WriteModel.Account.Commands;
@@ -33,6 +34,7 @@
 
         protected CommandHandlerSpecs()
         {
+            Logger = NSubstitute.Substitute.For<ILogger<TCommand>>();
             HistoricalEvents = new List<IEvent>();
             DataFixture = new Fixture();
             UserId = DataFixture.Create<string>();
@@ -56,6 +58,8 @@
                 ContractResolver = new JsonPrivateResolver()
             };
         }
+
+        protected ILogger<TCommand> Logger { get; set; }
 
         protected string UserId { get; set; }
 

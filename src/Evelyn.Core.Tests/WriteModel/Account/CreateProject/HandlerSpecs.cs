@@ -10,11 +10,6 @@
     public abstract class HandlerSpecs<TCommand> : CommandHandlerSpecs<Account, Handler, TCommand>
         where TCommand : ICommand
     {
-        protected override Handler BuildHandler()
-        {
-            return new Handler(Session);
-        }
-
         protected void GivenWeHaveCreatedAProjectWith(Guid id)
         {
             var projectCreated = DataFixture.Create<ProjectCreated>();
