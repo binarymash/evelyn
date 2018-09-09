@@ -35,6 +35,7 @@
             catch (Exception ex)
             {
                 _logger.LogInformation(ex, "Error when handling {@messageType}", message.GetType().FullName);
+                throw;
             }
         }
 

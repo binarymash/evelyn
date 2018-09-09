@@ -111,7 +111,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void GivenWeHaveCreatedAProject()

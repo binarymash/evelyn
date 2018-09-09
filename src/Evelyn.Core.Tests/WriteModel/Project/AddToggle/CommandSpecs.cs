@@ -139,7 +139,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void GivenWeHaveCreatedAProject()

@@ -143,7 +143,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void GivenWeHaveCreatedAProject()

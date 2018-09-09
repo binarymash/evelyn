@@ -35,7 +35,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.StartSystem
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void GivenWeHaveCreatedTheSystem()
