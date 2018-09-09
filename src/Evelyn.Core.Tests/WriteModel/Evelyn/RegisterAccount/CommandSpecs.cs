@@ -53,7 +53,7 @@ namespace Evelyn.Core.Tests.WriteModel.Evelyn.RegisterAccount
 
         protected override Handler BuildHandler()
         {
-            return new Handler(Session);
+            return new Handler(Logger, Session);
         }
 
         private void ThenADuplicateAccountExceptionIsThrown()

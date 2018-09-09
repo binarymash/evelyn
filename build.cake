@@ -1,5 +1,5 @@
 ﻿#tool "nuget:?package=GitVersion.CommandLine"
-#tool "nuget:?package=OpenCover"
+#tool "nuget:?package=OpenCover&version=4.6.832"
 #tool "nuget:?package=ReportGenerator"
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
@@ -7,7 +7,8 @@
 #addin "nuget:?package=Newtonsoft.Json&version=9.0.1"
 #tool "nuget:?package=xunit.runner.console"
 #tool "nuget:?package=coveralls.net&version=0.7.0"
-#addin Cake.Coveralls
+#addin "nuget:?package=Cake.Coveralls"
+#addin "nuget:?package=Cake.Docker"
 
 // compile
 var compileConfig = ValidateConfig(Argument("configuration", "Release"));
@@ -63,6 +64,14 @@ var tagsUrl = "https://api.github.com/repos/binarymash/evelyn/releases/tags/";
 var nugetFeedStableKey = EnvironmentVariable("nuget-apikey-stable");
 var nugetFeedStableUploadUrl = "https://www.nuget.org/api/v2/package";
 var nugetFeedStableSymbolsUploadUrl = "https://www.nuget.org/api/v2/package";
+
+// docker compose
+var composeFiles = new[]
+{
+	"./src/docker-compose.yml",
+	"./src/docker-compose.override.yml"
+};
+
 // internal build variables - don't change these.
 var releaseTag = "";
 GitVersion versioning = null;
@@ -346,6 +355,18 @@ Task("ReleasePackagesToStableFeed")
 
 Task("Release")
     .IsDependentOn("ReleasePackagesToStableFeed");
+
+Task("RunSample")
+	.Does(() =>
+	{
+		var settings = new DockerComposeUpSettings()
+		{
+			Build = true,
+			Files = composeFiles,
+			ForceRecreate = true
+		};
+		DockerComposeUp(settings);
+	});
 
 RunTarget(target);
 

@@ -4,11 +4,12 @@
     using Account.Domain;
     using CQRSlite.Domain;
     using Domain;
+    using Microsoft.Extensions.Logging;
 
     public class Handler : Handler<Command>
     {
-        public Handler(ISession session)
-            : base(session, new Validator())
+        public Handler(ILogger<Command> logger, ISession session)
+            : base(logger, session, new Validator())
         {
         }
 

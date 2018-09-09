@@ -4,16 +4,19 @@
     using System.Collections.Generic;
     using Domain;
     using Generated;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Provider;
 
     public class EnvironmentStateRestProvider : IEnvironmentStateProvider
     {
         private readonly Client _client;
+        private readonly ILogger<EnvironmentStateRestProvider> _logger;
 
-        public EnvironmentStateRestProvider(IOptions<EnvironmentStateRestProviderOptions> options)
+        public EnvironmentStateRestProvider(IOptions<EnvironmentStateRestProviderOptions> options, ILogger<EnvironmentStateRestProvider> logger)
         {
             _client = new Client(options.Value.BaseUrl);
+            _logger = logger;
         }
 
         public EnvironmentState Invoke(Guid projectId, string environmentKey)
@@ -38,6 +41,7 @@
             }
             catch (SwaggerException ex)
             {
+                _logger.LogWarning(ex, "Failed to get state of {@projectdId} {@environmentKey} from {@serverBaseUrl}", projectId, environmentKey, _client.BaseUrl);
                 throw new SynchronizationException("FailedToGetEnvironmentState", ex);
             }
         }

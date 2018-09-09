@@ -2,11 +2,12 @@
 {
     using System.Threading.Tasks;
     using CQRSlite.Domain;
+    using Microsoft.Extensions.Logging;
 
     public class Handler : Handler<Command>
     {
-        public Handler(ISession session)
-            : base(session, new Validator())
+        public Handler(ILogger<Command> logger, ISession session)
+            : base(logger, session, new Validator())
         {
         }
 

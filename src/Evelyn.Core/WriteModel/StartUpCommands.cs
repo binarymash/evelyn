@@ -4,9 +4,11 @@
     using System.Threading.Tasks;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using Microsoft.Extensions.Logging;
 
     public class StartUpCommands : IStartUpCommands
     {
+        private readonly ILogger<StartUpCommands> _logger;
         private readonly ICommandHandler<Evelyn.Commands.CreateSystem.Command> _createSystemHandler;
         private readonly ICommandHandler<Evelyn.Commands.RegisterAccount.Command> _registerAccountHandler;
         private readonly ICommandHandler<Evelyn.Commands.StartSystem.Command> _startSystemHandler;
@@ -15,6 +17,7 @@
         private readonly ICommandHandler<Project.Commands.AddToggle.Command> _addToggleHandler;
 
         public StartUpCommands(
+            ILogger<StartUpCommands> logger,
             ICommandHandler<Evelyn.Commands.CreateSystem.Command> createSystemHandler,
             ICommandHandler<Evelyn.Commands.RegisterAccount.Command> registerAccountHandler,
             ICommandHandler<Evelyn.Commands.StartSystem.Command> startSystemHandler,
@@ -22,6 +25,7 @@
             ICommandHandler<Project.Commands.AddEnvironment.Command> addEnvironmentHandler,
             ICommandHandler<Project.Commands.AddToggle.Command> addToggleHandler)
         {
+            _logger = logger;
             _createSystemHandler = createSystemHandler;
             _registerAccountHandler = registerAccountHandler;
             _startSystemHandler = startSystemHandler;
@@ -32,6 +36,7 @@
 
         public async Task Execute()
         {
+            _logger.LogInformation("Performing startup commands");
             var systemCreated = false;
 
             try
@@ -54,6 +59,8 @@
                 await _addEnvironmentHandler.Handle(new Project.Commands.AddEnvironment.Command(Constants.SystemUser, Constants.SampleProject, "my-first-environment", "My First Environment", 0));
                 await _addToggleHandler.Handle(new Project.Commands.AddToggle.Command(Constants.SystemUser, Constants.SampleProject, "my-first-toggle", "My First Toggle", 1));
             }
+
+            _logger.LogInformation("Completed startup commands");
         }
     }
 }
