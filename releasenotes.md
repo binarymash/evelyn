@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version 0.13.0 (2018-09-09)
+
+ - [#134](https://github.com/binarymash/evelyn/pull/134) - [#131](https://github.com/binarymash/evelyn/issues/131) - run hosts via docker compose contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#133](https://github.com/binarymash/evelyn/pull/133) - [#132](https://github.com/binarymash/evelyn/issues/132) - Switch to portable PDBs contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: fa6a40e691...8610b1efcc
+
 ## Version 0.12.0 (2018-08-14)
 
  - [#127](https://github.com/binarymash/evelyn/pull/127) - [#126](https://github.com/binarymash/evelyn/issues/126) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
