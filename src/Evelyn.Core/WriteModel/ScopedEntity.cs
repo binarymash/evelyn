@@ -5,11 +5,11 @@
 
     public abstract class ScopedEntity
     {
-        public int ScopedVersion { get; protected set; }
+        public int LastModifiedVersion { get; protected set; }
 
         public void AssertVersion(int expectedVersion, Guid aggregateId)
         {
-            if (ScopedVersion != expectedVersion)
+            if (LastModifiedVersion != expectedVersion)
             {
                 throw new ConcurrencyException(aggregateId);
             }

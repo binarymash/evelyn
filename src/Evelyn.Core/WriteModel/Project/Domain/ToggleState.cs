@@ -7,19 +7,19 @@
     {
         public ToggleState()
         {
-            ScopedVersion = -1;
+            LastModifiedVersion = -1;
         }
 
-        public ToggleState(string key, string value, DateTimeOffset occurredAt, string userId)
+        public ToggleState(string key, string value, DateTimeOffset occurredAt, int lastModifiedVersion, string userId)
             : this()
         {
             Key = key;
             Value = value;
-            ScopedVersion = 0;
             Created = occurredAt;
             CreatedBy = userId;
             LastModified = occurredAt;
             LastModifiedBy = userId;
+            LastModifiedVersion = lastModifiedVersion;
         }
 
         public string Key { get; private set; }
@@ -34,12 +34,12 @@
 
         public string LastModifiedBy { get; private set; }
 
-        public void SetState(string value, DateTimeOffset occurredAt, string userId)
+        public void SetState(string value, DateTimeOffset occurredAt, int rootVersion, string userId)
         {
-            ScopedVersion++;
             Value = value;
             LastModified = occurredAt;
             LastModifiedBy = userId;
+            LastModifiedVersion = rootVersion;
         }
     }
 }

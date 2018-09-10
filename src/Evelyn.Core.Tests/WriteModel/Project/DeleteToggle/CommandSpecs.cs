@@ -92,7 +92,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
 
                 .And(_ => ThenTheAggregateRootHasOneFewerToggles())
                 .And(_ => ThenTheAggregateRootHasHadTheCorrectToggleRemoved())
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
@@ -123,17 +123,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
 
                 .And(_ => ThenTheFirstEnvironmentStateHasOneFewerToggleStates())
                 .And(_ => ThenTheFirstEnvironmentStateHasHadTheCorrectToggleStateDeleted())
-                .And(_ => ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheFirstEnvironmentLastModifiedVersionIs(OriginalAggregate.Version + 2))
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedByHasBeenUpdated())
 
                 .And(_ => ThenTheSecondEnvironmentStateHasOneFewerToggleStates())
                 .And(_ => ThenTheSecondEnvironmentStateHasHadTheCorrectToggleStateDeleted())
-                .And(_ => ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheSecondEnvironmentLastModifiedVersionIs(OriginalAggregate.Version + 3))
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedByHasBeenUpdated())
 
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(OriginalAggregate.Version + 1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
@@ -187,14 +187,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
             _toggle1Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
 
-            _toggle1Version++;
+            _toggle1Version = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveAddedAnotherToggle()
         {
             _toggle2Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _toggle2Version++;
+            _toggle2Version = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveDeletedTheProject()
@@ -330,22 +330,20 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
             environmentState.LastModifiedBy.Should().Be(UserId);
         }
 
-        private void ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        private void ThenTheFirstEnvironmentLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
-            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment1Key, increment);
+            ThenTheEnvironmentLastModifiedVersionIs(_environment1Key, expectedLastModifiedVersion);
         }
 
-        private void ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        private void ThenTheSecondEnvironmentLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
-            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment2Key, increment);
+            ThenTheEnvironmentLastModifiedVersionIs(_environment2Key, expectedLastModifiedVersion);
         }
 
-        private void ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(string environmentKey, int increment)
+        private void ThenTheEnvironmentLastModifiedVersionIs(string environmentKey, int expectedLastModifiedVersion)
         {
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-
-            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + increment);
+            newEnvironmentState.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
     }
 }

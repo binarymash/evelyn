@@ -165,7 +165,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
             project.Environments.Count().Should().Be(0);
             project.Toggles.Count().Should().Be(0);
             project.Version.Should().Be(0);
-            project.ScopedVersion.Should().Be(0);
+            project.LastModifiedVersion.Should().Be(0);
             project.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             project.CreatedBy.Should().Be(UserId);
             project.LastModified.Should().Be(project.Created);

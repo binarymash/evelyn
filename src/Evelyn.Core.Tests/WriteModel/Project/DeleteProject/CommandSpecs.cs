@@ -17,7 +17,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
         private Guid _projectId;
         private int _projectEventCount;
-        private int _scopedProjectVersion;
+        private int _projectLastModifiedVersion;
 
         private string _environment1Key;
         private string _environment2Key;
@@ -30,7 +30,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             IgnoreCollectionOrderDuringComparison = true;
             _accountEventCount = 0;
             _projectEventCount = 0;
-            _scopedProjectVersion = -1;
+            _projectLastModifiedVersion = -1;
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
                 .And(_ => ThenTheAggregateRootHasHadTheStatesForEnvironment2Removed())
                 .And(_ => ThenTheAggregateRootHasNoEnvironmentStates())
 
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(5))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version - 2))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(7))
@@ -126,14 +126,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
             GivenWeHaveCreatedAProjectWith(_projectId, _projectEventCount);
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
         private void GivenWeHaveDeletedTheProject()
         {
             HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTimeOffset.UtcNow) { Version = _projectEventCount });
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
         private void GivenWeHaveAddedTwoEnvironments()
@@ -143,7 +143,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment1Key, _projectEventCount);
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
 
             GivenWeHaveAddedAnEnvironmentStateWith(
                 _projectId,
@@ -154,7 +154,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key, _projectEventCount);
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
 
             GivenWeHaveAddedAnEnvironmentStateWith(
                 _projectId,
@@ -169,7 +169,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _toggle1Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = _projectEventCount });
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
         private void GivenWeHaveAddedAnotherToggle()
@@ -177,18 +177,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _toggle2Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggle2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = _projectEventCount });
             _projectEventCount++;
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
         private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
         {
-            _scopedProjectVersion++;
+            _projectLastModifiedVersion++;
         }
 
         private void WhenWeDeleteTheProject()
         {
             UserId = DataFixture.Create<string>();
-            var command = new Command(UserId, _accountId, _projectId, _scopedProjectVersion);
+            var command = new Command(UserId, _accountId, _projectId, _projectLastModifiedVersion);
             WhenWeHandle(command);
         }
 

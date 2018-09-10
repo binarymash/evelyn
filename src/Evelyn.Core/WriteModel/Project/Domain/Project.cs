@@ -21,7 +21,7 @@
         public Project()
         {
             Version = -1;
-            ScopedVersion = -1;
+            LastModifiedVersion = -1;
             _environments = new List<Environment>();
             _toggles = new List<Toggle>();
             _environmentStates = new List<EnvironmentState>();
@@ -47,7 +47,7 @@
 
         public string Name { get; private set; }
 
-        public int ScopedVersion { get; private set; }
+        public int LastModifiedVersion { get; private set; }
 
         public void AddEnvironment(string userId, string key, string name, int expectedProjectVersion)
         {
@@ -197,14 +197,14 @@
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;
-            ScopedVersion = 0;
+            LastModifiedVersion = 0;
         }
 
         private void Apply(EnvironmentAdded e)
         {
-            ScopedVersion++;
+            LastModifiedVersion = e.Version;
 
-            _environments.Add(new Environment(e.Key, e.Name, e.OccurredAt, e.UserId));
+            _environments.Add(new Environment(e.Key, e.Name, e.OccurredAt, e.Version, e.UserId));
 
             LastModified = e.OccurredAt;
             LastModifiedBy = e.UserId;
@@ -212,7 +212,7 @@
 
         private void Apply(EnvironmentDeleted e)
         {
-            ScopedVersion++;
+            LastModifiedVersion = e.Version;
 
             var environment = _environments.First(t => t.Key == e.Key);
             _environments.Remove(environment);
@@ -223,9 +223,9 @@
 
         private void Apply(ToggleAdded e)
         {
-            ScopedVersion++;
+            LastModifiedVersion = e.Version;
 
-            var toggle = new Toggle(e.Key, e.Name, e.OccurredAt, e.UserId);
+            var toggle = new Toggle(e.Key, e.Name, e.OccurredAt, e.Version, e.UserId);
             _toggles.Add(toggle);
 
             LastModified = e.OccurredAt;
@@ -234,7 +234,7 @@
 
         private void Apply(ToggleDeleted e)
         {
-            ScopedVersion++;
+            LastModifiedVersion = e.Version;
 
             var toggle = _toggles.First(t => t.Key == e.Key);
             _toggles.Remove(toggle);
@@ -245,8 +245,8 @@
 
         private void Apply(EnvironmentStateAdded e)
         {
-            var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.UserId));
-            var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.OccurredAt, e.UserId);
+            var toggleStates = e.ToggleStates.Select(ts => new ToggleState(ts.Key, ts.Value, e.OccurredAt, e.Version, e.UserId));
+            var environmentState = new EnvironmentState(e.EnvironmentKey, toggleStates, e.OccurredAt, e.Version, e.UserId);
             _environmentStates.Add(environmentState);
         }
 
@@ -258,28 +258,28 @@
 
         private void Apply(ToggleStateAdded e)
         {
-            var toggleState = new ToggleState(e.ToggleKey, e.Value, e.OccurredAt, e.UserId);
+            var toggleState = new ToggleState(e.ToggleKey, e.Value, e.OccurredAt, e.Version, e.UserId);
 
             var environmentState = _environmentStates.First(es => es.EnvironmentKey == e.EnvironmentKey);
-            environmentState.AddToggleState(toggleState, e.OccurredAt, e.UserId);
+            environmentState.AddToggleState(toggleState, e.OccurredAt, e.Version, e.UserId);
         }
 
         private void Apply(ToggleStateChanged @event)
         {
             var environmentState = _environmentStates.First(es => es.EnvironmentKey == @event.EnvironmentKey);
-            environmentState.SetToggleState(@event.ToggleKey, @event.Value, @event.OccurredAt, @event.UserId);
+            environmentState.SetToggleState(@event.ToggleKey, @event.Value, @event.OccurredAt, @event.Version, @event.UserId);
         }
 
         private void Apply(ToggleStateDeleted e)
         {
             _environmentStates
                 .First(es => es.EnvironmentKey == e.EnvironmentKey)
-                .DeleteToggleState(e.ToggleKey, e.OccurredAt, e.UserId);
+                .DeleteToggleState(e.ToggleKey, e.OccurredAt, e.Version, e.UserId);
         }
 
         private void Apply(ProjectDeleted e)
         {
-            ScopedVersion++;
+            LastModifiedVersion = e.Version;
 
             IsDeleted = true;
         }
@@ -288,7 +288,7 @@
         {
             if (expectedVersion.HasValue)
             {
-                if (ScopedVersion != expectedVersion.Value)
+                if (LastModifiedVersion != expectedVersion.Value)
                 {
                     throw new ConcurrencyException(Id);
                 }

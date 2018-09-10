@@ -152,7 +152,7 @@
 
         private void ThenTheVersionIsSet()
         {
-            Dto.Version.Should().Be(_expectedToggle.ScopedVersion);
+            Dto.Version.Should().Be(_expectedToggle.LastModifiedVersion);
         }
 
         private void ThenTheCreatedDateIsSet()

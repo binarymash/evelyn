@@ -66,9 +66,9 @@
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"The project with id {id} has already been deleted");
         }
 
-        protected void ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(int increment)
+        protected void ThenTheAggregateRootLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
-            NewAggregate.ScopedVersion.Should().Be(OriginalAggregate.ScopedVersion + increment);
+            NewAggregate.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
     }
 }

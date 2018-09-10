@@ -105,7 +105,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version - 1))
                 .BDDfy();
         }
 
@@ -216,26 +216,24 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         {
             var environment = NewAggregate.Environments.First(e => e.Key == _newEnvironmentKey);
 
-            environment.ScopedVersion.Should().Be(0);
-
             environment.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environment.CreatedBy.Should().Be(UserId);
 
             environment.LastModified.Should().Be(environment.Created);
             environment.LastModifiedBy.Should().Be(environment.CreatedBy);
+            environment.LastModifiedVersion.Should().Be(OriginalAggregate.Version + 1);
         }
 
         private void ThenTheAggregateRootHasHadAnEnvironmentStateAdded()
         {
             var environmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _newEnvironmentKey);
 
-            environmentState.ScopedVersion.Should().Be(0);
-
             environmentState.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             environmentState.CreatedBy.Should().Be(UserId);
 
             environmentState.LastModified.Should().Be(environmentState.Created);
             environmentState.LastModifiedBy.Should().Be(environmentState.CreatedBy);
+            environmentState.LastModifiedVersion.Should().Be(NewAggregate.Version);
 
             environmentState.ToggleStates.Count().Should().Be(OriginalAggregate.Toggles.Count());
             foreach (var toggleState in NewAggregate.Toggles)
@@ -255,7 +253,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
                 toggleState.LastModifiedBy == toggleState.CreatedBy &&
                 toggleState.Key == toggle.Key &&
                 toggleState.Value == toggle.DefaultValue &&
-                toggleState.ScopedVersion == 0;
+                toggleState.LastModifiedVersion == NewAggregate.Version;
         }
     }
 }

@@ -76,8 +76,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         public void EnvironmentExistsAndSoDoOtherEnvironments()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAnotherEnvironment())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
                 .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
 
@@ -96,7 +94,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
                 .And(_ => ThenTheAggregateRootHasOneFewerEnvironmentStates())
                 .And(_ => ThenTheAggregateRootHasHadTheCorrectEnvironmentStateRemoved())
 
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version - 1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
@@ -121,9 +119,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
             _environment2Key = DataFixture.Create<string>();
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment1Key);
+            _environment1Version = HistoricalEvents.Count - 1;
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment1Key);
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
+            _environment2Version = HistoricalEvents.Count - 1;
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment2Key);
         }
 
@@ -148,14 +148,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         {
             _environment1Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _environment1Version++;
+            _environment1Version = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveAddedAnotherEnvironment()
         {
             _environment2Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _environment2Version++;
+            _environment2Version = HistoricalEvents.Count - 1;
         }
 
         private void GivenTheEnvironmentVersionForOurNextCommandIsStale()
