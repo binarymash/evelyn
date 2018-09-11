@@ -57,13 +57,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
         }
 
         [Fact]
-        public void StaleToggleStateVersion()
+        public void StaleExpectedToggleStateVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveChangedTheToggleState())
-                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeChangeTheToggleState())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
@@ -79,7 +79,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsInTheFutureBy(toggleStateVersionOffset))
+                .And(_ => GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(toggleStateVersionOffset))
                 .When(_ => WhenWeChangeTheToggleState())
 
                 .Then(_ => ThenOneEventIsPublished())
@@ -147,12 +147,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             _toggleStateVersion = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheToggleStateVersionForOurNextCommandIsStale()
-        {
-            _toggleStateVersion--;
-        }
-
-        private void GivenTheToggleStateVersionForOurNextCommandIsInTheFutureBy(int toggleStateVersionOffset)
+        private void GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(int toggleStateVersionOffset)
         {
             _toggleStateVersion += toggleStateVersionOffset;
         }

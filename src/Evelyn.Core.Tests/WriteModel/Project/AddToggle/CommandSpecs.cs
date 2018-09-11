@@ -61,11 +61,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         }
 
         [Fact]
-        public void StaleProjectVersion()
+        public void StaleExpectedProjectVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
@@ -73,10 +73,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
                 .BDDfy();
         }
 
-        [Fact]
-        public void ToggleDoesntExistAndThereAreNoEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleDoesntExistAndThereAreNoEnvironments(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeAddAToggle())
 
                 .Then(_ => ThenOneEventIsPublished())
@@ -99,7 +102,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeAddAToggle())
 
                 .Then(_ => ThenThreeEventsArePublished())
@@ -170,12 +173,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             _projectVersion = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsStale()
-        {
-            _projectVersion--;
-        }
-
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
+        private void GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
             _projectVersion += projectVersionOffset;
         }

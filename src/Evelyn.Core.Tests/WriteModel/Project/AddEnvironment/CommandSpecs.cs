@@ -65,7 +65,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggleToTheProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeAddAnEnvironment())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
@@ -80,7 +80,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggleToTheProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeAddAnEnvironment())
 
                 .Then(_ => ThenTwoEventsArePublished())
@@ -135,12 +135,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
             _projectVersion++;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsStale()
-        {
-            _projectVersion--;
-        }
-
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
+        private void GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
             _projectVersion += projectVersionOffset;
         }

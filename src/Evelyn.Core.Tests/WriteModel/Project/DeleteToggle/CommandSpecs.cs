@@ -60,16 +60,31 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
                 .BDDfy();
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        public void ToggleExistsAndThereAreNoEnvironments(int toggleVersionOffset)
+        [Fact]
+        public void StaleExpectedToggleVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveAddedAnotherToggle())
                 .And(_ => GivenWeWillBeDeletingTheFirstToggle())
-                .And(_ => GivenTheToggleVersionForOurNextCommandIsInTheFutureBy(toggleVersionOffset))
+                .And(_ => GivenTheExpectedToggleVersionForOurNextCommandIsOffsetBy(-1))
+                .When(_ => WhenWeDeleteTheToggle())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleExistsAndThereAreNoEnvironments(int expectedVersionOffset)
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenWeHaveAddedAnotherToggle())
+                .And(_ => GivenWeWillBeDeletingTheFirstToggle())
+                .And(_ => GivenTheExpectedToggleVersionForOurNextCommandIsOffsetBy(expectedVersionOffset))
 
                 .When(_ => WhenWeDeleteTheToggle())
 
@@ -87,14 +102,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
                 .BDDfy();
         }
 
-        [Fact]
-        public void ToggleExistsAndThereAreMultipleEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleExistsAndThereAreMultipleEnvironments(int expectedVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveAddedAnotherToggle())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
                 .And(_ => GivenWeWillBeDeletingTheFirstToggle())
+                .And(_ => GivenTheExpectedToggleVersionForOurNextCommandIsOffsetBy(expectedVersionOffset))
 
                 .When(_ => WhenWeDeleteTheToggle())
 
@@ -190,12 +208,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteToggle
             HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
         }
 
-        private void GivenTheToggleVersionForOurNextCommandIsStale()
-        {
-            _toggleToDeleteVersion--;
-        }
-
-        private void GivenTheToggleVersionForOurNextCommandIsInTheFutureBy(int toggleVersionOffset)
+        private void GivenTheExpectedToggleVersionForOurNextCommandIsOffsetBy(int toggleVersionOffset)
         {
             _toggleToDeleteVersion += toggleVersionOffset;
         }

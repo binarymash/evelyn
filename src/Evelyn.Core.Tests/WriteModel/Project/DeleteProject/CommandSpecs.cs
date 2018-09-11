@@ -32,7 +32,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _projectEventCount = 0;
             _projectLastModifiedVersion = -1;
         }
-
+        
         [Fact]
         public void AlreadyDeleted()
         {
@@ -42,6 +42,23 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
                 .When(_ => WhenWeDeleteTheProject())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAProjectDeletedExceptionIsThrownFor(_projectId))
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void StaleExpectedProjectVersion()
+        {
+            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenWeHaveAddedAnotherToggle())
+                .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(-1))
+
+                .When(_ => WhenWeDeleteTheProject())
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
@@ -56,7 +73,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveAddedAnotherToggle())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
 
                 .When(_ => WhenWeDeleteTheProject())
 
@@ -170,7 +187,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
+        private void GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
             _projectLastModifiedVersion += projectVersionOffset;
         }

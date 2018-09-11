@@ -57,6 +57,22 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
                 .BDDfy();
         }
 
+        [Fact]
+        public void StaleExpectedEnvironmentVersion()
+        {
+            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
+                .And(_ => GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(-1))
+                .When(_ => WhenWeDeleteTheEnvironment())
+
+                .Then(_ => ThenNoEventIsPublished())
+                .And(_ => ThenAConcurrencyExceptionIsThrown())
+                .And(_ => ThenThereAreNoChangesOnTheAggregate())
+                .BDDfy();
+
+        }
+
         [Theory]
         [InlineData(0)]
         [InlineData(1)]
@@ -65,7 +81,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
                 .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
-                .And(_ => GivenTheEnvironmentVersionForOurNextCommandIsInTheFutureBy(environmentVersionOffset))
+                .And(_ => GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(environmentVersionOffset))
 
                 .When(_ => WhenWeDeleteTheEnvironment())
 
@@ -146,12 +162,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
             _environment2Version = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheEnvironmentVersionForOurNextCommandIsStale()
-        {
-            _environmentToDeleteVersion--;
-        }
-
-        private void GivenTheEnvironmentVersionForOurNextCommandIsInTheFutureBy(int environmentVersionOffset)
+        private void GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(int environmentVersionOffset)
         {
             _environmentToDeleteVersion += environmentVersionOffset;
         }

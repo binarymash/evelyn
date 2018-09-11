@@ -32,24 +32,14 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .BDDfy();
         }
 
-        [Fact]
-        public void StaleAccountVersion()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(1)]
+        public void ExpectedAccountVersionDoesNotExactlyMatch(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
                 .And(_ => GivenWeHaveAlreadyCreatedAProject())
-                .And(_ => GivenTheAccountVersionForOurNextCommandIsStale())
-                .When(_ => WhenWeCreateAProjectOnTheAccount())
-                .Then(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenNoEventIsPublished())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void FutureAccountVersion()
-        {
-            this.Given(_ => GivenWeHaveRegisteredAnAccount())
-                .And(_ => GivenTheAccountVersionForOurNextCommandIsInTheFuture())
+                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
                 .Then(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenNoEventIsPublished())
@@ -101,14 +91,9 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
             _accountVersion++;
         }
 
-        private void GivenTheAccountVersionForOurNextCommandIsStale()
+        private void GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
-            _accountVersion--;
-        }
-
-        private void GivenTheAccountVersionForOurNextCommandIsInTheFuture()
-        {
-            _accountVersion++;
+            _accountVersion += projectVersionOffset;
         }
 
         private void WhenWeCreateAProjectOnTheAccount()
