@@ -73,24 +73,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureProjectVersion()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ProjectWithToggle(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggleToTheProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeAddAnEnvironment())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void EnvironmentCanBeAdded()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAToggleToTheProject())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
                 .When(_ => WhenWeAddAnEnvironment())
 
                 .Then(_ => ThenTwoEventsArePublished())
@@ -150,9 +140,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddEnvironment
             _projectVersion--;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
+        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
         {
-            _projectVersion++;
+            _projectVersion += projectVersionOffset;
         }
 
         private void WhenWeAddAnEnvironment()

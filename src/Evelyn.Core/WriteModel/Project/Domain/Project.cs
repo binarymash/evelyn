@@ -288,7 +288,7 @@
         {
             if (expectedVersion.HasValue)
             {
-                if (LastModifiedVersion != expectedVersion.Value)
+                if (LastModifiedVersion > expectedVersion.Value)
                 {
                     throw new ConcurrencyException(Id);
                 }

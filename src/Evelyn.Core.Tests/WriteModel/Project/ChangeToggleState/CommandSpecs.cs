@@ -71,26 +71,15 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureToggleStateVersion()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void Nominal(int toggleStateVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeChangeTheToggleState())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void Nominal()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveCreatedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsInTheFutureBy(toggleStateVersionOffset))
                 .When(_ => WhenWeChangeTheToggleState())
 
                 .Then(_ => ThenOneEventIsPublished())
@@ -163,9 +152,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             _toggleStateVersion--;
         }
 
-        private void GivenTheToggleStateVersionForOurNextCommandIsInTheFuture()
+        private void GivenTheToggleStateVersionForOurNextCommandIsInTheFutureBy(int toggleStateVersionOffset)
         {
-            _toggleStateVersion++;
+            _toggleStateVersion += toggleStateVersionOffset;
         }
 
         private void WhenWeChangeTheValueOfAToggleOnAnEnvironmentThatDoesntExist()

@@ -74,18 +74,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         }
 
         [Fact]
-        public void FutureProjectVersion()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeAddAToggle())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
         public void ToggleDoesntExistAndThereAreNoEnvironments()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
@@ -104,11 +92,14 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
                 .BDDfy();
         }
 
-        [Fact]
-        public void ToggleDoesntExistAndThereAreMultipleEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleDoesntExistAndThereAreMultipleEnvironments(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
                 .When(_ => WhenWeAddAToggle())
 
                 .Then(_ => ThenThreeEventsArePublished())
@@ -184,9 +175,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             _projectVersion--;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
+        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
         {
-            _projectVersion++;
+            _projectVersion += projectVersionOffset;
         }
 
         private void WhenWeAddAToggle()

@@ -46,27 +46,17 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureProjectVersion()
-        {
-            this.Given(_ => GivenWeHaveRegisteredAnAccount())
-                .And(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeDeleteTheProject())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectExistsWithTogglesAndEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ProjectExistsWithTogglesAndEnvironments(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
                 .And(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveAddedAnotherToggle())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(projectVersionOffset))
 
                 .When(_ => WhenWeDeleteTheProject())
 
@@ -180,9 +170,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _projectLastModifiedVersion = _projectEventCount - 1;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
+        private void GivenTheProjectVersionForOurNextCommandIsInTheFutureBy(int projectVersionOffset)
         {
-            _projectLastModifiedVersion++;
+            _projectLastModifiedVersion += projectVersionOffset;
         }
 
         private void WhenWeDeleteTheProject()

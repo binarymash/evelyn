@@ -9,7 +9,7 @@
 
         public void AssertVersion(int expectedVersion, Guid aggregateId)
         {
-            if (LastModifiedVersion != expectedVersion)
+            if (LastModifiedVersion > expectedVersion)
             {
                 throw new ConcurrencyException(aggregateId);
             }
