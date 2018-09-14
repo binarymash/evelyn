@@ -6,7 +6,6 @@
     using Core.WriteModel.Project.Domain;
     using Core.WriteModel.Project.Events;
     using CQRSlite.Commands;
-    using FluentAssertions;
 
     public abstract class ProjectCommandHandlerSpecs<THandler, TCommand> : CommandHandlerSpecs<Project, THandler, TCommand>
         where THandler : class
@@ -64,11 +63,6 @@
         protected void ThenAProjectDeletedExceptionIsThrownFor(Guid id)
         {
             ThenAnInvalidOperationExceptionIsThrownWithMessage($"The project with id {id} has already been deleted");
-        }
-
-        protected void ThenTheAggregateRootLastModifiedVersionIs(int expectedLastModifiedVersion)
-        {
-            NewAggregate.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
     }
 }
