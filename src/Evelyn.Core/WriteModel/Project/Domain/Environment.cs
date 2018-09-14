@@ -6,10 +6,10 @@
     {
         public Environment()
         {
-            ScopedVersion = -1;
+            LastModifiedVersion = -1;
         }
 
-        public Environment(string key, string name, DateTimeOffset occurredAt, string userId)
+        public Environment(string key, string name, DateTimeOffset occurredAt, int lastModifiedVersion, string userId)
             : this()
         {
             Key = key;
@@ -18,7 +18,7 @@
             CreatedBy = userId;
             LastModified = occurredAt;
             LastModifiedBy = CreatedBy;
-            ScopedVersion = 0;
+            LastModifiedVersion = lastModifiedVersion;
         }
 
         public string Key { get; private set; }

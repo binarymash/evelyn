@@ -199,7 +199,7 @@
 
         private void ThenTheVersionIsSet()
         {
-            Dto.Version.Should().Be(_expectedEnvironmentState.ScopedVersion);
+            Dto.Version.Should().Be(_expectedEnvironmentState.LastModifiedVersion);
         }
 
         private void ThenTheCreatedDateIsSet()

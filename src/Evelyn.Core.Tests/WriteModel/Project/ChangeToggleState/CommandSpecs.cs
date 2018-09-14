@@ -57,13 +57,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
         }
 
         [Fact]
-        public void StaleToggleStateVersion()
+        public void StaleExpectedToggleStateVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
                 .And(_ => GivenWeHaveChangedTheToggleState())
-                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeChangeTheToggleState())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
@@ -71,26 +71,15 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureToggleStateVersion()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void Nominal(int toggleStateVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveCreatedAnEnvironment())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenTheToggleStateVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeChangeTheToggleState())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void Nominal()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveCreatedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAToggle())
+                .And(_ => GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(toggleStateVersionOffset))
                 .When(_ => WhenWeChangeTheToggleState())
 
                 .Then(_ => ThenOneEventIsPublished())
@@ -100,12 +89,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
 
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
 
-                .And(_ => ThenTheEnvironmentStateScopedVersionHasIncreasedBy(1))
+                .And(_ => ThenTheEnvironmentStateLastModifiedVersionIs(NewAggregate.Version))
                 .And(_ => ThenTheEnvironmentStateLastModifiedHasBeenUpdated())
                 .And(_ => ThenTheEnvironmentStateLastModifiedByHasBeenUpdated())
 
                 .And(_ => ThenTheToggleStateValueHasBeenUpdated())
-                .And(_ => ThenTheToggleStateScopedVersionHasIncreasedBy(1))
+                .And(_ => ThenTheToggleStateLastModifiedVersionIs(NewAggregate.Version))
                 .And(_ => ThenTheToggleStateLastModifiedHasBeenUpdated())
                 .And(_ => ThenTheToggleStateLastModifiedByHasBeenUpdated())
 
@@ -146,7 +135,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _toggleKey, _toggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
             HistoricalEvents.Add(new ToggleStateAdded(UserId, _projectId, _environmentKey, _toggleKey, _toggleValue, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
 
-            _toggleStateVersion++;
+            _toggleStateVersion = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveChangedTheToggleState()
@@ -155,17 +144,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             _newToggleValue = DataFixture.Create<bool>().ToString();
 
             HistoricalEvents.Add(new ToggleStateChanged(UserId, _projectId, _environmentKey, _toggleKey, _newToggleValue, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _toggleStateVersion++;
+            _toggleStateVersion = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheToggleStateVersionForOurNextCommandIsStale()
+        private void GivenTheExpectedToggleStateVersionForOurNextCommandIsOffsetBy(int toggleStateVersionOffset)
         {
-            _toggleStateVersion--;
-        }
-
-        private void GivenTheToggleStateVersionForOurNextCommandIsInTheFuture()
-        {
-            _toggleStateVersion++;
+            _toggleStateVersion += toggleStateVersionOffset;
         }
 
         private void WhenWeChangeTheValueOfAToggleOnAnEnvironmentThatDoesntExist()
@@ -236,12 +220,10 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             ev.UserId.Should().Be(UserId);
         }
 
-        private void ThenTheEnvironmentStateScopedVersionHasIncreasedBy(int increment)
+        private void ThenTheEnvironmentStateLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
-            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
-
-            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + increment);
+            newEnvironmentState.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
 
         private void ThenTheEnvironmentStateLastModifiedHasBeenUpdated()
@@ -264,15 +246,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.ChangeToggleState
             toggleState.Value.Should().Be(_newToggleValue);
         }
 
-        private void ThenTheToggleStateScopedVersionHasIncreasedBy(int increment)
+        private void ThenTheToggleStateLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
             var newToggleState = newEnvironmentState.ToggleStates.First(ts => ts.Key == _toggleKey);
-
-            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == _environmentKey);
-            var oldToggleState = oldEnvironmentState.ToggleStates.First(ts => ts.Key == _toggleKey);
-
-            newToggleState.ScopedVersion.Should().Be(oldToggleState.ScopedVersion + increment);
+            newToggleState.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
 
         private void ThenTheToggleStateLastModifiedHasBeenUpdated()

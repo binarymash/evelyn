@@ -61,11 +61,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         }
 
         [Fact]
-        public void StaleProjectVersion()
+        public void StaleExpectedProjectVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedAToggle())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
@@ -73,22 +73,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureProjectVersion()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleDoesntExistAndThereAreNoEnvironments(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenTheProjectVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeAddAToggle())
-                .Then(_ => ThenNoEventIsPublished())
-                .And(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ToggleDoesntExistAndThereAreNoEnvironments()
-        {
-            this.Given(_ => GivenWeHaveCreatedAProject())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeAddAToggle())
 
                 .Then(_ => ThenOneEventIsPublished())
@@ -100,15 +91,18 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version))
                 .BDDfy();
         }
 
-        [Fact]
-        public void ToggleDoesntExistAndThereAreMultipleEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void ToggleDoesntExistAndThereAreMultipleEnvironments(int projectVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
+                .And(_ => GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
                 .When(_ => WhenWeAddAToggle())
 
                 .Then(_ => ThenThreeEventsArePublished())
@@ -121,19 +115,19 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
 
                 .And(_ => ThenTheAggregateRootHasHadAToggleAdded())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(3))
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(OriginalAggregate.Version + 1))
 
                 .And(_ => ThenTheFirstEnvironmentStateHasANewToggleState())
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheFirstEnvironmentStateLastModifiedByHasBeenUpdated())
-                .And(_ => ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheFirstEnvironmentLastModifiedIs(OriginalAggregate.Version + 2))
 
                 .And(_ => ThenTheSecondEnvironmentStateHasANewToggleState())
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheSecondEnvironmentStateLastModifiedByHasBeenUpdated())
-                .And(_ => ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheSecondEnvironmentLastModifiedVersionIs(OriginalAggregate.Version + 3))
                 .BDDfy();
         }
 
@@ -147,13 +141,13 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             _projectId = DataFixture.Create<Guid>();
 
             GivenWeHaveCreatedAProjectWith(_projectId);
-            _projectVersion++;
+            _projectVersion = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveDeletedTheProject()
         {
             HistoricalEvents.Add(new ProjectDeleted(UserId, _projectId, DateTime.UtcNow) { Version = HistoricalEvents.Count });
-            _projectVersion++;
+            _projectVersion = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveAddedTwoEnvironments()
@@ -165,8 +159,9 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment1Key);
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
+            _projectVersion = HistoricalEvents.Count - 1;
+
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment2Key);
-            _projectVersion += 2;
         }
 
         private void GivenWeHaveAddedAToggle()
@@ -175,17 +170,12 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             _existingToggleName = DataFixture.Create<string>();
 
             HistoricalEvents.Add(new ToggleAdded(UserId, _projectId, _existingToggleKey, _existingToggleName, DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _projectVersion++;
+            _projectVersion = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheProjectVersionForOurNextCommandIsStale()
+        private void GivenTheExpectedProjectVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
-            _projectVersion--;
-        }
-
-        private void GivenTheProjectVersionForOurNextCommandIsInTheFuture()
-        {
-            _projectVersion++;
+            _projectVersion += projectVersionOffset;
         }
 
         private void WhenWeAddAToggle()
@@ -261,7 +251,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
         {
             var toggle = NewAggregate.Toggles.First(e => e.Key == _newToggleKey);
 
-            toggle.ScopedVersion.Should().Be(0);
+            toggle.LastModifiedVersion.Should().Be(OriginalAggregate.Version + 1);
 
             toggle.Name.Should().Be(_newToggleName);
 
@@ -328,22 +318,20 @@ namespace Evelyn.Core.Tests.WriteModel.Project.AddToggle
             environmentState.LastModifiedBy.Should().Be(UserId);
         }
 
-        private void ThenTheFirstEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        private void ThenTheFirstEnvironmentLastModifiedIs(int expectedLastModifiedVersion)
         {
-            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment1Key, increment);
+            ThenTheEnvironmentLastModifiedVersionIs(_environment1Key, expectedLastModifiedVersion);
         }
 
-        private void ThenTheSecondEnvironmentScopedVersionHasBeenIncreasedBy(int increment)
+        private void ThenTheSecondEnvironmentLastModifiedVersionIs(int expectedLastModifiedVersion)
         {
-            ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(_environment2Key, increment);
+            ThenTheEnvironmentLastModifiedVersionIs(_environment2Key, expectedLastModifiedVersion);
         }
 
-        private void ThenTheEnvironmentScopedVersionHasBeenIncreasedBy(string environmentKey, int increment)
+        private void ThenTheEnvironmentLastModifiedVersionIs(string environmentKey, int expectedLastModifiedVersion)
         {
             var newEnvironmentState = NewAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-            var oldEnvironmentState = OriginalAggregate.EnvironmentStates.First(es => es.EnvironmentKey == environmentKey);
-
-            newEnvironmentState.ScopedVersion.Should().Be(oldEnvironmentState.ScopedVersion + increment);
+            newEnvironmentState.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
         }
     }
 }

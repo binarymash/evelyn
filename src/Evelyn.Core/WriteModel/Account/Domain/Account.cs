@@ -27,8 +27,10 @@
         [JsonIgnore]
         public IEnumerable<Guid> Projects => _projects.ToList();
 
-        public Project CreateProject(string userId, Guid projectId, string name)
+        public Project CreateProject(string userId, Guid projectId, string name, int? expectedVersion)
         {
+            AssertVersion(expectedVersion);
+
             if (_projects.Contains(projectId))
             {
                 throw new InvalidOperationException($"There is already a project with the id {projectId}");
@@ -54,6 +56,7 @@
             CreatedBy = @event.UserId;
             LastModified = @event.OccurredAt;
             LastModifiedBy = @event.UserId;
+            LastModifiedVersion = CalculateLastModifiedVersion();
         }
 
         private void Apply(ProjectCreated @event)
@@ -61,6 +64,7 @@
             _projects.Add(@event.ProjectId);
             LastModified = @event.OccurredAt;
             LastModifiedBy = @event.UserId;
+            LastModifiedVersion = CalculateLastModifiedVersion();
         }
 
         private void Apply(ProjectDeleted @event)
@@ -68,6 +72,7 @@
             _projects.Remove(@event.ProjectId);
             LastModified = @event.OccurredAt;
             LastModifiedBy = @event.UserId;
+            LastModifiedVersion = CalculateLastModifiedVersion();
         }
     }
 }

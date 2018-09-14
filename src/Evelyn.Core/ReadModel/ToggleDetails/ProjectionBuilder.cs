@@ -27,7 +27,7 @@
                     return null;
                 }
 
-                var dto = new ToggleDetailsDto(request.ProjectId, toggle.ScopedVersion, toggle.Key, toggle.Name, toggle.Created, toggle.CreatedBy, toggle.LastModified, toggle.LastModifiedBy);
+                var dto = new ToggleDetailsDto(request.ProjectId, toggle.LastModifiedVersion, toggle.Key, toggle.Name, toggle.Created, toggle.CreatedBy, toggle.LastModified, toggle.LastModifiedBy);
 
                 return dto;
             }

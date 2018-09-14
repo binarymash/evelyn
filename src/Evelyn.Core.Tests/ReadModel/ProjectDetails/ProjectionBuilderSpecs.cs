@@ -194,7 +194,7 @@
 
         private void ThenTheVersionIsSet()
         {
-            Dto.Version.Should().Be(_project.ScopedVersion);
+            Dto.Version.Should().Be(_project.LastModifiedVersion);
         }
 
         private void ThenTheIdIsSet()

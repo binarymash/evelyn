@@ -28,7 +28,7 @@
 
                 var environments = project.Environments.Select(e => new EnvironmentListDto(e.Key, e.Name));
                 var toggles = project.Toggles.Select(t => new ToggleListDto(t.Key, t.Name));
-                var dto = new ProjectDetailsDto(project.Id, project.Name, environments, toggles, project.ScopedVersion, project.Created, project.CreatedBy, project.LastModified, project.LastModifiedBy);
+                var dto = new ProjectDetailsDto(project.Id, project.Name, environments, toggles, project.LastModifiedVersion, project.Created, project.CreatedBy, project.LastModified, project.LastModifiedBy);
 
                 return dto;
             }

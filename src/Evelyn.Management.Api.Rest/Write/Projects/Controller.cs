@@ -3,10 +3,11 @@
     using System;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Core.WriteModel;
     using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Responses;
 
     [Route("api/projects")]
@@ -19,7 +20,8 @@
         private readonly ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> _createHandler;
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteProject.Command> _deleteHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> createHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteProject.Command> deleteHandler)
+        public Controller(ILogger<Controller> logger, ICommandHandler<Core.WriteModel.Account.Commands.CreateProject.Command> createHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteProject.Command> deleteHandler)
+            : base(logger)
         {
             _createHandler = createHandler;
             _deleteHandler = deleteHandler;

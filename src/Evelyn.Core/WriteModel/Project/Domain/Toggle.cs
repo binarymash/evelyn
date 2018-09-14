@@ -12,7 +12,7 @@
         {
         }
 
-        public Toggle(string key, string name, DateTimeOffset occurredAt, string userId)
+        public Toggle(string key, string name, DateTimeOffset occurredAt, int lastModifiedVersion, string userId)
         {
             Name = name;
             Key = key;
@@ -20,7 +20,7 @@
             CreatedBy = userId;
             LastModified = occurredAt;
             LastModifiedBy = userId;
-            ScopedVersion = 0;
+            LastModifiedVersion = lastModifiedVersion;
         }
 
         public string Name { get; private set; }

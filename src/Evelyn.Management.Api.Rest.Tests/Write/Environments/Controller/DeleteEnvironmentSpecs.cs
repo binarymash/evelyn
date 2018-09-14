@@ -6,10 +6,11 @@
     using Core;
     using Core.WriteModel.Project.Commands.DeleteEnvironment;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Management.Api.Rest.Write.Environments;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
@@ -17,6 +18,7 @@
     public class DeleteEnvironmentSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<Rest.Write.Environments.Controller> _logger;
         private readonly Rest.Write.Environments.Controller _controller;
         private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
@@ -27,8 +29,9 @@
         public DeleteEnvironmentSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<Rest.Write.Environments.Controller>>();
             _handler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.Environments.Controller(null, _handler);
+            _controller = new Rest.Write.Environments.Controller(_logger, null, _handler);
             _projectId = _fixture.Create<Guid>();
             _environmentKey = _fixture.Create<string>();
         }
@@ -74,7 +77,7 @@
         {
             _handler
                 .Handle(Arg.Any<Command>())
-                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+                .Returns(cah => throw _fixture.Create<Core.WriteModel.ConcurrencyException>());
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()

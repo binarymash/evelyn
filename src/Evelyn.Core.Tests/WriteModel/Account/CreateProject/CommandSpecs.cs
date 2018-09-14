@@ -37,7 +37,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
                 .And(_ => GivenWeHaveAlreadyCreatedAProject())
-                .And(_ => GivenTheAccountVersionForOurNextCommandIsStale())
+                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
                 .Then(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenNoEventIsPublished())
@@ -45,22 +45,13 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .BDDfy();
         }
 
-        [Fact]
-        public void FutureAccountVersion()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void CreateProject(int accountVersionOffset)
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
-                .And(_ => GivenTheAccountVersionForOurNextCommandIsInTheFuture())
-                .When(_ => WhenWeCreateAProjectOnTheAccount())
-                .Then(_ => ThenAConcurrencyExceptionIsThrown())
-                .And(_ => ThenNoEventIsPublished())
-                .And(_ => ThenThereAreNoChangesOnTheAggregate())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectDoesNotExist()
-        {
-            this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(accountVersionOffset))
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
 
                 .Then(_ => ThenTwoEventsArePublished())
@@ -68,10 +59,11 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .And(_ => ThenAProjectAddedToAccountEventIsPublished())
                 .And(_ => ThenAProjectCreatedEventIsPublishedForAProject())
 
-                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(4))
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(5))
 
                 .And(_ => ThenTheAggregateRootHasHadTheProjectAdded())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version))
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
 
@@ -101,14 +93,9 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
             _accountVersion++;
         }
 
-        private void GivenTheAccountVersionForOurNextCommandIsStale()
+        private void GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(int projectVersionOffset)
         {
-            _accountVersion--;
-        }
-
-        private void GivenTheAccountVersionForOurNextCommandIsInTheFuture()
-        {
-            _accountVersion++;
+            _accountVersion += projectVersionOffset;
         }
 
         private void WhenWeCreateAProjectOnTheAccount()
@@ -165,7 +152,7 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
             project.Environments.Count().Should().Be(0);
             project.Toggles.Count().Should().Be(0);
             project.Version.Should().Be(0);
-            project.ScopedVersion.Should().Be(0);
+            project.LastModifiedVersion.Should().Be(0);
             project.Created.Should().BeAfter(TimeBeforeHandling).And.BeBefore(TimeAfterHandling);
             project.CreatedBy.Should().Be(UserId);
             project.LastModified.Should().Be(project.Created);

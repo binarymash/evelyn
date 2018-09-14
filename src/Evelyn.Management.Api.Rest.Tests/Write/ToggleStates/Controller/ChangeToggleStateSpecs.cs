@@ -7,9 +7,11 @@
     using Core.WriteModel.Project.Commands.ChangeToggleState;
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
+    using Evelyn.Management.Api.Rest.Write.ToggleStates;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
@@ -17,6 +19,7 @@
     public class ChangeToggleStateSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<Rest.Write.ToggleStates.Controller> _logger;
         private readonly Rest.Write.ToggleStates.Controller _controller;
         private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
@@ -28,8 +31,9 @@
         public ChangeToggleStateSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<Rest.Write.ToggleStates.Controller>>();
             _handler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.ToggleStates.Controller(_handler);
+            _controller = new Rest.Write.ToggleStates.Controller(_logger, _handler);
             _projectId = _fixture.Create<Guid>();
             _environmentKey = _fixture.Create<string>();
             _toggleKey = _fixture.Create<string>();
@@ -76,7 +80,7 @@
         {
             _handler
                 .Handle(Arg.Any<Command>())
-                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+                .Returns(cah => throw _fixture.Create<Core.WriteModel.ConcurrencyException>());
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()

@@ -3,10 +3,11 @@
     using System;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Core.WriteModel;
     using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Responses;
 
     [Route("api/projects/{projectId}/toggles")]
@@ -19,7 +20,8 @@
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> _addToggleHandler;
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> _deleteToggleHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> addToggleHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> deleteToggleHandler)
+        public Controller(ILogger<Controller> logger, ICommandHandler<Core.WriteModel.Project.Commands.AddToggle.Command> addToggleHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteToggle.Command> deleteToggleHandler)
+            : base(logger)
         {
             _addToggleHandler = addToggleHandler;
             _deleteToggleHandler = deleteToggleHandler;

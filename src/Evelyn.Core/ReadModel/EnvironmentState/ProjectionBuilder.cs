@@ -29,8 +29,8 @@
                     return null;
                 }
 
-                var toggleStates = environmentState.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, ts.ScopedVersion));
-                var environmentStateDto = new EnvironmentStateDto(environmentState.ScopedVersion, environmentState.Created, environmentState.CreatedBy, environmentState.LastModified, environmentState.LastModifiedBy, toggleStates);
+                var toggleStates = environmentState.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, ts.LastModifiedVersion));
+                var environmentStateDto = new EnvironmentStateDto(environmentState.LastModifiedVersion, environmentState.Created, environmentState.CreatedBy, environmentState.LastModified, environmentState.LastModifiedBy, toggleStates);
 
                 return environmentStateDto;
             }
