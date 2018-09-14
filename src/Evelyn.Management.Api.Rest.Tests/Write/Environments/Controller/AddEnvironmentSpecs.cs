@@ -6,10 +6,11 @@
     using Core;
     using Core.WriteModel.Project.Commands.AddEnvironment;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Management.Api.Rest.Write.Environments;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
@@ -17,6 +18,7 @@
     public class AddEnvironmentSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<Rest.Write.Environments.Controller> _logger;
         private readonly Rest.Write.Environments.Controller _controller;
         private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
@@ -26,8 +28,9 @@
         public AddEnvironmentSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<Rest.Write.Environments.Controller>>();
             _handler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.Environments.Controller(_handler, null);
+            _controller = new Rest.Write.Environments.Controller(_logger, _handler, null);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -72,7 +75,7 @@
         {
             _handler
                 .Handle(Arg.Any<Command>())
-                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+                .Returns(cah => throw new Core.WriteModel.ConcurrencyException(Guid.NewGuid(), _fixture.Create<int>(), _fixture.Create<int>()));
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()

@@ -7,6 +7,7 @@
     using Evelyn.Core.ReadModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Write;
 
     [Route("api/projects")]
@@ -15,7 +16,8 @@
     {
         private readonly IReadModelFacade _readModelFacade;
 
-        public ProjectsController(IReadModelFacade readModelFacade)
+        public ProjectsController(ILogger<ProjectsController> logger, IReadModelFacade readModelFacade)
+            : base(logger)
         {
             _readModelFacade = readModelFacade;
         }

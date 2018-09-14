@@ -32,7 +32,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteProject
             _projectEventCount = 0;
             _projectLastModifiedVersion = -1;
         }
-        
+
         [Fact]
         public void AlreadyDeleted()
         {

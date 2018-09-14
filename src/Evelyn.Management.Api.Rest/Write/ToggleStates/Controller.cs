@@ -3,11 +3,11 @@
     using System;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Core.WriteModel;
     using FluentValidation;
-    using Messages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Responses;
 
     [Route("api/projects/{projectId}/environments/{environmentKey}/toggles/{toggleKey}")]
@@ -19,7 +19,8 @@
     {
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> _handler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> handler)
+        public Controller(ILogger<Controller> logger, ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> handler)
+            : base(logger)
         {
             _handler = handler;
         }

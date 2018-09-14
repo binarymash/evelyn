@@ -11,6 +11,7 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using Rest.Write;
@@ -20,6 +21,7 @@
     public class ProjectsControllerSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<ProjectsController> _logger;
         private readonly ProjectsController _controller;
         private readonly IReadModelFacade _readModelFacade;
         private readonly Guid _accountId = Constants.DefaultAccount;
@@ -31,8 +33,9 @@
         public ProjectsControllerSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<ProjectsController>>();
             _readModelFacade = Substitute.For<IReadModelFacade>();
-            _controller = new ProjectsController(_readModelFacade);
+            _controller = new ProjectsController(_logger, _readModelFacade);
         }
 
         [Fact]

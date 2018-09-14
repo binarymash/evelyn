@@ -7,9 +7,11 @@
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
     using Evelyn.Core.WriteModel.Project.Commands.AddToggle;
+    using Evelyn.Management.Api.Rest.Write.Toggles;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
@@ -17,6 +19,7 @@
     public class AddToggleSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<Rest.Write.Toggles.Controller> _logger;
         private readonly Rest.Write.Toggles.Controller _controller;
         private readonly ICommandHandler<Command> _handler;
         private readonly Guid _projectId;
@@ -26,8 +29,9 @@
         public AddToggleSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<Rest.Write.Toggles.Controller>>();
             _handler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.Toggles.Controller(_handler, null);
+            _controller = new Rest.Write.Toggles.Controller(_logger, _handler, null);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -72,7 +76,7 @@
         {
             _handler
                 .Handle(Arg.Any<Command>())
-                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+                .Returns(cah => throw _fixture.Create<Core.WriteModel.ConcurrencyException>());
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()

@@ -32,14 +32,12 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .BDDfy();
         }
 
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(1)]
-        public void ExpectedAccountVersionDoesNotExactlyMatch(int projectVersionOffset)
+        [Fact]
+        public void StaleAccountVersion()
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
                 .And(_ => GivenWeHaveAlreadyCreatedAProject())
-                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(projectVersionOffset))
+                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
                 .Then(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenNoEventIsPublished())
@@ -47,10 +45,13 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .BDDfy();
         }
 
-        [Fact]
-        public void ProjectDoesNotExist()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void CreateProject(int accountVersionOffset)
         {
             this.Given(_ => GivenWeHaveRegisteredAnAccount())
+                .And(_ => GivenTheExpectedAccountVersionForOurNextCommandIsOffsetBy(accountVersionOffset))
                 .When(_ => WhenWeCreateAProjectOnTheAccount())
 
                 .Then(_ => ThenTwoEventsArePublished())
@@ -58,10 +59,11 @@ namespace Evelyn.Core.Tests.WriteModel.Account.CreateProject
                 .And(_ => ThenAProjectAddedToAccountEventIsPublished())
                 .And(_ => ThenAProjectCreatedEventIsPublishedForAProject())
 
-                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(4))
+                .And(_ => ThenTheNumberOfChangesOnTheAggregateIs(5))
 
                 .And(_ => ThenTheAggregateRootHasHadTheProjectAdded())
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version))
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(1))
 

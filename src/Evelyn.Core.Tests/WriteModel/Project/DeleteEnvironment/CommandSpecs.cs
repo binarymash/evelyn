@@ -70,7 +70,6 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
-
         }
 
         [Theory]

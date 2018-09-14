@@ -13,8 +13,8 @@
 
         protected override async Task HandleImpl(Command message)
         {
-            var account = await Session.Get<Domain.Account>(message.Id, message.ExpectedVersion).ConfigureAwait(false);
-            var project = account.CreateProject(message.UserId, message.ProjectId, message.Name);
+            var account = await Session.Get<Domain.Account>(message.Id).ConfigureAwait(false);
+            var project = account.CreateProject(message.UserId, message.ProjectId, message.Name, message.ExpectedVersion);
             await Session.Add(project).ConfigureAwait(false);
         }
     }

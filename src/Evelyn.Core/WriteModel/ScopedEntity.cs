@@ -11,7 +11,7 @@
         {
             if (LastModifiedVersion > expectedVersion)
             {
-                throw new ConcurrencyException(aggregateId);
+                throw new ConcurrencyException(aggregateId, expectedVersion, LastModifiedVersion);
             }
         }
     }
