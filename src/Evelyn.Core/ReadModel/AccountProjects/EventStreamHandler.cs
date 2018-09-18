@@ -1,33 +1,101 @@
 ﻿namespace Evelyn.Core.ReadModel.AccountProjects
 {
     using System;
-    using System.Threading;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using CQRSlite.Events;
+    using Evelyn.Core.WriteModel.Account.Events;
     using Infrastructure;
 
-    public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, AccountProjectsDto>
+    public class EventStreamHandler : EventStreamHandler<AccountProjectsDto>
     {
-        private readonly IDatabase<Guid, AccountProjectsDto> _db;
+        private readonly IProjectionStore<Guid, AccountProjectsDto> _db;
 
         public EventStreamHandler(
-            IProjectionBuilder<ProjectionBuilderRequest, AccountProjectsDto> projectionBuilder,
-            IDatabase<Guid, AccountProjectsDto> db,
+            IProjectionStore<Guid, AccountProjectsDto> db,
             IEventStreamFactory eventQueueFactory)
-            : base(projectionBuilder, eventQueueFactory)
+            : base(eventQueueFactory)
         {
             _db = db;
         }
 
-        protected override ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
+        protected override async Task HandleEvent(IEvent @event)
         {
-            return new ProjectionBuilderRequest(@event.Id);
+            switch (@event)
+            {
+                case AccountRegistered accountRegistered:
+                    await Handle(accountRegistered).ConfigureAwait(false);
+                    break;
+                case ProjectCreated projectCreated:
+                    await Handle(projectCreated).ConfigureAwait(false);
+                    break;
+                case ProjectDeleted projectDeleted:
+                    await Handle(projectDeleted).ConfigureAwait(false);
+                    break;
+                case WriteModel.Project.Events.ProjectCreated projectCreated:
+                    await Handle(projectCreated).ConfigureAwait(false);
+                    break;
+                default:
+                    break;
+            }
         }
 
-        protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
+        private async Task Handle(AccountRegistered @event)
         {
-            var dto = await ProjectionBuilder.Invoke(request, token);
-            await _db.AddOrUpdate(dto.AccountId, dto);
+            try
+            {
+                var dto = new AccountProjectsDto(@event.Id, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, new List<ProjectListDto>());
+                await _db.AddOrUpdate(dto.AccountId, dto);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(ProjectCreated @event)
+        {
+            try
+            {
+                var dto = await _db.Get(@event.Id).ConfigureAwait(false);
+                dto.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(dto.AccountId, dto);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(WriteModel.Project.Events.ProjectCreated @event)
+        {
+            try
+            {
+                var dto = await _db.Get(@event.AccountId).ConfigureAwait(false);
+
+                var project = dto.Projects.Single(p => p.Id == @event.Id);
+                project.SetName(@event.Name);
+                await _db.AddOrUpdate(dto.AccountId, dto);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(ProjectDeleted @event)
+        {
+            try
+            {
+                var dto = await _db.Get(@event.Id).ConfigureAwait(false);
+                dto.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(dto.AccountId, dto);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
         }
     }
 }

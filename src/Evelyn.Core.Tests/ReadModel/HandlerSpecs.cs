@@ -20,11 +20,11 @@
         {
             DataFixture = new Fixture();
 
-            AccountProjectsStore = new InMemoryDatabase<Guid, AccountProjectsDto>();
-            ProjectDetailsStore = new InMemoryDatabase<Guid, ProjectDetailsDto>();
-            EnvironmentDetailsStore = new InMemoryDatabase<string, EnvironmentDetailsDto>();
-            ToggleDetailsStore = new InMemoryDatabase<string, ToggleDetailsDto>();
-            EnvironmentStatesStore = new InMemoryDatabase<string, EnvironmentStateDto>();
+            AccountProjectsStore = new InMemoryProjectionStore<Guid, AccountProjectsDto>();
+            ProjectDetailsStore = new InMemoryProjectionStore<Guid, ProjectDetailsDto>();
+            EnvironmentDetailsStore = new InMemoryProjectionStore<string, EnvironmentDetailsDto>();
+            ToggleDetailsStore = new InMemoryProjectionStore<string, ToggleDetailsDto>();
+            EnvironmentStatesStore = new InMemoryProjectionStore<string, EnvironmentStateDto>();
 
             StubbedRepository = new StubbedRepository();
 
@@ -44,15 +44,15 @@
 
         protected IReadModelFacade ReadModelFacade { get; }
 
-        protected IDatabase<Guid, AccountProjectsDto> AccountProjectsStore { get; }
+        protected IProjectionStore<Guid, AccountProjectsDto> AccountProjectsStore { get; }
 
-        protected IDatabase<Guid, ProjectDetailsDto> ProjectDetailsStore { get; }
+        protected IProjectionStore<Guid, ProjectDetailsDto> ProjectDetailsStore { get; }
 
-        protected IDatabase<string, EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
+        protected IProjectionStore<string, EnvironmentDetailsDto> EnvironmentDetailsStore { get; set; }
 
-        protected IDatabase<string, ToggleDetailsDto> ToggleDetailsStore { get; set; }
+        protected IProjectionStore<string, ToggleDetailsDto> ToggleDetailsStore { get; set; }
 
-        protected IDatabase<string, EnvironmentStateDto> EnvironmentStatesStore { get; set; }
+        protected IProjectionStore<string, EnvironmentStateDto> EnvironmentStatesStore { get; set; }
 
         protected StubbedRepository StubbedRepository { get; set; }
 

@@ -7,46 +7,61 @@
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, EnvironmentDetailsDto>
+    public class EventStreamHandler : EventStreamHandler<EnvironmentDetailsDto>
     {
-        private readonly IDatabase<string, EnvironmentDetailsDto> _db;
+        private readonly IProjectionStore<string, EnvironmentDetailsDto> _db;
 
         public EventStreamHandler(
-            IProjectionBuilder<ProjectionBuilderRequest, EnvironmentDetailsDto> projectionBuilder,
-            IDatabase<string, EnvironmentDetailsDto> db,
+            IProjectionStore<string, EnvironmentDetailsDto> db,
             IEventStreamFactory eventQueueFactory)
-            : base(projectionBuilder, eventQueueFactory)
+            : base(eventQueueFactory)
         {
             _db = db;
         }
 
-        protected override ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
+        protected override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
                 case EnvironmentAdded ea:
-                    return new ProjectionBuilderRequest(ea.Id, ea.Key);
+                    await Handle(ea).ConfigureAwait(false);
+                    break;
                 case EnvironmentDeleted ed:
-                    return new ProjectionBuilderRequest(ed.Id, ed.Key);
+                    await Handle(ed).ConfigureAwait(false);
+                    break;
                 default:
-                    throw new InvalidOperationException();
+                    break;
             }
         }
 
-        protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
+        private async Task Handle(EnvironmentAdded @event)
         {
-            var projectionKey = $"{request.ProjectId}-{request.EnvironmentKey}";
-
-            var dto = await ProjectionBuilder.Invoke(request, token);
-
-            if (dto == null)
+            try
             {
-                await _db.Delete(projectionKey);
+                var dto = new EnvironmentDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(StoreKey(@event.Id, @event.Key), dto).ConfigureAwait(false);
             }
-            else
+            catch
             {
-                await _db.AddOrUpdate(projectionKey, dto);
+                throw new FailedToBuildProjectionException();
             }
+        }
+
+        private async Task Handle(EnvironmentDeleted @event)
+        {
+            try
+            {
+                await _db.Delete(StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private string StoreKey(Guid projectId, string environmentKey)
+        {
+            return $"{projectId}-{environmentKey}";
         }
     }
 }

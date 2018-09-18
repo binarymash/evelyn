@@ -18,5 +18,30 @@
         public Guid AccountId { get; private set; }
 
         public IEnumerable<ProjectListDto> Projects => _projects.ToList();
+
+        public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        {
+            LastModified = lastModified;
+            LastModifiedBy = lastModifiedBy;
+            Version = version;
+
+            var project = new ProjectListDto(projectId, name);
+            _projects.Add(project);
+        }
+
+        public void DeleteProject(Guid projectId, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        {
+            LastModified = lastModified;
+            LastModifiedBy = lastModifiedBy;
+            Version = version;
+
+            var project = _projects.Single(p => p.Id == projectId);
+            _projects.Remove(project);
+        }
+
+        internal object Single(Func<object, object> p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,58 +1,121 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentState
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, EnvironmentStateDto>
+    public class EventStreamHandler : EventStreamHandler<EnvironmentStateDto>
     {
-        private IDatabase<string, EnvironmentStateDto> _db;
+        private IProjectionStore<string, EnvironmentStateDto> _db;
 
         public EventStreamHandler(
-            IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> projectionBuilder,
-            IDatabase<string, EnvironmentStateDto> db,
+            IProjectionStore<string, EnvironmentStateDto> db,
             IEventStreamFactory eventQueueFactory)
-            : base(projectionBuilder, eventQueueFactory)
+            : base(eventQueueFactory)
         {
             _db = db;
         }
 
-        protected override ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
+        protected override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
                 case EnvironmentStateAdded esa:
-                    return new ProjectionBuilderRequest(esa.Id, esa.EnvironmentKey);
+                    await Handle(esa).ConfigureAwait(false);
+                    break;
                 case EnvironmentStateDeleted esd:
-                    return new ProjectionBuilderRequest(esd.Id, esd.EnvironmentKey);
+                    await Handle(esd).ConfigureAwait(false);
+                    break;
                 case ToggleStateAdded tsa:
-                    return new ProjectionBuilderRequest(tsa.Id, tsa.EnvironmentKey);
+                    await Handle(tsa).ConfigureAwait(false);
+                    break;
                 case ToggleStateChanged tsc:
-                    return new ProjectionBuilderRequest(tsc.Id, tsc.EnvironmentKey);
+                    await Handle(tsc).ConfigureAwait(false);
+                    break;
                 case ToggleStateDeleted tsd:
-                    return new ProjectionBuilderRequest(tsd.Id, tsd.EnvironmentKey);
+                    await Handle(tsd).ConfigureAwait(false);
+                    break;
                 default:
-                    throw new InvalidOperationException();
+                    break;
             }
         }
 
-        protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
+        private async Task Handle(EnvironmentStateAdded @event)
         {
-            var projectionKey = $"{request.ProjectId}-{request.EnvironmentKey}";
-
-            var dto = await ProjectionBuilder.Invoke(request, token);
-
-            if (dto == null)
+            try
             {
-                await _db.Delete(projectionKey);
+                var toggleStates = @event.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, @event.Version));
+                var dto = new EnvironmentStateDto(@event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, toggleStates);
+                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
             }
-            else
+            catch
             {
-                await _db.AddOrUpdate(projectionKey, dto);
+                throw new FailedToBuildProjectionException();
             }
+        }
+
+        private async Task Handle(EnvironmentStateDeleted @event)
+        {
+            try
+            {
+                await _db.Delete(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(ToggleStateAdded @event)
+        {
+            try
+            {
+                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+                dto.AddToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(ToggleStateChanged @event)
+        {
+            try
+            {
+                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+                dto.ChangeToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private async Task Handle(ToggleStateDeleted @event)
+        {
+            try
+            {
+                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+                dto.DeleteToggleState(@event.ToggleKey, @event.Version, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private string StoreKey(Guid projectId, string environmentKey)
+        {
+            return $"{projectId}-{environmentKey}";
         }
     }
 }

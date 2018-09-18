@@ -23,23 +23,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.AccountProjects.EventStreamPublisher>();
             parentOptions.Services.AddSingleton<IHostedService, Evelyn.Core.ReadModel.AccountProjects.EventStreamHandler>();
-            parentOptions.Services.TryAddSingleton<IProjectionBuilder<Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilderRequest, Evelyn.Core.ReadModel.AccountProjects.AccountProjectsDto>, Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentDetails.EventStreamPublisher>();
             parentOptions.Services.AddSingleton<IHostedService, Evelyn.Core.ReadModel.EnvironmentDetails.EventStreamHandler>();
-            parentOptions.Services.TryAddSingleton<IProjectionBuilder<Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.EnvironmentDetails.EnvironmentDetailsDto>, Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentState.EventStreamPublisher>();
             parentOptions.Services.AddSingleton<IHostedService, Evelyn.Core.ReadModel.EnvironmentState.EventStreamHandler>();
-            parentOptions.Services.TryAddSingleton<IProjectionBuilder<Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilderRequest, Evelyn.Core.ReadModel.EnvironmentState.EnvironmentStateDto>, Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ProjectDetails.EventStreamPublisher>();
             parentOptions.Services.AddSingleton<IHostedService, Evelyn.Core.ReadModel.ProjectDetails.EventStreamHandler>();
-            parentOptions.Services.TryAddSingleton<IProjectionBuilder<Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.ProjectDetails.ProjectDetailsDto>, Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ToggleDetails.EventStreamPublisher>();
             parentOptions.Services.AddSingleton<IHostedService, Evelyn.Core.ReadModel.ToggleDetails.EventStreamHandler>();
-            parentOptions.Services.TryAddSingleton<IProjectionBuilder<Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilderRequest, Evelyn.Core.ReadModel.ToggleDetails.ToggleDetailsDto>, Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilder>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<HandlerOptions>, ConfigureInProcessHandlerOptions>();
         }

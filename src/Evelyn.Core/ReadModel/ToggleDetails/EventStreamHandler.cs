@@ -7,46 +7,61 @@
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<ProjectionBuilderRequest, ToggleDetailsDto>
+    public class EventStreamHandler : EventStreamHandler<ToggleDetailsDto>
     {
-        private readonly IDatabase<string, ToggleDetailsDto> _db;
+        private readonly IProjectionStore<string, ToggleDetailsDto> _db;
 
         public EventStreamHandler(
-            IProjectionBuilder<ProjectionBuilderRequest, ToggleDetailsDto> projectionBuilder,
-            IDatabase<string, ToggleDetailsDto> db,
+            IProjectionStore<string, ToggleDetailsDto> db,
             IEventStreamFactory eventQueueFactory)
-            : base(projectionBuilder, eventQueueFactory)
+            : base(eventQueueFactory)
         {
             _db = db;
         }
 
-        protected override ProjectionBuilderRequest BuildProjectionRequest(IEvent @event)
+        protected override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
-                case ToggleAdded ta:
-                    return new ProjectionBuilderRequest(ta.Id, ta.Key);
-                case ToggleDeleted td:
-                    return new ProjectionBuilderRequest(td.Id, td.Key);
+                case ToggleAdded toggleAdded:
+                    await Handle(toggleAdded).ConfigureAwait(false);
+                    break;
+                case ToggleDeleted toggleDeleted:
+                    await Handle(toggleDeleted).ConfigureAwait(false);
+                    break;
                 default:
-                    throw new InvalidOperationException();
+                    break;
             }
         }
 
-        protected override async Task UpdateProjection(ProjectionBuilderRequest request, CancellationToken token)
+        private async Task Handle(ToggleAdded @event)
         {
-            var projectionKey = $"{request.ProjectId}-{request.ToggleKey}";
-
-            var dto = await ProjectionBuilder.Invoke(request, token);
-
-            if (dto == null)
+            try
             {
-                await _db.Delete(projectionKey);
+                var projection = new ToggleDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+                await _db.AddOrUpdate(GetStoreKey(@event.Id, @event.Key), projection);
             }
-            else
+            catch
             {
-                await _db.AddOrUpdate(projectionKey, dto);
+                throw new FailedToBuildProjectionException();
             }
+        }
+
+        private async Task Handle(ToggleDeleted @event)
+        {
+            try
+            {
+                await _db.Delete(GetStoreKey(@event.Id, @event.Key));
+            }
+            catch
+            {
+                throw new FailedToBuildProjectionException();
+            }
+        }
+
+        private string GetStoreKey(Guid projectId, string toggleKey)
+        {
+            return $"{projectId}-{toggleKey}";
         }
     }
 }

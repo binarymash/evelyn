@@ -11,22 +11,22 @@
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IDatabase<Guid, AccountProjectsDto> _accountProjects;
+        private readonly IProjectionStore<Guid, AccountProjectsDto> _accountProjects;
 
-        private readonly IDatabase<Guid, ProjectDetailsDto> _projectDetails;
+        private readonly IProjectionStore<Guid, ProjectDetailsDto> _projectDetails;
 
-        private readonly IDatabase<string, EnvironmentDetailsDto> _environmentDetails;
+        private readonly IProjectionStore<string, EnvironmentDetailsDto> _environmentDetails;
 
-        private readonly IDatabase<string, ToggleDetailsDto> _toggleDetails;
+        private readonly IProjectionStore<string, ToggleDetailsDto> _toggleDetails;
 
-        private readonly IDatabase<string, EnvironmentStateDto> _environmentStates;
+        private readonly IProjectionStore<string, EnvironmentStateDto> _environmentStates;
 
         public DatabaseReadModelFacade(
-            IDatabase<Guid, AccountProjectsDto> accountProjects,
-            IDatabase<Guid, ProjectDetailsDto> projectDetails,
-            IDatabase<string, EnvironmentDetailsDto> environmentDetails,
-            IDatabase<string, ToggleDetailsDto> toggleDetails,
-            IDatabase<string, EnvironmentStateDto> environmentStates)
+            IProjectionStore<Guid, AccountProjectsDto> accountProjects,
+            IProjectionStore<Guid, ProjectDetailsDto> projectDetails,
+            IProjectionStore<string, EnvironmentDetailsDto> environmentDetails,
+            IProjectionStore<string, ToggleDetailsDto> toggleDetails,
+            IProjectionStore<string, EnvironmentStateDto> environmentStates)
         {
             _accountProjects = accountProjects;
             _projectDetails = projectDetails;

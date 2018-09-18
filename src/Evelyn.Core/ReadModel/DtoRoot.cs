@@ -13,14 +13,21 @@
             LastModifiedBy = lastModifiedBy;
         }
 
-        public DateTimeOffset Created { get; private set; }
+        public DateTimeOffset Created { get; protected set; }
 
-        public string CreatedBy { get; private set; }
+        public string CreatedBy { get; protected set; }
 
-        public DateTimeOffset LastModified { get; private set; }
+        public DateTimeOffset LastModified { get; protected set; }
 
-        public string LastModifiedBy { get; private set; }
+        public string LastModifiedBy { get; protected set; }
 
-        public int Version { get; private set; }
+        public int Version { get; protected set; }
+
+        protected void UpdateModificationAudit(DateTimeOffset lastModified, string lastModifiedBy, int lastModifiedVersion)
+        {
+            LastModified = lastModified;
+            LastModifiedBy = lastModifiedBy;
+            Version = lastModifiedVersion;
+        }
     }
 }

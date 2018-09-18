@@ -5,11 +5,13 @@
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using AccountEvents = WriteModel.Account.Events;
+    using ProjectEvents = WriteModel.Project.Events;
 
     public class EventStreamPublisher :
         ICancellableEventHandler<AccountEvents.AccountRegistered>,
         ICancellableEventHandler<AccountEvents.ProjectCreated>,
-        ICancellableEventHandler<AccountEvents.ProjectDeleted>
+        ICancellableEventHandler<AccountEvents.ProjectDeleted>,
+        ICancellableEventHandler<ProjectEvents.ProjectCreated>
     {
         private readonly Queue<IEvent> _eventStream;
 
@@ -35,5 +37,12 @@
             _eventStream.Enqueue(message);
             return Task.CompletedTask;
         }
+
+        public Task Handle(ProjectEvents.ProjectCreated message, CancellationToken token = default)
+        {
+            _eventStream.Enqueue(message);
+            return Task.CompletedTask;
+        }
+
     }
 }

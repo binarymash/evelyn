@@ -7,17 +7,14 @@
     using CQRSlite.Events;
     using Microsoft.Extensions.Hosting;
 
-    public abstract class EventStreamHandler<TProjectionBuilderRequest, TDto> : BackgroundService
+    public abstract class EventStreamHandler<TDto> : BackgroundService
     {
         private readonly Queue<IEvent> _eventsToHandle;
 
-        protected EventStreamHandler(IProjectionBuilder<TProjectionBuilderRequest, TDto> projectionBuilder, IEventStreamFactory eventQueueFactory)
+        protected EventStreamHandler(IEventStreamFactory eventQueueFactory)
         {
-            ProjectionBuilder = projectionBuilder;
             _eventsToHandle = eventQueueFactory.GetEventStream<TDto>();
         }
-
-        protected IProjectionBuilder<TProjectionBuilderRequest, TDto> ProjectionBuilder { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -25,9 +22,9 @@
             {
                 if (_eventsToHandle.Count > 0)
                 {
-                    var @event = _eventsToHandle.Dequeue();
-                    var request = BuildProjectionRequest(@event);
-                    await UpdateProjection(request, stoppingToken);
+                    var @event = _eventsToHandle.Peek();
+                    await HandleEvent(@event).ConfigureAwait(false);
+                    _eventsToHandle.Dequeue();
                 }
                 else
                 {
@@ -36,8 +33,6 @@
             }
         }
 
-        protected abstract TProjectionBuilderRequest BuildProjectionRequest(IEvent @event);
-
-        protected abstract Task UpdateProjection(TProjectionBuilderRequest request, CancellationToken token);
+        protected abstract Task HandleEvent(IEvent @event);
     }
 }

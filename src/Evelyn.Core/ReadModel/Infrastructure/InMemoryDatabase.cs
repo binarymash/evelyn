@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class InMemoryDatabase<TKey, TValue> : IDatabase<TKey, TValue>
+    public class InMemoryProjectionStore<TKey, TValue> : IProjectionStore<TKey, TValue>
     {
         private readonly Dictionary<TKey, TValue> _items;
 
-        public InMemoryDatabase()
+        public InMemoryProjectionStore()
         {
             _items = new Dictionary<TKey, TValue>();
         }

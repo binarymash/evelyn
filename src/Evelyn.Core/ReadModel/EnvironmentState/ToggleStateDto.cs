@@ -14,5 +14,11 @@
         public string Value { get; private set; }
 
         public int Version { get; private set; }
+
+        public void ChangeState(string value, int version)
+        {
+            Value = value;
+            Version = version;
+        }
     }
 }

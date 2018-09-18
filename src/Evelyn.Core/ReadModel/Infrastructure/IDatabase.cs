@@ -2,7 +2,7 @@
 {
     using System.Threading.Tasks;
 
-    public interface IDatabase<TKey, TValue>
+    public interface IProjectionStore<TKey, TValue>
     {
         Task<TValue> Get(TKey id);
 
