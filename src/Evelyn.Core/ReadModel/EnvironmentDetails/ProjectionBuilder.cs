@@ -1,25 +1,19 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentDetails
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<EnvironmentDetailsDto>
+    public class ProjectionBuilder : ProjectionBuilder<EnvironmentDetailsDto>
     {
-        private readonly IProjectionStore<string, EnvironmentDetailsDto> _db;
-
-        public EventStreamHandler(
-            IProjectionStore<string, EnvironmentDetailsDto> db,
-            IEventStreamFactory eventQueueFactory)
-            : base(eventQueueFactory)
+        public ProjectionBuilder(IProjectionStore<EnvironmentDetailsDto> projectionStore)
+            : base(projectionStore)
         {
-            _db = db;
         }
 
-        protected override async Task HandleEvent(IEvent @event)
+        public override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
@@ -38,8 +32,8 @@
         {
             try
             {
-                var dto = new EnvironmentDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(StoreKey(@event.Id, @event.Key), dto).ConfigureAwait(false);
+                var projection = new EnvironmentDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+                await Projections.AddOrUpdate(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
             }
             catch
             {
@@ -51,17 +45,12 @@
         {
             try
             {
-                await _db.Delete(StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
+                await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
             }
             catch
             {
                 throw new FailedToBuildProjectionException();
             }
-        }
-
-        private string StoreKey(Guid projectId, string environmentKey)
-        {
-            return $"{projectId}-{environmentKey}";
         }
     }
 }

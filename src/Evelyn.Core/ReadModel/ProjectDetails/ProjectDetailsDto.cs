@@ -26,6 +26,11 @@
 
         public IEnumerable<ToggleListDto> Toggles => _toggles;
 
+        public static string StoreKey(Guid projectId)
+        {
+            return $"{nameof(ProjectDetailsDto)}-{projectId}";
+        }
+
         public void AddEnvironment(string environmentKey, string environmentName, DateTimeOffset lastModified, int lastModifiedVersion, string lastModifiedBy)
         {
             UpdateModificationAudit(lastModified, lastModifiedBy, lastModifiedVersion);

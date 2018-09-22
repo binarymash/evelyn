@@ -6,14 +6,14 @@
 
     public class StubbedEventStreamFactory : IEventStreamFactory
     {
-        private readonly Queue<IEvent> _events;
+        private readonly Queue<EventEnvelope> _events;
 
         public StubbedEventStreamFactory()
         {
-            _events = new Queue<IEvent>();
+            _events = new Queue<EventEnvelope>();
         }
 
-        public Queue<IEvent> GetEventStream<TDto>()
+        public Queue<EventEnvelope> GetEventStream<TDto>()
         {
             return _events;
         }

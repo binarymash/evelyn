@@ -3,16 +3,16 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class InMemoryProjectionStore<TKey, TValue> : IProjectionStore<TKey, TValue>
+    public class InMemoryProjectionStore<TValue> : IProjectionStore<TValue>
     {
-        private readonly Dictionary<TKey, TValue> _items;
+        private readonly Dictionary<string, TValue> _items;
 
         public InMemoryProjectionStore()
         {
-            _items = new Dictionary<TKey, TValue>();
+            _items = new Dictionary<string, TValue>();
         }
 
-        public async Task<TValue> Get(TKey key)
+        public async Task<TValue> Get(string key)
         {
             if (!_items.TryGetValue(key, out var value))
             {
@@ -22,7 +22,7 @@
             return await Task.FromResult(value);
         }
 
-        public async Task AddOrUpdate(TKey key, TValue value)
+        public async Task AddOrUpdate(string key, TValue value)
         {
             if (_items.ContainsKey(key))
             {
@@ -36,7 +36,7 @@
             await Task.CompletedTask;
         }
 
-        public async Task Delete(TKey key)
+        public async Task Delete(string key)
         {
             _items.Remove(key);
             await Task.CompletedTask;

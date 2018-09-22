@@ -4,7 +4,7 @@
 
     public abstract class DtoRoot
     {
-        protected DtoRoot(int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+        protected DtoRoot(long version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
         {
             Version = version;
             Created = created;
@@ -21,9 +21,9 @@
 
         public string LastModifiedBy { get; protected set; }
 
-        public int Version { get; protected set; }
+        public long Version { get; protected set; }
 
-        protected void UpdateModificationAudit(DateTimeOffset lastModified, string lastModifiedBy, int lastModifiedVersion)
+        protected void UpdateModificationAudit(DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             LastModified = lastModified;
             LastModifiedBy = lastModifiedBy;

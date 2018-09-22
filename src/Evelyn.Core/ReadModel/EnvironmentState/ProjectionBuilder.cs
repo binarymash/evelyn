@@ -1,27 +1,20 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentState
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<EnvironmentStateDto>
+    public class ProjectionBuilder : ProjectionBuilder<EnvironmentStateDto>
     {
-        private IProjectionStore<string, EnvironmentStateDto> _db;
-
-        public EventStreamHandler(
-            IProjectionStore<string, EnvironmentStateDto> db,
-            IEventStreamFactory eventQueueFactory)
-            : base(eventQueueFactory)
+        public ProjectionBuilder(IProjectionStore<EnvironmentStateDto> projectionStore)
+            : base(projectionStore)
         {
-            _db = db;
         }
 
-        protected override async Task HandleEvent(IEvent @event)
+        public override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
@@ -50,8 +43,9 @@
             try
             {
                 var toggleStates = @event.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, @event.Version));
-                var dto = new EnvironmentStateDto(@event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, toggleStates);
-                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+                var projection = new EnvironmentStateDto(@event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, toggleStates);
+
+                await Projections.AddOrUpdate(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
             }
             catch
             {
@@ -63,7 +57,7 @@
         {
             try
             {
-                await _db.Delete(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+                await Projections.Delete(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
             }
             catch
             {
@@ -75,9 +69,11 @@
         {
             try
             {
-                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-                dto.AddToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+                var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+
+                projection.AddToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
+
+                await Projections.AddOrUpdate(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
             }
             catch
             {
@@ -89,9 +85,11 @@
         {
             try
             {
-                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-                dto.ChangeToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+                var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+
+                projection.ChangeToggleState(@event.ToggleKey, @event.Value, @event.Version, @event.OccurredAt, @event.UserId);
+
+                await Projections.AddOrUpdate(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
             }
             catch
             {
@@ -103,19 +101,16 @@
         {
             try
             {
-                var dto = await _db.Get(StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-                dto.DeleteToggleState(@event.ToggleKey, @event.Version, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(StoreKey(@event.Id, @event.EnvironmentKey), dto).ConfigureAwait(false);
+                var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+
+                projection.DeleteToggleState(@event.ToggleKey, @event.Version, @event.OccurredAt, @event.UserId);
+
+                await Projections.AddOrUpdate(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
             }
             catch
             {
                 throw new FailedToBuildProjectionException();
             }
-        }
-
-        private string StoreKey(Guid projectId, string environmentKey)
-        {
-            return $"{projectId}-{environmentKey}";
         }
     }
 }

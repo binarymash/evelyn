@@ -1,10 +1,10 @@
 ﻿namespace Evelyn.Core.ReadModel
 {
-    using System.Threading;
     using System.Threading.Tasks;
+    using CQRSlite.Events;
 
-    public interface IProjectionBuilder<TRequest, TDto>
+    public interface IProjectionBuilder
     {
-        Task<TDto> Invoke(TRequest request, CancellationToken token = default(CancellationToken));
+        Task HandleEvent(IEvent @event);
     }
 }

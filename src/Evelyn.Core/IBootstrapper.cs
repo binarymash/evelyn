@@ -3,7 +3,7 @@
     using System;
     using WriteModel;
 
-    public interface IRouteRegistrarBootstrapper
+    public interface IBootstrapper
     {
         void Bootstrap(IServiceProvider serviceProvider, IStartUpCommands startUpCommands);
     }

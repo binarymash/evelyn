@@ -1,25 +1,19 @@
 ﻿namespace Evelyn.Core.ReadModel.ToggleDetails
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
     using WriteModel.Project.Events;
 
-    public class EventStreamHandler : EventStreamHandler<ToggleDetailsDto>
+    public class ProjectionBuilder : ProjectionBuilder<ToggleDetailsDto>
     {
-        private readonly IProjectionStore<string, ToggleDetailsDto> _db;
-
-        public EventStreamHandler(
-            IProjectionStore<string, ToggleDetailsDto> db,
-            IEventStreamFactory eventQueueFactory)
-            : base(eventQueueFactory)
+        public ProjectionBuilder(IProjectionStore<ToggleDetailsDto> projectionStore)
+            : base(projectionStore)
         {
-            _db = db;
         }
 
-        protected override async Task HandleEvent(IEvent @event)
+        public override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
@@ -39,7 +33,8 @@
             try
             {
                 var projection = new ToggleDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(GetStoreKey(@event.Id, @event.Key), projection);
+
+                await Projections.AddOrUpdate(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection);
             }
             catch
             {
@@ -51,17 +46,12 @@
         {
             try
             {
-                await _db.Delete(GetStoreKey(@event.Id, @event.Key));
+                await Projections.Delete(ToggleDetailsDto.StoreKey(@event.Id, @event.Key));
             }
             catch
             {
                 throw new FailedToBuildProjectionException();
             }
-        }
-
-        private string GetStoreKey(Guid projectId, string toggleKey)
-        {
-            return $"{projectId}-{toggleKey}";
         }
     }
 }

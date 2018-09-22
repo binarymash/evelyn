@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void RunningInBackgroundService(this EventStorePublisherOptions parentOptions, Action<SubscriptionPublisherOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.TryAddSingleton<IHostedService, Evelyn.Storage.EventStore.SubscriptionPublisher>();
+            parentOptions.Services.AddHostedService<Evelyn.Storage.EventStore.SubscriptionPublisher>();
             action.Invoke(new SubscriptionPublisherOptions(parentOptions.Services));
         }
     }

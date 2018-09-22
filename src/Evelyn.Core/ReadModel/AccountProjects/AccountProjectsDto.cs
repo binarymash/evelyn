@@ -19,6 +19,11 @@
 
         public IEnumerable<ProjectListDto> Projects => _projects.ToList();
 
+        public static string StoreKey(Guid projectId)
+        {
+            return $"{nameof(AccountProjectsDto)}-{projectId}";
+        }
+
         public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
         {
             LastModified = lastModified;

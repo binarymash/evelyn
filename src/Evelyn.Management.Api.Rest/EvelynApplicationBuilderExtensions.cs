@@ -18,7 +18,7 @@
 #pragma warning restore SA1616 // Element return value documentation must have text
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            var bootstrapper = app.ApplicationServices.GetService(typeof(IRouteRegistrarBootstrapper)) as IRouteRegistrarBootstrapper;
+            var bootstrapper = app.ApplicationServices.GetService(typeof(IBootstrapper)) as IBootstrapper;
             bootstrapper.Bootstrap(app.ApplicationServices, startUpCommands);
 
             return app;

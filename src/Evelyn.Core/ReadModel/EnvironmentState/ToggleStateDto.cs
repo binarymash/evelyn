@@ -2,7 +2,7 @@
 {
     public class ToggleStateDto
     {
-        public ToggleStateDto(string key, string value, int version)
+        public ToggleStateDto(string key, string value, long version)
         {
             Key = key;
             Value = value;
@@ -13,9 +13,9 @@
 
         public string Value { get; private set; }
 
-        public int Version { get; private set; }
+        public long Version { get; private set; }
 
-        public void ChangeState(string value, int version)
+        public void ChangeState(string value, long version)
         {
             Value = value;
             Version = version;

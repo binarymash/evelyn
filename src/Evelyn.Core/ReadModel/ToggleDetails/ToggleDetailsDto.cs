@@ -17,5 +17,10 @@
         public string Key { get; private set; }
 
         public string Name { get; private set; }
+
+        public static string StoreKey(Guid projectId, string toggleKey)
+        {
+            return $"{nameof(ToggleDetailsDto)}-{projectId}-{toggleKey}";
+        }
     }
 }

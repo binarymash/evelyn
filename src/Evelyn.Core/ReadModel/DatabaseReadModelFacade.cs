@@ -11,22 +11,22 @@
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IProjectionStore<Guid, AccountProjectsDto> _accountProjects;
+        private readonly IProjectionStore<AccountProjectsDto> _accountProjects;
 
-        private readonly IProjectionStore<Guid, ProjectDetailsDto> _projectDetails;
+        private readonly IProjectionStore<ProjectDetailsDto> _projectDetails;
 
-        private readonly IProjectionStore<string, EnvironmentDetailsDto> _environmentDetails;
+        private readonly IProjectionStore<EnvironmentDetailsDto> _environmentDetails;
 
-        private readonly IProjectionStore<string, ToggleDetailsDto> _toggleDetails;
+        private readonly IProjectionStore<ToggleDetailsDto> _toggleDetails;
 
-        private readonly IProjectionStore<string, EnvironmentStateDto> _environmentStates;
+        private readonly IProjectionStore<EnvironmentStateDto> _environmentStates;
 
         public DatabaseReadModelFacade(
-            IProjectionStore<Guid, AccountProjectsDto> accountProjects,
-            IProjectionStore<Guid, ProjectDetailsDto> projectDetails,
-            IProjectionStore<string, EnvironmentDetailsDto> environmentDetails,
-            IProjectionStore<string, ToggleDetailsDto> toggleDetails,
-            IProjectionStore<string, EnvironmentStateDto> environmentStates)
+            IProjectionStore<AccountProjectsDto> accountProjects,
+            IProjectionStore<ProjectDetailsDto> projectDetails,
+            IProjectionStore<EnvironmentDetailsDto> environmentDetails,
+            IProjectionStore<ToggleDetailsDto> toggleDetails,
+            IProjectionStore<EnvironmentStateDto> environmentStates)
         {
             _accountProjects = accountProjects;
             _projectDetails = projectDetails;
@@ -37,27 +37,27 @@
 
         public async Task<AccountProjectsDto> GetProjects(Guid accountId)
         {
-            return await _accountProjects.Get(accountId);
+            return await _accountProjects.Get(AccountProjectsDto.StoreKey(accountId));
         }
 
         public async Task<ProjectDetailsDto> GetProjectDetails(Guid projectId)
         {
-            return await _projectDetails.Get(projectId);
+            return await _projectDetails.Get(ProjectDetailsDto.StoreKey(projectId));
         }
 
         public async Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid projectId, string environmentKey)
         {
-            return await _environmentDetails.Get($"{projectId}-{environmentKey}");
+            return await _environmentDetails.Get(EnvironmentDetailsDto.StoreKey(projectId, environmentKey));
         }
 
         public async Task<ToggleDetailsDto> GetToggleDetails(Guid projectId, string toggleKey)
         {
-            return await _toggleDetails.Get($"{projectId}-{toggleKey}");
+            return await _toggleDetails.Get(ToggleDetailsDto.StoreKey(projectId, toggleKey));
         }
 
         public async Task<EnvironmentStateDto> GetEnvironmentState(Guid projectId, string environmentName)
         {
-            return await _environmentStates.Get($"{projectId}-{environmentName}");
+            return await _environmentStates.Get(EnvironmentStateDto.StoreKey(projectId, environmentName));
         }
     }
 }

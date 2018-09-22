@@ -16,6 +16,11 @@
 
         public IEnumerable<ToggleStateDto> ToggleStates => _toggleStates;
 
+        public static string StoreKey(Guid projectId, string environmentKey)
+        {
+            return $"{nameof(EnvironmentStateDto)}-{projectId}-{environmentKey}";
+        }
+
         public void AddToggleState(string toggleKey, string toggleValue, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
         {
             UpdateModificationAudit(lastModified, lastModifiedBy, lastModifiedVersion);

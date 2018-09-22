@@ -8,19 +8,14 @@
     using Evelyn.Core.WriteModel.Account.Events;
     using Infrastructure;
 
-    public class EventStreamHandler : EventStreamHandler<AccountProjectsDto>
+    public class ProjectionBuilder : ProjectionBuilder<AccountProjectsDto>
     {
-        private readonly IProjectionStore<Guid, AccountProjectsDto> _db;
-
-        public EventStreamHandler(
-            IProjectionStore<Guid, AccountProjectsDto> db,
-            IEventStreamFactory eventQueueFactory)
-            : base(eventQueueFactory)
+        public ProjectionBuilder(IProjectionStore<AccountProjectsDto> projectionStore)
+            : base(projectionStore)
         {
-            _db = db;
         }
 
-        protected override async Task HandleEvent(IEvent @event)
+        public override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
@@ -45,8 +40,9 @@
         {
             try
             {
-                var dto = new AccountProjectsDto(@event.Id, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, new List<ProjectListDto>());
-                await _db.AddOrUpdate(dto.AccountId, dto);
+                var projection = new AccountProjectsDto(@event.Id, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, new List<ProjectListDto>());
+
+                await Projections.AddOrUpdate(AccountProjectsDto.StoreKey(@event.Id), projection);
             }
             catch
             {
@@ -58,9 +54,12 @@
         {
             try
             {
-                var dto = await _db.Get(@event.Id).ConfigureAwait(false);
-                dto.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(dto.AccountId, dto);
+                var storeKey = AccountProjectsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
+                projection.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
+
+                await Projections.AddOrUpdate(storeKey, projection);
             }
             catch
             {
@@ -72,11 +71,13 @@
         {
             try
             {
-                var dto = await _db.Get(@event.AccountId).ConfigureAwait(false);
+                var storeKey = AccountProjectsDto.StoreKey(@event.AccountId);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
 
-                var project = dto.Projects.Single(p => p.Id == @event.Id);
+                var project = projection.Projects.Single(p => p.Id == @event.Id);
                 project.SetName(@event.Name);
-                await _db.AddOrUpdate(dto.AccountId, dto);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {
@@ -88,9 +89,12 @@
         {
             try
             {
-                var dto = await _db.Get(@event.Id).ConfigureAwait(false);
-                dto.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(dto.AccountId, dto);
+                var storeKey = AccountProjectsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
+                projection.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {

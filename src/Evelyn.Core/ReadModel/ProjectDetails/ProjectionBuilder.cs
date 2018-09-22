@@ -1,25 +1,19 @@
 ﻿namespace Evelyn.Core.ReadModel.ProjectDetails
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Evelyn.Core.WriteModel.Project.Events;
     using Infrastructure;
 
-    public class EventStreamHandler : EventStreamHandler<ProjectDetailsDto>
+    public class ProjectionBuilder : ProjectionBuilder<ProjectDetailsDto>
     {
-        private IProjectionStore<Guid, ProjectDetailsDto> _db;
-
-        public EventStreamHandler(
-            IProjectionStore<Guid, ProjectDetailsDto> db,
-            IEventStreamFactory eventQueueFactory)
-            : base(eventQueueFactory)
+        public ProjectionBuilder(IProjectionStore<ProjectDetailsDto> projectionStore)
+            : base(projectionStore)
         {
-            _db = db;
         }
 
-        protected override async Task HandleEvent(IEvent @event)
+        public override async Task HandleEvent(IEvent @event)
         {
             switch (@event)
             {
@@ -51,7 +45,8 @@
             try
             {
                 var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-                await _db.AddOrUpdate(@event.Id, projection).ConfigureAwait(false);
+
+                await Projections.AddOrUpdate(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
             }
             catch
             {
@@ -63,9 +58,12 @@
         {
             try
             {
-                var projection = await _db.Get(@event.Id).ConfigureAwait(false);
+                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
                 projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
-                await _db.AddOrUpdate(@event.Id, projection).ConfigureAwait(false);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {
@@ -77,9 +75,12 @@
         {
             try
             {
-                var projection = await _db.Get(@event.Id).ConfigureAwait(false);
+                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
                 projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-                await _db.AddOrUpdate(@event.Id, projection).ConfigureAwait(false);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {
@@ -91,9 +92,12 @@
         {
             try
             {
-                var projection = await _db.Get(@event.Id).ConfigureAwait(false);
+                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
                 projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
-                await _db.AddOrUpdate(@event.Id, projection).ConfigureAwait(false);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {
@@ -105,9 +109,12 @@
         {
             try
             {
-                var projection = await _db.Get(@event.Id).ConfigureAwait(false);
+                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+
                 projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-                await _db.AddOrUpdate(@event.Id, projection).ConfigureAwait(false);
+
+                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
             }
             catch
             {
@@ -119,7 +126,7 @@
         {
             try
             {
-                await _db.Delete(@event.Id);
+                await Projections.Delete(ProjectDetailsDto.StoreKey(@event.Id));
             }
             catch
             {

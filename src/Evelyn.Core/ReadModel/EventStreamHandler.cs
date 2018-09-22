@@ -4,26 +4,39 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using CQRSlite.Events;
+    using Evelyn.Core.ReadModel.EventStreamHandlerState;
+    using Evelyn.Core.ReadModel.Infrastructure;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
-    public abstract class EventStreamHandler<TDto> : BackgroundService
+    public class EventStreamHandler : BackgroundService
     {
-        private readonly Queue<IEvent> _eventsToHandle;
+        private const string StoreKey = nameof(EventStreamHandler);
+        private readonly ILogger<EventStreamHandler> _logger;
+        private readonly Queue<EventEnvelope> _eventsToHandle;
+        private readonly List<IProjectionBuilder> _projectionBuilders;
+        private readonly IProjectionStore<EventStreamHandlerStateDto> _projections;
+        private readonly IProjectionBuilderRegistrar _projectionBuilderRegistrar;
 
-        protected EventStreamHandler(IEventStreamFactory eventQueueFactory)
+        public EventStreamHandler(ILogger<EventStreamHandler> logger, IEventStreamFactory eventStreamFactory, IProjectionStore<EventStreamHandlerStateDto> projectionStore, IProjectionBuilderRegistrar projectionBuilderRegistrar)
         {
-            _eventsToHandle = eventQueueFactory.GetEventStream<TDto>();
+            _logger = logger;
+            _eventsToHandle = eventStreamFactory.GetEventStream<EventStreamHandler>();
+            _projectionBuilders = new List<IProjectionBuilder>();
+            _projections = projectionStore;
+            _projectionBuilderRegistrar = projectionBuilderRegistrar;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _projectionBuilders.AddRange(_projectionBuilderRegistrar.Get(typeof(EventStreamHandler)));
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_eventsToHandle.Count > 0)
                 {
-                    var @event = _eventsToHandle.Peek();
-                    await HandleEvent(@event).ConfigureAwait(false);
+                    var eventEnvelope = _eventsToHandle.Peek();
+                    await HandleEvent(eventEnvelope).ConfigureAwait(false);
                     _eventsToHandle.Dequeue();
                 }
                 else
@@ -33,6 +46,29 @@
             }
         }
 
-        protected abstract Task HandleEvent(IEvent @event);
+        protected async Task HandleEvent(EventEnvelope eventEnvelope)
+        {
+            EventStreamHandlerStateDto state;
+            try
+            {
+                state = await _projections.Get(StoreKey).ConfigureAwait(false);
+            }
+            catch (NotFoundException)
+            {
+                _logger.LogInformation("No state found");
+                state = EventStreamHandlerStateDto.Null;
+            }
+
+            if (state.Version < eventEnvelope.StreamVersion)
+            {
+                foreach (var projectionBuilder in _projectionBuilders)
+                {
+                    await projectionBuilder.HandleEvent(eventEnvelope.Event).ConfigureAwait(false);
+                }
+
+                state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
+                await _projections.AddOrUpdate(StoreKey, state).ConfigureAwait(false);
+            }
+        }
     }
 }

@@ -1,9 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel
 {
-    using System.Collections.Generic;
     using AutoFixture;
     using Core.ReadModel;
-    using CQRSlite.Events;
     using FluentAssertions;
 
     public abstract class EventStreamPublisherSpecs<TPublisher>
@@ -20,7 +18,7 @@
 
         protected TPublisher Publisher { get; set; }
 
-        protected IEvent Message { get; set; }
+        protected EventEnvelope Message { get; set; }
 
         protected void ThenTheEventIsAddedToTheStreamFor<TDto>()
         {
