@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Evelyn.Core.ReadModel.Projections;
 
     public class InMemoryProjectionStore<TValue> : IProjectionStore<TValue>
     {

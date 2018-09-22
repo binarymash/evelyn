@@ -2,7 +2,7 @@
 namespace Microsoft.Extensions.DependencyInjection
 {
     using Evelyn.Core.ReadModel;
-    using Hosting;
+    using Evelyn.Core.ReadModel.Projections;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 

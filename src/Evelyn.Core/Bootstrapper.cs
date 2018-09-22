@@ -4,6 +4,7 @@
     using System.Linq;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.Projections;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using WriteModel;

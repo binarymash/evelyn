@@ -2,6 +2,7 @@
 namespace Microsoft.Extensions.DependencyInjection
 {
     using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class InMemoryReadCache

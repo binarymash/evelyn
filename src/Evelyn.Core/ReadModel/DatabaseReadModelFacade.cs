@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Projections.EnvironmentState;

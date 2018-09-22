@@ -2,15 +2,16 @@
 {
     using System;
     using AutoFixture;
-    using Core.ReadModel.Projections.AccountProjects;
-    using Core.ReadModel.Projections.EnvironmentDetails;
-    using Core.ReadModel.Projections.EnvironmentState;
-    using Core.ReadModel.Projections.ProjectDetails;
-    using Core.ReadModel.Projections.ToggleDetails;
     using CQRSlite.Events;
     using CQRSlite.Routing;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections;
+    using Evelyn.Core.ReadModel.Projections.AccountProjects;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentState;
+    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
 
     public abstract class HandlerSpecs
     {
