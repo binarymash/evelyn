@@ -9,15 +9,15 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
-    public class SubscriptionPublisher : BackgroundService
+    public class CatchUpSubscriptionPublisher : BackgroundService
     {
         private const string EvelynEvents = "$ce-evelyn";
-        private readonly ILogger<SubscriptionPublisher> _logger;
+        private readonly ILogger<CatchUpSubscriptionPublisher> _logger;
         private readonly IEventStoreConnection _connection;
         private readonly EventMapper _eventMapper;
         private readonly Queue<EventEnvelope> _eventStream;
 
-        public SubscriptionPublisher(ILogger<SubscriptionPublisher> logger, IEventStoreConnectionFactory connectionFactory, IEventStreamFactory eventStreamFactory)
+        public CatchUpSubscriptionPublisher(ILogger<CatchUpSubscriptionPublisher> logger, IEventStoreConnectionFactory connectionFactory, IEventStreamFactory eventStreamFactory)
         {
             _logger = logger;
             _eventMapper = new EventMapper();

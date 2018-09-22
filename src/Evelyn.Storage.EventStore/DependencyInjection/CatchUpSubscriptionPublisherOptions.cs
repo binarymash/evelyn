@@ -1,9 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class SubscriptionPublisherOptions : EvelynComponentOptions
+    public class CatchUpSubscriptionPublisherOptions : EvelynComponentOptions
     {
-        public SubscriptionPublisherOptions(IServiceCollection services)
+        public CatchUpSubscriptionPublisherOptions(IServiceCollection services)
             : base(services)
         {
             PublishEvents = new EventPublisherOptions(services);
