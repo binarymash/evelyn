@@ -5,11 +5,11 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.EnvironmentState;
-    using Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using Core.ReadModel.Projections.AccountProjects;
+    using Core.ReadModel.Projections.EnvironmentState;
+    using Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Evelyn.Management.Api.Rest.Write.Projects.Messages;
     using Evelyn.Management.Api.Rest.Write.Toggles.Messages;

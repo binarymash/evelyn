@@ -9,11 +9,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.ProjectionBuilders.AddRange(new[]
             {
-                typeof(Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilder),
-                typeof(Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilder),
-                typeof(Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilder),
-                typeof(Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilder),
-                typeof(Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.AccountProjects.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.EnvironmentDetails.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.EnvironmentState.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.ProjectDetails.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.ToggleDetails.ProjectionBuilder),
             });
         }
     }

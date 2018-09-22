@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Core.ReadModel.EnvironmentState;
+    using Core.ReadModel.Projections.EnvironmentState;
     using Evelyn.Core.ReadModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

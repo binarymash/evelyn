@@ -2,11 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-    using AccountProjects;
-    using EnvironmentDetails;
-    using EnvironmentState;
-    using ProjectDetails;
-    using ToggleDetails;
+    using Projections.AccountProjects;
+    using Projections.EnvironmentDetails;
+    using Projections.EnvironmentState;
+    using Projections.ProjectDetails;
+    using Projections.ToggleDetails;
 
     public interface IReadModelFacade
     {

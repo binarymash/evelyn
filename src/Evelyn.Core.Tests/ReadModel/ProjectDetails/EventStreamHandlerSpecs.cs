@@ -6,7 +6,7 @@
 ////    using AutoFixture;
 ////    using Core.ReadModel;
 ////    using Core.ReadModel.Infrastructure;
-////    using Core.ReadModel.ProjectDetails;
+////    using Core.ReadModel.Projections.ProjectDetails;
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Events;
 ////    using FluentAssertions;

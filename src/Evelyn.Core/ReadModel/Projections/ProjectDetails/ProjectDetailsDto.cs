@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.ProjectDetails
+﻿namespace Evelyn.Core.ReadModel.Projections.ProjectDetails
 {
     using System;
     using System.Collections.Generic;

@@ -2,7 +2,7 @@
 ////{
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
-////    using Core.ReadModel.ToggleDetails;
+////    using Core.ReadModel.Projections.ToggleDetails;
 ////    using Core.WriteModel.Project.Events;
 ////    using TestStack.BDDfy;
 ////    using Xunit;

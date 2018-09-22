@@ -6,7 +6,7 @@
 ////    using System.Threading;
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
-////    using Core.ReadModel.AccountProjects;
+////    using Core.ReadModel.Projections.AccountProjects;
 ////    using Core.WriteModel.Account.Domain;
 ////    using Core.WriteModel.Project.Domain;
 ////    using CQRSlite.Domain.Exception;

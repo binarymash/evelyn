@@ -1,8 +1,8 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails
 ////{
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
-////    using Core.ReadModel.EnvironmentDetails;
+////    using Core.ReadModel.Projections.EnvironmentDetails;
 ////    using Core.WriteModel.Project.Events;
 ////    using TestStack.BDDfy;
 ////    using Xunit;

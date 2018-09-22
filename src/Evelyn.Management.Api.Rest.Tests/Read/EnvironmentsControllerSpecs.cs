@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;

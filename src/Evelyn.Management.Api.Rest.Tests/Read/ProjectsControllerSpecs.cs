@@ -4,8 +4,8 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
-    using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.Projections.AccountProjects;
+    using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;

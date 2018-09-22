@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel
+﻿namespace Evelyn.Core.ReadModel.Projections
 {
     using System;
 

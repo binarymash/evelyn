@@ -10,7 +10,7 @@
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Domain.Exception;
 ////    using CQRSlite.Events;
-////    using Evelyn.Core.ReadModel.ToggleDetails;
+////    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
 ////    using FluentAssertions;
 ////    using NSubstitute;
 ////    using NSubstitute.ExceptionExtensions;

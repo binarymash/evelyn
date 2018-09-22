@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.EnvironmentState
 {
     using AutoFixture;
-    using Core.ReadModel.EnvironmentState;
+    using Core.ReadModel.Projections.EnvironmentState;
     using Xunit;
 
     public class EnvironmentStateDtoSpecs : DtoSpecs<EnvironmentStateDto>

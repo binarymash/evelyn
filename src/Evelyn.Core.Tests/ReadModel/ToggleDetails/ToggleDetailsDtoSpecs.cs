@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.ToggleDetails
 {
     using AutoFixture;
-    using Core.ReadModel.ToggleDetails;
+    using Core.ReadModel.Projections.ToggleDetails;
     using Xunit;
 
     public class ToggleDetailsDtoSpecs : DtoSpecs<ToggleDetailsDto>

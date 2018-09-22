@@ -25,11 +25,11 @@ namespace Microsoft.Extensions.DependencyInjection
             parentOptions.Services.TryAddSingleton<IEventStreamFactory, EventStreamFactory>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<EventStreamHandlerOptions>, ConfigureEventStreamHandlerOptions>();
-            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.AccountProjects.ProjectionBuilder>();
-            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentDetails.ProjectionBuilder>();
-            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.EnvironmentState.ProjectionBuilder>();
-            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ProjectDetails.ProjectionBuilder>();
-            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.ToggleDetails.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.AccountProjects.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.EnvironmentDetails.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.EnvironmentState.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ProjectDetails.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ToggleDetails.ProjectionBuilder>();
         }
     }
 }

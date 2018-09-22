@@ -2,12 +2,12 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.AccountProjects;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.EnvironmentState;
     using Evelyn.Core.ReadModel.Infrastructure;
-    using Evelyn.Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using Evelyn.Core.ReadModel.Projections.AccountProjects;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentState;
+    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {

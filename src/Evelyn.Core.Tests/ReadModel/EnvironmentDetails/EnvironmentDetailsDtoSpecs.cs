@@ -1,7 +1,7 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails
 {
     using AutoFixture;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Xunit;
 
     public class EnvironmentDetailsDtoSpecs : DtoSpecs<EnvironmentDetailsDto>

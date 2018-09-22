@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel.EventStreamHandlerState;
     using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections.EventStreamHandlerState;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 

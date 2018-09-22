@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.ToggleDetails
+﻿namespace Evelyn.Core.ReadModel.Projections.ToggleDetails
 {
     using System.Threading.Tasks;
     using CQRSlite.Events;

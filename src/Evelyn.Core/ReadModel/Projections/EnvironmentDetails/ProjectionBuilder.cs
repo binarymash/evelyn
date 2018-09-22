@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.EnvironmentDetails
+﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentDetails
 {
     using System.Threading.Tasks;
     using CQRSlite.Events;

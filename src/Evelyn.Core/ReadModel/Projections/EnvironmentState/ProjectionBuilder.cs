@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.EnvironmentState
+﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentState
 {
     using System.Linq;
     using System.Threading.Tasks;

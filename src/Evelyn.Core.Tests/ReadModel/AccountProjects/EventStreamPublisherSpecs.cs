@@ -2,7 +2,7 @@
 ////{
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
-////    using Core.ReadModel.AccountProjects;
+////    using Core.ReadModel.Projections.AccountProjects;
 ////    using Core.WriteModel.Account.Events;
 ////    using TestStack.BDDfy;
 ////    using Xunit;

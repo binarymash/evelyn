@@ -5,7 +5,7 @@
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
 ////    using Core.ReadModel;
-////    using Core.ReadModel.EnvironmentState;
+////    using Core.ReadModel.Projections.EnvironmentState;
 ////    using Core.ReadModel.Infrastructure;
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Events;

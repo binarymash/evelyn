@@ -1,4 +1,4 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails
 ////{
 ////    using System;
 ////    using System.Collections.Generic;
@@ -10,7 +10,7 @@
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Domain.Exception;
 ////    using CQRSlite.Events;
-////    using Evelyn.Core.ReadModel.EnvironmentDetails;
+////    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
 ////    using FluentAssertions;
 ////    using NSubstitute;
 ////    using NSubstitute.ExceptionExtensions;

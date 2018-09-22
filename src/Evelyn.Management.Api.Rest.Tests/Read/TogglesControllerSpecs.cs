@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.ToggleDetails;
+    using Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;

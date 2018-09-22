@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.EventStreamHandlerState
+﻿namespace Evelyn.Core.ReadModel.Projections.EventStreamHandlerState
 {
     using System;
 

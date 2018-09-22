@@ -1,11 +1,11 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.EnvironmentDetails
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails
 ////{
 ////    using System;
 ////    using System.Threading;
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
 ////    using Core.ReadModel;
-////    using Core.ReadModel.EnvironmentDetails;
+////    using Core.ReadModel.Projections.EnvironmentDetails;
 ////    using Core.ReadModel.Infrastructure;
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Events;

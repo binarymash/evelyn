@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.AccountProjects
+﻿namespace Evelyn.Core.ReadModel.Projections.AccountProjects
 {
     using System;
 

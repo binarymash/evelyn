@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.ProjectDetails
 {
     using AutoFixture;
-    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.Projections.ProjectDetails;
     using Xunit;
 
     public class ProjectDetailsDtoSpecs : DtoSpecs<ProjectDetailsDto>

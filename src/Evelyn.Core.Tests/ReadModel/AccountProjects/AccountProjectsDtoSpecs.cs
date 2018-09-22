@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects
 {
     using AutoFixture;
-    using Core.ReadModel.AccountProjects;
+    using Core.ReadModel.Projections.AccountProjects;
     using Xunit;
 
     public class AccountProjectsDtoSpecs : DtoSpecs<AccountProjectsDto>
