@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.EnvironmentDetails
 {
-    using System;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
@@ -30,27 +29,14 @@
 
         private async Task Handle(EnvironmentAdded @event)
         {
-            try
-            {
-                var projection = new EnvironmentDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-                await Projections.AddOrUpdate(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            var projection = new EnvironmentDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+
+            await Projections.AddOrUpdate(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
         }
 
         private async Task Handle(EnvironmentDeleted @event)
         {
-            try
-            {
-                await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
         }
     }
 }

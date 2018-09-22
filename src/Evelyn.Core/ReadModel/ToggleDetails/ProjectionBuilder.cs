@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.ToggleDetails
 {
-    using System;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Infrastructure;
@@ -30,28 +29,14 @@
 
         private async Task Handle(ToggleAdded @event)
         {
-            try
-            {
-                var projection = new ToggleDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+            var projection = new ToggleDetailsDto(@event.Id, @event.Version, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
 
-                await Projections.AddOrUpdate(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
-        }
+            await Projections.AddOrUpdate(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection);
+    }
 
         private async Task Handle(ToggleDeleted @event)
         {
-            try
-            {
-                await Projections.Delete(ToggleDetailsDto.StoreKey(@event.Id, @event.Key));
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.Delete(ToggleDetailsDto.StoreKey(@event.Id, @event.Key));
         }
     }
 }

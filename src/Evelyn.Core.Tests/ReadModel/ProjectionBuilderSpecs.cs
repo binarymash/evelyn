@@ -29,10 +29,5 @@
         {
             Dto.Should().BeNull();
         }
-
-        protected void ThenAFailedToBuildProjectionExceptionIsThrown()
-        {
-            ThrownException.Should().BeOfType<FailedToBuildProjectionException>();
-        }
     }
 }

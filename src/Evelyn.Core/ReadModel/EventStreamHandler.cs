@@ -61,13 +61,20 @@
 
             if (state.Version < eventEnvelope.StreamVersion)
             {
-                foreach (var projectionBuilder in _projectionBuilders)
+                try
                 {
-                    await projectionBuilder.HandleEvent(eventEnvelope.Event).ConfigureAwait(false);
-                }
+                    foreach (var projectionBuilder in _projectionBuilders)
+                    {
+                        await projectionBuilder.HandleEvent(eventEnvelope.Event).ConfigureAwait(false);
+                    }
 
-                state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
-                await _projections.AddOrUpdate(StoreKey, state).ConfigureAwait(false);
+                    state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
+                    await _projections.AddOrUpdate(StoreKey, state).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Failed to build projection for {@event}. Exception: {@exception}", eventEnvelope.Event, ex);
+                }
             }
         }
     }

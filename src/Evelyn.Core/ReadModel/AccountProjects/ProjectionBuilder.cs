@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.AccountProjects
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -38,68 +37,38 @@
 
         private async Task Handle(AccountRegistered @event)
         {
-            try
-            {
-                var projection = new AccountProjectsDto(@event.Id, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, new List<ProjectListDto>());
+            var projection = new AccountProjectsDto(@event.Id, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId, new List<ProjectListDto>());
 
-                await Projections.AddOrUpdate(AccountProjectsDto.StoreKey(@event.Id), projection);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(AccountProjectsDto.StoreKey(@event.Id), projection);
         }
 
         private async Task Handle(ProjectCreated @event)
         {
-            try
-            {
-                var storeKey = AccountProjectsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = AccountProjectsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            projection.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
 
-                projection.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
-
-                await Projections.AddOrUpdate(storeKey, projection);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection);
         }
 
         private async Task Handle(WriteModel.Project.Events.ProjectCreated @event)
         {
-            try
-            {
                 var storeKey = AccountProjectsDto.StoreKey(@event.AccountId);
                 var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-
                 var project = projection.Projects.Single(p => p.Id == @event.Id);
                 project.SetName(@event.Name);
 
                 await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
         }
 
         private async Task Handle(ProjectDeleted @event)
         {
-            try
-            {
-                var storeKey = AccountProjectsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = AccountProjectsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
 
-                projection.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
+            projection.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
 
-                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
     }
 }

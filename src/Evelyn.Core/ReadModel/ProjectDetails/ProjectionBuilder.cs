@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.ProjectDetails
 {
-    using System;
     using System.Threading.Tasks;
     using CQRSlite.Events;
     using Evelyn.Core.WriteModel.Project.Events;
@@ -42,96 +41,50 @@
 
         private async Task Handle(ProjectCreated @event)
         {
-            try
-            {
-                var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+            var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
 
-                await Projections.AddOrUpdate(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
         private async Task Handle(EnvironmentAdded @event)
         {
-            try
-            {
-                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
 
-                projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
-
-                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
         private async Task Handle(EnvironmentDeleted @event)
         {
-            try
-            {
-                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
 
-                projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-
-                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
         private async Task Handle(ToggleAdded @event)
         {
-            try
-            {
-                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
 
-                projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
-
-                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
         private async Task Handle(ToggleDeleted @event)
         {
-            try
-            {
-                var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
-                var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
+            var projection = await Projections.Get(storeKey).ConfigureAwait(false);
+            projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
 
-                projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-
-                await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
         private async Task Handle(ProjectDeleted @event)
         {
-            try
-            {
-                await Projections.Delete(ProjectDetailsDto.StoreKey(@event.Id));
-            }
-            catch
-            {
-                throw new FailedToBuildProjectionException();
-            }
+            await Projections.Delete(ProjectDetailsDto.StoreKey(@event.Id));
         }
     }
 }
