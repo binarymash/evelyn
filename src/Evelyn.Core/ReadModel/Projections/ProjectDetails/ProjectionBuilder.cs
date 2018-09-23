@@ -1,90 +1,63 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.ProjectDetails
 {
+    using System.Threading;
     using System.Threading.Tasks;
-    using CQRSlite.Events;
     using Evelyn.Core.WriteModel.Project.Events;
-    using Infrastructure;
 
-    public class ProjectionBuilder : ProjectionBuilder<ProjectDetailsDto>
+    public class ProjectionBuilder : ProjectionBuilder<ProjectDetailsDto>,
+        IBuildProjectionsFrom<ProjectCreated>,
+        IBuildProjectionsFrom<EnvironmentAdded>,
+        IBuildProjectionsFrom<EnvironmentDeleted>,
+        IBuildProjectionsFrom<ToggleAdded>,
+        IBuildProjectionsFrom<ToggleDeleted>,
+        IBuildProjectionsFrom<ProjectDeleted>
     {
         public ProjectionBuilder(IProjectionStore<ProjectDetailsDto> projectionStore)
             : base(projectionStore)
         {
         }
 
-        public override async Task HandleEvent(IEvent @event)
-        {
-            switch (@event)
-            {
-                case ProjectCreated projectCreated:
-                    await Handle(projectCreated).ConfigureAwait(false);
-                    break;
-                case EnvironmentAdded environmentAdded:
-                    await Handle(environmentAdded).ConfigureAwait(false);
-                    break;
-                case EnvironmentDeleted environmentDeleted:
-                    await Handle(environmentDeleted).ConfigureAwait(false);
-                    break;
-                case ToggleAdded toggleAdded:
-                    await Handle(toggleAdded).ConfigureAwait(false);
-                    break;
-                case ToggleDeleted toggleDeleted:
-                    await Handle(toggleDeleted).ConfigureAwait(false);
-                    break;
-                case ProjectDeleted projectDeleted:
-                    await Handle(projectDeleted).ConfigureAwait(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private async Task Handle(ProjectCreated @event)
+        public async Task Handle(ProjectCreated @event, CancellationToken stoppingToken)
         {
             var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-
             await Projections.AddOrUpdate(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
-        private async Task Handle(EnvironmentAdded @event)
+        public async Task Handle(EnvironmentAdded @event, CancellationToken stoppingToken)
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
-
             await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
-        private async Task Handle(EnvironmentDeleted @event)
+        public async Task Handle(EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-
             await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
-        private async Task Handle(ToggleAdded @event)
+        public async Task Handle(ToggleAdded @event, CancellationToken stoppingToken)
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
-
             await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
-        private async Task Handle(ToggleDeleted @event)
+        public async Task Handle(ToggleDeleted @event, CancellationToken stoppingToken)
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-
             await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
         }
 
-        private async Task Handle(ProjectDeleted @event)
+        public async Task Handle(ProjectDeleted @event, CancellationToken stoppingToken)
         {
-            await Projections.Delete(ProjectDetailsDto.StoreKey(@event.Id));
+            await Projections.Delete(ProjectDetailsDto.StoreKey(@event.Id)).ConfigureAwait(false);
         }
     }
 }

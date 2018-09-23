@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using CQRSlite.Events;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventStreamHandlerState;
     using Microsoft.Extensions.Hosting;
@@ -14,7 +15,7 @@
         private const string StoreKey = nameof(EventStreamHandler);
         private readonly ILogger<EventStreamHandler> _logger;
         private readonly Queue<EventEnvelope> _eventsToHandle;
-        private readonly List<IProjectionBuilder> _projectionBuilders;
+        private readonly Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>> _projectionBuilders;
         private readonly IProjectionStore<EventStreamHandlerStateDto> _projections;
         private readonly IProjectionBuilderRegistrar _projectionBuilderRegistrar;
 
@@ -22,21 +23,25 @@
         {
             _logger = logger;
             _eventsToHandle = eventStreamFactory.GetEventStream<EventStreamHandler>();
-            _projectionBuilders = new List<IProjectionBuilder>();
+            _projectionBuilders = new Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>>();
             _projections = projectionStore;
             _projectionBuilderRegistrar = projectionBuilderRegistrar;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _projectionBuilders.AddRange(_projectionBuilderRegistrar.Get(typeof(EventStreamHandler)));
+            var projectionBuilders = _projectionBuilderRegistrar.Get(typeof(EventStreamHandler));
+            foreach (var @event in projectionBuilders.Keys)
+            {
+                _projectionBuilders.Add(@event, projectionBuilders[@event]);
+            }
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_eventsToHandle.Count > 0)
                 {
                     var eventEnvelope = _eventsToHandle.Peek();
-                    await HandleEvent(eventEnvelope).ConfigureAwait(false);
+                    await HandleEvent(eventEnvelope, stoppingToken).ConfigureAwait(false);
                     _eventsToHandle.Dequeue();
                 }
                 else
@@ -46,35 +51,42 @@
             }
         }
 
-        protected async Task HandleEvent(EventEnvelope eventEnvelope)
+        protected async Task HandleEvent(EventEnvelope eventEnvelope, CancellationToken stoppingToken)
         {
-            EventStreamHandlerStateDto state;
             try
             {
-                state = await _projections.Get(StoreKey).ConfigureAwait(false);
-            }
-            catch (NotFoundException)
-            {
-                _logger.LogInformation("No state found");
-                state = EventStreamHandlerStateDto.Null;
-            }
+                EventStreamHandlerStateDto state;
 
-            if (state.Version < eventEnvelope.StreamVersion)
-            {
                 try
                 {
-                    foreach (var projectionBuilder in _projectionBuilders)
+                    state = await _projections.Get(StoreKey).ConfigureAwait(false);
+                }
+                catch (NotFoundException)
+                {
+                    _logger.LogInformation("No state found");
+                    state = EventStreamHandlerStateDto.Null;
+                }
+
+                if (state.Version < eventEnvelope.StreamVersion)
+                {
+                    if (_projectionBuilders.TryGetValue(eventEnvelope.Event.GetType(), out var handlers))
                     {
-                        await projectionBuilder.HandleEvent(eventEnvelope.Event).ConfigureAwait(false);
+                        var tasks = new Task[handlers.Count];
+                        for (var index = 0; index < handlers.Count; index++)
+                        {
+                            tasks[index] = handlers[index](eventEnvelope.Event, stoppingToken);
+                        }
+
+                        await Task.WhenAll(tasks);
                     }
 
                     state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
                     await _projections.AddOrUpdate(StoreKey, state).ConfigureAwait(false);
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning("Failed to build projection for {@event}. Exception: {@exception}", eventEnvelope.Event, ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning("Failed to build projection for {@event}. Exception: {@exception}", eventEnvelope.Event, ex);
             }
         }
     }

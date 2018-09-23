@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void SynchronouslyInProcess(this EventPublisherOptions parentOptions)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.TryAddSingleton<IProjectionBuilderRegistrar, ProjectionBuilderRegistrar>();
+            parentOptions.Services.TryAddSingleton<IProjectionBuilderRegistrar>(sp => new ProjectionBuilderRegistrar(sp));
 
             parentOptions.Services.AddHostedService<EventStreamHandler>();
             parentOptions.Services.TryAddSingleton<IEventStreamFactory, EventStreamFactory>();

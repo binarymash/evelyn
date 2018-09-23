@@ -2,11 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using CQRSlite.Events;
 
     public interface IProjectionBuilderRegistrar
     {
-        void Register(Type handler, IEnumerable<IProjectionBuilder> projectionBuilders);
+        void Register(Type eventStreamHandlerType, IEnumerable<Type> projectionBuilderTypes);
 
-        IEnumerable<IProjectionBuilder> Get(Type handler);
+        Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>> Get(Type eventStreamHandlerType);
     }
 }
