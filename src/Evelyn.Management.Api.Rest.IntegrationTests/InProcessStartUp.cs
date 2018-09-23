@@ -26,7 +26,10 @@
                 {
                     wm.WithEventStore.InMemory(es =>
                     {
-                        es.WithEventPublisher.SynchronouslyInProcess();
+                        es.WithEventPublisher.RunningInBackgroundService(ep =>
+                        {
+                            ep.PublishEvents.SynchronouslyInProcess();
+                        });
                     });
                 });
                 api.WithReadModel(rm =>

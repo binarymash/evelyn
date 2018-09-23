@@ -6,15 +6,15 @@ namespace Microsoft.Extensions.DependencyInjection
         public InMemoryEventStoreOptions(IServiceCollection services)
             : base(services)
         {
-            WithEventPublisher = new EventPublisherOptions(services);
+            WithEventPublisher = new InMemoryEventStorePublisherOptions(services);
         }
 
         /// <summary>
-        /// Configures how we will publish events from the in-memory event store.
+        /// Configures how we will publish events from the in-memory Event Store.
         /// </summary>
         /// <value>
         /// The event publisher options
         /// </value>
-        public EventPublisherOptions WithEventPublisher { get; }
+        public InMemoryEventStorePublisherOptions WithEventPublisher { get; }
     }
 }

@@ -3,7 +3,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
 
-    public static class CatchUpSubscriptionPublisher
+    public static class EventStoreCatchUpSubscriptionPublisher
     {
 #pragma warning disable SA1614 // Element parameter documentation must have text
         /// <summary>
@@ -13,11 +13,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="parentOptions"></param>
         /// <param name="action"></param>
-        public static void RunningInBackgroundService(this EventStorePublisherOptions parentOptions, Action<CatchUpSubscriptionPublisherOptions> action)
+        public static void RunningInBackgroundService(this EventStorePublisherOptions parentOptions, Action<EventStoreCatchUpSubscriptionPublisherOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
             parentOptions.Services.AddHostedService<Evelyn.Storage.EventStore.CatchUpSubscriptionPublisher>();
-            action.Invoke(new CatchUpSubscriptionPublisherOptions(parentOptions.Services));
+            action.Invoke(new EventStoreCatchUpSubscriptionPublisherOptions(parentOptions.Services));
         }
     }
 }

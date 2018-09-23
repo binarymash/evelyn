@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -17,6 +18,7 @@
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
+    using Polly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -31,7 +33,9 @@
         [Fact]
         public void NominalTests()
         {
-            this.When(_ => WhenGetProjects())
+            this.Given(_ => GivenWeWaitUntilEverythingIsInitialised())
+
+                .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
                 .And(_ => ThenTheDefaultSampleProjectWeAddedIsInTheCollection())
@@ -76,8 +80,25 @@
                 .BDDfy();
         }
 
+        private async Task GivenWeWaitUntilEverythingIsInitialised()
+        {
+            var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(60, retryAttempt => TimeSpan.FromMilliseconds(1));
+
+            await policy.ExecuteAsync(async () =>
+            {
+                var response = await Client
+                    .Request("/api/projects")
+                    .GetAsync().ConfigureAwait(false);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+            });
+        }
+
         private async Task GivenweWaitAFewSecondsForEventualConsistency()
         {
+            // TODO: something more deterministic
             await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
