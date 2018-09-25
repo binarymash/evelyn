@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests
+﻿namespace Evelyn.Core.Infrastructure
 {
     using System.Reflection;
     using Newtonsoft.Json;

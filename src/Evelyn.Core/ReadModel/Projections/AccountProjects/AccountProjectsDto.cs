@@ -3,12 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     public class AccountProjectsDto : DtoRoot
     {
+        [JsonProperty("Projects")]
         private readonly List<ProjectListDto> _projects;
 
-        public AccountProjectsDto(Guid accountId, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ProjectListDto> projects)
+        [JsonConstructor]
+        private AccountProjectsDto(Guid accountId, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ProjectListDto> projects)
             : base(version, created, createdBy, lastModified, lastModifiedBy)
         {
             AccountId = accountId;
@@ -17,11 +20,17 @@
 
         public Guid AccountId { get; private set; }
 
+        [JsonIgnore]
         public IEnumerable<ProjectListDto> Projects => _projects.ToList();
 
         public static string StoreKey(Guid projectId)
         {
             return $"{nameof(AccountProjectsDto)}-{projectId}";
+        }
+
+        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy)
+        {
+            return new AccountProjectsDto(accountId, 0, created, createdBy, created, createdBy, new List<ProjectListDto>());
         }
 
         public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
