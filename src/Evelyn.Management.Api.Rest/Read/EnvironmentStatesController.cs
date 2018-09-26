@@ -29,7 +29,7 @@
                 var result = await _readModelFacade.GetEnvironmentState(projectId, environmentName);
                 return Ok(result);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }

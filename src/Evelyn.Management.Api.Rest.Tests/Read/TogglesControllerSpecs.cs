@@ -74,7 +74,7 @@
             _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
                 .GetToggleDetails(_projectId, _keyOfToggleToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingToggle()

@@ -100,7 +100,7 @@
         {
             if (_originalProjection != null)
             {
-                await _projectionStore.AddOrUpdate(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+                await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
             }
 
             _projectionBuilder = new ProjectionBuilder(_projectionStore);

@@ -20,26 +20,36 @@
             };
         }
 
+        public async Task Create(string key, TValue value)
+        {
+            if (_items.ContainsKey(key))
+            {
+                throw new ProjectionAlreadyExistsException();
+            }
+
+            _items.Add(key, CopyOf(value));
+
+            await Task.CompletedTask;
+        }
+
         public async Task<TValue> Get(string key)
         {
             if (!_items.TryGetValue(key, out var value))
             {
-                throw new NotFoundException();
+                throw new ProjectionNotFoundException();
             }
 
             return await Task.FromResult(CopyOf(value));
         }
 
-        public async Task AddOrUpdate(string key, TValue value)
+        public async Task Update(string key, TValue value)
         {
-            if (_items.ContainsKey(key))
+            if (!_items.ContainsKey(key))
             {
-                _items[key] = CopyOf(value);
+                throw new ProjectionNotFoundException();
             }
-            else
-            {
-                _items.Add(key, CopyOf(value));
-            }
+
+            _items[key] = CopyOf(value);
 
             await Task.CompletedTask;
         }

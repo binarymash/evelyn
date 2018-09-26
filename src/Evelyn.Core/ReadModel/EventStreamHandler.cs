@@ -55,16 +55,18 @@
         {
             try
             {
+                bool initialEvent = false;
                 EventStreamHandlerStateDto state;
 
                 try
                 {
                     state = await _projections.Get(StoreKey).ConfigureAwait(false);
                 }
-                catch (NotFoundException)
+                catch (ProjectionNotFoundException)
                 {
                     _logger.LogInformation("No state found");
                     state = EventStreamHandlerStateDto.Null;
+                    initialEvent = true;
                 }
 
                 if (state.Version < eventEnvelope.StreamVersion)
@@ -81,7 +83,14 @@
                     }
 
                     state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
-                    await _projections.AddOrUpdate(StoreKey, state).ConfigureAwait(false);
+                    if (initialEvent)
+                    {
+                        await _projections.Create(StoreKey, state).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await _projections.Update(StoreKey, state).ConfigureAwait(false);
+                    }
                 }
             }
             catch (Exception ex)

@@ -77,7 +77,7 @@
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
 
-            await _projectionStore.AddOrUpdate(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
         private async Task GivenAnAccountExistsWithAProject()
@@ -94,7 +94,7 @@
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
 
-            await _projectionStore.AddOrUpdate(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
         private async Task WhenTheEventIsHandled()

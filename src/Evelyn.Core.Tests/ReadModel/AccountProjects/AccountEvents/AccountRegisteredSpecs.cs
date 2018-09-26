@@ -32,7 +32,7 @@
         }
 
         [Fact]
-        public void Nominal()
+        public void NoProjection()
         {
             this.Given(_ => GivenAnAccountRegisteredEvent())
                 .When(_ => WhenTheEventIsHandled())
@@ -60,7 +60,7 @@
             _projectionStore = Substitute.For<IProjectionStore<AccountProjectsDto>>();
 
             _exceptionFromStore = new Exception();
-            _projectionStore.AddOrUpdate(Arg.Any<string>(), Arg.Any<AccountProjectsDto>())
+            _projectionStore.Create(Arg.Any<string>(), Arg.Any<AccountProjectsDto>())
                 .Returns(ps => throw _exceptionFromStore);
         }
 

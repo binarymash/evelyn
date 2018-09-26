@@ -4,9 +4,11 @@
 
     public interface IProjectionStore<TValue>
     {
-        Task<TValue> Get(string id);
+        Task Create(string key, TValue aggregate);
 
-        Task AddOrUpdate(string key, TValue aggregate);
+        Task<TValue> Get(string key);
+
+        Task Update(string key, TValue aggregate);
 
         Task Delete(string key);
     }

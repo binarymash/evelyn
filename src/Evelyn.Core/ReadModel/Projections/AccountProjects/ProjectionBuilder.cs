@@ -21,7 +21,7 @@
         public async Task Handle(AccountEvents.AccountRegistered @event, CancellationToken stoppingToken)
         {
             var projection = AccountProjectsDto.Create(@event.Id, @event.OccurredAt, @event.UserId);
-            await Projections.AddOrUpdate(AccountProjectsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
+            await Projections.Create(AccountProjectsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
         public async Task Handle(AccountEvents.ProjectCreated @event, CancellationToken stoppingToken)
@@ -29,7 +29,7 @@
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(AccountEvents.ProjectDeleted @event, CancellationToken stoppingToken)
@@ -37,7 +37,7 @@
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
@@ -46,7 +46,7 @@
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             var project = projection.Projects.Single(p => p.Id == @event.Id);
             project.SetName(@event.Name);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
     }
 }

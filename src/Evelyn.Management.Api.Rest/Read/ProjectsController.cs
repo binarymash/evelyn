@@ -31,7 +31,7 @@
                 var result = await _readModelFacade.GetProjects(AccountId);
                 return Ok(result);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }
@@ -51,7 +51,7 @@
                 var projectDetails = await _readModelFacade.GetProjectDetails(id);
                 return Ok(projectDetails);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }

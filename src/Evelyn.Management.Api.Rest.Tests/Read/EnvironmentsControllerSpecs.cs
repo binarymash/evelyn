@@ -75,7 +75,7 @@
             _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
                 .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingEnvironment()

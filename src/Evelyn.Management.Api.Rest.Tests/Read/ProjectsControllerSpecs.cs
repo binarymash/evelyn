@@ -113,7 +113,7 @@
             _idOfProjectToGet = _fixture.Create<Guid>();
             _readModelFacade
                 .GetProjectDetails(_idOfProjectToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingProject()

@@ -78,7 +78,7 @@
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
 
-            await _projectionStore.AddOrUpdate(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
         private async Task GivenTheProjectWeAreDeletingIsOnTheProjection()
@@ -95,7 +95,7 @@
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
 
-            await _projectionStore.AddOrUpdate(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
         private async Task WhenTheEventIsHandled()
@@ -124,7 +124,7 @@
                 var currentProjection = await _projectionStore.Get(AccountProjectsDto.StoreKey(_accountId));
                 currentProjection.Should().BeEquivalentTo(_originalProjection);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 _originalProjection.Should().BeNull();
             }

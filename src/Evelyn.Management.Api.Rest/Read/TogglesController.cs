@@ -29,7 +29,7 @@
                 var result = await _readModelFacade.GetToggleDetails(projectId, toggleKey);
                 return Ok(result);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }

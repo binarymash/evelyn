@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class NotFoundException : Exception
+    public class ProjectionNotFoundException : Exception
     {
     }
 }

@@ -77,7 +77,7 @@
 
             _readModelFacade
                 .GetEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingEnvironmentState()

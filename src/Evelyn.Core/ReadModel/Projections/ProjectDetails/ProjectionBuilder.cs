@@ -20,7 +20,7 @@
         public async Task Handle(ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
             var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
-            await Projections.AddOrUpdate(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
+            await Projections.Create(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
@@ -28,7 +28,7 @@
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
@@ -36,7 +36,7 @@
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
@@ -44,7 +44,7 @@
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
@@ -52,7 +52,7 @@
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
             projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
-            await Projections.AddOrUpdate(storeKey, projection).ConfigureAwait(false);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(ProjectEvents.ProjectDeleted @event, CancellationToken stoppingToken)
