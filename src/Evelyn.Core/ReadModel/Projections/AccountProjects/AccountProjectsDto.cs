@@ -52,10 +52,5 @@
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);
         }
-
-        internal object Single(Func<object, object> p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
