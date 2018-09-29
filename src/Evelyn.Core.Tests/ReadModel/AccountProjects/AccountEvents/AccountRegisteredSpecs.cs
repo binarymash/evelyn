@@ -19,8 +19,10 @@
         private ProjectionBuilder _projectionBuilder;
         private CancellationToken _stoppingToken;
         private IProjectionStore<AccountProjectsDto> _projectionStore;
-        private Exception _exceptionFromStore;
+        private Guid _accountId;
+        private AccountProjectsDto _originalProjection;
         private AccountEvents.AccountRegistered @event;
+        private Exception _exceptionFromStore;
         private Exception _thrownException;
 
         public AccountRegisteredSpecs()
@@ -34,25 +36,39 @@
         [Fact]
         public void NoProjection()
         {
-            this.Given(_ => GivenAnAccountRegisteredEvent())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenTheProjectionDoesNotAlreadyExist())
+                .When(_ => WhenWeHandleAnAccountRegisteredEvent())
                 .Then(_ => ThenAProjectionHasBeenAddedToTheStore())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ProjectionAlreadyExists()
+        {
+            this.Given(_ => GivenTheProjectionAlreadyExists())
+                .When(_ => WhenWeHandleAnAccountRegisteredEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void ExceptionThrownByProjectionStoreWhenSaving()
         {
-            this.Given(_ => GivenAnAccountRegisteredEvent())
-                .And(_ => GivenTheProjectionStoreWillThrowWhenSaving())
-                .When(_ => WhenTheEventIsHandled())
-                .Then(_ => ThenTheExceptionIsNotHandled())
+            this.Given(_ => GivenTheProjectionStoreWillThrowWhenSaving())
+                .When(_ => WhenWeHandleAnAccountRegisteredEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
-        private void GivenAnAccountRegisteredEvent()
+        private void GivenTheProjectionDoesNotAlreadyExist()
         {
-            @event = _fixture.Create<AccountEvents.AccountRegistered>();
+            _accountId = _fixture.Create<Guid>();
+        }
+
+        private void GivenTheProjectionAlreadyExists()
+        {
+            _originalProjection = _fixture.Create<AccountProjectsDto>();
+            _accountId = _originalProjection.AccountId;
         }
 
         private void GivenTheProjectionStoreWillThrowWhenSaving()
@@ -64,8 +80,22 @@
                 .Returns(ps => throw _exceptionFromStore);
         }
 
+        private async Task WhenWeHandleAnAccountRegisteredEvent()
+        {
+            @event = _fixture.Build<AccountEvents.AccountRegistered>()
+                .With(ar => ar.Id, _accountId)
+                .Create();
+
+            await WhenTheEventIsHandled();
+        }
+
         private async Task WhenTheEventIsHandled()
         {
+            if (_originalProjection != null)
+            {
+                await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            }
+
             _projectionBuilder = new ProjectionBuilder(_projectionStore);
             try
             {
@@ -89,9 +119,9 @@
             projection.Version.Should().Be(0);
         }
 
-        private void ThenTheExceptionIsNotHandled()
+        private void ThenAnExceptionIsThrown()
         {
-            _thrownException.Should().Be(_exceptionFromStore);
+            _thrownException.Should().NotBeNull();
         }
     }
 }

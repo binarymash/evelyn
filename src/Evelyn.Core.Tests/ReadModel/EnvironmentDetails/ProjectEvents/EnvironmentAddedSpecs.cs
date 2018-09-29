@@ -36,8 +36,7 @@
         public void NoProjection()
         {
             this.Given(_ => GivenThereIsNoProjection())
-                .And(_ => GivenWeReceivedAProjectCreatedEvent())
-                .When(_ => WhenTheEventIsHandled())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionIsCreated())
                 .BDDfy();
         }
@@ -46,8 +45,7 @@
         public void ProjectionAlreadyExists()
         {
             this.Given(_ => GivenTheProjectionAlreadyExists())
-                .And(_ => GivenWeReceivedAProjectCreatedEvent())
-                .When(_ => WhenTheEventIsHandled())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
@@ -65,12 +63,14 @@
             _key = _originalProjection.Key;
         }
 
-        private void GivenWeReceivedAProjectCreatedEvent()
+        private async Task WhenWeHandleAProjectCreatedEvent()
         {
             @event = _fixture.Build<ProjectEvents.EnvironmentAdded>()
                .With(ea => ea.Id, _projectId)
                .With(ea => ea.Key, _key)
                .Create();
+
+            await WhenTheEventIsHandled();
         }
 
         private async Task WhenTheEventIsHandled()

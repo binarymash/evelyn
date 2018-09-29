@@ -1,7 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects.AccountEvents
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -11,6 +10,7 @@
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
     using Evelyn.Core.WriteModel.Account.Events;
     using FluentAssertions;
+    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -18,13 +18,16 @@
     {
         private Fixture _fixture;
         private IProjectionStore<AccountProjectsDto> _projectionStore;
+        private Exception _exceptionFromStore;
         private ProjectCreated @event;
         private ProjectionBuilder _projectionBuilder;
         private CancellationToken _stoppingToken;
         private Guid _accountId;
+        private Guid _projectId;
         private AccountProjectsDto _originalProjection;
         private Exception _thrownException;
         private AccountProjectsDto _updatedProjection;
+
 
         public ProjectCreatedSpecs()
         {
@@ -33,72 +36,93 @@
             _stoppingToken = default;
 
             _accountId = Guid.NewGuid();
-            @event = _fixture.Build<ProjectCreated>()
-                .With(pc => pc.Id, _accountId)
-                .Create();
         }
 
         [Fact]
-        public void AccountDoesntExist()
+        public void NoProjection()
         {
-            this.Given(_ => GivenNoAccountProjectsProjectionExists())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
-        public void AccountExistsWithNoProjects()
+        public void Nominal()
         {
-            this.Given(_ => GivenAnAccountExistsWithNoProjects())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurProjectIsNotOnTheProjection())
+                .And(_ => GivenAnotherProjectIsOnTheProjection())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionHasBeenUpdated())
                 .BDDfy();
         }
 
         [Fact]
-        public void AccountExistsWithAProject()
+        public void ExceptionThrownByProjectionStoreWhenSaving()
         {
-            this.Given(_ => GivenAnAccountExistsWithAProject())
-                .When(_ => WhenTheEventIsHandled())
-                .Then(_ => ThenTheProjectionHasBeenUpdated2())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurProjectIsNotOnTheProjection())
+                .And(_ => GivenTheProjectionStoreWillThrowWhenSaving())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
-        private void GivenNoAccountProjectsProjectionExists()
+        private void GivenThereIsNoProjection()
         {
             _originalProjection = null;
         }
 
-        private async Task GivenAnAccountExistsWithNoProjects()
+        private void GivenTheProjectionExists()
         {
             _originalProjection = AccountProjectsDto.Create(
                 _accountId,
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
-
-            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
-        private async Task GivenAnAccountExistsWithAProject()
+        private void GivenOurProjectIsNotOnTheProjection()
         {
-            _originalProjection = AccountProjectsDto.Create(
-                _accountId,
-                _fixture.Create<DateTimeOffset>(),
-                _fixture.Create<string>());
+            _projectId = _fixture.Create<Guid>();
+        }
 
+        private void GivenAnotherProjectIsOnTheProjection()
+        {
             _originalProjection.AddProject(
                 _fixture.Create<Guid>(),
                 _fixture.Create<string>(),
                 _fixture.Create<int>(),
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
-
-            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
-        private async Task WhenTheEventIsHandled()
+        private void GivenTheProjectionStoreWillThrowWhenSaving()
         {
+            _projectionStore = Substitute.For<IProjectionStore<AccountProjectsDto>>();
+
+            _exceptionFromStore = new Exception();
+            _projectionStore.Update(Arg.Any<string>(), Arg.Any<AccountProjectsDto>())
+                .Returns(ps => throw _exceptionFromStore);
+        }
+
+        private async Task WhenWeHandleAProjectCreatedEvent()
+        {
+            @event = _fixture.Build<ProjectCreated>()
+                .With(pc => pc.Id, _accountId)
+                .With(pc => pc.ProjectId, _projectId)
+                .Create();
+
+            await WhenWeHandleTheEvent();
+        }
+
+        private async Task WhenWeHandleTheEvent()
+        {
+            if (_originalProjection != null)
+            {
+                await _projectionStore.Create(AccountProjectsDto.StoreKey(_accountId), _originalProjection);
+            }
+
             _projectionBuilder = new ProjectionBuilder(_projectionStore);
             try
             {
@@ -117,22 +141,6 @@
         }
 
         private void ThenTheProjectionHasBeenUpdated()
-        {
-            _updatedProjection.LastModified.Should().Be(@event.OccurredAt);
-            _updatedProjection.LastModifiedBy.Should().Be(@event.UserId);
-            _updatedProjection.Version.Should().Be(@event.Version);
-
-            _updatedProjection.Projects.Count().Should().Be(1);
-            var project = _updatedProjection.Projects.First();
-            project.Id.Should().Be(@event.ProjectId);
-            project.Name.Should().Be(string.Empty);
-
-            _updatedProjection.AccountId.Should().Be(_originalProjection.AccountId);
-            _updatedProjection.Created.Should().Be(_originalProjection.Created);
-            _updatedProjection.CreatedBy.Should().Be(_originalProjection.CreatedBy);
-        }
-
-        private void ThenTheProjectionHasBeenUpdated2()
         {
             _updatedProjection.AccountId.Should().Be(_originalProjection.AccountId);
             _updatedProjection.Created.Should().Be(_originalProjection.Created);

@@ -21,6 +21,7 @@
         private ProjectionBuilder _projectionBuilder;
         private CancellationToken _stoppingToken;
         private Guid _accountId;
+        private Guid _projectId;
         private AccountProjectsDto _originalProjection;
         private Exception _thrownException;
         private AccountProjectsDto _updatedProjection;
@@ -35,9 +36,8 @@
         [Fact]
         public void NoProjection()
         {
-            this.Given(_ => GivenAProjectCreatedEvent())
-                .And(_ => GivenThereIsNoProjectionForTheAccountProjects())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
@@ -45,10 +45,9 @@
         [Fact]
         public void ProjectNotOnProjection()
         {
-            this.Given(_ => GivenAProjectCreatedEvent())
-                .And(_ => GivenThereIsAProjectionForTheAccountProjects())
+            this.Given(_ => GivenThereIsAProjection())
                 .And(_ => GivenTheProjectIsNotOnTheProjection())
-                .When(_ => WhenTheEventIsHandled())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
@@ -56,44 +55,54 @@
         [Fact]
         public void ProjectIsOnProjection()
         {
-            this.Given(_ => GivenAProjectCreatedEvent())
-                .And(_ => GivenThereIsAProjectionForTheAccountProjects())
+            this.Given(_ => GivenThereIsAProjection())
                 .And(_ => GivenTheProjectIsOnTheProjection())
-                .When(_ => WhenTheEventIsHandled())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionHasBeenUpdated())
                 .BDDfy();
         }
 
-        private void GivenAProjectCreatedEvent()
+        private void GivenThereIsNoProjection()
         {
-            @event = _fixture.Create<ProjectEvents.ProjectCreated>();
-        }
-
-        private void GivenThereIsNoProjectionForTheAccountProjects()
-        {
+            _accountId = _fixture.Create<Guid>();
             _originalProjection = null;
         }
 
-        private void GivenThereIsAProjectionForTheAccountProjects()
+        private void GivenThereIsAProjection()
         {
+            _accountId = _fixture.Create<Guid>();
+
             _originalProjection = AccountProjectsDto.Create(
-                @event.AccountId,
+                _accountId,
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
         }
 
         private void GivenTheProjectIsNotOnTheProjection()
         {
+            _projectId = _fixture.Create<Guid>();
         }
 
         private void GivenTheProjectIsOnTheProjection()
         {
+            _projectId = _fixture.Create<Guid>();
+
             _originalProjection.AddProject(
-                @event.Id,
+                _projectId,
                 _fixture.Create<string>(),
                 _fixture.Create<int>(),
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
+        }
+
+        private async Task WhenWeHandleAProjectCreatedEvent()
+        {
+            @event = _fixture.Build<ProjectEvents.ProjectCreated>()
+                .With(e => e.AccountId, _accountId)
+                .With(e => e.Id, _projectId)
+                .Create();
+
+            await WhenTheEventIsHandled();
         }
 
         private async Task WhenTheEventIsHandled()

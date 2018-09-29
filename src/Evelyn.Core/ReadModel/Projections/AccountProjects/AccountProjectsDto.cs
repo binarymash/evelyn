@@ -23,9 +23,9 @@
         [JsonIgnore]
         public IEnumerable<ProjectListDto> Projects => _projects.ToList();
 
-        public static string StoreKey(Guid projectId)
+        public static string StoreKey(Guid accountId)
         {
-            return $"{nameof(AccountProjectsDto)}-{projectId}";
+            return $"{nameof(AccountProjectsDto)}-{accountId}";
         }
 
         public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy)

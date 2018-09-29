@@ -7,8 +7,10 @@
     using AutoFixture;
     using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
     using FluentAssertions;
+    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
     using AccountEvents = Evelyn.Core.WriteModel.Account.Events;
@@ -20,10 +22,12 @@
         private AccountProjectsDto _updatedProjection;
         private Exception _thrownException;
         private Fixture _fixture;
-        private InMemoryProjectionStore<AccountProjectsDto> _projectionStore;
+        private IProjectionStore<AccountProjectsDto> _projectionStore;
+        private Exception _exceptionFromStore;
         private CancellationToken _stoppingToken;
         private Guid _accountId;
         private AccountEvents.ProjectDeleted @event;
+        private Guid _projectId;
 
         public ProjectDeletedSpecs()
         {
@@ -32,26 +36,23 @@
             _stoppingToken = default;
 
             _accountId = Guid.NewGuid();
-            @event = _fixture.Build<AccountEvents.ProjectDeleted>()
-                .With(pc => pc.Id, _accountId)
-                .Create();
         }
 
         [Fact]
         public void NoProjection()
         {
-            this.Given(_ => GivenThereIsNoProjectionForTheAccount())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
-                .And(_ => ThenTheStoredProjectionIsUnchanged())
                 .BDDfy();
         }
 
         [Fact]
         public void ProjectDoesntExist()
         {
-            this.Given(_ => GivenTheProjectWeAreDeletingIsNotOnTheProjection())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectWeAreDeletingIsNotOnTheProjection())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .And(_ => ThenTheStoredProjectionIsUnchanged())
                 .BDDfy();
@@ -60,46 +61,80 @@
         [Fact]
         public void ProjectExists()
         {
-            this.Given(_ => GivenTheProjectWeAreDeletingIsOnTheProjection())
-                .When(_ => WhenTheEventIsHandled())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectWeAreDeletingIsOnTheProjection())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenTheProjectionHasBeenUpdated())
                 .BDDfy();
         }
 
-        private void GivenThereIsNoProjectionForTheAccount()
+        [Fact]
+        public void ExceptionThrownByProjectionStoreWhenSaving()
+        {
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectWeAreDeletingIsOnTheProjection())
+                .And(_ => GivenTheProjectionStoreWillThrowWhenSaving())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
+                .BDDfy();
+        }
+
+        private void GivenThereIsNoProjection()
         {
             _originalProjection = null;
         }
 
-        private async Task GivenTheProjectWeAreDeletingIsNotOnTheProjection()
+        private void GivenTheProjectionExists()
         {
             _originalProjection = AccountProjectsDto.Create(
                 _accountId,
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
-
-            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
         }
 
-        private async Task GivenTheProjectWeAreDeletingIsOnTheProjection()
+        private void GivenTheProjectWeAreDeletingIsNotOnTheProjection()
         {
-            _originalProjection = AccountProjectsDto.Create(
-                _accountId,
-                _fixture.Create<DateTimeOffset>(),
-                _fixture.Create<string>());
+            _projectId = _fixture.Create<Guid>();
+        }
+
+        private void GivenTheProjectWeAreDeletingIsOnTheProjection()
+        {
+            _projectId = _fixture.Create<Guid>();
 
             _originalProjection.AddProject(
-                @event.ProjectId,
+                _projectId,
                 _fixture.Create<string>(),
                 1,
                 _fixture.Create<DateTimeOffset>(),
                 _fixture.Create<string>());
+        }
 
-            await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+        private void GivenTheProjectionStoreWillThrowWhenSaving()
+        {
+            _projectionStore = Substitute.For<IProjectionStore<AccountProjectsDto>>();
+
+            _exceptionFromStore = new Exception();
+            _projectionStore.Delete(Arg.Any<string>())
+                .Returns(ps => throw _exceptionFromStore);
+        }
+
+        private async Task WhenWeHandleTheProjectDeletedEvent()
+        {
+            @event = _fixture.Build<AccountEvents.ProjectDeleted>()
+                .With(e => e.Id, _accountId)
+                .With(e => e.ProjectId, _projectId)
+                .Create();
+
+            await WhenTheEventIsHandled();
         }
 
         private async Task WhenTheEventIsHandled()
         {
+            if (_originalProjection != null)
+            {
+                await _projectionStore.Create(AccountProjectsDto.StoreKey(_originalProjection.AccountId), _originalProjection);
+            }
+
             _projectionBuilder = new ProjectionBuilder(_projectionStore);
             try
             {
