@@ -1,35 +1,46 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects.AccountEvents
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.AccountEvents
 {
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
-    using Evelyn.Core.WriteModel.Account.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
+    using AccountEvents = Evelyn.Core.WriteModel.Account.Events;
 
-    public class ProjectCreatedSpecs : EventSpecs
+    public class ProjectDeletedSpecs : EventSpecs
     {
-        private ProjectCreated _event;
+        private AccountEvents.ProjectDeleted _event;
 
         [Fact]
         public void NoProjection()
         {
             this.Given(_ => GivenThereIsNoProjection())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
-        public void Nominal()
+        public void ProjectDoesntExist()
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurProjectIsNotOnTheProjection())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
+                .And(_ => ThenTheStoredProjectionIsUnchanged())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ProjectExists()
+        {
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurProjectIsOnTheProjection())
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenTheProjectHadBeenAddedToTheProjection())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
+                .Then(_ => ThenTheProjectionHasBeenUpdated())
                 .BDDfy();
         }
 
@@ -37,9 +48,9 @@
         public void ExceptionThrownByProjectionStoreWhenSaving()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsNotOnTheProjection())
-                .And(_ => GivenTheProjectionStoreWillThrowWhenUpdating())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
+                .And(_ => GivenOurProjectIsOnTheProjection())
+                .And(_ => GivenTheProjectionStoreWillThrowWhenDeleting())
+                .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
@@ -49,17 +60,17 @@
             await ProjectionBuilder.Handle(_event, StoppingToken);
         }
 
-        private async Task WhenWeHandleAProjectCreatedEvent()
+        private async Task WhenWeHandleTheProjectDeletedEvent()
         {
-            _event = DataFixture.Build<ProjectCreated>()
-                .With(pc => pc.Id, AccountId)
-                .With(pc => pc.ProjectId, ProjectId)
+            _event = DataFixture.Build<AccountEvents.ProjectDeleted>()
+                .With(e => e.Id, AccountId)
+                .With(e => e.ProjectId, ProjectId)
                 .Create();
 
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectHadBeenAddedToTheProjection()
+        private void ThenTheProjectionHasBeenUpdated()
         {
             UpdatedProjection.AccountId.Should().Be(OriginalProjection.AccountId);
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
@@ -70,19 +81,7 @@
             UpdatedProjection.Version.Should().Be(_event.Version);
 
             var projects = UpdatedProjection.Projects.ToList();
-
-            projects.Count.Should().Be(OriginalProjection.Projects.Count() + 1);
-
-            foreach (var originalProject in OriginalProjection.Projects)
-            {
-                projects.Exists(p =>
-                    p.Id == _event.ProjectId &&
-                    p.Name == string.Empty).Should().BeTrue();
-            }
-
-            projects.Exists(p =>
-                p.Id == _event.ProjectId &&
-                p.Name == string.Empty).Should().BeTrue();
+            projects.Count.Should().Be(OriginalProjection.Projects.Count() - 1);
         }
     }
 }

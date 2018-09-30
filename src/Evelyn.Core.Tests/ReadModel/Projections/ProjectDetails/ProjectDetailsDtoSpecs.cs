@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.ProjectDetails
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails
 {
     using AutoFixture;
     using Core.ReadModel.Projections.ProjectDetails;

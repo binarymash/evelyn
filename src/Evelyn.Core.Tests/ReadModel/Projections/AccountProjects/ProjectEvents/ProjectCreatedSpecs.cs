@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects.ProjectEvents
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.ProjectEvents
 {
     using System.Linq;
     using System.Threading.Tasks;

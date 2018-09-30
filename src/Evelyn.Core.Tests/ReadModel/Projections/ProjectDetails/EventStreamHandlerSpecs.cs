@@ -1,12 +1,12 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.EnvironmentState
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails
 ////{
 ////    using System;
 ////    using System.Threading;
 ////    using System.Threading.Tasks;
 ////    using AutoFixture;
 ////    using Core.ReadModel;
-////    using Core.ReadModel.Projections.EnvironmentState;
 ////    using Core.ReadModel.Infrastructure;
+////    using Core.ReadModel.Projections.ProjectDetails;
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Events;
 ////    using FluentAssertions;
@@ -19,19 +19,19 @@
 ////        private readonly Fixture _fixture;
 ////        private readonly EventStreamHandler _handler;
 ////        private readonly StubbedEventStreamFactory _eventStreamFactory;
-////        private readonly IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto> _projectionBuilder;
-////        private readonly IDatabase<string, EnvironmentStateDto> _db;
+////        private readonly IProjectionBuilder<ProjectionBuilderRequest, ProjectDetailsDto> _projectionBuilder;
+////        private readonly IDatabase<Guid, ProjectDetailsDto> _db;
 
-////        private EnvironmentStateAdded _event1;
-////        private ToggleStateAdded _event2;
-////        private EnvironmentStateDto _projection1;
-////        private EnvironmentStateDto _projection2;
+////        private IEvent _event1;
+////        private IEvent _event2;
+////        private ProjectDetailsDto _projection1;
+////        private ProjectDetailsDto _projection2;
 
 ////        public EventStreamHandlerSpecs()
 ////        {
 ////            _fixture = new Fixture();
-////            _projectionBuilder = Substitute.For<IProjectionBuilder<ProjectionBuilderRequest, EnvironmentStateDto>>();
-////            _db = Substitute.For<IDatabase<string, EnvironmentStateDto>>();
+////            _projectionBuilder = Substitute.For<IProjectionBuilder<ProjectionBuilderRequest, ProjectDetailsDto>>();
+////            _db = Substitute.For<IDatabase<Guid, ProjectDetailsDto>>();
 ////            _eventStreamFactory = new StubbedEventStreamFactory();
 ////            _handler = new EventStreamHandler(_projectionBuilder, _db, _eventStreamFactory);
 
@@ -83,14 +83,14 @@
 
 ////        private void GivenAProjectionCanBeBuiltForEvent1()
 ////        {
-////            _projection1 = _fixture.Create<EnvironmentStateDto>();
+////            _projection1 = _fixture.Create<ProjectDetailsDto>();
 ////            _projectionBuilder.Invoke(Arg.Any<ProjectionBuilderRequest>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(_projection1));
 ////        }
 
 ////        private void GivenAProjectionCanBeBuiltForEvent1And2()
 ////        {
-////            _projection1 = _fixture.Create<EnvironmentStateDto>();
-////            _projection2 = _fixture.Create<EnvironmentStateDto>();
+////            _projection1 = _fixture.Create<ProjectDetailsDto>();
+////            _projection2 = _fixture.Create<ProjectDetailsDto>();
 ////            _projectionBuilder.Invoke(Arg.Any<ProjectionBuilderRequest>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(_projection1), Task.FromResult(_projection2));
 ////        }
 
@@ -100,14 +100,14 @@
 
 ////        private void WhenEvent1IsAddedToTheEventStream()
 ////        {
-////            _event1 = _fixture.Create<EnvironmentStateAdded>();
-////            _eventStreamFactory.GetEventStream<EnvironmentStateDto>().Enqueue(_event1);
+////            _event1 = _fixture.Create<EnvironmentAdded>();
+////            _eventStreamFactory.GetEventStream<ProjectDetailsDto>().Enqueue(_event1);
 ////        }
 
 ////        private void WhenEvent2IsAddedToTheEventStream()
 ////        {
-////            _event2 = _fixture.Create<ToggleStateAdded>();
-////            _eventStreamFactory.GetEventStream<EnvironmentStateDto>().Enqueue(_event2);
+////            _event2 = _fixture.Create<EnvironmentAdded>();
+////            _eventStreamFactory.GetEventStream<ProjectDetailsDto>().Enqueue(_event2);
 ////        }
 
 ////        private async Task WhenWeWaitAMoment()
@@ -132,17 +132,17 @@
 
 ////        private void ThenNoProjectionIsCached()
 ////        {
-////            _db.DidNotReceiveWithAnyArgs().AddOrUpdate(Arg.Any<string>(), Arg.Any<EnvironmentStateDto>());
+////            _db.DidNotReceiveWithAnyArgs().AddOrUpdate(Arg.Any<Guid>(), Arg.Any<ProjectDetailsDto>());
 ////        }
 
 ////        private void ThenTheProjectionIsCachedForEvent1()
 ////        {
-////            _db.Received().AddOrUpdate($"{_event1.Id}-{_event1.EnvironmentKey}", _projection1);
+////            _db.Received().AddOrUpdate(_event1.Id, _projection1);
 ////        }
 
 ////        private void ThenTheProjectionIsCachedForEvent2()
 ////        {
-////            _db.Received().AddOrUpdate($"{_event2.Id}-{_event2.EnvironmentKey}", _projection2);
+////            _db.Received().AddOrUpdate(_event2.Id, _projection2);
 ////        }
 
 ////        private void ThenEvent1IsRemovedFromTheStream()
@@ -157,7 +157,7 @@
 
 ////        private void ThenTheEventStreamDoesNotContain(IEvent @event)
 ////        {
-////            _eventStreamFactory.GetEventStream<EnvironmentStateDto>().Should().NotContain(@event);
+////            _eventStreamFactory.GetEventStream<ProjectDetailsDto>().Should().NotContain(@event);
 ////        }
 ////    }
 ////}

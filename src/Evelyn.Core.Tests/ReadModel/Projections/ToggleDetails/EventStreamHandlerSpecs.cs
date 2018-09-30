@@ -1,4 +1,4 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.ToggleDetails
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleDetails
 ////{
 ////    using System;
 ////    using System.Threading;

@@ -1,4 +1,4 @@
-﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails
+﻿////namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleDetails
 ////{
 ////    using System;
 ////    using System.Collections.Generic;
@@ -10,23 +10,22 @@
 ////    using Core.WriteModel.Project.Events;
 ////    using CQRSlite.Domain.Exception;
 ////    using CQRSlite.Events;
-////    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
+////    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
 ////    using FluentAssertions;
 ////    using NSubstitute;
 ////    using NSubstitute.ExceptionExtensions;
 ////    using TestStack.BDDfy;
 ////    using Xunit;
-////    using Environment = Core.WriteModel.Project.Domain.Environment;
 
-////    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, EnvironmentDetailsDto>
+////    public class ProjectionBuilderSpecs : ProjectionBuilderSpecs<ProjectionBuilder, ToggleDetailsDto>
 ////    {
 ////        private readonly List<IEvent> _projectEvents;
 
 ////        private Guid _projectId;
 ////        private Project _project;
 
-////        private string _environmentKey;
-////        private Environment _expectedEnvironment;
+////        private string _toggleKey;
+////        private Toggle _expectedToggle;
 
 ////        public ProjectionBuilderSpecs()
 ////        {
@@ -44,9 +43,9 @@
 ////        }
 
 ////        [Fact]
-////        public void EnvironmentDoesNotExist()
+////        public void ToggleDoesNotExist()
 ////        {
-////            this.Given(_ => GivenWeHaveAProjectButItDoesntHaveOurEnvironment())
+////            this.Given(_ => GivenWeHaveAProjectButItDoesntHaveOurToggle())
 ////                .And(_ => GivenTheProjectIsInTheRepository())
 ////                .When(_ => WhenWeInvokeTheProjectionBuilder())
 ////                .Then(_ => ThenANullProjectionIsReturned())
@@ -54,18 +53,19 @@
 ////        }
 
 ////        [Fact]
-////        public void EnvironmentExists()
+////        public void ToggleExists()
 ////        {
-////            this.Given(_ => GivenWeHaveAProjectWithEnvironments())
+////            this.Given(_ => GivenWeHaveAProjectWithToggles())
 ////                .And(_ => GivenTheProjectIsInTheRepository())
 ////                .When(_ => WhenWeInvokeTheProjectionBuilder())
 ////                .Then(_ => ThenTheVersionIsSet())
-////                .Then(_ => ThenTheCreatedDateIsSet())
+////                .And(_ => ThenTheCreatedDateIsSet())
 ////                .And(_ => ThenTheCreatedByIsSet())
 ////                .And(_ => ThenTheLastModifiedDateIsSet())
 ////                .And(_ => ThenTheLastModifiedByIsSet())
 ////                .And(_ => ThenTheProjectIdIsSet())
-////                .And(_ => ThenTheEnvironmentKeyIsSet())
+////                .And(_ => ThenTheToggleKeyIsSet())
+////                .And(_ => ThenTheToggleNameIsSet())
 ////                .BDDfy();
 ////        }
 
@@ -94,10 +94,10 @@
 ////                .Returns(Task.FromResult(_project));
 ////        }
 
-////        private void GivenWeHaveAProjectButItDoesntHaveOurEnvironment()
+////        private void GivenWeHaveAProjectButItDoesntHaveOurToggle()
 ////        {
 ////            _projectId = DataFixture.Create<Guid>();
-////            _environmentKey = DataFixture.Create<string>();
+////            _toggleKey = DataFixture.Create<string>();
 
 ////            _projectEvents.Add(DataFixture.Build<ProjectCreated>()
 ////                .With(ev => ev.Version, 0)
@@ -108,26 +108,26 @@
 ////            _project.LoadFromHistory(_projectEvents);
 ////        }
 
-////        private void GivenWeHaveAProjectWithEnvironments()
+////        private void GivenWeHaveAProjectWithToggles()
 ////        {
 ////            _projectId = DataFixture.Create<Guid>();
-////            _environmentKey = DataFixture.Create<string>();
+////            _toggleKey = DataFixture.Create<string>();
 
 ////            _projectEvents.Add(DataFixture.Build<ProjectCreated>()
 ////                .With(ev => ev.Version, 0)
 ////                .With(ev => ev.Id, _projectId)
 ////                .Create());
 
-////            _projectEvents.Add(DataFixture.Build<EnvironmentAdded>()
+////            _projectEvents.Add(DataFixture.Build<ToggleAdded>()
 ////                .With(ev => ev.Version, 1)
 ////                .With(ev => ev.Id, _projectId)
-////                .With(ev => ev.Key, _environmentKey)
+////                .With(ev => ev.Key, _toggleKey)
 ////                .Create());
 
 ////            _project = new Project();
 ////            _project.LoadFromHistory(_projectEvents);
 
-////            _expectedEnvironment = _project.Environments.First(es => es.Key == _environmentKey);
+////            _expectedToggle = _project.Toggles.First(es => es.Key == _toggleKey);
 ////        }
 
 ////        private void GivenTheEventStoreThrowsSomeOtherException()
@@ -141,7 +141,7 @@
 ////        {
 ////            try
 ////            {
-////                var request = new ProjectionBuilderRequest(_projectId, _environmentKey);
+////                var request = new ProjectionBuilderRequest(_projectId, _toggleKey);
 ////                Dto = await Builder.Invoke(request);
 ////            }
 ////            catch (Exception ex)
@@ -152,27 +152,27 @@
 
 ////        private void ThenTheVersionIsSet()
 ////        {
-////            Dto.Version.Should().Be(_expectedEnvironment.LastModifiedVersion);
+////            Dto.Version.Should().Be(_expectedToggle.LastModifiedVersion);
 ////        }
 
 ////        private void ThenTheCreatedDateIsSet()
 ////        {
-////            Dto.Created.Should().Be(_expectedEnvironment.Created);
+////            Dto.Created.Should().Be(_expectedToggle.Created);
 ////        }
 
 ////        private void ThenTheCreatedByIsSet()
 ////        {
-////            Dto.CreatedBy.Should().Be(_expectedEnvironment.CreatedBy);
+////            Dto.CreatedBy.Should().Be(_expectedToggle.CreatedBy);
 ////        }
 
 ////        private void ThenTheLastModifiedDateIsSet()
 ////        {
-////            Dto.LastModified.Should().Be(_expectedEnvironment.LastModified);
+////            Dto.LastModified.Should().Be(_expectedToggle.LastModified);
 ////        }
 
 ////        private void ThenTheLastModifiedByIsSet()
 ////        {
-////            Dto.LastModifiedBy.Should().Be(_expectedEnvironment.LastModifiedBy);
+////            Dto.LastModifiedBy.Should().Be(_expectedToggle.LastModifiedBy);
 ////        }
 
 ////        private void ThenTheProjectIdIsSet()
@@ -180,9 +180,14 @@
 ////            Dto.ProjectId.Should().Be(_projectId);
 ////        }
 
-////        private void ThenTheEnvironmentKeyIsSet()
+////        private void ThenTheToggleKeyIsSet()
 ////        {
-////            Dto.Key.Should().Be(_expectedEnvironment.Key);
+////            Dto.Key.Should().Be(_expectedToggle.Key);
+////        }
+
+////        private void ThenTheToggleNameIsSet()
+////        {
+////            Dto.Name.Should().Be(_expectedToggle.Name);
 ////        }
 ////    }
 ////}

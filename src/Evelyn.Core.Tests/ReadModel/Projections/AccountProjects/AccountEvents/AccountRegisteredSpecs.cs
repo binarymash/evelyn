@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects.AccountEvents
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.AccountEvents
 {
     using System.Threading.Tasks;
     using AutoFixture;

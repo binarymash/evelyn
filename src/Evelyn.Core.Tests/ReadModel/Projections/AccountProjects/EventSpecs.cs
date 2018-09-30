@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.AccountProjects
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects
 {
     using System;
     using System.Threading;

@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.EnvironmentState
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState
 {
     using AutoFixture;
     using Core.ReadModel.Projections.EnvironmentState;
