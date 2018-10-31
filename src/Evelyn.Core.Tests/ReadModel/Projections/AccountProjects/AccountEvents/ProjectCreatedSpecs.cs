@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.AccountEvents
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -14,11 +15,12 @@
         private ProjectCreated _event;
 
         [Fact]
-        public void NoProjection()
+        public void ProjectionDoesNotExist()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
+                .And(_ => ThenNoProjectionIsCreated())
                 .BDDfy();
         }
 
@@ -30,17 +32,6 @@
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectHadBeenAddedToTheProjection())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ExceptionThrownByProjectionStoreWhenSaving()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsNotOnTheProjection())
-                .And(_ => GivenTheProjectionStoreWillThrowWhenUpdating())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 

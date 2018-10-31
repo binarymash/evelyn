@@ -14,43 +14,23 @@
         private ProjectEvents.ProjectCreated _event;
 
         [Fact]
-        public void NoProjection()
+        public void ProjectionDoesNotExist()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
+                .And(_ => ThenNoProjectionIsCreated())
                 .BDDfy();
         }
 
         [Fact]
-        public void ProjectNotOnProjection()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsNotOnTheProjection())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectIsOnProjection()
+        public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurProjectIsOnTheProjection())
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenOurProjectNameHasBeenUpdated())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ExceptionThrownByProjectionStoreWhenSaving()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsOnTheProjection())
-                .And(_ => GivenTheProjectionStoreWillThrowWhenUpdating())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 

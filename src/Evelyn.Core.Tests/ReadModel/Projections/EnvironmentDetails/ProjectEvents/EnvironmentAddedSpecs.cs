@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails.ProjectEvents
 {
-    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using FluentAssertions;
@@ -13,20 +12,11 @@
         private ProjectEvents.EnvironmentAdded _event;
 
         [Fact]
-        public void NoProjection()
+        public void Nominal()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionIsCreated())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectionAlreadyExists()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -38,8 +28,8 @@
         private async Task WhenWeHandleAProjectCreatedEvent()
         {
             _event = DataFixture.Build<ProjectEvents.EnvironmentAdded>()
-               .With(ea => ea.Id, ProjectId)
-               .With(ea => ea.Key, EnvironmentKey)
+               .With(e => e.Id, ProjectId)
+               .With(e => e.Key, EnvironmentKey)
                .Create();
 
             await WhenTheEventIsHandled();

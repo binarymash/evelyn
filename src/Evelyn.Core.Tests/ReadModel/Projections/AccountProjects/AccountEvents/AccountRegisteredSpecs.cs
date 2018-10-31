@@ -13,29 +13,11 @@
         private AccountRegistered _event;
 
         [Fact]
-        public void NoProjection()
+        public void Nominal()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAnAccountRegisteredEvent())
-                .Then(_ => ThenAProjectionHasBeenAddedToTheStore())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectionAlreadyExists()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .When(_ => WhenWeHandleAnAccountRegisteredEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ExceptionThrownByProjectionStoreWhenSaving()
-        {
-            this.Given(_ => GivenTheProjectionStoreWillThrowWhenCreating())
-                .When(_ => WhenWeHandleAnAccountRegisteredEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
+                .Then(_ => ThenTheProjectionIsCreatedWithTheCorrectProperties())
                 .BDDfy();
         }
 
@@ -53,16 +35,17 @@
             await WhenTheEventIsHandled();
         }
 
-        private async Task ThenAProjectionHasBeenAddedToTheStore()
+        private void ThenTheProjectionIsCreatedWithTheCorrectProperties()
         {
-            var projection = await ProjectionStore.Get(AccountProjectsDto.StoreKey(_event.Id));
-            projection.AccountId.Should().Be(_event.Id);
-            projection.Created.Should().Be(_event.OccurredAt);
-            projection.CreatedBy.Should().Be(_event.UserId);
-            projection.LastModified.Should().Be(_event.OccurredAt);
-            projection.LastModifiedBy.Should().Be(_event.UserId);
-            projection.Projects.Should().BeEmpty();
-            projection.Version.Should().Be(0);
+            ThenTheProjectionIsCreated();
+
+            UpdatedProjection.AccountId.Should().Be(_event.Id);
+            UpdatedProjection.Created.Should().Be(_event.OccurredAt);
+            UpdatedProjection.CreatedBy.Should().Be(_event.UserId);
+            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
+            UpdatedProjection.Projects.Should().BeEmpty();
+            UpdatedProjection.Version.Should().Be(0);
         }
     }
 }

@@ -21,6 +21,7 @@
 
         public async Task Handle(ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
+            var projection = await Projections.Get(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key));
             await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
         }
     }

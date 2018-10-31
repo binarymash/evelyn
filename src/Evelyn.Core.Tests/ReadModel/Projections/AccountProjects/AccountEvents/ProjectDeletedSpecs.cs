@@ -14,7 +14,7 @@
         private AccountEvents.ProjectDeleted _event;
 
         [Fact]
-        public void NoProjection()
+        public void ProjectionDoesNotExist()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleTheProjectDeletedEvent())
@@ -23,35 +23,13 @@
         }
 
         [Fact]
-        public void ProjectDoesntExist()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsNotOnTheProjection())
-                .When(_ => WhenWeHandleTheProjectDeletedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
-                .And(_ => ThenTheStoredProjectionIsUnchanged())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ProjectExists()
+        public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurProjectIsOnTheProjection())
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
                 .When(_ => WhenWeHandleTheProjectDeletedEvent())
                 .Then(_ => ThenTheProjectionHasBeenUpdated())
-                .BDDfy();
-        }
-
-        [Fact]
-        public void ExceptionThrownByProjectionStoreWhenSaving()
-        {
-            this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsOnTheProjection())
-                .And(_ => GivenTheProjectionStoreWillThrowWhenDeleting())
-                .When(_ => WhenWeHandleTheProjectDeletedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
