@@ -27,13 +27,6 @@
             await ProjectionBuilder.Handle(_event, StoppingToken);
         }
 
-        private void GivenTheProjectionExists()
-        {
-            OriginalProjection = DataFixture.Create<EnvironmentStateDto>();
-            ProjectId = DataFixture.Create<Guid>();
-            EnvironmentKey = DataFixture.Create<string>();
-        }
-
         private async Task WhenWeHandleAnEnvironmentStateDeletedEvent()
         {
             _event = DataFixture.Build<EnvironmentStateDeleted>()

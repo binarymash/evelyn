@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
+﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails.ProjectEvents
 {
     using System.Threading.Tasks;
     using AutoFixture;
@@ -7,16 +7,16 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateAddedSpecs : EventSpecs
+    public class ProjectCreatedEventSpecs : EventSpecs
     {
-        private EnvironmentStateAdded _event;
+        private ProjectCreated _event;
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => GivenThereIsNoProjection())
-                .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
-                .Then(_ => ThenTheProjectionIsCreatedWithTheCorrectProperties())
+            this.Given(_ => _.GivenThereIsNoProjection())
+                .When(_ => _.WhenWeHandleAProjectCreatedEvent())
+                .Then(_ => _.ThenTheProjectionIsCreatedWithTheCorrectProperties())
                 .BDDfy();
         }
 
@@ -25,11 +25,10 @@
             await ProjectionBuilder.Handle(_event, StoppingToken);
         }
 
-        private async Task WhenWeHandleAnEnvironmentStateAddedEvent()
+        private async Task WhenWeHandleAProjectCreatedEvent()
         {
-            _event = DataFixture.Build<EnvironmentStateAdded>()
+            _event = DataFixture.Build<ProjectCreated>()
                 .With(ar => ar.Id, ProjectId)
-                .With(esa => esa.EnvironmentKey, EnvironmentKey)
                 .Create();
 
             await WhenTheEventIsHandled();
@@ -44,7 +43,10 @@
             UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
             UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
             UpdatedProjection.Version.Should().Be(_event.Version);
-            UpdatedProjection.ToggleStates.Should().BeEquivalentTo(_event.ToggleStates);
+
+            UpdatedProjection.Name.Should().Be(_event.Name);
+            UpdatedProjection.Environments.Should().BeEmpty();
+            UpdatedProjection.Toggles.Should().BeEmpty();
         }
     }
 }
