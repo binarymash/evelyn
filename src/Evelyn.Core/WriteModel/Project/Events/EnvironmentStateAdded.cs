@@ -15,7 +15,7 @@
             _toggleStates = toggleStates?.ToList() ?? new List<KeyValuePair<string, string>>();
         }
 
-        public string EnvironmentKey { get; private set; }
+        public string EnvironmentKey { get; set; }
 
         public IEnumerable<KeyValuePair<string, string>> ToggleStates => _toggleStates;
     }

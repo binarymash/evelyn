@@ -60,6 +60,11 @@
             }
         }
 
+        protected void ThenAnExceptionIsThrown()
+        {
+            ThrownException.Should().NotBeNull();
+        }
+
         protected void ThenTheStoredProjectionIsUnchanged()
         {
             UpdatedProjection.Should().BeEquivalentTo(OriginalProjection);

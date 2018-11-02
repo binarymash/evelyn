@@ -56,11 +56,6 @@
                 DataFixture.Create<string>());
         }
 
-        protected void ThenAnExceptionIsThrown()
-        {
-            ThrownException.Should().NotBeNull();
-        }
-
         protected void ThenTheProjectionIsCreated()
         {
             ProjectionStore.Received().Create(AccountProjectsDto.StoreKey(AccountId), UpdatedProjection);
