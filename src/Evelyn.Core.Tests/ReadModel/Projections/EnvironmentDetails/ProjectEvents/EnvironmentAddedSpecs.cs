@@ -7,10 +7,8 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class EnvironmentAddedSpecs : EventSpecs
+    public class EnvironmentAddedSpecs : EventSpecs<ProjectEvents.EnvironmentAdded>
     {
-        private ProjectEvents.EnvironmentAdded _event;
-
         [Fact]
         public void Nominal()
         {
@@ -22,12 +20,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
         {
-            _event = DataFixture.Build<ProjectEvents.EnvironmentAdded>()
+            Event = DataFixture.Build<ProjectEvents.EnvironmentAdded>()
                .With(e => e.Id, ProjectId)
                .With(e => e.Key, EnvironmentKey)
                .Create();
@@ -37,16 +35,16 @@
 
         private void ThenTheProjectionIsCreated()
         {
-            UpdatedProjection.ProjectId.Should().Be(_event.Id);
-            UpdatedProjection.Created.Should().Be(_event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(_event.UserId);
+            UpdatedProjection.ProjectId.Should().Be(Event.Id);
+            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
             UpdatedProjection.Version.Should().Be(0);
 
-            UpdatedProjection.Key.Should().Be(_event.Key);
-            UpdatedProjection.Name.Should().Be(_event.Name);
+            UpdatedProjection.Key.Should().Be(Event.Key);
+            UpdatedProjection.Name.Should().Be(Event.Name);
         }
     }
 }

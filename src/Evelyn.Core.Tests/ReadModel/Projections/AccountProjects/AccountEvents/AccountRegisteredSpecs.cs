@@ -8,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AccountRegisteredSpecs : EventSpecs
+    public class AccountRegisteredSpecs : EventSpecs<AccountRegistered>
     {
-        private AccountRegistered _event;
-
         [Fact]
         public void Nominal()
         {
@@ -23,12 +21,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnAccountRegisteredEvent()
         {
-            _event = DataFixture.Build<AccountRegistered>()
+            Event = DataFixture.Build<AccountRegistered>()
                 .With(ar => ar.Id, AccountId)
                 .Create();
 
@@ -39,11 +37,11 @@
         {
             ThenTheProjectionIsCreated();
 
-            UpdatedProjection.AccountId.Should().Be(_event.Id);
-            UpdatedProjection.Created.Should().Be(_event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(_event.UserId);
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
+            UpdatedProjection.AccountId.Should().Be(Event.Id);
+            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
             UpdatedProjection.Projects.Should().BeEmpty();
             UpdatedProjection.Version.Should().Be(0);
         }

@@ -3,17 +3,16 @@
     using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
-    using FluentAssertions;
+    using Evelyn.Core.WriteModel;
     using NSubstitute;
 
-    public abstract class EventSpecs : EventSpecs<AccountProjectsDto>
+    public abstract class EventSpecs<TEvent> : EventSpecs<AccountProjectsDto, ProjectionBuilder, TEvent>
+        where TEvent : Event
     {
         protected EventSpecs()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
-
-        protected ProjectionBuilder ProjectionBuilder { get; private set; }
 
         protected Guid AccountId { get; private set; }
 

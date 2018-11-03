@@ -3,16 +3,15 @@
     using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using NSubstitute;
+    using Evelyn.Core.WriteModel;
 
-    public abstract class EventSpecs : EventSpecs<ProjectDetailsDto>
+    public abstract class EventSpecs<TEvent> : EventSpecs<ProjectDetailsDto, ProjectionBuilder, TEvent>
+        where TEvent : Event
     {
         public EventSpecs()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
-
-        protected ProjectionBuilder ProjectionBuilder { get; private set; }
 
         protected Guid ProjectId { get; private set; }
 
@@ -45,11 +44,6 @@
                 DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<int>());
-        }
-
-        protected void ThenTheProjectionIsCreated()
-        {
-            ProjectionStore.Received().Create(ProjectDetailsDto.StoreKey(ProjectId), UpdatedProjection);
         }
     }
 }

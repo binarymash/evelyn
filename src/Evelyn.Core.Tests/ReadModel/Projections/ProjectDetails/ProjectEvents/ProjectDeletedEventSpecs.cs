@@ -8,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectDeletedEventSpecs : EventSpecs
+    public class ProjectDeletedEventSpecs : EventSpecs<ProjectDeleted>
     {
-        private ProjectDeleted _event;
-
         [Fact]
         public void Nominal()
         {
@@ -23,12 +21,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectDeletedEvent()
         {
-            _event = DataFixture.Build<ProjectDeleted>()
+            Event = DataFixture.Build<ProjectDeleted>()
                 .With(e => e.Id, ProjectId)
                 .Create();
 

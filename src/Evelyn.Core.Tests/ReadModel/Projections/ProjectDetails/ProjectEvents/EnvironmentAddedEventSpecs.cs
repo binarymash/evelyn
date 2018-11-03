@@ -9,10 +9,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentAddedEventSpecs : EventSpecs
+    public class EnvironmentAddedEventSpecs : EventSpecs<EnvironmentAdded>
     {
-        private EnvironmentAdded _event;
-
         [Fact]
         public void ProjectionDoesNotExist()
         {
@@ -35,12 +33,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentAddedEvent()
         {
-            _event = DataFixture.Build<EnvironmentAdded>()
+            Event = DataFixture.Build<EnvironmentAdded>()
                 .With(ar => ar.Id, ProjectId)
                 .Create();
 
@@ -52,9 +50,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
 
@@ -69,8 +67,8 @@
             }
 
             updatedEnvironments.Should().Contain(e =>
-                e.Key == _event.Key &&
-                e.Name == _event.Name);
+                e.Key == Event.Key &&
+                e.Name == Event.Name);
         }
     }
 }

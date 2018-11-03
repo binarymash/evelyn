@@ -7,10 +7,8 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class EnvironmentDeletedSpecs : EventSpecs
+    public class EnvironmentDeletedSpecs : EventSpecs<ProjectEvents.EnvironmentDeleted>
     {
-        private ProjectEvents.EnvironmentDeleted _event;
-
         [Fact]
         public void Nominal()
         {
@@ -22,12 +20,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentDeletedEvent()
         {
-            _event = DataFixture.Build<ProjectEvents.EnvironmentDeleted>()
+            Event = DataFixture.Build<ProjectEvents.EnvironmentDeleted>()
                 .With(e => e.Id, ProjectId)
                 .With(e => e.Key, EnvironmentKey)
                 .Create();

@@ -2,49 +2,49 @@
 {
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
+    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectCreatedEventSpecs : EventSpecs
+    public class ProjectCreatedEventSpecs : EventSpecs<ProjectCreated>
     {
-        private ProjectCreated _event;
-
         [Fact]
         public void Nominal()
         {
             this.Given(_ => _.GivenThereIsNoProjection())
                 .When(_ => _.WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => _.ThenTheProjectionIsCreatedWithTheCorrectProperties())
+                .Then(_ => _.ThenTheProjectionIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
         {
-            _event = DataFixture.Build<ProjectCreated>()
+            Event = DataFixture.Build<ProjectCreated>()
                 .With(ar => ar.Id, ProjectId)
                 .Create();
 
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreatedWithTheCorrectProperties()
+        private void ThenTheProjectionIsCreated()
         {
-            ThenTheProjectionIsCreated();
+            ProjectionStore.Received().Create(ProjectDetailsDto.StoreKey(ProjectId), UpdatedProjection);
 
-            UpdatedProjection.Created.Should().Be(_event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(_event.UserId);
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
-            UpdatedProjection.Name.Should().Be(_event.Name);
+            UpdatedProjection.Name.Should().Be(Event.Name);
             UpdatedProjection.Environments.Should().BeEmpty();
             UpdatedProjection.Toggles.Should().BeEmpty();
         }

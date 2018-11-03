@@ -10,11 +10,9 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentDeletedEventSpecs : EventSpecs
+    public class EnvironmentDeletedEventSpecs : EventSpecs<EnvironmentDeleted>
     {
-        private EnvironmentDeleted _event;
-
-        public string EnvironmentKey { get; private set; }
+        private string _environmentKey;
 
         [Fact]
         public void ProjectionDoesNotExist()
@@ -38,15 +36,15 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private void GivenOurEnvironmentIsOnTheProjection()
         {
-            EnvironmentKey = DataFixture.Create<string>();
+            _environmentKey = DataFixture.Create<string>();
 
             OriginalProjection.AddEnvironment(
-                EnvironmentKey,
+                _environmentKey,
                 DataFixture.Create<string>(),
                 DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<int>(),
@@ -55,9 +53,9 @@
 
         private async Task WhenWeHandleAnEnvironmentDeletedEvent()
         {
-            _event = DataFixture.Build<EnvironmentDeleted>()
+            Event = DataFixture.Build<EnvironmentDeleted>()
                 .With(ar => ar.Id, ProjectId)
-                .With(ar => ar.Key, EnvironmentKey)
+                .With(ar => ar.Key, _environmentKey)
                 .Create();
 
             await WhenTheEventIsHandled();
@@ -68,9 +66,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
 
@@ -79,7 +77,7 @@
 
             foreach (var originalEnvironment in OriginalProjection.Environments)
             {
-                if (originalEnvironment.Key == _event.Key)
+                if (originalEnvironment.Key == Event.Key)
                 {
                     continue;
                 }

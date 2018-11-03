@@ -9,10 +9,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateAddedSpecs : EventSpecs
+    public class ToggleStateAddedSpecs : EventSpecs<ToggleStateAdded>
     {
-        private ToggleStateAdded _event;
-
         [Fact]
         public void ProjectionDoesNotExist()
         {
@@ -34,7 +32,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private void GivenTheProjectAlreadyHasAToggleState()
@@ -49,7 +47,7 @@
 
         private async Task WhenWeHandleAToggleStateAddedEvent()
         {
-            _event = DataFixture.Build<ToggleStateAdded>()
+            Event = DataFixture.Build<ToggleStateAdded>()
                 .With(pc => pc.Id, ProjectId)
                 .With(pc => pc.EnvironmentKey, EnvironmentKey)
                 .Create();
@@ -62,9 +60,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             var toggleStates = UpdatedProjection.ToggleStates.ToList();
             toggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() + 1);
@@ -77,8 +75,8 @@
             }
 
             toggleStates.Should().Contain(ts =>
-                ts.Key == _event.ToggleKey &&
-                ts.Value == _event.Value);
+                ts.Key == Event.ToggleKey &&
+                ts.Value == Event.Value);
         }
     }
 }

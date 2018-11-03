@@ -3,32 +3,32 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
+    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleAddedEventSpecs : EventSpecs
+    public class ToggleAddedEventSpecs : EventSpecs<ToggleAdded>
     {
-        private ToggleAdded _event;
-
         [Fact]
         public void Nominal()
         {
             this.Given(_ => _.GivenThereIsNoProjection())
                 .When(_ => _.WhenWeHandleAToggleAddedEvent())
-                .Then(_ => _.ThenTheProjectionIsCreatedWithTheCorrectProperties())
+                .Then(_ => _.ThenTheProjectionIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleAddedEvent()
         {
-            _event = DataFixture.Build<ToggleAdded>()
+            Event = DataFixture.Build<ToggleAdded>()
                 .With(e => e.Id, ProjectId)
                 .With(e => e.Key, ToggleKey)
                 .Create();
@@ -36,19 +36,19 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreatedWithTheCorrectProperties()
+        private void ThenTheProjectionIsCreated()
         {
-            ThenTheProjectionIsCreated();
+            ProjectionStore.Received().Create(ToggleDetailsDto.StoreKey(ProjectId, ToggleKey), UpdatedProjection);
 
-            UpdatedProjection.Created.Should().Be(_event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(_event.UserId);
+            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
-            UpdatedProjection.Key.Should().Be(_event.Key);
-            UpdatedProjection.Name.Should().Be(_event.Name);
+            UpdatedProjection.Key.Should().Be(Event.Key);
+            UpdatedProjection.Name.Should().Be(Event.Name);
         }
     }
 }

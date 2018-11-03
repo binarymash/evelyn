@@ -8,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleDeletedEventSpecs : EventSpecs
+    public class ToggleDeletedEventSpecs : EventSpecs<ToggleDeleted>
     {
-        private ToggleDeleted _event;
-
         [Fact]
         public void Nominal()
         {
@@ -23,12 +21,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleDeletedEvent()
         {
-            _event = DataFixture.Build<ToggleDeleted>()
+            Event = DataFixture.Build<ToggleDeleted>()
                 .With(e => e.Id, ProjectId)
                 .With(e => e.Key, ToggleKey)
                 .Create();

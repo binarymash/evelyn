@@ -8,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateDeletedSpecs : EventSpecs
+    public class ToggleStateDeletedSpecs : EventSpecs<ToggleStateDeleted>
     {
-        private ToggleStateDeleted _event;
-
         [Fact]
         public void Nominal()
         {
@@ -33,12 +31,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleStateDeletedEvent()
         {
-            _event = DataFixture.Build<ToggleStateDeleted>()
+            Event = DataFixture.Build<ToggleStateDeleted>()
                 .With(pc => pc.Id, ProjectId)
                 .With(pc => pc.EnvironmentKey, EnvironmentKey)
                 .With(pc => pc.ToggleKey, ToggleKey)
@@ -52,16 +50,16 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
             updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() - 1);
 
             foreach (var originalToggleState in OriginalProjection.ToggleStates)
             {
-                if (originalToggleState.Key != _event.ToggleKey)
+                if (originalToggleState.Key != Event.ToggleKey)
                 {
                     updatedToggleStates.Should().Contain(ts =>
                         ts.Key == originalToggleState.Key &&

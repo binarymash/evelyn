@@ -9,10 +9,8 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class ProjectCreatedSpecs : EventSpecs
+    public class ProjectCreatedSpecs : EventSpecs<ProjectEvents.ProjectCreated>
     {
-        private ProjectEvents.ProjectCreated _event;
-
         [Fact]
         public void ProjectionDoesNotExist()
         {
@@ -36,12 +34,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
         {
-            _event = DataFixture.Build<ProjectEvents.ProjectCreated>()
+            Event = DataFixture.Build<ProjectEvents.ProjectCreated>()
                 .With(e => e.AccountId, AccountId)
                 .With(e => e.Id, ProjectId)
                 .Create();
@@ -63,7 +61,7 @@
 
             projects.Count.Should().Be(OriginalProjection.Projects.Count());
 
-            foreach (var originalProject in OriginalProjection.Projects.Where(p => p.Id != _event.Id))
+            foreach (var originalProject in OriginalProjection.Projects.Where(p => p.Id != Event.Id))
             {
                 projects.Exists(p =>
                     p.Id == originalProject.Id &&
@@ -71,8 +69,8 @@
             }
 
             projects.Exists(p =>
-                p.Id == _event.Id &&
-                p.Name == _event.Name).Should().BeTrue();
+                p.Id == Event.Id &&
+                p.Name == Event.Name).Should().BeTrue();
         }
     }
 }

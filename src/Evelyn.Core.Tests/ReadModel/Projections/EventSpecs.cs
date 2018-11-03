@@ -6,12 +6,15 @@
     using AutoFixture;
     using Evelyn.Core.Infrastructure;
     using Evelyn.Core.ReadModel.Projections;
+    using Evelyn.Core.WriteModel;
     using FluentAssertions;
     using Newtonsoft.Json;
     using NSubstitute;
 
-    public abstract class EventSpecs<TDto>
+    public abstract class EventSpecs<TDto, TProjectionBuilder, TEvent>
         where TDto : DtoRoot
+        where TProjectionBuilder : ProjectionBuilder<TDto>
+        where TEvent : Event
     {
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
@@ -42,11 +45,15 @@
 
         protected IProjectionStore<TDto> ProjectionStore { get; set; }
 
-        protected Exception ThrownException { get; set; }
+        protected TProjectionBuilder ProjectionBuilder { get; set; }
 
         protected TDto OriginalProjection { get; set; }
 
+        protected TEvent Event { get; set; }
+
         protected TDto UpdatedProjection { get; set; }
+
+        protected Exception ThrownException { get; set; }
 
         protected async Task WhenTheEventIsHandled()
         {

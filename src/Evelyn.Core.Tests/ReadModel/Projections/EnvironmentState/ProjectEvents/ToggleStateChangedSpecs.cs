@@ -8,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateChangedSpecs : EventSpecs
+    public class ToggleStateChangedSpecs : EventSpecs<ToggleStateChanged>
     {
-        private ToggleStateChanged _event;
-
         [Fact]
         public void ProjectionDoesNotExist()
         {
@@ -34,12 +32,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleStateChangedEvent()
         {
-            _event = DataFixture.Build<ToggleStateChanged>()
+            Event = DataFixture.Build<ToggleStateChanged>()
                 .With(pc => pc.Id, ProjectId)
                 .With(pc => pc.EnvironmentKey, EnvironmentKey)
                 .With(pc => pc.ToggleKey, ToggleKey)
@@ -53,9 +51,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
             updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count());
@@ -63,8 +61,8 @@
             foreach (var originalToggleState in OriginalProjection.ToggleStates)
             {
                 var expectedToggleStateValue =
-                    (originalToggleState.Key == _event.ToggleKey)
-                    ? _event.Value
+                    (originalToggleState.Key == Event.ToggleKey)
+                    ? Event.Value
                     : originalToggleState.Value;
 
                 updatedToggleStates.Should().Contain(ts =>

@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
 {
-    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.EnvironmentState;
@@ -9,10 +8,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateDeletedSpecs : EventSpecs
+    public class EnvironmentStateDeletedSpecs : EventSpecs<EnvironmentStateDeleted>
     {
-        private EnvironmentStateDeleted _event;
-
         [Fact]
         public void Nominal()
         {
@@ -24,12 +21,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentStateDeletedEvent()
         {
-            _event = DataFixture.Build<EnvironmentStateDeleted>()
+            Event = DataFixture.Build<EnvironmentStateDeleted>()
                 .With(pc => pc.Id, ProjectId)
                 .With(pc => pc.EnvironmentKey, EnvironmentKey)
                 .Create();

@@ -10,9 +10,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleDeletedEventSpecs : EventSpecs
+    public class ToggleDeletedEventSpecs : EventSpecs<ToggleDeleted>
     {
-        private ToggleDeleted _event;
         private string _toggleKey;
 
         [Fact]
@@ -38,7 +37,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private void GivenOurToggleIsOnTheProjection()
@@ -55,7 +54,7 @@
 
         private async Task WhenWeHandleAToggleDeletedEvent()
         {
-            _event = DataFixture.Build<ToggleDeleted>()
+            Event = DataFixture.Build<ToggleDeleted>()
                 .With(e => e.Id, ProjectId)
                 .With(e => e.Key, _toggleKey)
                 .Create();
@@ -68,9 +67,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             UpdatedProjection.Environments.Should().BeEquivalentTo(OriginalProjection.Environments);
 
@@ -79,7 +78,7 @@
 
             foreach (var originalToggle in OriginalProjection.Toggles)
             {
-                if (originalToggle.Key == _event.Key)
+                if (originalToggle.Key == Event.Key)
                 {
                     continue;
                 }

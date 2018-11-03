@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.AccountEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -10,10 +9,8 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectCreatedSpecs : EventSpecs
+    public class ProjectCreatedSpecs : EventSpecs<ProjectCreated>
     {
-        private ProjectCreated _event;
-
         [Fact]
         public void ProjectionDoesNotExist()
         {
@@ -37,12 +34,12 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(_event, StoppingToken);
+            await ProjectionBuilder.Handle(Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
         {
-            _event = DataFixture.Build<ProjectCreated>()
+            Event = DataFixture.Build<ProjectCreated>()
                 .With(pc => pc.Id, AccountId)
                 .With(pc => pc.ProjectId, ProjectId)
                 .Create();
@@ -56,9 +53,9 @@
             UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
             UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
 
-            UpdatedProjection.LastModified.Should().Be(_event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(_event.UserId);
-            UpdatedProjection.Version.Should().Be(_event.Version);
+            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Version.Should().Be(Event.Version);
 
             var projects = UpdatedProjection.Projects.ToList();
 
@@ -67,12 +64,12 @@
             foreach (var originalProject in OriginalProjection.Projects)
             {
                 projects.Exists(p =>
-                    p.Id == _event.ProjectId &&
+                    p.Id == Event.ProjectId &&
                     p.Name == string.Empty).Should().BeTrue();
             }
 
             projects.Exists(p =>
-                p.Id == _event.ProjectId &&
+                p.Id == Event.ProjectId &&
                 p.Name == string.Empty).Should().BeTrue();
         }
     }
