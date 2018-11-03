@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectCreatedEventSpecs : EventSpecs<ProjectCreated>
+    public class ProjectCreatedEventSpecs : ProjectionHarness<ProjectCreated>
     {
         [Fact]
         public void Nominal()

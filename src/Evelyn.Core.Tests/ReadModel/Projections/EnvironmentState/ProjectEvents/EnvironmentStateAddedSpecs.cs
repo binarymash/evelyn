@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateAddedSpecs : EventSpecs<EnvironmentStateAdded>
+    public class EnvironmentStateAddedSpecs : ProjectionHarness<EnvironmentStateAdded>
     {
         [Fact]
         public void Nominal()

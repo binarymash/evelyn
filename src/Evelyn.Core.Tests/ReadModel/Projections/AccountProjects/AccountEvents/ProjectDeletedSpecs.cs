@@ -9,7 +9,7 @@
     using Xunit;
     using AccountEvents = Evelyn.Core.WriteModel.Account.Events;
 
-    public class ProjectDeletedSpecs : EventSpecs<AccountEvents.ProjectDeleted>
+    public class ProjectDeletedSpecs : ProjectionHarness<AccountEvents.ProjectDeleted>
     {
         [Fact]
         public void ProjectionDoesNotExist()

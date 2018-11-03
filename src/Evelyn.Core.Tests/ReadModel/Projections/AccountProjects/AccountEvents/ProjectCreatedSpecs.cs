@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectCreatedSpecs : EventSpecs<ProjectCreated>
+    public class ProjectCreatedSpecs : ProjectionHarness<ProjectCreated>
     {
         [Fact]
         public void ProjectionDoesNotExist()

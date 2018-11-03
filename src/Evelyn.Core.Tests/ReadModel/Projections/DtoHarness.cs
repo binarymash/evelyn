@@ -2,14 +2,16 @@
 {
     using AutoFixture;
     using Evelyn.Core.Infrastructure;
+    using Evelyn.Core.ReadModel.Projections;
     using FluentAssertions;
     using Newtonsoft.Json;
 
-    public class DtoSpecs<T>
+    public abstract class DtoHarness<TDto>
+        where TDto : DtoRoot
     {
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
-        public DtoSpecs()
+        public DtoHarness()
         {
             DataFixture = new Fixture();
 
@@ -21,10 +23,10 @@
 
         protected Fixture DataFixture { get; }
 
-        protected void AssertSerializationOf(T dto)
+        protected void AssertSerializationOf(TDto dto)
         {
             var serializedDto = JsonConvert.SerializeObject(dto);
-            var deserializedDto = JsonConvert.DeserializeObject<T>(serializedDto, _deserializeWithPrivateSetters);
+            var deserializedDto = JsonConvert.DeserializeObject<TDto>(serializedDto, _deserializeWithPrivateSetters);
             deserializedDto.Should().BeEquivalentTo(dto);
         }
     }

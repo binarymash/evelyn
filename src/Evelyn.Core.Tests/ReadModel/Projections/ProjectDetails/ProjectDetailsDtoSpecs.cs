@@ -4,7 +4,7 @@
     using Core.ReadModel.Projections.ProjectDetails;
     using Xunit;
 
-    public class ProjectDetailsDtoSpecs : DtoSpecs<ProjectDetailsDto>
+    public class ProjectDetailsDtoSpecs : DtoHarness<ProjectDetailsDto>
     {
         [Fact]
         public void Serialization()

@@ -9,7 +9,7 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class ProjectCreatedSpecs : EventSpecs<ProjectEvents.ProjectCreated>
+    public class ProjectCreatedSpecs : ProjectionHarness<ProjectEvents.ProjectCreated>
     {
         [Fact]
         public void ProjectionDoesNotExist()

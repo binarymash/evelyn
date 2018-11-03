@@ -4,7 +4,7 @@
     using Core.ReadModel.Projections.EnvironmentState;
     using Xunit;
 
-    public class EnvironmentStateDtoSpecs : DtoSpecs<EnvironmentStateDto>
+    public class EnvironmentStateDtoSpecs : DtoHarness<EnvironmentStateDto>
     {
         [Fact]
         public void Serialization()

@@ -5,7 +5,7 @@
     using Core.ReadModel.Projections.AccountProjects;
     using Xunit;
 
-    public class AccountProjectsDtoSpecs : DtoSpecs<AccountProjectsDto>
+    public class AccountProjectsDtoSpecs : DtoHarness<AccountProjectsDto>
     {
         [Fact]
         public void Serialization()

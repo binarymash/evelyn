@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateChangedSpecs : EventSpecs<ToggleStateChanged>
+    public class ToggleStateChangedSpecs : ProjectionHarness<ToggleStateChanged>
     {
         [Fact]
         public void ProjectionDoesNotExist()

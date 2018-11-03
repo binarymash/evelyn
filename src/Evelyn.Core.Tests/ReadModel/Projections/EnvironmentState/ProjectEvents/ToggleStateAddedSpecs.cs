@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateAddedSpecs : EventSpecs<ToggleStateAdded>
+    public class ToggleStateAddedSpecs : ProjectionHarness<ToggleStateAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()

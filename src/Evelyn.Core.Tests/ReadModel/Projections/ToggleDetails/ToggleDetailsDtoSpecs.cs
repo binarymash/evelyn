@@ -4,7 +4,7 @@
     using Core.ReadModel.Projections.ToggleDetails;
     using Xunit;
 
-    public class ToggleDetailsDtoSpecs : DtoSpecs<ToggleDetailsDto>
+    public class ToggleDetailsDtoSpecs : DtoHarness<ToggleDetailsDto>
     {
         [Fact]
         public void Serialization()

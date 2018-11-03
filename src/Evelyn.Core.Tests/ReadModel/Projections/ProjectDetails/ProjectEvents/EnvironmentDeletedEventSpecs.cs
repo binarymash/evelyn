@@ -10,7 +10,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentDeletedEventSpecs : EventSpecs<EnvironmentDeleted>
+    public class EnvironmentDeletedEventSpecs : ProjectionHarness<EnvironmentDeleted>
     {
         private string _environmentKey;
 

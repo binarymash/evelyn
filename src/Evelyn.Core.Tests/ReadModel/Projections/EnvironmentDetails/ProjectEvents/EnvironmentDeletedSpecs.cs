@@ -7,7 +7,7 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class EnvironmentDeletedSpecs : EventSpecs<ProjectEvents.EnvironmentDeleted>
+    public class EnvironmentDeletedSpecs : ProjectionHarness<ProjectEvents.EnvironmentDeleted>
     {
         [Fact]
         public void Nominal()

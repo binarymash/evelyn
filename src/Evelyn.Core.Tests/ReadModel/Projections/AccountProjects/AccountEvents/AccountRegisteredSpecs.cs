@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class AccountRegisteredSpecs : EventSpecs<AccountRegistered>
+    public class AccountRegisteredSpecs : ProjectionHarness<AccountRegistered>
     {
         [Fact]
         public void Nominal()

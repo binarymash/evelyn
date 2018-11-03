@@ -11,14 +11,14 @@
     using Newtonsoft.Json;
     using NSubstitute;
 
-    public abstract class EventSpecs<TDto, TProjectionBuilder, TEvent>
+    public abstract class ProjectionsHarness<TDto, TProjectionBuilder, TEvent>
         where TDto : DtoRoot
         where TProjectionBuilder : ProjectionBuilder<TDto>
         where TEvent : Event
     {
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
-        protected EventSpecs()
+        protected ProjectionsHarness()
         {
             DataFixture = new Fixture();
             StoppingToken = default;

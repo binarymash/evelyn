@@ -5,10 +5,10 @@
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Core.WriteModel;
 
-    public abstract class EventSpecs<TEvent> : EventSpecs<EnvironmentDetailsDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<EnvironmentDetailsDto, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        protected EventSpecs()
+        protected ProjectionHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }

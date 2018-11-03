@@ -4,7 +4,7 @@
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Xunit;
 
-    public class EnvironmentDetailsDtoSpecs : DtoSpecs<EnvironmentDetailsDto>
+    public class EnvironmentDetailsDtoSpecs : DtoHarness<EnvironmentDetailsDto>
     {
         [Fact]
         public void Serialization()

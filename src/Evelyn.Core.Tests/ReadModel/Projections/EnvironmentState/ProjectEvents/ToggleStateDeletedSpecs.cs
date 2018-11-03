@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateDeletedSpecs : EventSpecs<ToggleStateDeleted>
+    public class ToggleStateDeletedSpecs : ProjectionHarness<ToggleStateDeleted>
     {
         [Fact]
         public void Nominal()

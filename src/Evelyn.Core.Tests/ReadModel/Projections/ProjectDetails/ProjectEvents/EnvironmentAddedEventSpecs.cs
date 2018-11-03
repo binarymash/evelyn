@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentAddedEventSpecs : EventSpecs<EnvironmentAdded>
+    public class EnvironmentAddedEventSpecs : ProjectionHarness<EnvironmentAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()

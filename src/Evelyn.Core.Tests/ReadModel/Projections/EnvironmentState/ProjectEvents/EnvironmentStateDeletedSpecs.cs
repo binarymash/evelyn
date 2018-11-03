@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateDeletedSpecs : EventSpecs<EnvironmentStateDeleted>
+    public class EnvironmentStateDeletedSpecs : ProjectionHarness<EnvironmentStateDeleted>
     {
         [Fact]
         public void Nominal()

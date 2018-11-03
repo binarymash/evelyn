@@ -6,10 +6,10 @@
     using Evelyn.Core.WriteModel;
     using NSubstitute;
 
-    public abstract class EventSpecs<TEvent> : EventSpecs<AccountProjectsDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<AccountProjectsDto, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        protected EventSpecs()
+        protected ProjectionHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
