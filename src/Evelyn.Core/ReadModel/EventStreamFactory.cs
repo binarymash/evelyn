@@ -12,12 +12,12 @@
             _queues = new Dictionary<Type, Queue<EventEnvelope>>();
         }
 
-        public Queue<EventEnvelope> GetEventStream<T>()
+        public Queue<EventEnvelope> GetEventStream<TEventStreamHandler>()
         {
-            if (!_queues.TryGetValue(typeof(T), out var queue))
+            if (!_queues.TryGetValue(typeof(TEventStreamHandler), out var queue))
             {
                 queue = new Queue<EventEnvelope>();
-                _queues.Add(typeof(T), queue);
+                _queues.Add(typeof(TEventStreamHandler), queue);
             }
 
             return queue;

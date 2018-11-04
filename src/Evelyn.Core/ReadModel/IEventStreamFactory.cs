@@ -4,6 +4,6 @@
 
     public interface IEventStreamFactory
     {
-        Queue<EventEnvelope> GetEventStream<T>();
+        Queue<EventEnvelope> GetEventStream<TEventStreamHandler>();
     }
 }
