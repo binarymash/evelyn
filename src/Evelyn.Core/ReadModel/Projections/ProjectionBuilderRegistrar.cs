@@ -11,7 +11,7 @@
     public class ProjectionBuilderRegistrar : IProjectionBuilderRegistrar
     {
         private readonly IServiceProvider _serviceLocator;
-        private readonly Dictionary<Type, Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>>> _projectionBuilderRegistrations = new Dictionary<Type, Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>>>();
+        private readonly Dictionary<Type, ProjectionBuildersByEventType> _projectionBuildersByEventType = new Dictionary<Type, ProjectionBuildersByEventType>();
 
         public ProjectionBuilderRegistrar(IServiceProvider serviceLocator)
         {
@@ -41,9 +41,9 @@
             }
         }
 
-        public Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>> Get(Type eventStreamHandlerType)
+        public ProjectionBuildersByEventType Get(Type eventStreamHandlerType)
         {
-            return _projectionBuilderRegistrations[eventStreamHandlerType];
+            return _projectionBuildersByEventType[eventStreamHandlerType] ?? ProjectionBuildersByEventType.Null;
         }
 
         private static IEnumerable<Type> ResolveProjectionBuilderInterfaces(Type projectionBuilderType)
@@ -95,10 +95,10 @@
         private void Register<TEvent>(Type eventStreamHandlerType, Func<TEvent, CancellationToken, Task> eventHandlerMethodInvocation)
             where TEvent : class, IEvent
         {
-            if (!_projectionBuilderRegistrations.TryGetValue(eventStreamHandlerType, out var projectionBuildersForEventStreamHandler))
+            if (!_projectionBuildersByEventType.TryGetValue(eventStreamHandlerType, out var projectionBuildersForEventStreamHandler))
             {
-                projectionBuildersForEventStreamHandler = new Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>>();
-                _projectionBuilderRegistrations.Add(eventStreamHandlerType, projectionBuildersForEventStreamHandler);
+                projectionBuildersForEventStreamHandler = new ProjectionBuildersByEventType();
+                _projectionBuildersByEventType.Add(eventStreamHandlerType, projectionBuildersForEventStreamHandler);
             }
 
             if (!projectionBuildersForEventStreamHandler.TryGetValue(typeof(TEvent), out var projectionBuildersForEvent))

@@ -22,6 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             parentOptions.Services.TryAddSingleton<IProjectionBuilderRegistrar>(sp => new ProjectionBuilderRegistrar(sp));
 
             parentOptions.Services.AddHostedService<EventStreamHandler>();
+            parentOptions.Services.TryAddSingleton<IEventHandler<EventStreamHandler>, EventHandler<EventStreamHandler>>();
             parentOptions.Services.TryAddSingleton<IEventStreamFactory, EventStreamFactory>();
 
             parentOptions.Services.TryAddSingleton<IConfigureOptions<EventStreamHandlerOptions>, ConfigureEventStreamHandlerOptions>();
