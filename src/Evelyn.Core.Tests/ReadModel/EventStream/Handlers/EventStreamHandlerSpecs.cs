@@ -10,7 +10,6 @@
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -30,13 +29,9 @@
         {
             _dataFixture = new Fixture();
 
-            _eventStream = new EventStream();
             _eventHandler = new StubbedEventHandler();
-
-            _eventStreamFactory = Substitute.For<IEventStreamFactory>();
-            _eventStreamFactory
-                .GetEventStream<EventStreamHandler>()
-                .Returns(_eventStream);
+            _eventStreamFactory = new EventStreamFactory();
+            _eventStream = _eventStreamFactory.GetEventStream<EventStreamHandler>();
 
             _stoppingTokenSource = new CancellationTokenSource();
 
