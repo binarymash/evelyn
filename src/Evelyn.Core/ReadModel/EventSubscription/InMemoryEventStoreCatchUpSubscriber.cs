@@ -1,7 +1,7 @@
 ﻿namespace Evelyn.Core.ReadModel.EventSubscription
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
     using Evelyn.Core;
@@ -13,7 +13,7 @@
     {
         private readonly ILogger<InMemoryEventStoreCatchUpSubscriber> _logger;
         private readonly IInMemoryEventStore _eventStore;
-        private readonly Queue<EventEnvelope> _eventStream;
+        private readonly EventStream _eventStream;
 
         public InMemoryEventStoreCatchUpSubscriber(ILogger<InMemoryEventStoreCatchUpSubscriber> logger, IEventStreamFactory eventStreamFactory, IInMemoryEventStore eventStore)
         {

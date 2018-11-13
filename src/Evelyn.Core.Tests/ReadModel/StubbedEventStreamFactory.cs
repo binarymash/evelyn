@@ -1,21 +1,21 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel
 {
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using Core.ReadModel;
-    using CQRSlite.Events;
 
     public class StubbedEventStreamFactory : IEventStreamFactory
     {
-        private readonly Queue<EventEnvelope> _events;
+        private readonly EventStream _eventStream;
 
         public StubbedEventStreamFactory()
         {
-            _events = new Queue<EventEnvelope>();
+            _eventStream = new EventStream();
         }
 
-        public Queue<EventEnvelope> GetEventStream<TDto>()
+        public EventStream GetEventStream<TDto>()
         {
-            return _events;
+            return _eventStream;
         }
     }
 }

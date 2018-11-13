@@ -1,38 +1,73 @@
 ﻿namespace Evelyn.Core.ReadModel
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
+    public enum EventStreamHandlerStatus
+    {
+        Unknown = 0,
+        Starting = 1,
+        Started = 2,
+        Stopping = 3,
+        Stopped = 4
+    }
+
     public class EventStreamHandler : BackgroundService
     {
         private readonly ILogger<EventStreamHandler> _logger;
-        private readonly Queue<EventEnvelope> _eventsToHandle;
+        private readonly EventStream _eventStream;
         private readonly IEventHandler<EventStreamHandler> _eventHandler;
+
+        private CancellationTokenSource _stoppingTokenSource;
+        private Task _currentTask;
 
         public EventStreamHandler(ILogger<EventStreamHandler> logger, IEventStreamFactory eventStreamFactory, IEventHandler<EventStreamHandler> eventHandler)
         {
             _logger = logger;
-            _eventsToHandle = eventStreamFactory.GetEventStream<EventStreamHandler>();
+            _eventStream = eventStreamFactory.GetEventStream<EventStreamHandler>();
             _eventHandler = eventHandler;
+        }
+
+        public EventStreamHandlerStatus Status { get; private set; }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            Status = EventStreamHandlerStatus.Starting;
+            await base.StartAsync(cancellationToken);
+            Status = EventStreamHandlerStatus.Started;
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            Status = EventStreamHandlerStatus.Stopping;
+
+            _stoppingTokenSource.Cancel();
+
+            if (_currentTask != null)
+            {
+                await Task.WhenAny(_currentTask, Task.Delay(-1, cancellationToken));
+            }
+
+            Status = EventStreamHandlerStatus.Stopped;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _stoppingTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_eventsToHandle.Count > 0)
+                try
                 {
-                    var eventEnvelope = _eventsToHandle.Peek();
-                    await _eventHandler.HandleEvent(eventEnvelope, stoppingToken).ConfigureAwait(false);
-                    _eventsToHandle.Dequeue();
+                    var eventEnvelope = await _eventStream.DequeueAsync();
+                    _currentTask = _eventHandler.HandleEvent(eventEnvelope, stoppingToken);
+                    await _currentTask;
                 }
-                else
+                catch (OperationCanceledException)
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), stoppingToken);
                 }
             }
         }

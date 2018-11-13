@@ -140,7 +140,7 @@
                 .When(_ => _.WhenWeHandleTheEvent())
                 .Then(_ => _.ThenTheProjectionBuildersForOurEventAreInvoked())
                 .And(_ => _.ThenTheStateIsNotUpdated())
-                .And(_ => _.ThenNoExceptionIsThrown())
+                .And(_ => _.ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -253,6 +253,11 @@
         private void ThenNoExceptionIsThrown()
         {
             _thrownException.Should().BeNull();
+        }
+
+        private void ThenAnExceptionIsThrown()
+        {
+            _thrownException.Should().NotBeNull();
         }
 
         private void ThenTheStateIsCreated()

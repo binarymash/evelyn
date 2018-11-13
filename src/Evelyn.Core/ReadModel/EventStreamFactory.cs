@@ -1,26 +1,27 @@
 ﻿namespace Evelyn.Core.ReadModel
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
 
     public class EventStreamFactory : IEventStreamFactory
     {
-        private readonly Dictionary<Type, Queue<EventEnvelope>> _queues;
+        private readonly Dictionary<Type, EventStream> _eventStreams;
 
         public EventStreamFactory()
         {
-            _queues = new Dictionary<Type, Queue<EventEnvelope>>();
+            _eventStreams = new Dictionary<Type, EventStream>();
         }
 
-        public Queue<EventEnvelope> GetEventStream<TEventStreamHandler>()
+        public EventStream GetEventStream<TEventStreamHandler>()
         {
-            if (!_queues.TryGetValue(typeof(TEventStreamHandler), out var queue))
+            if (!_eventStreams.TryGetValue(typeof(TEventStreamHandler), out var eventStream))
             {
-                queue = new Queue<EventEnvelope>();
-                _queues.Add(typeof(TEventStreamHandler), queue);
+                eventStream = new EventStream();
+                _eventStreams.Add(typeof(TEventStreamHandler), eventStream);
             }
 
-            return queue;
+            return eventStream;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Storage.EventStore
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,7 +16,7 @@
         private readonly ILogger<CatchUpSubscriptionPublisher> _logger;
         private readonly IEventStoreConnection _connection;
         private readonly EventMapper _eventMapper;
-        private readonly Queue<EventEnvelope> _eventStream;
+        private readonly EventStream _eventStream;
 
         public CatchUpSubscriptionPublisher(ILogger<CatchUpSubscriptionPublisher> logger, IEventStoreConnectionFactory connectionFactory, IEventStreamFactory eventStreamFactory)
         {

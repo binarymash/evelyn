@@ -62,6 +62,7 @@
             catch (Exception ex)
             {
                 _logger.LogWarning("Failed to build projection for {@event}. Exception: {@exception}", eventEnvelope.Event, ex);
+                throw;
             }
         }
     }
