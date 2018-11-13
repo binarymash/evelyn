@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.Projections
+﻿namespace Evelyn.Core.ReadModel.EventStream.Handlers
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using CQRSlite.Events;
+    using Evelyn.Core.ReadModel.Projections;
 
     public class ProjectionBuilderRegistrar : IProjectionBuilderRegistrar
     {

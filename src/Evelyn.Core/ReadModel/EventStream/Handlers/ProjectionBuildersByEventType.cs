@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel.Projections
+﻿namespace Evelyn.Core.ReadModel.EventStream.Handlers
 {
     using System;
     using System.Collections.Generic;

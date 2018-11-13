@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void RunningInBackgroundService(this InMemoryEventStorePublisherOptions parentOptions, Action<InMemoryEventStoreCatchUpSubscriptionPublisherOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.AddHostedService<Evelyn.Core.ReadModel.EventSubscription.InMemoryEventStoreCatchUpSubscriber>();
+            parentOptions.Services.AddHostedService<Evelyn.Core.ReadModel.EventStream.Subscribers.InMemoryEventStoreCatchUpSubscriber>();
             action.Invoke(new InMemoryEventStoreCatchUpSubscriptionPublisherOptions(parentOptions.Services));
         }
     }

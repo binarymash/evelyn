@@ -1,8 +1,8 @@
 ﻿// ReSharper disable CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections;
+    using Evelyn.Core.ReadModel.EventStream;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 

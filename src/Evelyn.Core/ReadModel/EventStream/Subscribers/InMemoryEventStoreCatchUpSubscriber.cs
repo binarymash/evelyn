@@ -1,11 +1,10 @@
-﻿namespace Evelyn.Core.ReadModel.EventSubscription
+﻿namespace Evelyn.Core.ReadModel.EventStream.Subscribers
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
     using Evelyn.Core;
-    using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 

@@ -1,11 +1,12 @@
-﻿namespace Evelyn.Core.Tests.ReadModel
+﻿namespace Evelyn.Core.Tests.ReadModel.EventStream.Handlers
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.EventStream;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;

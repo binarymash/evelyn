@@ -1,11 +1,10 @@
 ﻿namespace Evelyn.Storage.EventStore
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.EventStream;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using global::EventStore.ClientAPI;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;

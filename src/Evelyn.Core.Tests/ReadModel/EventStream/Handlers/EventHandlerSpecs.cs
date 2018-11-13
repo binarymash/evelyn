@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.Tests.ReadModel
+﻿namespace Evelyn.Core.Tests.ReadModel.EventStream.Handlers
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,8 @@
     using AutoFixture;
     using CQRSlite.Events;
     using Evelyn.Core.Infrastructure;
-    using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.EventStream;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
     using FluentAssertions;
@@ -21,12 +22,12 @@
     {
         private readonly Fixture _dataFixture;
         private readonly CancellationToken _stoppingToken;
-        private readonly ILogger<Core.ReadModel.EventHandler<SomeStream>> _logger;
+        private readonly ILogger<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>> _logger;
         private readonly IProjectionStore<EventHandlerStateDto> _eventHandlerStateStore;
         private readonly IProjectionBuilderRegistrar _projectionBuilderRegistrar;
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
-        private Core.ReadModel.EventHandler<SomeStream> _eventHandler;
+        private Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream> _eventHandler;
         private EventEnvelope _eventEnvelope;
         private ProjectionBuildersByEventType _projectionBuildersByEventType;
         private EventHandlerStateDto _originalEventHandlerState;
@@ -41,7 +42,7 @@
         {
             _dataFixture = new Fixture();
 
-            _logger = Substitute.For<ILogger<Core.ReadModel.EventHandler<SomeStream>>>();
+            _logger = Substitute.For<ILogger<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>>>();
 
             _deserializeWithPrivateSetters = new JsonSerializerSettings
             {
@@ -220,7 +221,7 @@
                 .Get(Arg.Any<Type>())
                 .Returns(_projectionBuildersByEventType);
 
-            _eventHandler = new Core.ReadModel.EventHandler<SomeStream>(_logger, _eventHandlerStateStore, _projectionBuilderRegistrar);
+            _eventHandler = new Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>(_logger, _eventHandlerStateStore, _projectionBuilderRegistrar);
 
             try
             {

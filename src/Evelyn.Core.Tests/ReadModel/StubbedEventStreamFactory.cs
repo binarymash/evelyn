@@ -1,8 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using Core.ReadModel;
+    using Evelyn.Core.ReadModel.EventStream;
 
     public class StubbedEventStreamFactory : IEventStreamFactory
     {

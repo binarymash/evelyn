@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             parentOptions.Services.TryAddSingleton<IEventStore>(sp => sp.GetRequiredService<Evelyn.Core.InMemoryEventStore>());
             parentOptions.Services.TryAddSingleton<IInMemoryEventStore>(sp => sp.GetRequiredService<Evelyn.Core.InMemoryEventStore>());
 
-            parentOptions.Services.AddHostedService<Evelyn.Core.ReadModel.EventSubscription.InMemoryEventStoreCatchUpSubscriber>(); // TODO: move this
+            parentOptions.Services.AddHostedService<Evelyn.Core.ReadModel.EventStream.Subscribers.InMemoryEventStoreCatchUpSubscriber>(); // TODO: move this
 
             action.Invoke(new InMemoryEventStoreOptions(parentOptions.Services));
         }

@@ -1,8 +1,7 @@
 ﻿namespace Evelyn.Core
 {
     using System;
-    using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections;
+    using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using WriteModel;

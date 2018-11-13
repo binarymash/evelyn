@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Core.ReadModel
+﻿namespace Evelyn.Core.ReadModel.EventStream
 {
     public interface IEventStreamFactory
     {
