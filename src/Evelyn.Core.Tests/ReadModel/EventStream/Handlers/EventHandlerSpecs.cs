@@ -212,7 +212,6 @@
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
                 .Returns(_originalEventHandlerState);
-
         }
 
         private void GivenTheEventHasAlreadyBeenHandled()

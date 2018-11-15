@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -16,33 +17,32 @@
     public class EventStreamHandlerSpecs
     {
         private readonly Fixture _dataFixture;
-        private IEventStreamFactory _eventStreamFactory;
-        private StubbedEventHandler _eventHandler;
-        private EventStream _eventStream;
-        private EventEnvelope _event;
+        private readonly ServiceProvider _serviceProvider;
         private CancellationTokenSource _stoppingTokenSource;
-        private ServiceProvider _serviceProvider;
+
+        private EventStream _eventStream;
         private EventStreamHandler _eventStreamHandler;
-        private List<EventEnvelope> _events;
+        private StubbedEventHandler _eventHandler;
+
+        private List<EventEnvelope> _eventsAddedToStream;
 
         public EventStreamHandlerSpecs()
         {
             _dataFixture = new Fixture();
-
             _eventHandler = new StubbedEventHandler();
-            _eventStreamFactory = new EventStreamFactory();
-            _eventStream = _eventStreamFactory.GetEventStream<EventStreamHandler>();
-
             _stoppingTokenSource = new CancellationTokenSource();
 
             IServiceCollection services = new ServiceCollection();
             services.AddHostedService<EventStreamHandler>();
-            services.AddSingleton(_eventStreamFactory);
+            services.AddSingleton<IEventStreamFactory, EventStreamFactory>();
             services.AddSingleton<IEventHandler<EventStreamHandler>>(_eventHandler);
             services.AddLogging();
 
             _serviceProvider = services.BuildServiceProvider();
             _eventStreamHandler = _serviceProvider.GetService<IHostedService>() as EventStreamHandler;
+            _eventStream = _serviceProvider.GetService<IEventStreamFactory>().GetEventStream<EventStreamHandler>();
+
+            _eventsAddedToStream = new List<EventEnvelope>();
         }
 
         [Fact]
@@ -108,16 +108,18 @@
 
         private void WhenAnEventIsAddedToTheEventStream()
         {
-            _event = new EventEnvelope(
+            var @event = new EventEnvelope(
                 _dataFixture.Create<long>(),
                 new SomeEvent());
 
-            _eventStream.Enqueue(_event);
+            _eventStream.Enqueue(@event);
+
+            _eventsAddedToStream.Add(@event);
         }
 
         private void WhenMultipleEventsAreAddedToTheEventStream()
         {
-            _events = new List<EventEnvelope>
+            _eventsAddedToStream = new List<EventEnvelope>
             {
                 new EventEnvelope(
                 _dataFixture.Create<long>(),
@@ -128,7 +130,7 @@
                 new SomeEvent())
             };
 
-            _eventStream.EnqueueRange(_events);
+            _eventStream.EnqueueRange(_eventsAddedToStream);
         }
 
         private async Task WhenTheEventStreamHandlerIsStopped()
@@ -138,12 +140,12 @@
 
         private void ThenTheEventIsHandledByTheEventHandler()
         {
-            AssertHandledEvents(new List<EventEnvelope> { _event });
+            AssertHandledEvents(new[] { _eventsAddedToStream.First() });
         }
 
         private void ThenAllTheEventsAreHandledByTheEventHandlerInTheCorrectOrder()
         {
-            AssertHandledEvents(_events);
+            AssertHandledEvents(_eventsAddedToStream);
         }
 
         private void ThenTheEventStreamHandlerStops()
@@ -163,7 +165,7 @@
             _eventStreamHandler.Status.Should().Be(EventStreamHandlerStatus.Stopped);
         }
 
-        private void AssertHandledEvents(List<EventEnvelope> expectedOrderedEvents)
+        private void AssertHandledEvents(IEnumerable<EventEnvelope> expectedOrderedEvents)
         {
             // Polly
             var iterations = 0;
@@ -218,6 +220,9 @@
                 }
 
                 _handledEvents.Add(eventEnvelope);
+
+                _handleEventAttempt++;
+
                 await Task.CompletedTask;
             }
         }

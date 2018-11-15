@@ -31,7 +31,7 @@
                 {
                     state = await _eventHandlerStateStore.Get(EventHandlerStateDto.StoreKey(typeof(TEventStream))).ConfigureAwait(false);
                 }
-                catch (ProjectionNotFoundException ex)
+                catch (ProjectionNotFoundException)
                 {
                     state = EventHandlerStateDto.Null;
                     {
