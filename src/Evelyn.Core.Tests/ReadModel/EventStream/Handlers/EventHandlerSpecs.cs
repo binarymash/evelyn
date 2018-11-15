@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.EventStream.Handlers
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,7 +13,7 @@
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
     using FluentAssertions;
-    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
     using NSubstitute;
     using TestStack.BDDfy;
@@ -21,28 +22,21 @@
     public class EventHandlerSpecs
     {
         private readonly Fixture _dataFixture;
-        private readonly CancellationToken _stoppingToken;
-        private readonly ILogger<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>> _logger;
+        private readonly CancellationTokenSource _stoppingTokenSource;
         private readonly IProjectionStore<EventHandlerStateDto> _eventHandlerStateStore;
-        private readonly IProjectionBuilderRegistrar _projectionBuilderRegistrar;
+        private readonly ServiceProvider _serviceProvider;
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
         private Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream> _eventHandler;
         private EventEnvelope _eventEnvelope;
-        private ProjectionBuildersByEventType _projectionBuildersByEventType;
         private EventHandlerStateDto _originalEventHandlerState;
         private EventHandlerStateDto _updatedEventHandlerState;
-        private StubbedProjectionBuilder _someEventProjectionBuilder1;
-        private StubbedProjectionBuilder _someEventProjectionBuilder2;
-        private StubbedProjectionBuilder _someOtherEventProjectionBuilder1;
-        private StubbedProjectionBuilder _someOtherEventProjectionBuilder2;
         private Exception _thrownException;
 
         public EventHandlerSpecs()
         {
             _dataFixture = new Fixture();
-
-            _logger = Substitute.For<ILogger<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>>>();
+            _stoppingTokenSource = new CancellationTokenSource();
 
             _deserializeWithPrivateSetters = new JsonSerializerSettings
             {
@@ -50,17 +44,32 @@
             };
 
             _eventHandlerStateStore = Substitute.For<IProjectionStore<EventHandlerStateDto>>();
-            _eventHandlerStateStore.Get(Arg.Any<string>())
+
+            _eventHandlerStateStore
+                .Get(Arg.Any<string>())
                 .Returns(ps => CopyOf(_originalEventHandlerState));
-            _eventHandlerStateStore.WhenForAnyArgs(ps => ps.Create(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
-                .Do(ci => _updatedEventHandlerState = ci.ArgAt<EventHandlerStateDto>(1));
-            _eventHandlerStateStore.WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
+
+            _eventHandlerStateStore
+                .WhenForAnyArgs(ps => ps.Create(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
                 .Do(ci => _updatedEventHandlerState = ci.ArgAt<EventHandlerStateDto>(1));
 
-            _projectionBuilderRegistrar = Substitute.For<IProjectionBuilderRegistrar>();
-            _projectionBuildersByEventType = new ProjectionBuildersByEventType();
+            _eventHandlerStateStore
+                .WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
+                .Do(ci => _updatedEventHandlerState = ci.ArgAt<EventHandlerStateDto>(1));
 
-            _stoppingToken = default;
+            IServiceCollection services = new ServiceCollection();
+            services.AddLogging();
+            services.AddSingleton<IProjectionStore<EventHandlerStateDto>>(_eventHandlerStateStore);
+            services.AddSingleton<IProjectionBuilderRegistrar, ProjectionBuilderRegistrar>();
+            services.AddSingleton<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>>();
+            services.AddSingleton<ProjectionBuilder1>();
+            services.AddSingleton<ProjectionBuilder2>();
+            services.AddSingleton<ProjectionBuilder3>();
+            services.AddSingleton<ProjectionBuilder4>();
+
+            _serviceProvider = services.BuildServiceProvider();
+
+            HandledEventTracker.Reset();
         }
 
         [Fact]
@@ -147,40 +156,37 @@
 
         private void GivenThereAreNoRegisteredProjectionBuilders()
         {
-            _projectionBuildersByEventType = ProjectionBuildersByEventType.Null;
         }
 
         private void GivenThereAreProjectionBuildersForOtherEvents()
         {
-            _someOtherEventProjectionBuilder1 = new StubbedProjectionBuilder();
-            _someOtherEventProjectionBuilder2 = new StubbedProjectionBuilder();
-
-            var projectionBuildersForSomeOtherEvent = new List<Func<IEvent, CancellationToken, Task>>()
+            var projectionBuilders = new List<Type>()
             {
-                _someOtherEventProjectionBuilder1.HandleEvent,
-                _someOtherEventProjectionBuilder2.HandleEvent,
+                typeof(ProjectionBuilder3),
+                typeof(ProjectionBuilder4)
             };
 
-            _projectionBuildersByEventType.Add(typeof(SomeOtherEvent), projectionBuildersForSomeOtherEvent);
+            _serviceProvider
+                .GetService<IProjectionBuilderRegistrar>()
+                .Register(typeof(SomeStream), projectionBuilders);
         }
 
         private void GivenThereAreProjectionBuildersForOurEvent()
         {
-            _someEventProjectionBuilder1 = new StubbedProjectionBuilder();
-            _someEventProjectionBuilder2 = new StubbedProjectionBuilder();
-
-            var projectionBuildersForSomeEvent = new List<Func<IEvent, CancellationToken, Task>>()
+            var projectionBuilders = new List<Type>()
             {
-                _someEventProjectionBuilder1.HandleEvent,
-                _someEventProjectionBuilder2.HandleEvent,
+                typeof(ProjectionBuilder1),
+                typeof(ProjectionBuilder2)
             };
 
-            _projectionBuildersByEventType.Add(typeof(SomeEvent), projectionBuildersForSomeEvent);
+            _serviceProvider
+                .GetService<IProjectionBuilderRegistrar>()
+                .Register(typeof(SomeStream), projectionBuilders);
         }
 
         private void GivenOurFirstProjectionBuilderThrowsAnException()
         {
-            _someEventProjectionBuilder1.ThrowExceptionOnInvocation();
+            HandledEventTracker.ThrowExceptionOnInvocation(typeof(ProjectionBuilder1));
         }
 
         private void GivenWeReceiveAnEvent()
@@ -217,15 +223,11 @@
 
         private async Task WhenWeHandleTheEvent()
         {
-            _projectionBuilderRegistrar
-                .Get(Arg.Any<Type>())
-                .Returns(_projectionBuildersByEventType);
-
-            _eventHandler = new Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>(_logger, _eventHandlerStateStore, _projectionBuilderRegistrar);
+            _eventHandler = _serviceProvider.GetService<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>>();
 
             try
             {
-                await _eventHandler.HandleEvent(_eventEnvelope, _stoppingToken);
+                await _eventHandler.HandleEvent(_eventEnvelope, _stoppingTokenSource.Token);
             }
             catch (Exception ex)
             {
@@ -235,20 +237,20 @@
 
         private void ThenTheProjectionBuildersForTheOtherEventsAreNotInvoked()
         {
-            _someOtherEventProjectionBuilder1.CallCount.Should().Be(0);
-            _someOtherEventProjectionBuilder2.CallCount.Should().Be(0);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder3)).Should().Be(0);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder4)).Should().Be(0);
         }
 
         private void ThenTheProjectionBuildersForOurEventAreNotInvoked()
         {
-            _someEventProjectionBuilder1.CallCount.Should().Be(0);
-            _someEventProjectionBuilder2.CallCount.Should().Be(0);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder1)).Should().Be(0);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder2)).Should().Be(0);
         }
 
         private void ThenTheProjectionBuildersForOurEventAreInvoked()
         {
-            _someEventProjectionBuilder1.CallCount.Should().Be(1);
-            _someEventProjectionBuilder2.CallCount.Should().Be(1);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder1)).Should().Be(1);
+            HandledEventTracker.CallCount(typeof(ProjectionBuilder2)).Should().Be(1);
         }
 
         private void ThenNoExceptionIsThrown()
@@ -286,6 +288,51 @@
             return JsonConvert.DeserializeObject<EventHandlerStateDto>(serializedDto, _deserializeWithPrivateSetters);
         }
 
+        public static class HandledEventTracker
+        {
+            private static List<Type> _throwExceptionOnInvocation = new List<Type>();
+
+            private static ConcurrentDictionary<Type, int> _callCount = new ConcurrentDictionary<Type, int>();
+
+            public static void Reset()
+            {
+                _throwExceptionOnInvocation = new List<Type>();
+                _callCount = new ConcurrentDictionary<Type, int>();
+            }
+
+            public static int CallCount(Type projectionBuilderType)
+            {
+                if (!_callCount.TryGetValue(projectionBuilderType, out int callCount))
+                {
+                    callCount = 0;
+                }
+
+                return callCount;
+            }
+
+            public static async Task HandleEvent(Type projectionBuilderType, IEvent @event, CancellationToken stoppingToken)
+            {
+                IncrementCallCount(projectionBuilderType);
+
+                if (_throwExceptionOnInvocation.Contains(projectionBuilderType))
+                {
+                    throw new Exception("boom");
+                }
+
+                await Task.CompletedTask;
+            }
+
+            public static void ThrowExceptionOnInvocation(Type projectionBuilderType)
+            {
+                _throwExceptionOnInvocation.Add(projectionBuilderType);
+            }
+
+            private static void IncrementCallCount(Type projectionBuilderType)
+            {
+                _callCount.AddOrUpdate(projectionBuilderType, 1, (pbt, cc) => cc++);
+            }
+        }
+
         public class SomeStream
         {
         }
@@ -308,27 +355,35 @@
             public DateTimeOffset TimeStamp { get; set; }
         }
 
-        public class StubbedProjectionBuilder
+        public class ProjectionBuilder1 : IBuildProjectionsFrom<SomeEvent>
         {
-            private bool _throwExceptionOnInvocation = false;
-
-            public int CallCount { get; private set; }
-
-            public async Task HandleEvent(IEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(SomeEvent @event, CancellationToken stoppingToken)
             {
-                CallCount++;
-
-                if (_throwExceptionOnInvocation)
-                {
-                    throw new Exception("boom");
-                }
-
-                await Task.CompletedTask;
+                await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
+        }
 
-            public void ThrowExceptionOnInvocation()
+        public class ProjectionBuilder2 : IBuildProjectionsFrom<SomeEvent>
+        {
+            public async Task Handle(SomeEvent @event, CancellationToken stoppingToken)
             {
-                _throwExceptionOnInvocation = true;
+                await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
+            }
+        }
+
+        public class ProjectionBuilder3 : IBuildProjectionsFrom<SomeOtherEvent>
+        {
+            public async Task Handle(SomeOtherEvent @event, CancellationToken stoppingToken)
+            {
+                await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
+            }
+        }
+
+        public class ProjectionBuilder4 : IBuildProjectionsFrom<SomeOtherEvent>
+        {
+            public async Task Handle(SomeOtherEvent @event, CancellationToken stoppingToken)
+            {
+                await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
         }
     }

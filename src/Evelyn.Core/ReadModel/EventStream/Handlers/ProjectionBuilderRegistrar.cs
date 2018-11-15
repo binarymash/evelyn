@@ -1,6 +1,7 @@
 ﻿namespace Evelyn.Core.ReadModel.EventStream.Handlers
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -12,7 +13,7 @@
     public class ProjectionBuilderRegistrar : IProjectionBuilderRegistrar
     {
         private readonly IServiceProvider _serviceLocator;
-        private readonly Dictionary<Type, ProjectionBuildersByEventType> _projectionBuildersByEventType = new Dictionary<Type, ProjectionBuildersByEventType>();
+        private readonly ConcurrentDictionary<Type, ProjectionBuildersByEventType> _projectionBuildersByEventType = new ConcurrentDictionary<Type, ProjectionBuildersByEventType>();
 
         public ProjectionBuilderRegistrar(IServiceProvider serviceLocator)
         {
@@ -44,7 +45,12 @@
 
         public ProjectionBuildersByEventType Get(Type eventStreamHandlerType)
         {
-            return _projectionBuildersByEventType[eventStreamHandlerType] ?? ProjectionBuildersByEventType.Null;
+            if (!_projectionBuildersByEventType.TryGetValue(eventStreamHandlerType, out var projectionBuildersByEventType))
+            {
+                projectionBuildersByEventType = ProjectionBuildersByEventType.Null;
+            }
+
+            return projectionBuildersByEventType;
         }
 
         private static IEnumerable<Type> ResolveProjectionBuilderInterfaces(Type projectionBuilderType)
@@ -99,7 +105,7 @@
             if (!_projectionBuildersByEventType.TryGetValue(eventStreamHandlerType, out var projectionBuildersForEventStreamHandler))
             {
                 projectionBuildersForEventStreamHandler = new ProjectionBuildersByEventType();
-                _projectionBuildersByEventType.Add(eventStreamHandlerType, projectionBuildersForEventStreamHandler);
+                _projectionBuildersByEventType.TryAdd(eventStreamHandlerType, projectionBuildersForEventStreamHandler);
             }
 
             if (!projectionBuildersForEventStreamHandler.TryGetValue(typeof(TEvent), out var projectionBuildersForEvent))
