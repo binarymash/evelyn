@@ -8,6 +8,7 @@
     using AutoFixture;
     using CQRSlite.Events;
     using Evelyn.Core.Infrastructure;
+    using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.EventStream;
     using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Evelyn.Core.ReadModel.Projections;
@@ -44,10 +45,6 @@
             };
 
             _eventHandlerStateStore = Substitute.For<IProjectionStore<EventHandlerStateDto>>();
-
-            _eventHandlerStateStore
-                .Get(Arg.Any<string>())
-                .Returns(ps => CopyOf(_originalEventHandlerState));
 
             _eventHandlerStateStore
                 .WhenForAnyArgs(ps => ps.Create(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
@@ -198,7 +195,9 @@
 
         private void GivenThereIsNoEventHandlerState()
         {
-            _originalEventHandlerState = EventHandlerStateDto.Null;
+            _eventHandlerStateStore
+                .Get(Arg.Any<string>())
+                .Returns<EventHandlerStateDto>(ps => throw new ProjectionNotFoundException());
         }
 
         private void GivenTheEventHasNotYetBeenHandled()
@@ -209,6 +208,11 @@
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>());
+
+            _eventHandlerStateStore
+                .Get(Arg.Any<string>())
+                .Returns(_originalEventHandlerState);
+
         }
 
         private void GivenTheEventHasAlreadyBeenHandled()
@@ -219,6 +223,10 @@
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>());
+
+            _eventHandlerStateStore
+                .Get(Arg.Any<string>())
+                .Returns(_originalEventHandlerState);
         }
 
         private async Task WhenWeHandleTheEvent()

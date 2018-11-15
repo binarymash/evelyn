@@ -27,12 +27,17 @@
                 bool initialEvent = false;
                 EventHandlerStateDto state;
 
-                state = await _eventHandlerStateStore.Get(EventHandlerStateDto.StoreKey(typeof(TEventStream))).ConfigureAwait(false);
-
-                if (state.Version == EventHandlerStateDto.Null.Version)
+                try
                 {
-                    _logger.LogInformation("No state found");
-                    initialEvent = true;
+                    state = await _eventHandlerStateStore.Get(EventHandlerStateDto.StoreKey(typeof(TEventStream))).ConfigureAwait(false);
+                }
+                catch (ProjectionNotFoundException ex)
+                {
+                    state = EventHandlerStateDto.Null;
+                    {
+                        _logger.LogInformation("No state found");
+                        initialEvent = true;
+                    }
                 }
 
                 if (state.Version < eventEnvelope.StreamVersion)
