@@ -46,7 +46,24 @@
         }
 
         [Fact]
-        public void EventAddedToStream()
+        public void EventAddedToStreamBeforeHandlerIsStarted()
+        {
+            try
+            {
+                this.Given(_ => _.GivenMultipleEventsAreAddedToTheEventStream())
+                    .When(_ => _.WhenTheEventStreamHandlerIsStarted())
+                    .Then(_ => _.ThenTheEventIsHandledByTheEventHandler())
+                    .And(_ => _.ThenThereAreNoQueuedEventsInTheEventStream())
+                    .BDDfy();
+            }
+            finally
+            {
+                _stoppingTokenSource.Cancel();
+            }
+        }
+
+        [Fact]
+        public void EventAddedToStreamAfterHandlerIsStarted()
         {
             try
             {
@@ -103,7 +120,17 @@
 
         private async Task GivenTheEventStreamHandlerIsStarted()
         {
-            await _eventStreamHandler.StartAsync(_stoppingTokenSource.Token);
+            await StartEventStreamHandler();
+        }
+
+        private void GivenMultipleEventsAreAddedToTheEventStream()
+        {
+            AddMultipleEventsToTheEventStream();
+        }
+
+        private async Task WhenTheEventStreamHandlerIsStarted()
+        {
+            await StartEventStreamHandler();
         }
 
         private void WhenAnEventIsAddedToTheEventStream()
@@ -119,18 +146,7 @@
 
         private void WhenMultipleEventsAreAddedToTheEventStream()
         {
-            _eventsAddedToStream = new List<EventEnvelope>
-            {
-                new EventEnvelope(
-                _dataFixture.Create<long>(),
-                new SomeEvent()),
-
-                new EventEnvelope(
-                _dataFixture.Create<long>(),
-                new SomeEvent())
-            };
-
-            _eventStream.EnqueueRange(_eventsAddedToStream);
+            AddMultipleEventsToTheEventStream();
         }
 
         private async Task WhenTheEventStreamHandlerIsStopped()
@@ -163,6 +179,27 @@
             }
 
             _eventStreamHandler.Status.Should().Be(EventStreamHandlerStatus.Stopped);
+        }
+
+        private async Task StartEventStreamHandler()
+        {
+            await _eventStreamHandler.StartAsync(_stoppingTokenSource.Token);
+        }
+
+        private void AddMultipleEventsToTheEventStream()
+        {
+            _eventsAddedToStream = new List<EventEnvelope>
+            {
+                new EventEnvelope(
+                _dataFixture.Create<long>(),
+                new SomeEvent()),
+
+                new EventEnvelope(
+                _dataFixture.Create<long>(),
+                new SomeEvent())
+            };
+
+            _eventStream.EnqueueRange(_eventsAddedToStream);
         }
 
         private void AssertHandledEvents(IEnumerable<EventEnvelope> expectedOrderedEvents)
