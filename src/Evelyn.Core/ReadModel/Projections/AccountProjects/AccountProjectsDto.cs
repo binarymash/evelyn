@@ -7,7 +7,7 @@
 
     public class AccountProjectsDto : DtoRoot
     {
-        [JsonProperty("Projects")]
+        [JsonProperty("projects")]
         private readonly List<ProjectListDto> _projects;
 
         [JsonConstructor]

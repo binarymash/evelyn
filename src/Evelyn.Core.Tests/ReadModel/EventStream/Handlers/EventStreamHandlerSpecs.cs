@@ -11,6 +11,7 @@
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Polly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -25,6 +26,8 @@
         private StubbedEventHandler _eventHandler;
 
         private List<EventEnvelope> _eventsAddedToStream;
+        private EventEnvelope _eventBeingHandleAtTimeOfSutdownd;
+        private Task _eventStreamHandlerStoppingTask;
 
         public EventStreamHandlerSpecs()
         {
@@ -52,7 +55,7 @@
             {
                 this.Given(_ => _.GivenMultipleEventsAreAddedToTheEventStream())
                     .When(_ => _.WhenTheEventStreamHandlerIsStarted())
-                    .Then(_ => _.ThenTheEventIsHandledByTheEventHandler())
+                    .Then(_ => _.ThenAllTheEventsAreHandledByTheEventHandlerInTheCorrectOrder())
                     .And(_ => _.ThenThereAreNoQueuedEventsInTheEventStream())
                     .BDDfy();
             }
@@ -80,15 +83,14 @@
         }
 
         [Fact]
-        public void ExceptionThrownByEventHandlerOnFirstAttempt()
+        public void ExceptionThrownByEventHandler()
         {
             try
             {
                 this.Given(_ => _.GivenTheEventStreamHandlerIsStarted())
-                    .And(_ => _.GivenTheEventHandlerWillThrowAnExceptionOnTheFirstAttempt())
+                    .And(_ => _.GivenTheEventHandlerWillThrowAnException())
                     .When(_ => _.WhenMultipleEventsAreAddedToTheEventStream())
-                    .Then(_ => _.ThenAllTheEventsAreHandledByTheEventHandlerInTheCorrectOrder())
-                    .And(_ => _.ThenThereAreNoQueuedEventsInTheEventStream())
+                    .Then(_ => _.ThenTheEventStreamHandlerStops())
                     .BDDfy();
             }
             finally
@@ -98,7 +100,7 @@
         }
 
         [Fact]
-        public void StoppingWhenNoEvents()
+        public void StoppingWhenNoEventsInStream()
         {
             try
             {
@@ -113,7 +115,27 @@
             }
         }
 
-        private void GivenTheEventHandlerWillThrowAnExceptionOnTheFirstAttempt()
+        [Fact]
+        public void StoppingWhenEventsInStream()
+        {
+            try
+            {
+                this.Given(_ => _.GivenTheEventStreamHandlerIsStarted())
+                    .And(_ => _.GivenThereAreManyEventsInTheStream())
+                    .And(_ => _.GivenTheCurrentEventWillTakeAWhileToBeHandled())
+                    .When(_ => _.WhenTheEventStreamHandlerIsStopped())
+                    .And(_ => _.WhenTheCurrentEventIsCompleted())
+                    .Then(_ => _.ThenTheEventStreamHandlerStops())
+                    .And(_ => _.TheEventHandlerDoesntProcessAnyMoreEventsFromTheQueue())
+                    .BDDfy();
+            }
+            finally
+            {
+                _stoppingTokenSource.Cancel();
+            }
+        }
+
+        private void GivenTheEventHandlerWillThrowAnException()
         {
             _eventHandler.ThrowOnHandleEventAttempt(1);
         }
@@ -125,7 +147,22 @@
 
         private void GivenMultipleEventsAreAddedToTheEventStream()
         {
-            AddMultipleEventsToTheEventStream();
+            AddEventsToTheEventStream();
+        }
+
+        private void GivenThereAreManyEventsInTheStream()
+        {
+            AddEventsToTheEventStream(1000);
+        }
+
+        private void GivenTheCurrentEventWillTakeAWhileToBeHandled()
+        {
+            _eventHandler.Block();
+
+            while (_eventBeingHandleAtTimeOfSutdownd == null)
+            {
+                _eventBeingHandleAtTimeOfSutdownd = _eventHandler.CurrentEvent;
+            }
         }
 
         private async Task WhenTheEventStreamHandlerIsStarted()
@@ -146,12 +183,17 @@
 
         private void WhenMultipleEventsAreAddedToTheEventStream()
         {
-            AddMultipleEventsToTheEventStream();
+            AddEventsToTheEventStream();
         }
 
-        private async Task WhenTheEventStreamHandlerIsStopped()
+        private void WhenTheCurrentEventIsCompleted()
         {
-            await _eventStreamHandler.StopAsync(default);
+            _eventHandler.Unblock();
+        }
+
+        private void WhenTheEventStreamHandlerIsStopped()
+        {
+            _eventStreamHandlerStoppingTask = _eventStreamHandler.StopAsync(default);
         }
 
         private void ThenTheEventIsHandledByTheEventHandler()
@@ -164,21 +206,27 @@
             AssertHandledEvents(_eventsAddedToStream);
         }
 
-        private void ThenTheEventStreamHandlerStops()
+        private void TheEventHandlerDoesntProcessAnyMoreEventsFromTheQueue()
         {
-            var i = 0;
-            var keepWaiting = true;
+            AssertLastHandledEvent(_eventBeingHandleAtTimeOfSutdownd);
+            _eventHandler.HandledEvents.Count().Should().BeLessThan(_eventsAddedToStream.Count());
+        }
 
-            while (keepWaiting)
+        private async Task ThenTheEventStreamHandlerStops()
+        {
+            if (_eventStreamHandlerStoppingTask != null)
             {
-                i++;
-                keepWaiting = i < 10 &&
-                    _eventStreamHandler.Status != EventStreamHandlerStatus.Stopped;
-
-                Task.Delay(50);
+                await _eventStreamHandlerStoppingTask;
             }
 
-            _eventStreamHandler.Status.Should().Be(EventStreamHandlerStatus.Stopped);
+            var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetry(50, retryAttempt => TimeSpan.FromMilliseconds(10));
+
+            policy.Execute(() =>
+            {
+                _eventStreamHandler.Status.Should().Be(EventStreamHandlerStatus.Stopped);
+            });
         }
 
         private async Task StartEventStreamHandler()
@@ -186,40 +234,46 @@
             await _eventStreamHandler.StartAsync(_stoppingTokenSource.Token);
         }
 
-        private void AddMultipleEventsToTheEventStream()
+        private void AddEventsToTheEventStream(int quantity = 2)
         {
-            _eventsAddedToStream = new List<EventEnvelope>
+            var events = new List<EventEnvelope>();
+
+            int added = 0;
+            while (added < quantity)
             {
-                new EventEnvelope(
-                _dataFixture.Create<long>(),
-                new SomeEvent()),
+                events.Add(
+                    new EventEnvelope(
+                    _dataFixture.Create<long>(),
+                    new SomeEvent()));
+                added++;
+            }
 
-                new EventEnvelope(
-                _dataFixture.Create<long>(),
-                new SomeEvent())
-            };
-
-            _eventStream.EnqueueRange(_eventsAddedToStream);
+            _eventStream.EnqueueRange(events);
+            _eventsAddedToStream.AddRange(events);
         }
 
         private void AssertHandledEvents(IEnumerable<EventEnvelope> expectedOrderedEvents)
         {
-            // Polly
-            var iterations = 0;
+            var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetry(50, retryAttempt => TimeSpan.FromMilliseconds(10));
 
-            while (iterations < 10)
+            policy.Execute(() =>
             {
-                try
-                {
-                    _eventHandler.HandledEvents.Should().ContainInOrder(expectedOrderedEvents);
-                    break;
-                }
-                catch
-                {
-                    iterations++;
-                    Task.Delay(50);
-                }
-            }
+                _eventHandler.HandledEvents.Should().ContainInOrder(expectedOrderedEvents);
+            });
+        }
+
+        private void AssertLastHandledEvent(EventEnvelope expectedLastHandledEvent)
+        {
+            var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetry(50, retryAttempt => TimeSpan.FromMilliseconds(10));
+
+            policy.Execute(() =>
+            {
+                _eventHandler.HandledEvents.Last().Should().Be(expectedLastHandledEvent);
+            });
         }
 
         private void ThenThereAreNoQueuedEventsInTheEventStream()
@@ -241,26 +295,47 @@
             private int _handleEventAttempt = 0;
             private List<int> _throwOnHandleEventAttempts = new List<int>();
             private List<EventEnvelope> _handledEvents = new List<EventEnvelope>();
+            private bool _block = false;
 
             public IList<EventEnvelope> HandledEvents => _handledEvents;
+
+            public EventEnvelope CurrentEvent { get; private set; }
 
             public void ThrowOnHandleEventAttempt(int handleEventAttemptNumber)
             {
                 _throwOnHandleEventAttempts.Add(handleEventAttemptNumber);
             }
 
+            public void Block()
+            {
+                _block = true;
+            }
+
+            public void Unblock()
+            {
+                _block = false;
+            }
+
             public async Task HandleEvent(EventEnvelope eventEnvelope, CancellationToken stoppingToken)
             {
+                _handleEventAttempt++;
+
                 if (_throwOnHandleEventAttempts.Contains(_handleEventAttempt))
                 {
                     throw new Exception("bang");
                 }
 
+                while (_block)
+                {
+                    CurrentEvent = eventEnvelope;
+                    await Task.Delay(5);
+                }
+
+                await Task.Delay(5);
+
+                CurrentEvent = null;
+
                 _handledEvents.Add(eventEnvelope);
-
-                _handleEventAttempt++;
-
-                await Task.CompletedTask;
             }
         }
     }

@@ -35,23 +35,28 @@
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Starting");
             Status = EventStreamHandlerStatus.Starting;
             await base.StartAsync(cancellationToken);
             Status = EventStreamHandlerStatus.Started;
+            _logger.LogInformation("Started");
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Stopping");
             Status = EventStreamHandlerStatus.Stopping;
 
             _stoppingTokenSource.Cancel();
 
             if (_currentTask != null)
             {
+                _logger.LogInformation("Waiting for tasks to complete before stopping");
                 await Task.WhenAny(_currentTask, Task.Delay(-1, cancellationToken));
             }
 
             Status = EventStreamHandlerStatus.Stopped;
+            _logger.LogInformation("Stopped");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -63,13 +68,23 @@
                 try
                 {
                     var eventEnvelope = await _eventStream.DequeueAsync();
-                    _currentTask = _eventHandler.HandleEvent(eventEnvelope, stoppingToken);
-                    await _currentTask;
+
+                    await HandleEvent(eventEnvelope, stoppingToken);
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex)
                 {
+                    _logger.LogCritical("An unhandled exception occurred, and the event stream handler will be stopped. {@exception}", ex);
+                    _currentTask = null;
+                    await StopAsync(default);
                 }
             }
+        }
+
+        private async Task HandleEvent(EventEnvelope eventEnvelope, CancellationToken stoppingToken)
+        {
+            _currentTask = _eventHandler.HandleEvent(eventEnvelope, stoppingToken);
+            await _currentTask;
+            _currentTask = null;
         }
     }
 }
