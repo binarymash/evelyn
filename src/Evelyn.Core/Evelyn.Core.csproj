@@ -36,13 +36,13 @@
   
   <ItemGroup>
     <PackageReference Include="CqrsLite" Version="0.26.0" />
-    <PackageReference Include="FluentValidation" Version="7.6.105" />
+    <PackageReference Include="FluentValidation" Version="8.0.101" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.1" />    
-    <PackageReference Include="Scrutor" Version="2.2.2" />
+    <PackageReference Include="Scrutor" Version="3.0.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
