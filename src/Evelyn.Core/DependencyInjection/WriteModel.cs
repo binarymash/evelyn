@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddRouting(this IServiceCollection services)
         {
-            services.TryAddSingleton<IRouteRegistrarBootstrapper, RouteRegistrarBootstrapper>();
+            services.TryAddSingleton<IBootstrapper, Bootstrapper>();
             return services;
         }
     }

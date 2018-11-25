@@ -4,8 +4,8 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
-    using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.Projections.AccountProjects;
+    using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
@@ -87,7 +87,7 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = new AccountProjectsDto(_accountId, _fixture.Create<int>(), DateTimeOffset.UtcNow, _fixture.Create<string>(), DateTimeOffset.UtcNow, _fixture.Create<string>(), _fixture.CreateMany<ProjectListDto>());
+            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(_accountId, DateTimeOffset.UtcNow, _fixture.Create<string>());
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
         }
@@ -113,7 +113,7 @@
             _idOfProjectToGet = _fixture.Create<Guid>();
             _readModelFacade
                 .GetProjectDetails(_idOfProjectToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingProject()

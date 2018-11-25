@@ -11,6 +11,7 @@
     using CQRSlite.Domain;
     using CQRSlite.Events;
     using FluentAssertions;
+    using global::Evelyn.Core.Infrastructure;
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;

@@ -2,14 +2,15 @@
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.EnvironmentState;
-    using Core.ReadModel.ProjectDetails;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using Core.ReadModel.Projections.AccountProjects;
+    using Core.ReadModel.Projections.EnvironmentState;
+    using Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Evelyn.Management.Api.Rest.Write.Projects.Messages;
     using Evelyn.Management.Api.Rest.Write.Toggles.Messages;
@@ -17,6 +18,7 @@
     using Flurl.Http;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
+    using Polly;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -31,53 +33,78 @@
         [Fact]
         public void NominalTests()
         {
-            this.When(_ => WhenGetProjects())
+            this.Given(_ => GivenWeWaitUntilEverythingIsInitialised())
+
+                .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsACollectionWithOneProject())
                 .And(_ => ThenTheDefaultSampleProjectWeAddedIsInTheCollection())
+                .BDDfy();
 
                 // writing...
-                .When(_ => WhenWeAddAProject())
+            this.When(_ => WhenWeAddAProject())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
+                .BDDfy();
 
-                .When(_ => WhenWeAddAnEnvironment())
+            this.When(_ => WhenWeAddAnEnvironment())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
+                .BDDfy();
 
-                .When(_ => WhenWeAddAToggle())
+            this.When(_ => WhenWeAddAToggle())
                 .Then(_ => ThenTheResponseHasStatusCode202Accepted())
+                .BDDfy();
 
-                // reading...
-                .Given(_ => GivenweWaitAFewSecondsForEventualConsistency())
-
+            // reading...
+            this.Given(_ => GivenweWaitAFewSecondsForEventualConsistency())
                 .When(_ => WhenGetProjects())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheResponseContentIsACollectionWithTwoProjects())
                 .And(_ => ThenTheProjectWeAddedIsInTheCollection())
+                .BDDfy();
 
-                .When(_ => WhenWeGetTheDetailsForTheProjectWeAdded())
+            this.When(_ => WhenWeGetTheDetailsForTheProjectWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheProjectContainsOneEnvironment())
                 .And(_ => ThenTheEnvironmentWeAddedIsOnTheProject())
                 .And(_ => ThenTheProjectContainsOneToggle())
                 .And(_ => ThenTheToggleWeAddedIsOnTheProject())
+                .BDDfy();
 
-                .When(_ => WhenWeGetTheDetailsForTheEnvironmentWeAdded())
+            this.When(_ => WhenWeGetTheDetailsForTheEnvironmentWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheEnvironmentWeAddedIsReturned())
+                .BDDfy();
 
-                .When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
+            this.When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheToggleWeAddedIsReturned())
+                .BDDfy();
 
-                .When(_ => WhenWeGetTheStateForTheEnvironmentWeAdded())
+            this.When(_ => WhenWeGetTheStateForTheEnvironmentWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheEnvironmentStateContainsOurToggleStates())
-
                 .BDDfy();
+        }
+
+        private async Task GivenWeWaitUntilEverythingIsInitialised()
+        {
+            var policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(60, retryAttempt => TimeSpan.FromMilliseconds(1));
+
+            await policy.ExecuteAsync(async () =>
+            {
+                var response = await Client
+                    .Request("/api/projects")
+                    .GetAsync().ConfigureAwait(false);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+            });
         }
 
         private async Task GivenweWaitAFewSecondsForEventualConsistency()
         {
+            // TODO: something more deterministic
             await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
