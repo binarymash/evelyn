@@ -26,16 +26,20 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.5.0" />
-    <PackageReference Include="CompareNETObjects" Version="4.55.0" />
-    <PackageReference Include="FluentAssertions" Version="5.4.1" />
+    <PackageReference Include="CompareNETObjects" Version="4.57.0" />
+    <PackageReference Include="FluentAssertions" Version="5.5.3" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="Polly" Version="6.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +50,10 @@
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ReadModel\EventStream\Subscribers\" />
   </ItemGroup>
 
 </Project>

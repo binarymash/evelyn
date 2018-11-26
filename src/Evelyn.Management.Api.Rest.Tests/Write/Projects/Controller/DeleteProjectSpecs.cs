@@ -7,9 +7,11 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     using CQRSlite.Commands;
     using CQRSlite.Domain.Exception;
     using Evelyn.Core.WriteModel.Project.Commands.DeleteProject;
+    using Evelyn.Management.Api.Rest.Write.Projects;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
@@ -17,6 +19,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
     public class DeleteProjectSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<Rest.Write.Projects.Controller> _logger;
         private readonly Rest.Write.Projects.Controller _controller;
         private readonly ICommandHandler<Command> _deleteProjectHandler;
         private Rest.Write.Projects.Messages.DeleteProject _message;
@@ -26,8 +29,9 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         public DeleteProjectSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<Rest.Write.Projects.Controller>>();
             _deleteProjectHandler = Substitute.For<ICommandHandler<Command>>();
-            _controller = new Rest.Write.Projects.Controller(null, _deleteProjectHandler);
+            _controller = new Rest.Write.Projects.Controller(_logger, null, _deleteProjectHandler);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -72,7 +76,7 @@ namespace Evelyn.Management.Api.Rest.Tests.Write.Projects.Controller
         {
             _deleteProjectHandler
                 .Handle(Arg.Any<Command>())
-                .Returns(cah => throw new ConcurrencyException(Guid.NewGuid()));
+                .Returns(cah => throw _fixture.Create<Core.WriteModel.ConcurrencyException>());
         }
 
         private void GivenTheCommandHandlerWillThrowAnException()

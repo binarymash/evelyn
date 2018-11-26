@@ -3,10 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Write;
 
     [Route("api/projects")]
@@ -15,7 +16,8 @@
     {
         private readonly IReadModelFacade _readModelFacade;
 
-        public ProjectsController(IReadModelFacade readModelFacade)
+        public ProjectsController(ILogger<ProjectsController> logger, IReadModelFacade readModelFacade)
+            : base(logger)
         {
             _readModelFacade = readModelFacade;
         }
@@ -29,7 +31,7 @@
                 var result = await _readModelFacade.GetProjects(AccountId);
                 return Ok(result);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }
@@ -49,7 +51,7 @@
                 var projectDetails = await _readModelFacade.GetProjectDetails(id);
                 return Ok(projectDetails);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }

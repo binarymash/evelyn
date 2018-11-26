@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel;
-    using Core.ReadModel.EnvironmentState;
+    using Core.ReadModel.Projections.EnvironmentState;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -77,7 +77,7 @@
 
             _readModelFacade
                 .GetEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingEnvironmentState()

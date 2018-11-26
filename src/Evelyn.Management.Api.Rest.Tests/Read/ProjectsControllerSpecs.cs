@@ -4,13 +4,14 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
-    using Core.ReadModel.AccountProjects;
-    using Core.ReadModel.ProjectDetails;
+    using Core.ReadModel.Projections.AccountProjects;
+    using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using Rest.Write;
@@ -20,6 +21,7 @@
     public class ProjectsControllerSpecs
     {
         private readonly Fixture _fixture;
+        private readonly ILogger<ProjectsController> _logger;
         private readonly ProjectsController _controller;
         private readonly IReadModelFacade _readModelFacade;
         private readonly Guid _accountId = Constants.DefaultAccount;
@@ -31,8 +33,9 @@
         public ProjectsControllerSpecs()
         {
             _fixture = new Fixture();
+            _logger = Substitute.For<ILogger<ProjectsController>>();
             _readModelFacade = Substitute.For<IReadModelFacade>();
-            _controller = new ProjectsController(_readModelFacade);
+            _controller = new ProjectsController(_logger, _readModelFacade);
         }
 
         [Fact]
@@ -84,7 +87,7 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = new AccountProjectsDto(_accountId, _fixture.Create<int>(), DateTimeOffset.UtcNow, _fixture.Create<string>(), DateTimeOffset.UtcNow, _fixture.Create<string>(), _fixture.CreateMany<ProjectListDto>());
+            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(_accountId, DateTimeOffset.UtcNow, _fixture.Create<string>());
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
         }
@@ -110,7 +113,7 @@
             _idOfProjectToGet = _fixture.Create<Guid>();
             _readModelFacade
                 .GetProjectDetails(_idOfProjectToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingProject()

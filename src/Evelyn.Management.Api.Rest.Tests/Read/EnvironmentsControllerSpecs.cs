@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.EnvironmentDetails;
+    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -75,7 +75,7 @@
             _keyOfEnvironmentToGet = _fixture.Create<string>();
             _readModelFacade
                 .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingEnvironment()

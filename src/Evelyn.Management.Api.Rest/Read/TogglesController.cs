@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.ToggleDetails;
+    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +29,7 @@
                 var result = await _readModelFacade.GetToggleDetails(projectId, toggleKey);
                 return Ok(result);
             }
-            catch (NotFoundException)
+            catch (ProjectionNotFoundException)
             {
                 return NotFound(null);
             }

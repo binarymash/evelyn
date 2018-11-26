@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.ToggleDetails;
+    using Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Core.ReadModel;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
@@ -74,7 +74,7 @@
             _keyOfToggleToGet = _fixture.Create<string>();
             _readModelFacade
                 .GetToggleDetails(_projectId, _keyOfToggleToGet)
-                .Throws(_fixture.Create<NotFoundException>());
+                .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
         private void GivenThatAnExceptionIsThrownWhenGettingToggle()

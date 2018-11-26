@@ -3,10 +3,11 @@
     using System;
     using System.Threading.Tasks;
     using CQRSlite.Commands;
-    using CQRSlite.Domain.Exception;
+    using Evelyn.Core.WriteModel;
     using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Responses;
 
     [Route("api/projects/{projectId}/environments")]
@@ -19,7 +20,8 @@
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> _addHandler;
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment.Command> _deleteHandler;
 
-        public Controller(ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> addHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment.Command> deleteHandler)
+        public Controller(ILogger<Controller> logger, ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> addHandler, ICommandHandler<Core.WriteModel.Project.Commands.DeleteEnvironment.Command> deleteHandler)
+            : base(logger)
         {
             _addHandler = addHandler;
             _deleteHandler = deleteHandler;

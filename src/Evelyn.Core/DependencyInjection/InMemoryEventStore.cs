@@ -2,7 +2,6 @@
 namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
-    using System.Runtime.CompilerServices;
     using CQRSlite.Events;
     using Evelyn.Core;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,7 +19,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void InMemory(this EventStoreOptions parentOptions, Action<InMemoryEventStoreOptions> action)
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            parentOptions.Services.TryAddSingleton<IEventStore, Evelyn.Core.InMemoryEventStore>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.InMemoryEventStore>();
+            parentOptions.Services.TryAddSingleton<IEventStore>(sp => sp.GetRequiredService<Evelyn.Core.InMemoryEventStore>());
+            parentOptions.Services.TryAddSingleton<IInMemoryEventStore>(sp => sp.GetRequiredService<Evelyn.Core.InMemoryEventStore>());
+
+            parentOptions.Services.AddHostedService<Evelyn.Core.ReadModel.EventStream.Subscribers.InMemoryEventStoreCatchUpSubscriber>(); // TODO: move this
 
             action.Invoke(new InMemoryEventStoreOptions(parentOptions.Services));
         }

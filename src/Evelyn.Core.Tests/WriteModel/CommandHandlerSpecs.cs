@@ -9,9 +9,9 @@
     using Core.WriteModel.Project.Domain;
     using CQRSlite.Commands;
     using CQRSlite.Domain;
-    using CQRSlite.Domain.Exception;
     using CQRSlite.Events;
     using FluentAssertions;
+    using global::Evelyn.Core.Infrastructure;
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -131,6 +131,7 @@
                 NewAggregate = GetAggregate(aggregateId).Result;
 
                 _compareLogic.Config.IgnoreCollectionOrder = IgnoreCollectionOrderDuringComparison;
+                _compareLogic.Config.MembersToIgnore.Add("CalculatedVersion");
                 ComparisonResult = _compareLogic.Compare(OriginalAggregate, NewAggregate);
 
                 PublishedEvents = _eventPublisher.PublishedEvents;
@@ -219,6 +220,11 @@
             NewAggregate.LastModifiedBy.Should().Be(UserId);
         }
 
+        protected void ThenTheAggregateRootLastModifiedVersionIs(int expectedLastModifiedVersion)
+        {
+            NewAggregate.LastModifiedVersion.Should().Be(expectedLastModifiedVersion);
+        }
+
         protected void ThenAConcurrencyExceptionIsThrown()
         {
             ThrownException.Should().BeOfType<ConcurrencyException>();
@@ -274,7 +280,7 @@
                 var aggregate = await Session.Get<TAggregate>(id);
                 return aggregate;
             }
-            catch (AggregateNotFoundException)
+            catch (CQRSlite.Domain.Exception.AggregateNotFoundException)
             {
                 return null;
             }

@@ -58,28 +58,29 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         }
 
         [Fact]
-        public void FutureProjectVersion()
+        public void StaleExpectedEnvironmentVersion()
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAnotherEnvironment())
+                .And(_ => GivenWeHaveAddedTwoEnvironments())
                 .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
-                .And(_ => GivenTheEnvironmentVersionForOurNextCommandIsInTheFuture())
+                .And(_ => GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(-1))
                 .When(_ => WhenWeDeleteTheEnvironment())
+
                 .Then(_ => ThenNoEventIsPublished())
                 .And(_ => ThenAConcurrencyExceptionIsThrown())
                 .And(_ => ThenThereAreNoChangesOnTheAggregate())
                 .BDDfy();
         }
 
-        [Fact]
-        public void EnvironmentExistsAndSoDoOtherEnvironments()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void EnvironmentExistsAndSoDoOtherEnvironments(int environmentVersionOffset)
         {
             this.Given(_ => GivenWeHaveCreatedAProject())
-                .And(_ => GivenWeHaveAddedAnEnvironment())
-                .And(_ => GivenWeHaveAddedAnotherEnvironment())
                 .And(_ => GivenWeHaveAddedTwoEnvironments())
                 .And(_ => GivenWeWillBeDeletingTheFirstEnvironment())
+                .And(_ => GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(environmentVersionOffset))
 
                 .When(_ => WhenWeDeleteTheEnvironment())
 
@@ -96,7 +97,7 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
                 .And(_ => ThenTheAggregateRootHasOneFewerEnvironmentStates())
                 .And(_ => ThenTheAggregateRootHasHadTheCorrectEnvironmentStateRemoved())
 
-                .And(_ => ThenTheAggregateRootScopedVersionHasBeenIncreasedBy(1))
+                .And(_ => ThenTheAggregateRootLastModifiedVersionIs(NewAggregate.Version - 1))
                 .And(_ => ThenTheAggregateRootLastModifiedTimeHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootLastModifiedByHasBeenUpdated())
                 .And(_ => ThenTheAggregateRootVersionHasBeenIncreasedBy(2))
@@ -121,9 +122,11 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
             _environment2Key = DataFixture.Create<string>();
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment1Key);
+            _environment1Version = HistoricalEvents.Count - 1;
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment1Key);
 
             GivenWeHaveAddedAnEnvironmentWith(_projectId, _environment2Key);
+            _environment2Version = HistoricalEvents.Count - 1;
             GivenWeHaveAddedAnEnvironmentStateWith(_projectId, _environment2Key);
         }
 
@@ -148,24 +151,19 @@ namespace Evelyn.Core.Tests.WriteModel.Project.DeleteEnvironment
         {
             _environment1Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment1Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _environment1Version++;
+            _environment1Version = HistoricalEvents.Count - 1;
         }
 
         private void GivenWeHaveAddedAnotherEnvironment()
         {
             _environment2Key = DataFixture.Create<string>();
             HistoricalEvents.Add(new EnvironmentAdded(UserId, _projectId, _environment2Key, DataFixture.Create<string>(), DateTimeOffset.UtcNow) { Version = HistoricalEvents.Count });
-            _environment2Version++;
+            _environment2Version = HistoricalEvents.Count - 1;
         }
 
-        private void GivenTheEnvironmentVersionForOurNextCommandIsStale()
+        private void GivenTheExpectedEnvironmentVersionForOurNextCommandIsOffsetBy(int environmentVersionOffset)
         {
-            _environmentToDeleteVersion--;
-        }
-
-        private void GivenTheEnvironmentVersionForOurNextCommandIsInTheFuture()
-        {
-            _environmentToDeleteVersion++;
+            _environmentToDeleteVersion += environmentVersionOffset;
         }
 
         private void WhenWeDeleteTheEnvironment()

@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.14.0 (2018-11-26)
+
+ - [#142](https://github.com/binarymash/evelyn/pull/142) - [#141](https://github.com/binarymash/evelyn/issues/141) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#140](https://github.com/binarymash/evelyn/pull/140) - [#138](https://github.com/binarymash/evelyn/issues/138) - do not read from event store when building projections contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#137](https://github.com/binarymash/evelyn/pull/137) - [#136](https://github.com/binarymash/evelyn/issues/136) - tweak scoped versioning contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: f9968e6c33...235d2c06c0
+
 ## Version 0.13.0 (2018-09-09)
 
  - [#134](https://github.com/binarymash/evelyn/pull/134) - [#131](https://github.com/binarymash/evelyn/issues/131) - run hosts via docker compose contributed by Philip Wood ([binarymash](https://github.com/binarymash))
