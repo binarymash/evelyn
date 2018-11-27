@@ -273,13 +273,13 @@
         private void ThenTheStateIsCreated()
         {
             _eventHandlerStateStore.Received().Create(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsUpdated()
         {
             _eventHandlerStateStore.Received().Update(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsNotUpdated()

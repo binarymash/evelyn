@@ -18,7 +18,7 @@
 
         public void Processed(long version, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            this.UpdateModificationAudit(lastModified, lastModifiedBy, version);
+            Audit.Update(lastModified, lastModifiedBy, version);
         }
     }
 }

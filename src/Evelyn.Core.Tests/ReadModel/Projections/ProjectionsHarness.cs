@@ -82,6 +82,24 @@
             UpdatedProjection.Should().BeNull();
         }
 
+        protected void ThenTheAuditIsCreated()
+        {
+            UpdatedProjection.Audit.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.Audit.CreatedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Audit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.Audit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Audit.Version.Should().Be(0);
+        }
+
+        protected void ThenTheAuditIsUpdated()
+        {
+            UpdatedProjection.Audit.Created.Should().Be(OriginalProjection.Audit.Created);
+            UpdatedProjection.Audit.CreatedBy.Should().Be(OriginalProjection.Audit.CreatedBy);
+            UpdatedProjection.Audit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.Audit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.Audit.Version.Should().Be(Event.Version);
+        }
+
         protected abstract Task HandleEventImplementation();
 
         private TDto CopyOf(TDto original)

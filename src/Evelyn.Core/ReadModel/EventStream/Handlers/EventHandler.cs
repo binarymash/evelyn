@@ -40,7 +40,7 @@
                     }
                 }
 
-                if (state.Version < eventEnvelope.StreamVersion)
+                if (state.Audit.Version < eventEnvelope.StreamVersion)
                 {
                     if (_projectionBuildersByEventType.TryGetValue(eventEnvelope.Event.GetType(), out var projectionBuilders))
                     {

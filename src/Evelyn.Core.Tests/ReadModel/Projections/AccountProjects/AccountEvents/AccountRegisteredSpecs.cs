@@ -16,6 +16,7 @@
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAnAccountRegisteredEvent())
                 .Then(_ => ThenTheProjectionIsCreatedWithTheCorrectProperties())
+                .And(_ => ThenTheAuditIsCreated())
                 .BDDfy();
         }
 
@@ -38,12 +39,7 @@
             ThenTheProjectionIsCreated();
 
             UpdatedProjection.AccountId.Should().Be(Event.Id);
-            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
             UpdatedProjection.Projects.Should().BeEmpty();
-            UpdatedProjection.Version.Should().Be(0);
         }
     }
 }

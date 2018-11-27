@@ -23,15 +23,15 @@
 
         public void AddToggleState(string toggleKey, string toggleValue, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            UpdateModificationAudit(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
-            var toggleState = new ToggleStateDto(toggleKey, toggleValue, Version);
+            var toggleState = new ToggleStateDto(toggleKey, toggleValue, lastModifiedVersion);
             _toggleStates.Add(toggleState);
         }
 
         public void ChangeToggleState(string toggleKey, string value, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            UpdateModificationAudit(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
             var toggleState = _toggleStates.Find(ts => ts.Key == toggleKey);
             toggleState.ChangeState(value, lastModifiedVersion);
@@ -39,7 +39,7 @@
 
         public void DeleteToggleState(string toggleKey, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            UpdateModificationAudit(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
             var toggleState = _toggleStates.Find(ts => ts.Key == toggleKey);
             _toggleStates.Remove(toggleState);

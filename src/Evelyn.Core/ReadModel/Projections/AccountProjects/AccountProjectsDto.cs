@@ -35,9 +35,7 @@
 
         public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
-            Version = version;
+            Audit.Update(lastModified, lastModifiedBy, version);
 
             var project = new ProjectListDto(projectId, name);
             _projects.Add(project);
@@ -45,9 +43,7 @@
 
         public void DeleteProject(Guid projectId, int version, DateTimeOffset lastModified, string lastModifiedBy)
         {
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
-            Version = version;
+            Audit.Update(lastModified, lastModifiedBy, version);
 
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);

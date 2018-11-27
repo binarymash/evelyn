@@ -13,20 +13,21 @@
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAToggleStateChangedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAToggleStateChangedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenOurToggleStateIsOnTheProjection())
-                .And(_ => _.GivenTheProjectionHasOtherToggleStates())
-                .When(_ => _.WhenWeHandleAToggleStateChangedEvent())
-                .Then(_ => _.ThenTheProjectionHasBeenUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurToggleStateIsOnTheProjection())
+                .And(_ => GivenTheProjectionHasOtherToggleStates())
+                .When(_ => WhenWeHandleAToggleStateChangedEvent())
+                .Then(_ => ThenOurToggleStateIsChanged())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -46,15 +47,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionHasBeenUpdated()
+        private void ThenOurToggleStateIsChanged()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
             updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count());
 

@@ -13,9 +13,9 @@
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .When(_ => _.WhenWeHandleAProjectDeletedEvent())
-                .Then(_ => _.ThenTheProjectionIsDeleted())
+            this.Given(_ => GivenTheProjectionExists())
+                .When(_ => WhenWeHandleAProjectDeletedEvent())
+                .Then(_ => ThenTheProjectionIsDeleted())
                 .BDDfy();
         }
 
