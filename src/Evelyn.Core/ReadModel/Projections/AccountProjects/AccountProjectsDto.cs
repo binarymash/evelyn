@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class AccountProjectsDto : DtoRoot
@@ -11,8 +12,8 @@
         private readonly List<ProjectListDto> _projects;
 
         [JsonConstructor]
-        private AccountProjectsDto(Guid accountId, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ProjectListDto> projects)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        private AccountProjectsDto(Guid accountId, IEnumerable<ProjectListDto> projects, AuditDto audit)
+            : base(audit)
         {
             AccountId = accountId;
             _projects = projects?.ToList() ?? new List<ProjectListDto>();
@@ -28,12 +29,12 @@
             return $"{nameof(AccountProjectsDto)}-{accountId}";
         }
 
-        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy)
+        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy, long version)
         {
-            return new AccountProjectsDto(accountId, 0, created, createdBy, created, createdBy, new List<ProjectListDto>());
+            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(created, createdBy, version));
         }
 
-        public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        public void AddProject(Guid projectId, string name, DateTimeOffset lastModified, string lastModifiedBy, long version)
         {
             Audit.Update(lastModified, lastModifiedBy, version);
 
@@ -41,12 +42,21 @@
             _projects.Add(project);
         }
 
-        public void DeleteProject(Guid projectId, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        public void DeleteProject(Guid projectId, DateTimeOffset lastModified, string lastModifiedBy, long version)
         {
             Audit.Update(lastModified, lastModifiedBy, version);
 
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);
+        }
+
+        internal void SetProjectName(Guid projectId, string name, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        {
+            Audit.Update(lastModified, lastModifiedBy, version);
+
+            _projects
+                .Single(p => p.Id == projectId)
+                .SetName(name);
         }
     }
 }

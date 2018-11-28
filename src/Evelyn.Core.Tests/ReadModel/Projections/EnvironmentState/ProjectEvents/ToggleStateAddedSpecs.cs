@@ -41,9 +41,9 @@
             OriginalProjection.AddToggleState(
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<int>());
         }
 
         private async Task WhenWeHandleAToggleStateAddedEvent()

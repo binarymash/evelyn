@@ -19,7 +19,7 @@
 
         public async Task Handle(AccountEvents.AccountRegistered @event, CancellationToken stoppingToken)
         {
-            var projection = AccountProjectsDto.Create(@event.Id, @event.OccurredAt, @event.UserId);
+            var projection = AccountProjectsDto.Create(@event.Id, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Create(AccountProjectsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
@@ -27,7 +27,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.AddProject(@event.ProjectId, string.Empty, @event.Version, @event.OccurredAt, @event.UserId);
+            projection.AddProject(@event.ProjectId, string.Empty, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -35,7 +35,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.DeleteProject(@event.ProjectId, @event.Version, @event.OccurredAt, @event.UserId);
+            projection.DeleteProject(@event.ProjectId, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -43,8 +43,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.AccountId);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            var project = projection.Projects.Single(p => p.Id == @event.Id);
-            project.SetName(@event.Name);
+            projection.SetProjectName(@event.Id, @event.Name, @event.OccurredAt, @event.UserId, projection.Audit.Version);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
     }

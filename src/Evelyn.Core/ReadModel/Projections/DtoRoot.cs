@@ -1,13 +1,12 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections
 {
-    using System;
     using Evelyn.Core.ReadModel.Projections.Shared;
 
     public abstract class DtoRoot
     {
-        protected DtoRoot(long version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
+        protected DtoRoot(AuditDto audit)
         {
-            Audit = AuditDto.Create(created, createdBy, lastModified, lastModifiedBy, version);
+            Audit = audit;
         }
 
         public AuditDto Audit { get; protected set; }

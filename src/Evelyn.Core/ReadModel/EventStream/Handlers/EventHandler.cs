@@ -33,11 +33,9 @@
                 }
                 catch (ProjectionNotFoundException)
                 {
-                    state = EventHandlerStateDto.Null;
-                    {
-                        _logger.LogInformation("No state found");
-                        initialEvent = true;
-                    }
+                    state = EventHandlerStateDto.Create();
+                    _logger.LogInformation("No state found");
+                    initialEvent = true;
                 }
 
                 if (state.Audit.Version < eventEnvelope.StreamVersion)
@@ -53,7 +51,7 @@
                         await Task.WhenAll(tasks);
                     }
 
-                    state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
+                    state.Processed(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.StreamVersion);
                     if (initialEvent)
                     {
                         await _eventHandlerStateStore.Create(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);

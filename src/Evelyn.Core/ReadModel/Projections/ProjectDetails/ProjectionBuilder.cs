@@ -19,7 +19,7 @@
 
         public async Task Handle(ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
-            var projection = new ProjectDetailsDto(@event.Id, @event.Name, null, null, @event.Version, @event.OccurredAt, @event.UserId, @event.OccurredAt, @event.UserId);
+            var projection = ProjectDetailsDto.Create(@event.Id, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Create(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
@@ -27,7 +27,7 @@
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.Version, @event.UserId);
+            projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 

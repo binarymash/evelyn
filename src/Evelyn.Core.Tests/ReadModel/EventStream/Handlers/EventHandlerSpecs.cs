@@ -202,12 +202,12 @@
 
         private void GivenTheEventHasNotYetBeenHandled()
         {
-            _originalEventHandlerState = new EventHandlerStateDto(
-                _eventEnvelope.StreamVersion - 1,
+            _originalEventHandlerState = EventHandlerStateDto.Create();
+
+            _originalEventHandlerState.Processed(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
-                _dataFixture.Create<DateTimeOffset>(),
-                _dataFixture.Create<string>());
+                _eventEnvelope.StreamVersion - 1);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -216,12 +216,12 @@
 
         private void GivenTheEventHasAlreadyBeenHandled()
         {
-            _originalEventHandlerState = new EventHandlerStateDto(
-                _eventEnvelope.StreamVersion + 1,
+            _originalEventHandlerState = EventHandlerStateDto.Create();
+
+            _originalEventHandlerState.Processed(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
-                _dataFixture.Create<DateTimeOffset>(),
-                _dataFixture.Create<string>());
+                _eventEnvelope.StreamVersion + 1);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())

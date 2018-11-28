@@ -1,13 +1,14 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentDetails
 {
     using System;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class EnvironmentDetailsDto : DtoRoot
     {
         [JsonConstructor]
-        private EnvironmentDetailsDto(Guid projectId, int version, string key, string name, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        private EnvironmentDetailsDto(Guid projectId, string key, string name, AuditDto audit)
+            : base(audit)
         {
             Key = key;
             Name = name;
@@ -20,9 +21,9 @@
 
         public string Name { get; private set; }
 
-        public static EnvironmentDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset created, string createdBy)
+        public static EnvironmentDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset created, string createdBy, long version)
         {
-            return new EnvironmentDetailsDto(projectId, 0, key, name, created, createdBy, created, createdBy);
+            return new EnvironmentDetailsDto(projectId, key, name, AuditDto.Create(created, createdBy, version));
         }
 
         public static string StoreKey(Guid projectId, string environmentKey)

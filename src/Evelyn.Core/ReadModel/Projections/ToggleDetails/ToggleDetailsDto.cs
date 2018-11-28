@@ -1,11 +1,14 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.ToggleDetails
 {
     using System;
+    using Evelyn.Core.ReadModel.Projections.Shared;
+    using Newtonsoft.Json;
 
     public class ToggleDetailsDto : DtoRoot
     {
-        public ToggleDetailsDto(Guid projectId, int version, string key, string name, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        [JsonConstructor]
+        public ToggleDetailsDto(Guid projectId, string key, string name, AuditDto audit)
+            : base(audit)
         {
             Key = key;
             Name = name;
@@ -17,6 +20,11 @@
         public string Key { get; private set; }
 
         public string Name { get; private set; }
+
+        public static ToggleDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset created, string createdBy, int version)
+        {
+            return new ToggleDetailsDto(projectId, key, name, AuditDto.Create(created, createdBy, version));
+        }
 
         public static string StoreKey(Guid projectId, string toggleKey)
         {

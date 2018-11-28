@@ -87,7 +87,7 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(_accountId, DateTimeOffset.UtcNow, _fixture.Create<string>());
+            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(_accountId, DateTimeOffset.UtcNow, _fixture.Create<string>(), _fixture.Create<int>());
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
         }

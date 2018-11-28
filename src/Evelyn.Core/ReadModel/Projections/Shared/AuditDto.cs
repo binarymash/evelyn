@@ -27,11 +27,6 @@
 
         public static AuditDto Create(DateTimeOffset created, string createdBy, long version)
         {
-            return Create(created, createdBy, created, createdBy, version);
-        }
-
-        public static AuditDto Create(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
-        {
             return new AuditDto(created, createdBy, created, createdBy, version);
         }
 

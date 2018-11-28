@@ -3,14 +3,17 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Evelyn.Core.ReadModel.Projections.Shared;
+    using Newtonsoft.Json;
 
     public class ProjectDetailsDto : DtoRoot
     {
         private readonly IList<EnvironmentListDto> _environments;
         private readonly IList<ToggleListDto> _toggles;
 
-        public ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        [JsonConstructor]
+        private ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, AuditDto audit)
+            : base(audit)
         {
             Id = id;
             Name = name;
@@ -26,12 +29,17 @@
 
         public IEnumerable<ToggleListDto> Toggles => _toggles;
 
+        public static ProjectDetailsDto Create(Guid id, string name, DateTimeOffset created, string createdBy, int version)
+        {
+            return new ProjectDetailsDto(id, name, new List<EnvironmentListDto>(), new List<ToggleListDto>(), AuditDto.Create(created, createdBy, version));
+        }
+
         public static string StoreKey(Guid projectId)
         {
             return $"{nameof(ProjectDetailsDto)}-{projectId}";
         }
 
-        public void AddEnvironment(string environmentKey, string environmentName, DateTimeOffset lastModified, int lastModifiedVersion, string lastModifiedBy)
+        public void AddEnvironment(string environmentKey, string environmentName, DateTimeOffset lastModified,  string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
@@ -39,7 +47,7 @@
             _environments.Add(environment);
         }
 
-        public void DeleteEnvironment(string environmentKey, DateTimeOffset lastModified, string lastModifiedBy, int lastModifiedVersion)
+        public void DeleteEnvironment(string environmentKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
@@ -47,7 +55,7 @@
             _environments.Remove(environment);
         }
 
-        public void AddToggle(string toggleKey, string toggleName, DateTimeOffset lastModified, string lastModifiedBy, int lastModifiedVersion)
+        public void AddToggle(string toggleKey, string toggleName, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
@@ -55,7 +63,7 @@
             _toggles.Add(toggleToAdd);
         }
 
-        public void DeleteToggle(string toggleKey, DateTimeOffset lastModified, string lastModifiedBy, int lastModifiedVersion)
+        public void DeleteToggle(string toggleKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 

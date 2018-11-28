@@ -3,25 +3,33 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Evelyn.Core.ReadModel.Projections.Shared;
+    using Newtonsoft.Json;
 
     public class EnvironmentStateDto : DtoRoot
     {
         private readonly List<ToggleStateDto> _toggleStates;
 
-        public EnvironmentStateDto(int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ToggleStateDto> toggleStates)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        [JsonConstructor]
+        private EnvironmentStateDto(IEnumerable<ToggleStateDto> toggleStates, AuditDto audit)
+            : base(audit)
         {
             _toggleStates = toggleStates.ToList();
         }
 
         public IEnumerable<ToggleStateDto> ToggleStates => _toggleStates;
 
+        public static EnvironmentStateDto Create(IEnumerable<ToggleStateDto> toggleStates, DateTimeOffset created, string createdBy, long version)
+        {
+            return new EnvironmentStateDto(toggleStates ?? new List<ToggleStateDto>(), AuditDto.Create(created, createdBy, version));
+        }
+
         public static string StoreKey(Guid projectId, string environmentKey)
         {
             return $"{nameof(EnvironmentStateDto)}-{projectId}-{environmentKey}";
         }
 
-        public void AddToggleState(string toggleKey, string toggleValue, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
+        public void AddToggleState(string toggleKey, string toggleValue, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
@@ -29,7 +37,7 @@
             _toggleStates.Add(toggleState);
         }
 
-        public void ChangeToggleState(string toggleKey, string value, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
+        public void ChangeToggleState(string toggleKey, string value, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 
@@ -37,7 +45,7 @@
             toggleState.ChangeState(value, lastModifiedVersion);
         }
 
-        public void DeleteToggleState(string toggleKey, int lastModifiedVersion, DateTimeOffset lastModified, string lastModifiedBy)
+        public void DeleteToggleState(string toggleKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
         {
             Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
 

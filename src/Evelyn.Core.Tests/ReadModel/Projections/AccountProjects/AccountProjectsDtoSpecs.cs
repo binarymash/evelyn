@@ -13,14 +13,15 @@
             var accountProjects = AccountProjectsDto.Create(
                 DataFixture.Create<Guid>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
 
             accountProjects.AddProject(
                 DataFixture.Create<Guid>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
 
             AssertSerializationOf(accountProjects);
         }

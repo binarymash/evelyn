@@ -32,8 +32,8 @@
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
         }
 
         protected void GivenThereAreTogglesOnTheProjection()

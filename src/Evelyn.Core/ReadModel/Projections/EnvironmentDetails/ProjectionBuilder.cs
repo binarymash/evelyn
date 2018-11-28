@@ -15,7 +15,7 @@
 
         public async Task Handle(ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
         {
-            var projection = EnvironmentDetailsDto.Create(@event.Id, @event.Key, @event.Name, @event.OccurredAt, @event.UserId);
+            var projection = EnvironmentDetailsDto.Create(@event.Id, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
             await Projections.Create(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
         }
 

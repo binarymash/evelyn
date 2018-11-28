@@ -48,8 +48,8 @@
                 _environmentKey,
                 DataFixture.Create<string>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
         }
 
         private async Task WhenWeHandleAnEnvironmentDeletedEvent()

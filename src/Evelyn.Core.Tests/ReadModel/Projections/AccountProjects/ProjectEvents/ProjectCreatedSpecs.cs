@@ -29,7 +29,7 @@
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenOurProjectNameIsUpdated())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheAuditIsUpdatedExcludingVersion())
                 .BDDfy();
         }
 

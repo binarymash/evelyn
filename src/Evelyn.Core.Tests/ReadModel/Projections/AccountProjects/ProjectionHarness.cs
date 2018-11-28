@@ -40,9 +40,9 @@
             OriginalProjection.AddProject(
                 ProjectId,
                 DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
         }
 
         protected void GivenAnotherProjectIsOnTheProjection()
@@ -50,9 +50,9 @@
             OriginalProjection.AddProject(
                 DataFixture.Create<Guid>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
                 DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>());
+                DataFixture.Create<string>(),
+                DataFixture.Create<long>());
         }
 
         protected void ThenTheProjectionIsCreated()
