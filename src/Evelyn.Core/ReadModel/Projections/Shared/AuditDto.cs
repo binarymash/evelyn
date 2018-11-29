@@ -25,16 +25,16 @@
 
         public long Version { get; protected set; }
 
-        public static AuditDto Create(DateTimeOffset created, string createdBy, long version)
+        public static AuditDto Create(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            return new AuditDto(created, createdBy, created, createdBy, version);
+            return new AuditDto(occurredAt, initiatedBy, occurredAt, initiatedBy, newVersion);
         }
 
-        public void Update(DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void Update(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
-            Version = lastModifiedVersion;
+            LastModified = occurredAt;
+            LastModifiedBy = initiatedBy;
+            Version = newVersion;
         }
     }
 }

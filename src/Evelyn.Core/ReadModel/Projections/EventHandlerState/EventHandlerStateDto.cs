@@ -22,9 +22,9 @@
             return $"{nameof(eventStreamType)}-State";
         }
 
-        public void Processed(DateTimeOffset lastModified, string lastModifiedBy, long version)
+        public void Processed(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, version);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
         }
     }
 }

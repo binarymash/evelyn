@@ -21,9 +21,9 @@
 
         public string Name { get; private set; }
 
-        public static ToggleDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset created, string createdBy, int version)
+        public static ToggleDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset occurredAt, string initiatedBy, int newVersion)
         {
-            return new ToggleDetailsDto(projectId, key, name, AuditDto.Create(created, createdBy, version));
+            return new ToggleDetailsDto(projectId, key, name, AuditDto.Create(occurredAt, initiatedBy, newVersion));
         }
 
         public static string StoreKey(Guid projectId, string toggleKey)

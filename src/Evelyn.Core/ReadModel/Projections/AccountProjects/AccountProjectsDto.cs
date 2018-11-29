@@ -29,30 +29,30 @@
             return $"{nameof(AccountProjectsDto)}-{accountId}";
         }
 
-        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy, long version)
+        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(created, createdBy, version));
+            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(occurredAt, initiatedBy, newVersion));
         }
 
-        public void AddProject(Guid projectId, string name, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        public void AddProject(Guid projectId, string name, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, version);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var project = new ProjectListDto(projectId, name);
             _projects.Add(project);
         }
 
-        public void DeleteProject(Guid projectId, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        public void DeleteProject(Guid projectId, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, version);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);
         }
 
-        internal void SetProjectName(Guid projectId, string name, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        internal void SetProjectName(Guid projectId, string name, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, version);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             _projects
                 .Single(p => p.Id == projectId)

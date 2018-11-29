@@ -19,9 +19,9 @@
 
         public IEnumerable<ToggleStateDto> ToggleStates => _toggleStates;
 
-        public static EnvironmentStateDto Create(IEnumerable<ToggleStateDto> toggleStates, DateTimeOffset created, string createdBy, long version)
+        public static EnvironmentStateDto Create(IEnumerable<ToggleStateDto> toggleStates, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            return new EnvironmentStateDto(toggleStates ?? new List<ToggleStateDto>(), AuditDto.Create(created, createdBy, version));
+            return new EnvironmentStateDto(toggleStates ?? new List<ToggleStateDto>(), AuditDto.Create(occurredAt, initiatedBy, newVersion));
         }
 
         public static string StoreKey(Guid projectId, string environmentKey)
@@ -29,25 +29,25 @@
             return $"{nameof(EnvironmentStateDto)}-{projectId}-{environmentKey}";
         }
 
-        public void AddToggleState(string toggleKey, string toggleValue, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void AddToggleState(string toggleKey, string toggleValue, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
-            var toggleState = new ToggleStateDto(toggleKey, toggleValue, lastModifiedVersion);
+            var toggleState = new ToggleStateDto(toggleKey, toggleValue, newVersion);
             _toggleStates.Add(toggleState);
         }
 
-        public void ChangeToggleState(string toggleKey, string value, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void ChangeToggleState(string toggleKey, string value, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var toggleState = _toggleStates.Find(ts => ts.Key == toggleKey);
-            toggleState.ChangeState(value, lastModifiedVersion);
+            toggleState.ChangeState(value, newVersion);
         }
 
-        public void DeleteToggleState(string toggleKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void DeleteToggleState(string toggleKey, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var toggleState = _toggleStates.Find(ts => ts.Key == toggleKey);
             _toggleStates.Remove(toggleState);

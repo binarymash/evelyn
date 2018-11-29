@@ -47,25 +47,25 @@
             _environments.Add(environment);
         }
 
-        public void DeleteEnvironment(string environmentKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void DeleteEnvironment(string environmentKey, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var environment = _environments.Single(e => e.Key == environmentKey);
             _environments.Remove(environment);
         }
 
-        public void AddToggle(string toggleKey, string toggleName, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void AddToggle(string toggleKey, string toggleName, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var toggleToAdd = new ToggleListDto(toggleKey, toggleName);
             _toggles.Add(toggleToAdd);
         }
 
-        public void DeleteToggle(string toggleKey, DateTimeOffset lastModified, string lastModifiedBy, long lastModifiedVersion)
+        public void DeleteToggle(string toggleKey, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(occurredAt, initiatedBy, newVersion);
 
             var toggleToRemove = _toggles.Single(toggle => toggle.Key == toggleKey);
             _toggles.Remove(toggleToRemove);
