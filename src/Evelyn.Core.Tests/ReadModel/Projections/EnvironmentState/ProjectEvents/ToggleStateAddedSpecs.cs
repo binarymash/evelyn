@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -39,11 +40,9 @@
         private void GivenTheProjectAlreadyHasAToggleState()
         {
             OriginalProjection.AddToggleState(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>());
+                DataFixture.Create<string>());
         }
 
         private async Task WhenWeHandleAToggleStateAddedEvent()

@@ -29,9 +29,9 @@
 
         public IEnumerable<ToggleListDto> Toggles => _toggles;
 
-        public static ProjectDetailsDto Create(Guid id, string name, DateTimeOffset created, string createdBy, int version)
+        public static ProjectDetailsDto Create(EventAuditDto eventAudit, Guid id, string name)
         {
-            return new ProjectDetailsDto(id, name, new List<EnvironmentListDto>(), new List<ToggleListDto>(), AuditDto.Create(created, createdBy, version));
+            return new ProjectDetailsDto(id, name, new List<EnvironmentListDto>(), new List<ToggleListDto>(), AuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Guid projectId)
@@ -39,33 +39,33 @@
             return $"{nameof(ProjectDetailsDto)}-{projectId}";
         }
 
-        public void AddEnvironment(string environmentKey, string environmentName, DateTimeOffset lastModified,  string lastModifiedBy, long lastModifiedVersion)
+        public void AddEnvironment(EventAuditDto eventAudit, string environmentKey, string environmentName)
         {
-            Audit.Update(lastModified, lastModifiedBy, lastModifiedVersion);
+            Audit.Update(eventAudit);
 
             var environment = new EnvironmentListDto(environmentKey, environmentName);
             _environments.Add(environment);
         }
 
-        public void DeleteEnvironment(string environmentKey, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void DeleteEnvironment(EventAuditDto eventAudit, string environmentKey)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             var environment = _environments.Single(e => e.Key == environmentKey);
             _environments.Remove(environment);
         }
 
-        public void AddToggle(string toggleKey, string toggleName, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void AddToggle(EventAuditDto eventAudit, string toggleKey, string toggleName)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             var toggleToAdd = new ToggleListDto(toggleKey, toggleName);
             _toggles.Add(toggleToAdd);
         }
 
-        public void DeleteToggle(string toggleKey, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void DeleteToggle(EventAuditDto eventAudit, string toggleKey)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             var toggleToRemove = _toggles.Single(toggle => toggle.Key == toggleKey);
             _toggles.Remove(toggleToRemove);

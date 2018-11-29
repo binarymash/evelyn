@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.AccountProjects
 {
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AccountEvents = Evelyn.Core.WriteModel.Account.Events;
@@ -19,7 +18,7 @@
 
         public async Task Handle(AccountEvents.AccountRegistered @event, CancellationToken stoppingToken)
         {
-            var projection = AccountProjectsDto.Create(@event.Id, @event.OccurredAt, @event.UserId, @event.Version);
+            var projection = AccountProjectsDto.Create(CreateEventAudit(@event), @event.Id);
             await Projections.Create(AccountProjectsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
@@ -27,7 +26,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.AddProject(@event.ProjectId, string.Empty, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.AddProject(CreateEventAudit(@event), @event.ProjectId, string.Empty);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -35,7 +34,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.DeleteProject(@event.ProjectId, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.DeleteProject(CreateEventAudit(@event), @event.ProjectId);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -43,7 +42,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.AccountId);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.SetProjectName(@event.Id, @event.Name, @event.OccurredAt, @event.UserId, projection.Audit.Version);
+            projection.SetProjectName(CreateEventAudit(@event, projection.Audit.Version), @event.Id, @event.Name);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
     }

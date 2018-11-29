@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -45,11 +46,9 @@
             _environmentKey = DataFixture.Create<string>();
 
             OriginalProjection.AddEnvironment(
+                DataFixture.Create<EventAuditDto>(),
                 _environmentKey,
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<long>());
+                DataFixture.Create<string>());
         }
 
         private async Task WhenWeHandleAnEnvironmentDeletedEvent()

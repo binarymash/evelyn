@@ -13,6 +13,7 @@
     using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
@@ -204,10 +205,12 @@
         {
             _originalEventHandlerState = EventHandlerStateDto.Create();
 
-            _originalEventHandlerState.Processed(
+            var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _eventEnvelope.StreamVersion - 1);
+
+            _originalEventHandlerState.Processed(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -218,10 +221,12 @@
         {
             _originalEventHandlerState = EventHandlerStateDto.Create();
 
-            _originalEventHandlerState.Processed(
+            var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _eventEnvelope.StreamVersion + 1);
+
+            _originalEventHandlerState.Processed(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())

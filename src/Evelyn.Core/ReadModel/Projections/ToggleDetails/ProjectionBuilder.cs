@@ -15,7 +15,7 @@
 
         public async Task Handle(ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
         {
-            var projection = ToggleDetailsDto.Create(@event.Id, @event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
+            var projection = ToggleDetailsDto.Create(CreateEventAudit(@event), @event.Id, @event.Key, @event.Name);
             await Projections.Create(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
         }
 

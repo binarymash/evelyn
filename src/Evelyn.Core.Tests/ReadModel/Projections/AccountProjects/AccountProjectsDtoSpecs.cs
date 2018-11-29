@@ -3,6 +3,7 @@
     using System;
     using AutoFixture;
     using Core.ReadModel.Projections.AccountProjects;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Xunit;
 
     public class AccountProjectsDtoSpecs : DtoHarness<AccountProjectsDto>
@@ -11,17 +12,13 @@
         public void Serialization()
         {
             var accountProjects = AccountProjectsDto.Create(
-                DataFixture.Create<Guid>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<long>());
+                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Guid>());
 
             accountProjects.AddProject(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<Guid>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<long>());
+                DataFixture.Create<string>());
 
             AssertSerializationOf(accountProjects);
         }

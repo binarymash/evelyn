@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Microsoft.Extensions.Logging;
 
     public class EventHandler<TEventStream> : IEventHandler<TEventStream>
@@ -51,7 +52,7 @@
                         await Task.WhenAll(tasks);
                     }
 
-                    state.Processed(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.StreamVersion);
+                    state.Processed(EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.StreamVersion));
                     if (initialEvent)
                     {
                         await _eventHandlerStateStore.Create(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);

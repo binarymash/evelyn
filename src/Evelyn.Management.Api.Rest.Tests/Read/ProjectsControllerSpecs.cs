@@ -7,6 +7,7 @@
     using Core.ReadModel.Projections.AccountProjects;
     using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -87,7 +88,9 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(_accountId, DateTimeOffset.UtcNow, _fixture.Create<string>(), _fixture.Create<int>());
+            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(
+                _fixture.Create<EventAuditDto>(),
+                _accountId);
 
             _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
         }

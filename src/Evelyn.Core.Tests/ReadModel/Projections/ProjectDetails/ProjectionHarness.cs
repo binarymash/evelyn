@@ -3,6 +3,7 @@
     using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
 
     public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<ProjectDetailsDto, ProjectionBuilder, TEvent>
@@ -29,21 +30,17 @@
         protected void GivenThereAreEnvironmentsOnTheProjection()
         {
             OriginalProjection.AddEnvironment(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<long>());
+                DataFixture.Create<string>());
         }
 
         protected void GivenThereAreTogglesOnTheProjection()
         {
             OriginalProjection.AddToggle(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>());
+                DataFixture.Create<string>());
         }
     }
 }

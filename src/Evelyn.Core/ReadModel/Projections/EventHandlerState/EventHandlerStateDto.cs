@@ -14,7 +14,8 @@
 
         public static EventHandlerStateDto Create()
         {
-            return new EventHandlerStateDto(AuditDto.Create(DateTimeOffset.UtcNow, Constants.SystemUser, -1));
+            var eventAudit = EventAuditDto.Create(DateTimeOffset.UtcNow, Constants.SystemUser, -1);
+            return new EventHandlerStateDto(AuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Type eventStreamType)
@@ -22,9 +23,9 @@
             return $"{nameof(eventStreamType)}-State";
         }
 
-        public void Processed(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void Processed(EventAuditDto eventAudit)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
         }
     }
 }

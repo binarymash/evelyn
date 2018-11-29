@@ -21,9 +21,9 @@
 
         public string Name { get; private set; }
 
-        public static EnvironmentDetailsDto Create(Guid projectId, string key, string name, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public static EnvironmentDetailsDto Create(EventAuditDto eventAudit, Guid projectId, string key, string name)
         {
-            return new EnvironmentDetailsDto(projectId, key, name, AuditDto.Create(occurredAt, initiatedBy, newVersion));
+            return new EnvironmentDetailsDto(projectId, key, name, AuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Guid projectId, string environmentKey)

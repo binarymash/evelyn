@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -46,11 +47,9 @@
             _toggleKey = DataFixture.Create<string>();
 
             OriginalProjection.AddToggle(
+                DataFixture.Create<EventAuditDto>(),
                 _toggleKey,
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>());
+                DataFixture.Create<string>());
         }
 
         private async Task WhenWeHandleAToggleDeletedEvent()

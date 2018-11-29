@@ -29,30 +29,30 @@
             return $"{nameof(AccountProjectsDto)}-{accountId}";
         }
 
-        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public static AccountProjectsDto Create(EventAuditDto eventAudit, Guid accountId)
         {
-            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(occurredAt, initiatedBy, newVersion));
+            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(eventAudit));
         }
 
-        public void AddProject(Guid projectId, string name, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void AddProject(EventAuditDto eventAudit, Guid projectId, string name)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             var project = new ProjectListDto(projectId, name);
             _projects.Add(project);
         }
 
-        public void DeleteProject(Guid projectId, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void DeleteProject(EventAuditDto eventAudit, Guid projectId)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);
         }
 
-        internal void SetProjectName(Guid projectId, string name, DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        internal void SetProjectName(EventAuditDto eventAudit, Guid projectId, string name)
         {
-            Audit.Update(occurredAt, initiatedBy, newVersion);
+            Audit.Update(eventAudit);
 
             _projects
                 .Single(p => p.Id == projectId)

@@ -25,16 +25,16 @@
 
         public long Version { get; protected set; }
 
-        public static AuditDto Create(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public static AuditDto Create(EventAuditDto eventAudit)
         {
-            return new AuditDto(occurredAt, initiatedBy, occurredAt, initiatedBy, newVersion);
+            return new AuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.NewVersion);
         }
 
-        public void Update(DateTimeOffset occurredAt, string initiatedBy, long newVersion)
+        public void Update(EventAuditDto eventAudit)
         {
-            LastModified = occurredAt;
-            LastModifiedBy = initiatedBy;
-            Version = newVersion;
+            LastModified = eventAudit.OccurredAt;
+            LastModifiedBy = eventAudit.InitiatedBy;
+            Version = eventAudit.NewVersion;
         }
     }
 }

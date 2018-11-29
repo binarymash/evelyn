@@ -19,7 +19,7 @@
 
         public async Task Handle(ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
-            var projection = ProjectDetailsDto.Create(@event.Id, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
+            var projection = ProjectDetailsDto.Create(CreateEventAudit(@event), @event.Id, @event.Name);
             await Projections.Create(ProjectDetailsDto.StoreKey(@event.Id), projection).ConfigureAwait(false);
         }
 
@@ -27,7 +27,7 @@
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.AddEnvironment(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.AddEnvironment(CreateEventAudit(@event), @event.Key, @event.Name);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -35,7 +35,7 @@
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.DeleteEnvironment(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.DeleteEnvironment(CreateEventAudit(@event), @event.Key);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -43,7 +43,7 @@
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.AddToggle(@event.Key, @event.Name, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.AddToggle(CreateEventAudit(@event), @event.Key, @event.Name);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
@@ -51,7 +51,7 @@
         {
             var storeKey = ProjectDetailsDto.StoreKey(@event.Id);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.DeleteToggle(@event.Key, @event.OccurredAt, @event.UserId, @event.Version);
+            projection.DeleteToggle(CreateEventAudit(@event), @event.Key);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
