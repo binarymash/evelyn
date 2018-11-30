@@ -3,6 +3,7 @@
     using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.EnvironmentState;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
 
     public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<EnvironmentStateDto, ProjectionBuilder, TEvent>
@@ -35,10 +36,8 @@
         protected void GivenTheProjectionHasOtherToggleStates()
         {
             OriginalProjection.AddToggleState(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>());
         }
 
@@ -47,10 +46,8 @@
             ToggleKey = DataFixture.Create<string>();
 
             OriginalProjection.AddToggleState(
+                DataFixture.Create<EventAuditDto>(),
                 ToggleKey,
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>());
         }
     }

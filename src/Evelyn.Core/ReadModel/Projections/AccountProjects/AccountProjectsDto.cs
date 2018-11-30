@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class AccountProjectsDto : DtoRoot
@@ -11,8 +12,8 @@
         private readonly List<ProjectListDto> _projects;
 
         [JsonConstructor]
-        private AccountProjectsDto(Guid accountId, int version, DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, IEnumerable<ProjectListDto> projects)
-            : base(version, created, createdBy, lastModified, lastModifiedBy)
+        private AccountProjectsDto(Guid accountId, IEnumerable<ProjectListDto> projects, AuditDto audit)
+            : base(audit)
         {
             AccountId = accountId;
             _projects = projects?.ToList() ?? new List<ProjectListDto>();
@@ -28,29 +29,34 @@
             return $"{nameof(AccountProjectsDto)}-{accountId}";
         }
 
-        public static AccountProjectsDto Create(Guid accountId, DateTimeOffset created, string createdBy)
+        public static AccountProjectsDto Create(EventAuditDto eventAudit, Guid accountId)
         {
-            return new AccountProjectsDto(accountId, 0, created, createdBy, created, createdBy, new List<ProjectListDto>());
+            return new AccountProjectsDto(accountId, new List<ProjectListDto>(), AuditDto.Create(eventAudit));
         }
 
-        public void AddProject(Guid projectId, string name, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        public void AddProject(EventAuditDto eventAudit, Guid projectId, string name)
         {
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
-            Version = version;
+            Audit.Update(eventAudit);
 
             var project = new ProjectListDto(projectId, name);
             _projects.Add(project);
         }
 
-        public void DeleteProject(Guid projectId, int version, DateTimeOffset lastModified, string lastModifiedBy)
+        public void DeleteProject(EventAuditDto eventAudit, Guid projectId)
         {
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
-            Version = version;
+            Audit.Update(eventAudit);
 
             var project = _projects.Single(p => p.Id == projectId);
             _projects.Remove(project);
+        }
+
+        internal void SetProjectName(EventAuditDto eventAudit, Guid projectId, string name)
+        {
+            Audit.Update(eventAudit);
+
+            _projects
+                .Single(p => p.Id == projectId)
+                .SetName(name);
         }
     }
 }

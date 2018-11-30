@@ -13,19 +13,20 @@
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenOurToggleStateIsOnTheProjection())
-                .When(_ => _.WhenWeHandleAToggleStateDeletedEvent())
-                .Then(_ => _.ThenTheProjectionIsUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurToggleStateIsOnTheProjection())
+                .When(_ => WhenWeHandleAToggleStateDeletedEvent())
+                .Then(_ => ThenOurToggleStateIsRemoved())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAToggleStateDeletedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAToggleStateDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
@@ -45,15 +46,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsUpdated()
+        private void ThenOurToggleStateIsRemoved()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
             updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() - 1);
 

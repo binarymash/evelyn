@@ -14,20 +14,21 @@
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAnEnvironmentAddedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAnEnvironmentAddedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenThereAreEnvironmentsOnTheProjection())
-                .And(_ => _.GivenThereAreTogglesOnTheProjection())
-                .When(_ => _.WhenWeHandleAnEnvironmentAddedEvent())
-                .Then(_ => _.ThenTheProjectionIsUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
+                .And(_ => GivenThereAreTogglesOnTheProjection())
+                .When(_ => WhenWeHandleAnEnvironmentAddedEvent())
+                .Then(_ => ThenTheEnvironmentIsAdded())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -45,15 +46,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsUpdated()
+        private void ThenTheEnvironmentIsAdded()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
 
             var updatedEnvironments = UpdatedProjection.Environments.ToList();

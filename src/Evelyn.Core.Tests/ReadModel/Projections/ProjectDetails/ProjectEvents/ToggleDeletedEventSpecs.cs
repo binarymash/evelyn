@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -17,21 +18,22 @@
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAToggleDeletedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAToggleDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenThereAreEnvironmentsOnTheProjection())
-                .And(_ => _.GivenThereAreTogglesOnTheProjection())
-                .And(_ => _.GivenOurToggleIsOnTheProjection())
-                .When(_ => _.WhenWeHandleAToggleDeletedEvent())
-                .Then(_ => _.ThenTheProjectionIsUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
+                .And(_ => GivenThereAreTogglesOnTheProjection())
+                .And(_ => GivenOurToggleIsOnTheProjection())
+                .When(_ => WhenWeHandleAToggleDeletedEvent())
+                .Then(_ => ThenOurToggleIsDeleted())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -45,11 +47,9 @@
             _toggleKey = DataFixture.Create<string>();
 
             OriginalProjection.AddToggle(
+                DataFixture.Create<EventAuditDto>(),
                 _toggleKey,
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>());
+                DataFixture.Create<string>());
         }
 
         private async Task WhenWeHandleAToggleDeletedEvent()
@@ -62,15 +62,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsUpdated()
+        private void ThenOurToggleIsDeleted()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             UpdatedProjection.Environments.Should().BeEquivalentTo(OriginalProjection.Environments);
 
             var updatedToggles = UpdatedProjection.Toggles.ToList();

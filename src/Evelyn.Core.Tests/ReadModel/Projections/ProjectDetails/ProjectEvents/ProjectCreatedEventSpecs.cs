@@ -14,9 +14,10 @@
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => _.ThenTheProjectionIsCreated())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAProjectCreatedEvent())
+                .Then(_ => ThenTheProjectionIsCreated())
+                .And(_ => ThenTheAuditIsCreated())
                 .BDDfy();
         }
 
@@ -37,12 +38,6 @@
         private void ThenTheProjectionIsCreated()
         {
             ProjectionStore.Received().Create(ProjectDetailsDto.StoreKey(ProjectId), UpdatedProjection);
-
-            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
 
             UpdatedProjection.Name.Should().Be(Event.Name);
             UpdatedProjection.Environments.Should().BeEmpty();
