@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version 0.15.0 (2018-11-30)
+
+
+ - [#144](https://github.com/binarymash/evelyn/pull/144) - [#143](https://github.com/binarymash/evelyn/issues/143) - refactor projection audit contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: fd28cb04f3...d00b5ae02d
+
 ## Version 0.14.0 (2018-11-26)
 
  - [#142](https://github.com/binarymash/evelyn/pull/142) - [#141](https://github.com/binarymash/evelyn/issues/141) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
