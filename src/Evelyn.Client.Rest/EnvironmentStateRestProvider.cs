@@ -24,7 +24,7 @@
             try
             {
                 var dto = _client
-                    .ApiStatesByProjectIdByEnvironmentNameGetAsync(projectId, environmentKey)
+                    .ApiStatesAsync(projectId, environmentKey)
                     .GetAwaiter().GetResult();
 
                 var toggleStates = new List<ToggleState>();
@@ -37,7 +37,7 @@
                     }
                 }
 
-                return new EnvironmentState(dto.Version.Value, toggleStates);
+                return new EnvironmentState(dto.Audit.Version.Value, toggleStates);
             }
             catch (SwaggerException ex)
             {

@@ -3,6 +3,7 @@
     using System;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.AccountProjects;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
     using NSubstitute;
 
@@ -38,20 +39,16 @@
         {
             ProjectId = DataFixture.Create<Guid>();
             OriginalProjection.AddProject(
+                DataFixture.Create<EventAuditDto>(),
                 ProjectId,
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>());
         }
 
         protected void GivenAnotherProjectIsOnTheProjection()
         {
             OriginalProjection.AddProject(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<Guid>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>());
         }
 

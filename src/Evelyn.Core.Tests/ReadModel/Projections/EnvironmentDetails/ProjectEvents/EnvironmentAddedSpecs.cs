@@ -15,6 +15,7 @@
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionIsCreated())
+                .And(_ => ThenTheAuditIsCreated())
                 .BDDfy();
         }
 
@@ -36,12 +37,6 @@
         private void ThenTheProjectionIsCreated()
         {
             UpdatedProjection.ProjectId.Should().Be(Event.Id);
-            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(0);
 
             UpdatedProjection.Key.Should().Be(Event.Key);
             UpdatedProjection.Name.Should().Be(Event.Name);

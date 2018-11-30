@@ -13,6 +13,7 @@
     using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
@@ -202,12 +203,14 @@
 
         private void GivenTheEventHasNotYetBeenHandled()
         {
-            _originalEventHandlerState = new EventHandlerStateDto(
-                _eventEnvelope.StreamVersion - 1,
+            _originalEventHandlerState = EventHandlerStateDto.Create();
+
+            var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
-                _dataFixture.Create<DateTimeOffset>(),
-                _dataFixture.Create<string>());
+                _eventEnvelope.StreamVersion - 1);
+
+            _originalEventHandlerState.Processed(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -216,12 +219,14 @@
 
         private void GivenTheEventHasAlreadyBeenHandled()
         {
-            _originalEventHandlerState = new EventHandlerStateDto(
-                _eventEnvelope.StreamVersion + 1,
+            _originalEventHandlerState = EventHandlerStateDto.Create();
+
+            var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
-                _dataFixture.Create<DateTimeOffset>(),
-                _dataFixture.Create<string>());
+                _eventEnvelope.StreamVersion + 1);
+
+            _originalEventHandlerState.Processed(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -273,13 +278,13 @@
         private void ThenTheStateIsCreated()
         {
             _eventHandlerStateStore.Received().Create(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsUpdated()
         {
             _eventHandlerStateStore.Received().Update(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsNotUpdated()

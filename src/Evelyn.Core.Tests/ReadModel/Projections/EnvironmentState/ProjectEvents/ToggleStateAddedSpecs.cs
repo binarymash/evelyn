@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -14,19 +15,20 @@
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAToggleStateAddedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAToggleStateAddedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenTheProjectAlreadyHasAToggleState())
-                .When(_ => _.WhenWeHandleAToggleStateAddedEvent())
-                .Then(_ => _.ThenTheProjectionHasBeenUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectAlreadyHasAToggleState())
+                .When(_ => WhenWeHandleAToggleStateAddedEvent())
+                .Then(_ => ThenTheNewToggleStateIsAdded())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -38,10 +40,8 @@
         private void GivenTheProjectAlreadyHasAToggleState()
         {
             OriginalProjection.AddToggleState(
+                DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<int>(),
-                DataFixture.Create<DateTimeOffset>(),
                 DataFixture.Create<string>());
         }
 
@@ -55,15 +55,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionHasBeenUpdated()
+        private void ThenTheNewToggleStateIsAdded()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             var toggleStates = UpdatedProjection.ToggleStates.ToList();
             toggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() + 1);
 

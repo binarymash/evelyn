@@ -27,7 +27,8 @@
                 .And(_ => GivenOurProjectIsOnTheProjection())
                 .And(_ => GivenAnotherProjectIsOnTheProjection())
                 .When(_ => WhenWeHandleTheProjectDeletedEvent())
-                .Then(_ => ThenTheProjectionHasBeenUpdated())
+                .Then(_ => ThenOurProjectIsRemoved())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -46,15 +47,9 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionHasBeenUpdated()
+        private void ThenOurProjectIsRemoved()
         {
             UpdatedProjection.AccountId.Should().Be(OriginalProjection.AccountId);
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
 
             var projects = UpdatedProjection.Projects.ToList();
             projects.Count.Should().Be(OriginalProjection.Projects.Count() - 1);

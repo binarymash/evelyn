@@ -17,6 +17,7 @@
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
                 .Then(_ => ThenTheProjectionIsCreated())
+                .And(_ => ThenTheAuditIsCreated())
                 .BDDfy();
         }
 
@@ -39,11 +40,6 @@
         {
             ProjectionStore.Received().Create(EnvironmentStateDto.StoreKey(ProjectId, EnvironmentKey), UpdatedProjection);
 
-            UpdatedProjection.Created.Should().Be(Event.OccurredAt);
-            UpdatedProjection.CreatedBy.Should().Be(Event.UserId);
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
             UpdatedProjection.ToggleStates.Should().BeEquivalentTo(Event.ToggleStates);
         }
     }

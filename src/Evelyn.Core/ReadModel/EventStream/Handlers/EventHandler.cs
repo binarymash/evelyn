@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Microsoft.Extensions.Logging;
 
     public class EventHandler<TEventStream> : IEventHandler<TEventStream>
@@ -33,14 +34,12 @@
                 }
                 catch (ProjectionNotFoundException)
                 {
-                    state = EventHandlerStateDto.Null;
-                    {
-                        _logger.LogInformation("No state found");
-                        initialEvent = true;
-                    }
+                    state = EventHandlerStateDto.Create();
+                    _logger.LogInformation("No state found");
+                    initialEvent = true;
                 }
 
-                if (state.Version < eventEnvelope.StreamVersion)
+                if (state.Audit.Version < eventEnvelope.StreamVersion)
                 {
                     if (_projectionBuildersByEventType.TryGetValue(eventEnvelope.Event.GetType(), out var projectionBuilders))
                     {
@@ -53,7 +52,7 @@
                         await Task.WhenAll(tasks);
                     }
 
-                    state.Processed(eventEnvelope.StreamVersion, DateTime.UtcNow, Constants.SystemUser);
+                    state.Processed(EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.StreamVersion));
                     if (initialEvent)
                     {
                         await _eventHandlerStateStore.Create(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);

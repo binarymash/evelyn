@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -17,20 +18,21 @@
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => _.GivenThereIsNoProjection())
-                .When(_ => _.WhenWeHandleAnEnvironmentDeletedEvent())
-                .Then(_ => _.ThenAnExceptionIsThrown())
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAnEnvironmentDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
         }
 
         [Fact]
         public void Nominal()
         {
-            this.Given(_ => _.GivenTheProjectionExists())
-                .And(_ => _.GivenOurEnvironmentIsOnTheProjection())
-                .And(_ => _.GivenThereAreEnvironmentsOnTheProjection())
-                .When(_ => _.WhenWeHandleAnEnvironmentDeletedEvent())
-                .Then(_ => _.ThenTheProjectionIsUpdated())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurEnvironmentIsOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
+                .When(_ => WhenWeHandleAnEnvironmentDeletedEvent())
+                .Then(_ => ThenOurEnvironmentIsDeleted())
+                .And(_ => ThenTheAuditIsUpdated())
                 .BDDfy();
         }
 
@@ -44,10 +46,8 @@
             _environmentKey = DataFixture.Create<string>();
 
             OriginalProjection.AddEnvironment(
+                DataFixture.Create<EventAuditDto>(),
                 _environmentKey,
-                DataFixture.Create<string>(),
-                DataFixture.Create<DateTimeOffset>(),
-                DataFixture.Create<int>(),
                 DataFixture.Create<string>());
         }
 
@@ -61,15 +61,8 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsUpdated()
+        private void ThenOurEnvironmentIsDeleted()
         {
-            UpdatedProjection.Created.Should().Be(OriginalProjection.Created);
-            UpdatedProjection.CreatedBy.Should().Be(OriginalProjection.CreatedBy);
-
-            UpdatedProjection.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Version.Should().Be(Event.Version);
-
             UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
 
             var updatedEnvironments = UpdatedProjection.Environments.ToList();
