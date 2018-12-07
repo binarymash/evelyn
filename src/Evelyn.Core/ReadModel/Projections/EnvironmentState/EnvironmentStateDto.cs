@@ -11,7 +11,7 @@
         private readonly List<ToggleStateDto> _toggleStates;
 
         [JsonConstructor]
-        private EnvironmentStateDto(IEnumerable<ToggleStateDto> toggleStates, AuditDto audit)
+        private EnvironmentStateDto(IEnumerable<ToggleStateDto> toggleStates, ProjectionAuditDto audit)
             : base(audit)
         {
             _toggleStates = toggleStates.ToList();
@@ -21,7 +21,7 @@
 
         public static EnvironmentStateDto Create(EventAuditDto eventAudit, IEnumerable<ToggleStateDto> toggleStates)
         {
-            return new EnvironmentStateDto(toggleStates ?? new List<ToggleStateDto>(), AuditDto.Create(eventAudit));
+            return new EnvironmentStateDto(toggleStates ?? new List<ToggleStateDto>(), ProjectionAuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Guid projectId, string environmentKey)
@@ -33,7 +33,7 @@
         {
             Audit.Update(eventAudit);
 
-            var toggleState = new ToggleStateDto(toggleKey, toggleValue, eventAudit.NewVersion);
+            var toggleState = new ToggleStateDto(toggleKey, toggleValue, eventAudit.AggregateRootVersion);
             _toggleStates.Add(toggleState);
         }
 
@@ -42,7 +42,7 @@
             Audit.Update(eventAudit);
 
             var toggleState = _toggleStates.Find(ts => ts.Key == toggleKey);
-            toggleState.ChangeState(value, eventAudit.NewVersion);
+            toggleState.ChangeState(value, eventAudit.AggregateRootVersion);
         }
 
         public void DeleteToggleState(EventAuditDto eventAudit, string toggleKey)

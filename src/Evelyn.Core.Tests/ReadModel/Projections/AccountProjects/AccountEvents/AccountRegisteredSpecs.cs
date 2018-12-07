@@ -17,12 +17,13 @@
                 .When(_ => WhenWeHandleAnAccountRegisteredEvent())
                 .Then(_ => ThenTheProjectionIsCreatedWithTheCorrectProperties())
                 .And(_ => ThenTheAuditIsCreated())
+                .And(_ => ThenTheAccountAuditIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnAccountRegisteredEvent()
@@ -40,6 +41,15 @@
 
             UpdatedProjection.AccountId.Should().Be(Event.Id);
             UpdatedProjection.Projects.Should().BeEmpty();
+        }
+
+        private void ThenTheAccountAuditIsCreated()
+        {
+            UpdatedProjection.AccountAudit.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.AccountAudit.CreatedBy.Should().Be(Event.UserId);
+            UpdatedProjection.AccountAudit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.AccountAudit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.AccountAudit.Version.Should().Be(Event.Version);
         }
     }
 }

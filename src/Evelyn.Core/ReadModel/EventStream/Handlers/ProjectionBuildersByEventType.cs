@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using CQRSlite.Events;
 
-    public class ProjectionBuildersByEventType : Dictionary<Type, List<Func<IEvent, CancellationToken, Task>>>
+    public class ProjectionBuildersByEventType : Dictionary<Type, List<Func<long, IEvent, CancellationToken, Task>>>
     {
         public static ProjectionBuildersByEventType Null => new ProjectionBuildersByEventType();
     }

@@ -12,18 +12,21 @@
         private readonly IList<ToggleListDto> _toggles;
 
         [JsonConstructor]
-        private ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, AuditDto audit)
+        private ProjectDetailsDto(Guid id, string name, IEnumerable<EnvironmentListDto> environments, IEnumerable<ToggleListDto> toggles, ProjectionAuditDto audit, AuditDto projectAudit)
             : base(audit)
         {
             Id = id;
             Name = name;
+            ProjectAudit = projectAudit;
             _environments = environments?.ToList() ?? new List<EnvironmentListDto>();
             _toggles = toggles?.ToList() ?? new List<ToggleListDto>();
         }
 
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
-        public string Name { get; }
+        public string Name { get; private set; }
+
+        public AuditDto ProjectAudit { get; private set; }
 
         public IEnumerable<EnvironmentListDto> Environments => _environments;
 
@@ -31,7 +34,7 @@
 
         public static ProjectDetailsDto Create(EventAuditDto eventAudit, Guid id, string name)
         {
-            return new ProjectDetailsDto(id, name, new List<EnvironmentListDto>(), new List<ToggleListDto>(), AuditDto.Create(eventAudit));
+            return new ProjectDetailsDto(id, name, new List<EnvironmentListDto>(), new List<ToggleListDto>(), ProjectionAuditDto.Create(eventAudit), AuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Guid projectId)
@@ -42,6 +45,7 @@
         public void AddEnvironment(EventAuditDto eventAudit, string environmentKey, string environmentName)
         {
             Audit.Update(eventAudit);
+            ProjectAudit.Update(eventAudit);
 
             var environment = new EnvironmentListDto(environmentKey, environmentName);
             _environments.Add(environment);
@@ -50,6 +54,7 @@
         public void DeleteEnvironment(EventAuditDto eventAudit, string environmentKey)
         {
             Audit.Update(eventAudit);
+            ProjectAudit.Update(eventAudit);
 
             var environment = _environments.Single(e => e.Key == environmentKey);
             _environments.Remove(environment);
@@ -58,6 +63,7 @@
         public void AddToggle(EventAuditDto eventAudit, string toggleKey, string toggleName)
         {
             Audit.Update(eventAudit);
+            ProjectAudit.Update(eventAudit);
 
             var toggleToAdd = new ToggleListDto(toggleKey, toggleName);
             _toggles.Add(toggleToAdd);
@@ -66,6 +72,7 @@
         public void DeleteToggle(EventAuditDto eventAudit, string toggleKey)
         {
             Audit.Update(eventAudit);
+            ProjectAudit.Update(eventAudit);
 
             var toggleToRemove = _toggles.Single(toggle => toggle.Key == toggleKey);
             _toggles.Remove(toggleToRemove);

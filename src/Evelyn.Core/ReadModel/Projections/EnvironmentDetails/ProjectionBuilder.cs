@@ -13,13 +13,13 @@
         {
         }
 
-        public async Task Handle(ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
         {
-            var projection = EnvironmentDetailsDto.Create(CreateEventAudit(@event), @event.Id, @event.Key, @event.Name);
+            var projection = EnvironmentDetailsDto.Create(CreateEventAudit(streamVersion, @event), @event.Id, @event.Key, @event.Name);
             await Projections.Create(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
             var projection = await Projections.Get(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key));
             await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);

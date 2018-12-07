@@ -3,10 +3,10 @@
     using System;
     using Newtonsoft.Json;
 
-    public class AuditDto
+    public class ProjectionAuditDto
     {
         [JsonConstructor]
-        protected AuditDto(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        protected ProjectionAuditDto(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
         {
             Created = created;
             CreatedBy = createdBy;
@@ -25,16 +25,16 @@
 
         public long Version { get; protected set; }
 
-        public static AuditDto Create(EventAuditDto eventAudit)
+        public static ProjectionAuditDto Create(EventAuditDto eventAudit)
         {
-            return new AuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.AggregateRootVersion);
+            return new ProjectionAuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.StreamVersion);
         }
 
         public void Update(EventAuditDto eventAudit)
         {
             LastModified = eventAudit.OccurredAt;
             LastModifiedBy = eventAudit.InitiatedBy;
-            Version = eventAudit.AggregateRootVersion;
+            Version = eventAudit.StreamVersion;
         }
     }
 }

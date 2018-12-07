@@ -5,6 +5,7 @@
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
+    using FluentAssertions;
 
     public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<ProjectDetailsDto, ProjectionBuilder, TEvent>
         where TEvent : Event
@@ -41,6 +42,15 @@
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
+        }
+
+        protected void ThenTheProjectAuditIsUpdated()
+        {
+            UpdatedProjection.ProjectAudit.Created.Should().Be(OriginalProjection.ProjectAudit.Created);
+            UpdatedProjection.ProjectAudit.CreatedBy.Should().Be(OriginalProjection.ProjectAudit.CreatedBy);
+            UpdatedProjection.ProjectAudit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.ProjectAudit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.ProjectAudit.Version.Should().Be(Event.Version);
         }
     }
 }

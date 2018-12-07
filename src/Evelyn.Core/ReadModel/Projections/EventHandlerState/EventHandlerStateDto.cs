@@ -7,15 +7,15 @@
     public class EventHandlerStateDto : DtoRoot
     {
         [JsonConstructor]
-        private EventHandlerStateDto(AuditDto audit)
+        private EventHandlerStateDto(ProjectionAuditDto audit)
             : base(audit)
         {
         }
 
         public static EventHandlerStateDto Create()
         {
-            var eventAudit = EventAuditDto.Create(DateTimeOffset.UtcNow, Constants.SystemUser, -1);
-            return new EventHandlerStateDto(AuditDto.Create(eventAudit));
+            var eventAudit = EventAuditDto.Create(DateTimeOffset.UtcNow, Constants.SystemUser, -1, -1);
+            return new EventHandlerStateDto(ProjectionAuditDto.Create(eventAudit));
         }
 
         public static string StoreKey(Type eventStreamType)

@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.AccountProjects.AccountEvents
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -30,12 +31,13 @@
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenOurProjectIsAdded())
                 .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheAccountAuditIsUpdated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
@@ -66,6 +68,15 @@
             projects.Exists(p =>
                 p.Id == Event.ProjectId &&
                 p.Name == string.Empty).Should().BeTrue();
+        }
+
+        private void ThenTheAccountAuditIsUpdated()
+        {
+            UpdatedProjection.AccountAudit.Created.Should().Be(OriginalProjection.AccountAudit.Created);
+            UpdatedProjection.AccountAudit.CreatedBy.Should().Be(OriginalProjection.AccountAudit.CreatedBy);
+            UpdatedProjection.AccountAudit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.AccountAudit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.AccountAudit.Version.Should().Be(Event.Version);
         }
     }
 }

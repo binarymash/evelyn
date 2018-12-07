@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentDetails.ProjectEvents
 {
+    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using FluentAssertions;
@@ -16,12 +17,13 @@
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
                 .Then(_ => ThenTheProjectionIsCreated())
                 .And(_ => ThenTheAuditIsCreated())
+                .And(_ => ThenTheEnvironmentAuditIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectCreatedEvent()
@@ -40,6 +42,15 @@
 
             UpdatedProjection.Key.Should().Be(Event.Key);
             UpdatedProjection.Name.Should().Be(Event.Name);
+        }
+
+        private void ThenTheEnvironmentAuditIsCreated()
+        {
+            UpdatedProjection.EnvironmentAudit.Created.Should().Be(Event.OccurredAt);
+            UpdatedProjection.EnvironmentAudit.CreatedBy.Should().Be(Event.UserId);
+            UpdatedProjection.EnvironmentAudit.LastModified.Should().Be(Event.OccurredAt);
+            UpdatedProjection.EnvironmentAudit.LastModifiedBy.Should().Be(Event.UserId);
+            UpdatedProjection.EnvironmentAudit.Version.Should().Be(Event.Version);
         }
     }
 }

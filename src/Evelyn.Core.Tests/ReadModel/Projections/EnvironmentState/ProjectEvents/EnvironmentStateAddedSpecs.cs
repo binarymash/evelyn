@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
 {
+    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.EnvironmentState;
@@ -23,7 +24,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentStateAddedEvent()

@@ -208,6 +208,7 @@
             var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
+                _dataFixture.Create<long>(),
                 _eventEnvelope.StreamVersion - 1);
 
             _originalEventHandlerState.Processed(eventAudit);
@@ -224,6 +225,7 @@
             var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
+                _dataFixture.Create<long>(),
                 _eventEnvelope.StreamVersion + 1);
 
             _originalEventHandlerState.Processed(eventAudit);
@@ -369,7 +371,7 @@
 
         public class ProjectionBuilder1 : IBuildProjectionsFrom<SomeEvent>
         {
-            public async Task Handle(SomeEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamVersion, SomeEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -377,7 +379,7 @@
 
         public class ProjectionBuilder2 : IBuildProjectionsFrom<SomeEvent>
         {
-            public async Task Handle(SomeEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamVersion, SomeEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -385,7 +387,7 @@
 
         public class ProjectionBuilder3 : IBuildProjectionsFrom<SomeOtherEvent>
         {
-            public async Task Handle(SomeOtherEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamVersion, SomeOtherEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -393,7 +395,7 @@
 
         public class ProjectionBuilder4 : IBuildProjectionsFrom<SomeOtherEvent>
         {
-            public async Task Handle(SomeOtherEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamVersion, SomeOtherEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }

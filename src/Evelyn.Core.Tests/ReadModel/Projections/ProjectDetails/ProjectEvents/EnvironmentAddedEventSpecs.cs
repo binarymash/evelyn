@@ -29,12 +29,13 @@
                 .When(_ => WhenWeHandleAnEnvironmentAddedEvent())
                 .Then(_ => ThenTheEnvironmentIsAdded())
                 .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentAddedEvent()

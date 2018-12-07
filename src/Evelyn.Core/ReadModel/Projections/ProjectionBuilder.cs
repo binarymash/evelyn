@@ -12,9 +12,9 @@
 
         protected IProjectionStore<TDto> Projections { get; }
 
-        protected EventAuditDto CreateEventAudit(Event @event, long? versionOverride = null)
+        protected EventAuditDto CreateEventAudit(long streamVersion, Event @event, long? aggregateRootVersionOverride = null)
         {
-            return EventAuditDto.Create(@event.OccurredAt, @event.UserId, versionOverride ?? @event.Version);
+            return EventAuditDto.Create(@event.OccurredAt, @event.UserId, aggregateRootVersionOverride ?? @event.Version, streamVersion);
         }
     }
 }

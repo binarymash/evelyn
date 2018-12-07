@@ -4,11 +4,11 @@
 
     public abstract class DtoRoot
     {
-        protected DtoRoot(AuditDto audit)
+        protected DtoRoot(ProjectionAuditDto audit)
         {
             Audit = audit;
         }
 
-        public AuditDto Audit { get; protected set; }
+        public ProjectionAuditDto Audit { get; protected set; }
     }
 }

@@ -46,13 +46,13 @@
                         var tasks = new Task[projectionBuilders.Count];
                         for (var index = 0; index < projectionBuilders.Count; index++)
                         {
-                            tasks[index] = projectionBuilders[index](eventEnvelope.Event, stoppingToken);
+                            tasks[index] = projectionBuilders[index](eventEnvelope.StreamVersion, eventEnvelope.Event, stoppingToken);
                         }
 
                         await Task.WhenAll(tasks);
                     }
 
-                    state.Processed(EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.StreamVersion));
+                    state.Processed(EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion));
                     if (initialEvent)
                     {
                         await _eventHandlerStateStore.Create(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);

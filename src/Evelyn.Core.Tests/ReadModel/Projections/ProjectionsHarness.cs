@@ -37,6 +37,8 @@
 
             ProjectionStore.WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<TDto>()))
                 .Do(ci => UpdatedProjection = ci.ArgAt<TDto>(1));
+
+            StreamVersion = DataFixture.Create<long>();
         }
 
         protected Fixture DataFixture { get; }
@@ -50,6 +52,8 @@
         protected TDto OriginalProjection { get; set; }
 
         protected TEvent Event { get; set; }
+
+        protected long StreamVersion { get; set; }
 
         protected TDto UpdatedProjection { get; set; }
 
@@ -88,7 +92,7 @@
             UpdatedProjection.Audit.CreatedBy.Should().Be(Event.UserId);
             UpdatedProjection.Audit.LastModified.Should().Be(Event.OccurredAt);
             UpdatedProjection.Audit.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Audit.Version.Should().Be(Event.Version);
+            UpdatedProjection.Audit.Version.Should().Be(StreamVersion);
         }
 
         protected void ThenTheAuditIsUpdated()
@@ -97,16 +101,7 @@
             UpdatedProjection.Audit.CreatedBy.Should().Be(OriginalProjection.Audit.CreatedBy);
             UpdatedProjection.Audit.LastModified.Should().Be(Event.OccurredAt);
             UpdatedProjection.Audit.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Audit.Version.Should().Be(Event.Version);
-        }
-
-        protected void ThenTheAuditIsUpdatedExcludingVersion()
-        {
-            UpdatedProjection.Audit.Created.Should().Be(OriginalProjection.Audit.Created);
-            UpdatedProjection.Audit.CreatedBy.Should().Be(OriginalProjection.Audit.CreatedBy);
-            UpdatedProjection.Audit.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.Audit.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Audit.Version.Should().Be(OriginalProjection.Audit.Version);
+            UpdatedProjection.Audit.Version.Should().Be(StreamVersion);
         }
 
         protected abstract Task HandleEventImplementation();

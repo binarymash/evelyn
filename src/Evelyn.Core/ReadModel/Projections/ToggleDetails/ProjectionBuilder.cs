@@ -13,13 +13,13 @@
         {
         }
 
-        public async Task Handle(ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamVersion, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
         {
-            var projection = ToggleDetailsDto.Create(CreateEventAudit(@event), @event.Id, @event.Key, @event.Name);
+            var projection = ToggleDetailsDto.Create(CreateEventAudit(streamVersion, @event), @event.Id, @event.Key, @event.Name);
             await Projections.Create(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamVersion, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
         {
             await Projections.Delete(ToggleDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
         }

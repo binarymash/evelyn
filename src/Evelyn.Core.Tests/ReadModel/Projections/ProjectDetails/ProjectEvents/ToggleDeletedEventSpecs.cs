@@ -34,12 +34,13 @@
                 .When(_ => WhenWeHandleAToggleDeletedEvent())
                 .Then(_ => ThenOurToggleIsDeleted())
                 .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
         }
 
         private void GivenOurToggleIsOnTheProjection()
