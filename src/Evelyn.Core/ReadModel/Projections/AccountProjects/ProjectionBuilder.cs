@@ -42,7 +42,7 @@
         {
             var storeKey = AccountProjectsDto.StoreKey(@event.AccountId);
             var projection = await Projections.Get(storeKey).ConfigureAwait(false);
-            projection.SetProjectName(CreateEventAudit(streamVersion, @event, projection.Audit.Version), @event.Id, @event.Name);
+            projection.SetProjectName(CreateEventAudit(streamVersion, @event), @event.Id, @event.Name);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
     }
