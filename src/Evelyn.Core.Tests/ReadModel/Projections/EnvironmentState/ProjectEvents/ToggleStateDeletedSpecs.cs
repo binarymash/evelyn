@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateDeletedSpecs : ProjectionHarness<ToggleStateDeleted>
+    public class ToggleStateDeletedSpecs : ProjectionBuilderHarness<ToggleStateDeleted>
     {
         [Fact]
         public void Nominal()
@@ -17,7 +17,7 @@
                 .And(_ => GivenOurToggleStateIsOnTheProjection())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
                 .Then(_ => ThenOurToggleStateIsRemoved())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .BDDfy();
         }
 
@@ -48,10 +48,10 @@
 
         private void ThenOurToggleStateIsRemoved()
         {
-            var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
-            updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() - 1);
+            var updatedToggleStates = UpdatedProjection.EnvironmentState.ToggleStates.ToList();
+            updatedToggleStates.Count.Should().Be(OriginalProjection.EnvironmentState.ToggleStates.Count() - 1);
 
-            foreach (var originalToggleState in OriginalProjection.ToggleStates)
+            foreach (var originalToggleState in OriginalProjection.EnvironmentState.ToggleStates)
             {
                 if (originalToggleState.Key != Event.ToggleKey)
                 {

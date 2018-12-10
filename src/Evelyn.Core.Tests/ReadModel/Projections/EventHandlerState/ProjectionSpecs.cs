@@ -4,13 +4,13 @@
     using Evelyn.Core.ReadModel.Projections.EventHandlerState;
     using Xunit;
 
-    public class EventHandlerStateSpecs : DtoHarness<EventHandlerStateDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var dto = DataFixture.Create<EventHandlerStateDto>();
-            AssertSerializationOf(dto);
+            var projection = DataFixture.Create<Projection>();
+            AssertSerializationOf(projection);
         }
     }
 }

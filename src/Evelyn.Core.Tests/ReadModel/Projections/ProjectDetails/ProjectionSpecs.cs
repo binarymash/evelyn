@@ -4,13 +4,13 @@
     using Core.ReadModel.Projections.ProjectDetails;
     using Xunit;
 
-    public class ProjectDetailsDtoSpecs : DtoHarness<ProjectDetailsDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var projectDetails = DataFixture.Create<ProjectDetailsDto>();
-            AssertSerializationOf(projectDetails);
+            var projection = DataFixture.Create<Projection>();
+            AssertSerializationOf(projection);
         }
     }
 }

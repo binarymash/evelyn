@@ -7,10 +7,10 @@
     using Evelyn.Core.WriteModel;
     using FluentAssertions;
 
-    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<ProjectDetailsDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        public ProjectionHarness()
+        public ProjectionBuilderHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
@@ -24,21 +24,21 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<ProjectDetailsDto>();
-            ProjectId = OriginalProjection.Id;
+            OriginalProjection = DataFixture.Create<Projection>();
+            ProjectId = OriginalProjection.Project.Id;
         }
 
-        protected void GivenThereAreEnvironmentsOnTheProjection()
+        protected void GivenThereAreEnvironmentsOnTheProject()
         {
-            OriginalProjection.AddEnvironment(
+            OriginalProjection.Project.AddEnvironment(
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
         }
 
-        protected void GivenThereAreTogglesOnTheProjection()
+        protected void GivenThereAreTogglesOnTheProject()
         {
-            OriginalProjection.AddToggle(
+            OriginalProjection.Project.AddToggle(
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
@@ -46,11 +46,13 @@
 
         protected void ThenTheProjectAuditIsUpdated()
         {
-            UpdatedProjection.ProjectAudit.Created.Should().Be(OriginalProjection.ProjectAudit.Created);
-            UpdatedProjection.ProjectAudit.CreatedBy.Should().Be(OriginalProjection.ProjectAudit.CreatedBy);
-            UpdatedProjection.ProjectAudit.LastModified.Should().Be(Event.OccurredAt);
-            UpdatedProjection.ProjectAudit.LastModifiedBy.Should().Be(Event.UserId);
-            UpdatedProjection.ProjectAudit.Version.Should().Be(Event.Version);
+            var audit = UpdatedProjection.Project.Audit;
+
+            audit.Created.Should().Be(OriginalProjection.Project.Audit.Created);
+            audit.CreatedBy.Should().Be(OriginalProjection.Project.Audit.CreatedBy);
+            audit.LastModified.Should().Be(Event.OccurredAt);
+            audit.LastModifiedBy.Should().Be(Event.UserId);
+            audit.Version.Should().Be(Event.Version);
         }
     }
 }

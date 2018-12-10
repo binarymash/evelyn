@@ -6,10 +6,10 @@
     using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
 
-    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<EnvironmentStateDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        public ProjectionHarness()
+        public ProjectionBuilderHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
@@ -28,14 +28,14 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<EnvironmentStateDto>();
+            OriginalProjection = DataFixture.Create<Projection>();
             ProjectId = DataFixture.Create<Guid>();
             EnvironmentKey = DataFixture.Create<string>();
         }
 
         protected void GivenTheProjectionHasOtherToggleStates()
         {
-            OriginalProjection.AddToggleState(
+            OriginalProjection.EnvironmentState.AddToggleState(
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
@@ -45,7 +45,7 @@
         {
             ToggleKey = DataFixture.Create<string>();
 
-            OriginalProjection.AddToggleState(
+            OriginalProjection.EnvironmentState.AddToggleState(
                 DataFixture.Create<EventAuditDto>(),
                 ToggleKey,
                 DataFixture.Create<string>());

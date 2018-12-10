@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentAddedEventSpecs : ProjectionHarness<EnvironmentAdded>
+    public class EnvironmentAddedEventSpecs : ProjectionBuilderHarness<EnvironmentAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -24,11 +24,11 @@
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
-                .And(_ => GivenThereAreTogglesOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProject())
+                .And(_ => GivenThereAreTogglesOnTheProject())
                 .When(_ => WhenWeHandleAnEnvironmentAddedEvent())
-                .Then(_ => ThenTheEnvironmentIsAdded())
-                .And(_ => ThenTheAuditIsUpdated())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .And(_ => ThenTheEnvironmentIsAddedToTheProject())
                 .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
@@ -47,18 +47,23 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheEnvironmentIsAdded()
+        private void ThenTheEnvironmentIsAddedToTheProject()
         {
-            UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
+            var originalProject = OriginalProjection.Project;
+            var updatedProject = UpdatedProjection.Project;
 
-            var updatedEnvironments = UpdatedProjection.Environments.ToList();
-            updatedEnvironments.Count.Should().Be(OriginalProjection.Environments.Count() + 1);
+            updatedProject.Toggles.Should().BeEquivalentTo(originalProject.Toggles);
 
-            foreach (var originalEnvironments in OriginalProjection.Environments)
+            var originalEnvironments = originalProject.Environments.ToList();
+            var updatedEnvironments = updatedProject.Environments.ToList();
+
+            updatedEnvironments.Count.Should().Be(originalEnvironments.Count() + 1);
+
+            foreach (var originalEnvironment in originalEnvironments)
             {
                 updatedEnvironments.Should().Contain(e =>
-                    e.Key == originalEnvironments.Key &&
-                    e.Name == originalEnvironments.Name);
+                    e.Key == originalEnvironment.Key &&
+                    e.Name == originalEnvironment.Name);
             }
 
             updatedEnvironments.Should().Contain(e =>

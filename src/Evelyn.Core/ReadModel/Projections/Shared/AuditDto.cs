@@ -27,14 +27,14 @@
 
         public static AuditDto Create(EventAuditDto eventAudit)
         {
-            return new AuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.AggregateRootVersion);
+            return new AuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.EventVersion);
         }
 
         public void Update(EventAuditDto eventAudit)
         {
             LastModified = eventAudit.OccurredAt;
             LastModifiedBy = eventAudit.InitiatedBy;
-            Version = eventAudit.AggregateRootVersion;
+            Version = eventAudit.EventVersion;
         }
     }
 }

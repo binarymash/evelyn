@@ -10,7 +10,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateAddedSpecs : ProjectionHarness<ToggleStateAdded>
+    public class ToggleStateAddedSpecs : ProjectionBuilderHarness<ToggleStateAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -28,7 +28,7 @@
                 .And(_ => GivenTheProjectAlreadyHasAToggleState())
                 .When(_ => WhenWeHandleAToggleStateAddedEvent())
                 .Then(_ => ThenTheNewToggleStateIsAdded())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .BDDfy();
         }
 
@@ -39,7 +39,7 @@
 
         private void GivenTheProjectAlreadyHasAToggleState()
         {
-            OriginalProjection.AddToggleState(
+            OriginalProjection.EnvironmentState.AddToggleState(
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
@@ -57,10 +57,10 @@
 
         private void ThenTheNewToggleStateIsAdded()
         {
-            var toggleStates = UpdatedProjection.ToggleStates.ToList();
-            toggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() + 1);
+            var toggleStates = UpdatedProjection.EnvironmentState.ToggleStates.ToList();
+            toggleStates.Count.Should().Be(OriginalProjection.EnvironmentState.ToggleStates.Count() + 1);
 
-            foreach (var toggleState in OriginalProjection.ToggleStates)
+            foreach (var toggleState in OriginalProjection.EnvironmentState.ToggleStates)
             {
                 toggleStates.Should().Contain(ts =>
                     ts.Key == toggleState.Key &&

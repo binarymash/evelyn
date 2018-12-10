@@ -24,7 +24,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 Description = "Management API for Evelyn",
             };
 
-            services.AddSwaggerGen(c => c.SwaggerDoc("v0.1", swaggerInfo));
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v0.1", swaggerInfo);
+                config.CustomSchemaIds(type => type.FullName);
+            });
 
             options.Invoke(new EvelynApiOptions(services));
 

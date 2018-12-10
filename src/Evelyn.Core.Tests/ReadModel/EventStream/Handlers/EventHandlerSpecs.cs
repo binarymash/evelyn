@@ -25,14 +25,14 @@
     {
         private readonly Fixture _dataFixture;
         private readonly CancellationTokenSource _stoppingTokenSource;
-        private readonly IProjectionStore<EventHandlerStateDto> _eventHandlerStateStore;
+        private readonly IProjectionStore<Core.ReadModel.Projections.EventHandlerState.Projection> _eventHandlerStateStore;
         private readonly ServiceProvider _serviceProvider;
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
         private Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream> _eventHandler;
         private EventEnvelope _eventEnvelope;
-        private EventHandlerStateDto _originalEventHandlerState;
-        private EventHandlerStateDto _updatedEventHandlerState;
+        private Core.ReadModel.Projections.EventHandlerState.Projection _originalEventHandlerState;
+        private Core.ReadModel.Projections.EventHandlerState.Projection _updatedEventHandlerState;
         private Exception _thrownException;
 
         public EventHandlerSpecs()
@@ -45,19 +45,19 @@
                 ContractResolver = new JsonPrivateResolver()
             };
 
-            _eventHandlerStateStore = Substitute.For<IProjectionStore<EventHandlerStateDto>>();
+            _eventHandlerStateStore = Substitute.For<IProjectionStore<Core.ReadModel.Projections.EventHandlerState.Projection>>();
 
             _eventHandlerStateStore
-                .WhenForAnyArgs(ps => ps.Create(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
-                .Do(ci => _updatedEventHandlerState = ci.ArgAt<EventHandlerStateDto>(1));
+                .WhenForAnyArgs((IProjectionStore<Core.ReadModel.Projections.EventHandlerState.Projection> ps) => ps.Create(Arg.Any<string>(), Arg.Any<Core.ReadModel.Projections.EventHandlerState.Projection>()))
+                .Do(ci => _updatedEventHandlerState = ci.ArgAt<Core.ReadModel.Projections.EventHandlerState.Projection>(1));
 
             _eventHandlerStateStore
-                .WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<EventHandlerStateDto>()))
-                .Do(ci => _updatedEventHandlerState = ci.ArgAt<EventHandlerStateDto>(1));
+                .WhenForAnyArgs((IProjectionStore<Core.ReadModel.Projections.EventHandlerState.Projection> ps) => ps.Update(Arg.Any<string>(), Arg.Any<Core.ReadModel.Projections.EventHandlerState.Projection>()))
+                .Do(ci => _updatedEventHandlerState = ci.ArgAt<Core.ReadModel.Projections.EventHandlerState.Projection>(1));
 
             IServiceCollection services = new ServiceCollection();
             services.AddLogging();
-            services.AddSingleton<IProjectionStore<EventHandlerStateDto>>(_eventHandlerStateStore);
+            services.AddSingleton(_eventHandlerStateStore);
             services.AddSingleton<IProjectionBuilderRegistrar, ProjectionBuilderRegistrar>();
             services.AddSingleton<Core.ReadModel.EventStream.Handlers.EventHandler<SomeStream>>();
             services.AddSingleton<ProjectionBuilder1>();
@@ -196,22 +196,20 @@
 
         private void GivenThereIsNoEventHandlerState()
         {
-            _eventHandlerStateStore
-                .Get(Arg.Any<string>())
-                .Returns<EventHandlerStateDto>(ps => throw new ProjectionNotFoundException());
+            SubstituteExtensions.Returns(
+                _eventHandlerStateStore.Get(Arg.Any<string>()),
+                (Func<NSubstitute.Core.CallInfo, Core.ReadModel.Projections.EventHandlerState.Projection>)(ps => throw new ProjectionNotFoundException()));
         }
 
         private void GivenTheEventHasNotYetBeenHandled()
         {
-            _originalEventHandlerState = EventHandlerStateDto.Create();
-
             var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),
                 _eventEnvelope.StreamVersion - 1);
 
-            _originalEventHandlerState.Processed(eventAudit);
+            _originalEventHandlerState = Core.ReadModel.Projections.EventHandlerState.Projection.Create(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -220,15 +218,13 @@
 
         private void GivenTheEventHasAlreadyBeenHandled()
         {
-            _originalEventHandlerState = EventHandlerStateDto.Create();
-
             var eventAudit = EventAuditDto.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),
                 _eventEnvelope.StreamVersion + 1);
 
-            _originalEventHandlerState.Processed(eventAudit);
+            _originalEventHandlerState = Core.ReadModel.Projections.EventHandlerState.Projection.Create(eventAudit);
 
             _eventHandlerStateStore
                 .Get(Arg.Any<string>())
@@ -279,27 +275,27 @@
 
         private void ThenTheStateIsCreated()
         {
-            _eventHandlerStateStore.Received().Create(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
+            _eventHandlerStateStore.Received().Create(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
             _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsUpdated()
         {
-            _eventHandlerStateStore.Received().Update(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
+            _eventHandlerStateStore.Received().Update(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
             _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
         }
 
         private void ThenTheStateIsNotUpdated()
         {
-            _eventHandlerStateStore.DidNotReceive().Create(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _eventHandlerStateStore.DidNotReceive().Update(EventHandlerStateDto.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _eventHandlerStateStore.DidNotReceive().Delete(EventHandlerStateDto.StoreKey(typeof(SomeStream)));
+            _eventHandlerStateStore.DidNotReceive().Create(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
+            _eventHandlerStateStore.DidNotReceive().Update(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
+            _eventHandlerStateStore.DidNotReceive().Delete(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)));
         }
 
-        private EventHandlerStateDto CopyOf(EventHandlerStateDto original)
+        private Core.ReadModel.Projections.EventHandlerState.Projection CopyOf(Core.ReadModel.Projections.EventHandlerState.Projection original)
         {
             var serializedDto = JsonConvert.SerializeObject(original);
-            return JsonConvert.DeserializeObject<EventHandlerStateDto>(serializedDto, _deserializeWithPrivateSetters);
+            return JsonConvert.DeserializeObject<Core.ReadModel.Projections.EventHandlerState.Projection>(serializedDto, _deserializeWithPrivateSetters);
         }
 
         public static class HandledEventTracker

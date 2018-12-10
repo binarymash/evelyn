@@ -10,15 +10,15 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateAddedSpecs : ProjectionHarness<EnvironmentStateAdded>
+    public class EnvironmentStateAddedSpecs : ProjectionBuilderHarness<EnvironmentStateAdded>
     {
         [Fact]
         public void Nominal()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
-                .Then(_ => ThenTheProjectionIsCreated())
-                .And(_ => ThenTheAuditIsCreated())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .And(_ => ThenTheProjectionContainsTheEnvironmentState())
                 .BDDfy();
         }
 
@@ -37,11 +37,11 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreated()
+        private void ThenTheProjectionContainsTheEnvironmentState()
         {
-            ProjectionStore.Received().Create(EnvironmentStateDto.StoreKey(ProjectId, EnvironmentKey), UpdatedProjection);
+            ProjectionStore.Received().Create(Projection.StoreKey(ProjectId, EnvironmentKey), UpdatedProjection);
 
-            UpdatedProjection.ToggleStates.Should().BeEquivalentTo(Event.ToggleStates);
+            UpdatedProjection.EnvironmentState.ToggleStates.Should().BeEquivalentTo(Event.ToggleStates);
         }
     }
 }

@@ -8,10 +8,9 @@
         [JsonConstructor]
         protected ProjectionAuditDto(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
         {
+            // TODO: change to generated
             Created = created;
             CreatedBy = createdBy;
-            LastModified = lastModified;
-            LastModifiedBy = lastModifiedBy;
             Version = version;
         }
 
@@ -19,22 +18,11 @@
 
         public string CreatedBy { get; protected set; }
 
-        public DateTimeOffset LastModified { get; protected set; }
-
-        public string LastModifiedBy { get; protected set; }
-
         public long Version { get; protected set; }
 
         public static ProjectionAuditDto Create(EventAuditDto eventAudit)
         {
             return new ProjectionAuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.StreamVersion);
-        }
-
-        public void Update(EventAuditDto eventAudit)
-        {
-            LastModified = eventAudit.OccurredAt;
-            LastModifiedBy = eventAudit.InitiatedBy;
-            Version = eventAudit.StreamVersion;
         }
     }
 }

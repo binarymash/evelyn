@@ -3,30 +3,25 @@
     using System;
     using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.Projections;
-    using Evelyn.Core.ReadModel.Projections.AccountProjects;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentState;
-    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
 
     public class DatabaseReadModelFacade : IReadModelFacade
     {
-        private readonly IProjectionStore<AccountProjectsDto> _accountProjects;
+        private readonly IProjectionStore<Projections.AccountProjects.Projection> _accountProjects;
 
-        private readonly IProjectionStore<ProjectDetailsDto> _projectDetails;
+        private readonly IProjectionStore<Projections.ProjectDetails.Projection> _projectDetails;
 
-        private readonly IProjectionStore<EnvironmentDetailsDto> _environmentDetails;
+        private readonly IProjectionStore<Projections.EnvironmentDetails.Projection> _environmentDetails;
 
-        private readonly IProjectionStore<ToggleDetailsDto> _toggleDetails;
+        private readonly IProjectionStore<Projections.ToggleDetails.Projection> _toggleDetails;
 
-        private readonly IProjectionStore<EnvironmentStateDto> _environmentStates;
+        private readonly IProjectionStore<Projections.EnvironmentState.Projection> _environmentStates;
 
         public DatabaseReadModelFacade(
-            IProjectionStore<AccountProjectsDto> accountProjects,
-            IProjectionStore<ProjectDetailsDto> projectDetails,
-            IProjectionStore<EnvironmentDetailsDto> environmentDetails,
-            IProjectionStore<ToggleDetailsDto> toggleDetails,
-            IProjectionStore<EnvironmentStateDto> environmentStates)
+            IProjectionStore<Projections.AccountProjects.Projection> accountProjects,
+            IProjectionStore<Projections.ProjectDetails.Projection> projectDetails,
+            IProjectionStore<Projections.EnvironmentDetails.Projection> environmentDetails,
+            IProjectionStore<Projections.ToggleDetails.Projection> toggleDetails,
+            IProjectionStore<Projections.EnvironmentState.Projection> environmentStates)
         {
             _accountProjects = accountProjects;
             _projectDetails = projectDetails;
@@ -35,29 +30,29 @@
             _environmentStates = environmentStates;
         }
 
-        public async Task<AccountProjectsDto> GetProjects(Guid accountId)
+        public async Task<Projections.AccountProjects.Projection> GetProjects(Guid accountId)
         {
-            return await _accountProjects.Get(AccountProjectsDto.StoreKey(accountId));
+            return await _accountProjects.Get(Projections.AccountProjects.Projection.StoreKey(accountId));
         }
 
-        public async Task<ProjectDetailsDto> GetProjectDetails(Guid projectId)
+        public async Task<Projections.ProjectDetails.Projection> GetProjectDetails(Guid projectId)
         {
-            return await _projectDetails.Get(ProjectDetailsDto.StoreKey(projectId));
+            return await _projectDetails.Get(Projections.ProjectDetails.Projection.StoreKey(projectId));
         }
 
-        public async Task<EnvironmentDetailsDto> GetEnvironmentDetails(Guid projectId, string environmentKey)
+        public async Task<Projections.EnvironmentDetails.Projection> GetEnvironmentDetails(Guid projectId, string environmentKey)
         {
-            return await _environmentDetails.Get(EnvironmentDetailsDto.StoreKey(projectId, environmentKey));
+            return await _environmentDetails.Get(Projections.EnvironmentDetails.Projection.StoreKey(projectId, environmentKey));
         }
 
-        public async Task<ToggleDetailsDto> GetToggleDetails(Guid projectId, string toggleKey)
+        public async Task<Projections.ToggleDetails.Projection> GetToggleDetails(Guid projectId, string toggleKey)
         {
-            return await _toggleDetails.Get(ToggleDetailsDto.StoreKey(projectId, toggleKey));
+            return await _toggleDetails.Get(Projections.ToggleDetails.Projection.StoreKey(projectId, toggleKey));
         }
 
-        public async Task<EnvironmentStateDto> GetEnvironmentState(Guid projectId, string environmentName)
+        public async Task<Projections.EnvironmentState.Projection> GetEnvironmentState(Guid projectId, string environmentName)
         {
-            return await _environmentStates.Get(EnvironmentStateDto.StoreKey(projectId, environmentName));
+            return await _environmentStates.Get(Projections.EnvironmentState.Projection.StoreKey(projectId, environmentName));
         }
     }
 }

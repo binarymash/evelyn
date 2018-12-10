@@ -6,11 +6,11 @@
     public class EventAuditDto
     {
         [JsonConstructor]
-        protected EventAuditDto(DateTimeOffset lastModified, string lastModifiedBy, long aggregateRootVersion, long streamVersion)
+        protected EventAuditDto(DateTimeOffset lastModified, string lastModifiedBy, long eventVersion, long streamVersion)
         {
             OccurredAt = lastModified;
             InitiatedBy = lastModifiedBy;
-            AggregateRootVersion = aggregateRootVersion;
+            EventVersion = eventVersion;
             StreamVersion = streamVersion;
         }
 
@@ -18,13 +18,13 @@
 
         public string InitiatedBy { get; protected set; }
 
-        public long AggregateRootVersion { get; protected set; }
+        public long EventVersion { get; protected set; }
 
         public long StreamVersion { get; protected set; }
 
-        public static EventAuditDto Create(DateTimeOffset occurredAt, string initiatedBy, long aggregateRootVersion, long streamVersion)
+        public static EventAuditDto Create(DateTimeOffset occurredAt, string initiatedBy, long eventVersion, long streamVersion)
         {
-            return new EventAuditDto(occurredAt, initiatedBy, aggregateRootVersion, streamVersion);
+            return new EventAuditDto(occurredAt, initiatedBy, eventVersion, streamVersion);
         }
     }
 }

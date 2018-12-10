@@ -12,9 +12,9 @@
     {
         private readonly ILogger<EventHandler<TEventStream>> _logger;
         private readonly ProjectionBuildersByEventType _projectionBuildersByEventType;
-        private readonly IProjectionStore<EventHandlerStateDto> _eventHandlerStateStore;
+        private readonly IProjectionStore<Projections.EventHandlerState.Projection> _eventHandlerStateStore;
 
-        public EventHandler(ILogger<EventHandler<TEventStream>> logger, IProjectionStore<EventHandlerStateDto> eventHandlerStateStore, IProjectionBuilderRegistrar projectionBuilderRegistrar)
+        public EventHandler(ILogger<EventHandler<TEventStream>> logger, IProjectionStore<Projections.EventHandlerState.Projection> eventHandlerStateStore, IProjectionBuilderRegistrar projectionBuilderRegistrar)
         {
             _logger = logger;
             _eventHandlerStateStore = eventHandlerStateStore;
@@ -26,41 +26,45 @@
             try
             {
                 bool initialEvent = false;
-                EventHandlerStateDto state;
+                var storeKey = Projections.EventHandlerState.Projection.StoreKey(typeof(TEventStream));
+                Projections.EventHandlerState.Projection state;
 
                 try
                 {
-                    state = await _eventHandlerStateStore.Get(EventHandlerStateDto.StoreKey(typeof(TEventStream))).ConfigureAwait(false);
+                    state = await _eventHandlerStateStore.Get(storeKey).ConfigureAwait(false);
+                    if (eventEnvelope.StreamVersion <= state.Audit.Version)
+                    {
+                        _logger.LogInformation("Ignoring event with stream version {@eventStreamVersion} because we have already processed to {@currentStreamVersion}", eventEnvelope.StreamVersion, state.Audit.Version);
+                        return;
+                    }
                 }
                 catch (ProjectionNotFoundException)
                 {
-                    state = EventHandlerStateDto.Create();
                     _logger.LogInformation("No state found");
                     initialEvent = true;
                 }
 
-                if (state.Audit.Version < eventEnvelope.StreamVersion)
+                if (_projectionBuildersByEventType.TryGetValue(eventEnvelope.Event.GetType(), out var projectionBuilders))
                 {
-                    if (_projectionBuildersByEventType.TryGetValue(eventEnvelope.Event.GetType(), out var projectionBuilders))
+                    var tasks = new Task[projectionBuilders.Count];
+                    for (var index = 0; index < projectionBuilders.Count; index++)
                     {
-                        var tasks = new Task[projectionBuilders.Count];
-                        for (var index = 0; index < projectionBuilders.Count; index++)
-                        {
-                            tasks[index] = projectionBuilders[index](eventEnvelope.StreamVersion, eventEnvelope.Event, stoppingToken);
-                        }
-
-                        await Task.WhenAll(tasks);
+                        tasks[index] = projectionBuilders[index](eventEnvelope.StreamVersion, eventEnvelope.Event, stoppingToken);
                     }
 
-                    state.Processed(EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion));
-                    if (initialEvent)
-                    {
-                        await _eventHandlerStateStore.Create(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await _eventHandlerStateStore.Update(EventHandlerStateDto.StoreKey(typeof(TEventStream)), state).ConfigureAwait(false);
-                    }
+                    await Task.WhenAll(tasks);
+                }
+
+                var eventAudit = EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion);
+
+                state = Projections.EventHandlerState.Projection.Create(eventAudit);
+                if (initialEvent)
+                {
+                    await _eventHandlerStateStore.Create(storeKey, state).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _eventHandlerStateStore.Update(storeKey, state).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

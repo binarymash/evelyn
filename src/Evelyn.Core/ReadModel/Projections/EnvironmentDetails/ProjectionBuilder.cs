@@ -4,25 +4,31 @@
     using System.Threading.Tasks;
     using ProjectEvents = WriteModel.Project.Events;
 
-    public class ProjectionBuilder : ProjectionBuilder<EnvironmentDetailsDto>,
+    public class ProjectionBuilder : ProjectionBuilder<Projection>,
         IBuildProjectionsFrom<ProjectEvents.EnvironmentAdded>,
         IBuildProjectionsFrom<ProjectEvents.EnvironmentDeleted>
     {
-        public ProjectionBuilder(IProjectionStore<EnvironmentDetailsDto> projectionStore)
+        public ProjectionBuilder(IProjectionStore<Projection> projectionStore)
             : base(projectionStore)
         {
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
         {
-            var projection = EnvironmentDetailsDto.Create(CreateEventAudit(streamVersion, @event), @event.Id, @event.Key, @event.Name);
-            await Projections.Create(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.Key);
+
+            var environment = Model.Environment.Create(eventAudit, @event.Id, @event.Key, @event.Name);
+
+            var projection = Projection.Create(eventAudit, environment);
+            await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
-            var projection = await Projections.Get(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key));
-            await Projections.Delete(EnvironmentDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
+            var storeKey = Projection.StoreKey(@event.Id, @event.Key);
+
+            await Projections.Delete(storeKey).ConfigureAwait(false);
         }
     }
 }

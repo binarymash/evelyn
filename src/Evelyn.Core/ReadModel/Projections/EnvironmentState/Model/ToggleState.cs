@@ -1,8 +1,11 @@
-﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentState
+﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentState.Model
 {
-    public class ToggleStateDto
+    using Newtonsoft.Json;
+
+    public class ToggleState
     {
-        public ToggleStateDto(string key, string value, long version)
+        [JsonConstructor]
+        private ToggleState(string key, string value, long version)
         {
             Key = key;
             Value = value;
@@ -14,6 +17,11 @@
         public string Value { get; private set; }
 
         public long Version { get; private set; }
+
+        public static ToggleState Create(string key, string value, long version)
+        {
+            return new ToggleState(key, value, version);
+        }
 
         public void ChangeState(string value, long version)
         {

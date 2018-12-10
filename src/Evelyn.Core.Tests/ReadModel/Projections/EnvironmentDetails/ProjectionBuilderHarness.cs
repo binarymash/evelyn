@@ -5,10 +5,10 @@
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Core.WriteModel;
 
-    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<EnvironmentDetailsDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        protected ProjectionHarness()
+        protected ProjectionBuilderHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
@@ -25,9 +25,9 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<EnvironmentDetailsDto>();
-            ProjectId = OriginalProjection.ProjectId;
-            EnvironmentKey = OriginalProjection.Key;
+            OriginalProjection = DataFixture.Create<Projection>();
+            ProjectId = OriginalProjection.Environment.ProjectId;
+            EnvironmentKey = OriginalProjection.Environment.Key;
         }
     }
 }

@@ -4,12 +4,12 @@
     using Core.ReadModel.Projections.ToggleDetails;
     using Xunit;
 
-    public class ToggleDetailsDtoSpecs : DtoHarness<ToggleDetailsDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var dto = DataFixture.Create<ToggleDetailsDto>();
+            var dto = DataFixture.Create<Projection>();
             AssertSerializationOf(dto);
         }
     }

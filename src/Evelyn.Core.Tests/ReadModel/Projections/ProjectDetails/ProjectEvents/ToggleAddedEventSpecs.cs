@@ -9,7 +9,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleAddedEventSpecs : ProjectionHarness<ToggleAdded>
+    public class ToggleAddedEventSpecs : ProjectionBuilderHarness<ToggleAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -24,11 +24,11 @@
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
-                .And(_ => GivenThereAreTogglesOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProject())
+                .And(_ => GivenThereAreTogglesOnTheProject())
                 .When(_ => WhenWeHandleAToggleAddedEvent())
                 .Then(_ => ThenTheToggleIsAdded())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
@@ -49,12 +49,17 @@
 
         private void ThenTheToggleIsAdded()
         {
-            UpdatedProjection.Environments.Should().BeEquivalentTo(OriginalProjection.Environments);
+            var originalProject = OriginalProjection.Project;
+            var updatedProject = UpdatedProjection.Project;
 
-            var updatedToggles = UpdatedProjection.Toggles.ToList();
-            updatedToggles.Count.Should().Be(OriginalProjection.Toggles.Count() + 1);
+            updatedProject.Environments.Should().BeEquivalentTo(originalProject.Environments);
 
-            foreach (var originalToggle in OriginalProjection.Toggles)
+            var originalToggles = originalProject.Toggles.ToList();
+            var updatedToggles = updatedProject.Toggles.ToList();
+
+            updatedToggles.Count.Should().Be(originalToggles.Count() + 1);
+
+            foreach (var originalToggle in originalToggles)
             {
                 updatedToggles.Should().Contain(t =>
                     t.Key == originalToggle.Key &&

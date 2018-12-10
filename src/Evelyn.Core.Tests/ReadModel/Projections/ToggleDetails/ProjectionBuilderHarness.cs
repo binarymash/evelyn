@@ -5,10 +5,10 @@
     using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Core.WriteModel;
 
-    public abstract class ProjectionHarness<TEvent> : ProjectionsHarness<ToggleDetailsDto, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
         where TEvent : Event
     {
-        public ProjectionHarness()
+        public ProjectionBuilderHarness()
         {
             ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
         }
@@ -27,8 +27,8 @@
         {
             ProjectId = DataFixture.Create<Guid>();
 
-            OriginalProjection = DataFixture.Create<ToggleDetailsDto>();
-            ToggleKey = OriginalProjection.Key;
+            OriginalProjection = DataFixture.Create<Projection>();
+            ToggleKey = OriginalProjection.Toggle.Key;
         }
     }
 }

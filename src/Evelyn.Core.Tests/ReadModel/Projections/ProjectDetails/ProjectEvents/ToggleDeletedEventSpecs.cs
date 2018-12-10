@@ -11,7 +11,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleDeletedEventSpecs : ProjectionHarness<ToggleDeleted>
+    public class ToggleDeletedEventSpecs : ProjectionBuilderHarness<ToggleDeleted>
     {
         private string _toggleKey;
 
@@ -28,12 +28,12 @@
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
-                .And(_ => GivenThereAreTogglesOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProject())
+                .And(_ => GivenThereAreTogglesOnTheProject())
                 .And(_ => GivenOurToggleIsOnTheProjection())
                 .When(_ => WhenWeHandleAToggleDeletedEvent())
                 .Then(_ => ThenOurToggleIsDeleted())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
@@ -47,7 +47,7 @@
         {
             _toggleKey = DataFixture.Create<string>();
 
-            OriginalProjection.AddToggle(
+            OriginalProjection.Project.AddToggle(
                 DataFixture.Create<EventAuditDto>(),
                 _toggleKey,
                 DataFixture.Create<string>());
@@ -65,12 +65,17 @@
 
         private void ThenOurToggleIsDeleted()
         {
-            UpdatedProjection.Environments.Should().BeEquivalentTo(OriginalProjection.Environments);
+            var originalProject = OriginalProjection.Project;
+            var updatedProject = UpdatedProjection.Project;
 
-            var updatedToggles = UpdatedProjection.Toggles.ToList();
-            updatedToggles.Count.Should().Be(OriginalProjection.Toggles.Count() - 1);
+            updatedProject.Environments.Should().BeEquivalentTo(originalProject.Environments);
 
-            foreach (var originalToggle in OriginalProjection.Toggles)
+            var originalToggles = originalProject.Toggles.ToList();
+            var updatedToggles = updatedProject.Toggles.ToList();
+
+            updatedToggles.Count.Should().Be(originalToggles.Count() - 1);
+
+            foreach (var originalToggle in originalToggles)
             {
                 if (originalToggle.Key == Event.Key)
                 {

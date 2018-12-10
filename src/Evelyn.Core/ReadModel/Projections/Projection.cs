@@ -2,9 +2,9 @@
 {
     using Evelyn.Core.ReadModel.Projections.Shared;
 
-    public abstract class DtoRoot
+    public abstract class Projection
     {
-        protected DtoRoot(ProjectionAuditDto audit)
+        protected Projection(ProjectionAuditDto audit)
         {
             Audit = audit;
         }

@@ -6,12 +6,12 @@
     using FluentAssertions;
     using Newtonsoft.Json;
 
-    public abstract class DtoHarness<TDto>
-        where TDto : DtoRoot
+    public abstract class ProjectionHarness<TProjection>
+        where TProjection : Projection
     {
         private readonly JsonSerializerSettings _deserializeWithPrivateSetters;
 
-        public DtoHarness()
+        public ProjectionHarness()
         {
             DataFixture = new Fixture();
 
@@ -23,10 +23,10 @@
 
         protected Fixture DataFixture { get; }
 
-        protected void AssertSerializationOf(TDto dto)
+        protected void AssertSerializationOf(TProjection dto)
         {
             var serializedDto = JsonConvert.SerializeObject(dto);
-            var deserializedDto = JsonConvert.DeserializeObject<TDto>(serializedDto, _deserializeWithPrivateSetters);
+            var deserializedDto = JsonConvert.DeserializeObject<TProjection>(serializedDto, _deserializeWithPrivateSetters);
             deserializedDto.Should().BeEquivalentTo(dto);
         }
     }

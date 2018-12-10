@@ -5,49 +5,71 @@
     using System.Threading.Tasks;
     using ProjectEvents = WriteModel.Project.Events;
 
-    public class ProjectionBuilder : ProjectionBuilder<EnvironmentStateDto>,
+    public class ProjectionBuilder : ProjectionBuilder<Projection>,
         IBuildProjectionsFrom<ProjectEvents.EnvironmentStateAdded>,
         IBuildProjectionsFrom<ProjectEvents.EnvironmentStateDeleted>,
         IBuildProjectionsFrom<ProjectEvents.ToggleStateAdded>,
         IBuildProjectionsFrom<ProjectEvents.ToggleStateChanged>,
         IBuildProjectionsFrom<ProjectEvents.ToggleStateDeleted>
     {
-        public ProjectionBuilder(IProjectionStore<EnvironmentStateDto> projectionStore)
+        public ProjectionBuilder(IProjectionStore<Projection> projectionStore)
             : base(projectionStore)
         {
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.EnvironmentStateAdded @event, CancellationToken stoppingToken)
         {
-            var toggleStates = @event.ToggleStates.Select(ts => new ToggleStateDto(ts.Key, ts.Value, @event.Version));
-            var projection = EnvironmentStateDto.Create(CreateEventAudit(streamVersion, @event), toggleStates);
-            await Projections.Create(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+
+            var toggleStates = @event.ToggleStates.Select(ts => Model.ToggleState.Create(ts.Key, ts.Value, @event.Version));
+            var environmentState = Model.EnvironmentState.Create(eventAudit, toggleStates);
+
+            var projection = Projection.Create(eventAudit, environmentState);
+            await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.EnvironmentStateDeleted @event, CancellationToken stoppingToken)
         {
-            await Projections.Delete(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
+            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+
+            await Projections.Delete(storeKey).ConfigureAwait(false);
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.ToggleStateAdded @event, CancellationToken stoppingToken)
         {
-            var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-            projection.AddToggleState(CreateEventAudit(streamVersion, @event), @event.ToggleKey, @event.Value);
-            await Projections.Update(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+            var environmentState = (await Projections.Get(storeKey).ConfigureAwait(false)).EnvironmentState;
+
+            environmentState.AddToggleState(eventAudit, @event.ToggleKey, @event.Value);
+
+            var projection = Projection.Create(eventAudit, environmentState);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.ToggleStateChanged @event, CancellationToken stoppingToken)
         {
-            var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-            projection.ChangeToggleState(CreateEventAudit(streamVersion, @event), @event.ToggleKey, @event.Value);
-            await Projections.Update(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+            var environmentState = (await Projections.Get(storeKey).ConfigureAwait(false)).EnvironmentState;
+
+            environmentState.ChangeToggleState(CreateEventAudit(streamVersion, @event), @event.ToggleKey, @event.Value);
+
+            var projection = Projection.Create(eventAudit, environmentState);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
         public async Task Handle(long streamVersion, ProjectEvents.ToggleStateDeleted @event, CancellationToken stoppingToken)
         {
-            var projection = await Projections.Get(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey)).ConfigureAwait(false);
-            projection.DeleteToggleState(CreateEventAudit(streamVersion, @event), @event.ToggleKey);
-            await Projections.Update(EnvironmentStateDto.StoreKey(@event.Id, @event.EnvironmentKey), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+            var environmentState = (await Projections.Get(storeKey).ConfigureAwait(false)).EnvironmentState;
+
+            environmentState.DeleteToggleState(CreateEventAudit(streamVersion, @event), @event.ToggleKey);
+
+            var projection = Projection.Create(eventAudit, environmentState);
+            await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
     }
 }

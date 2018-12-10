@@ -10,7 +10,7 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class ProjectCreatedSpecs : ProjectionHarness<ProjectEvents.ProjectCreated>
+    public class ProjectCreatedSpecs : ProjectionBuilderHarness<ProjectEvents.ProjectCreated>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -26,11 +26,11 @@
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsOnTheProjection())
-                .And(_ => GivenAnotherProjectIsOnTheProjection())
+                .And(_ => GivenOurProjectIsOnTheAccount())
+                .And(_ => GivenAnotherProjectIsOnTheAccount())
                 .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenOurProjectNameIsUpdated())
-                .And(_ => ThenTheAuditIsUpdated())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .Then(_ => ThenTheNameOfTheProjectIsUpdated())
                 .And(_ => ThenTheAccountAuditIsNotUpdated())
                 .BDDfy();
         }
@@ -50,32 +50,37 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenOurProjectNameIsUpdated()
+        private void ThenTheNameOfTheProjectIsUpdated()
         {
-            UpdatedProjection.AccountId.Should().Be(OriginalProjection.AccountId);
+            var originalAccount = OriginalProjection.Account;
+            var updatedAccount = UpdatedProjection.Account;
 
-            var projects = UpdatedProjection.Projects.ToList();
-            projects.Count.Should().Be(OriginalProjection.Projects.Count());
+            updatedAccount.AccountId.Should().Be(originalAccount.AccountId);
 
-            foreach (var originalProject in OriginalProjection.Projects.Where(p => p.Id != Event.Id))
+            var originalProjects = originalAccount.Projects.ToList();
+            var updatedProjects = updatedAccount.Projects.ToList();
+
+            updatedProjects.Count.Should().Be(originalProjects.Count());
+
+            foreach (var originalProject in originalProjects.Where(p => p.Id != Event.Id))
             {
-                projects.Exists(p =>
+                updatedProjects.Exists(p =>
                     p.Id == originalProject.Id &&
                     p.Name == originalProject.Name).Should().BeTrue();
             }
 
-            projects.Exists(p =>
+            updatedProjects.Exists(p =>
                 p.Id == Event.Id &&
                 p.Name == Event.Name).Should().BeTrue();
         }
 
         private void ThenTheAccountAuditIsNotUpdated()
         {
-            UpdatedProjection.AccountAudit.Created.Should().Be(OriginalProjection.AccountAudit.Created);
-            UpdatedProjection.AccountAudit.CreatedBy.Should().Be(OriginalProjection.AccountAudit.CreatedBy);
-            UpdatedProjection.AccountAudit.LastModified.Should().Be(OriginalProjection.AccountAudit.LastModified);
-            UpdatedProjection.AccountAudit.LastModifiedBy.Should().Be(OriginalProjection.AccountAudit.LastModifiedBy);
-            UpdatedProjection.AccountAudit.Version.Should().Be(OriginalProjection.AccountAudit.Version);
+            UpdatedProjection.Account.Audit.Created.Should().Be(OriginalProjection.Account.Audit.Created);
+            UpdatedProjection.Account.Audit.CreatedBy.Should().Be(OriginalProjection.Account.Audit.CreatedBy);
+            UpdatedProjection.Account.Audit.LastModified.Should().Be(OriginalProjection.Account.Audit.LastModified);
+            UpdatedProjection.Account.Audit.LastModifiedBy.Should().Be(OriginalProjection.Account.Audit.LastModifiedBy);
+            UpdatedProjection.Account.Audit.Version.Should().Be(OriginalProjection.Account.Audit.Version);
         }
     }
 }

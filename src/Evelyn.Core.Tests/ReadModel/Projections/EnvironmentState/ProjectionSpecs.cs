@@ -4,12 +4,12 @@
     using Core.ReadModel.Projections.EnvironmentState;
     using Xunit;
 
-    public class EnvironmentStateDtoSpecs : DtoHarness<EnvironmentStateDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var dto = DataFixture.Create<EnvironmentStateDto>();
+            var dto = DataFixture.Create<Projection>();
             AssertSerializationOf(dto);
         }
     }

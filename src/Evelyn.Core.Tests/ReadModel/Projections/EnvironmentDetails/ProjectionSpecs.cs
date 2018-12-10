@@ -4,12 +4,12 @@
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Xunit;
 
-    public class EnvironmentDetailsDtoSpecs : DtoHarness<EnvironmentDetailsDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var environmentDetailsDto = DataFixture.Create<EnvironmentDetailsDto>();
+            var environmentDetailsDto = DataFixture.Create<Projection>();
             AssertSerializationOf(environmentDetailsDto);
         }
     }

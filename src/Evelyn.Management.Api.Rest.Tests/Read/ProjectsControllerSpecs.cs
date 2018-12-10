@@ -4,9 +4,9 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
-    using Core.ReadModel.Projections.AccountProjects;
     using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
+    using Evelyn.Core.ReadModel.Projections.AccountProjects;
     using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
@@ -27,8 +27,8 @@
         private readonly IReadModelFacade _readModelFacade;
         private readonly Guid _accountId = Constants.DefaultAccount;
         private Guid _idOfProjectToGet;
-        private AccountProjectsDto _accountProjectsReturnedByFacade;
-        private ProjectDetailsDto _projectReturnedByFacade;
+        private Core.ReadModel.Projections.AccountProjects.Projection _accountProjectsProjectionReturnedByFacade;
+        private Core.ReadModel.Projections.ProjectDetails.Projection _projectDetailsProjectionReturnedByFacade;
         private ObjectResult _result;
 
         public ProjectsControllerSpecs()
@@ -88,11 +88,17 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            _accountProjectsReturnedByFacade = AccountProjectsDto.Create(
-                _fixture.Create<EventAuditDto>(),
+            var eventAudit = _fixture.Create<EventAuditDto>();
+
+            var account = Core.ReadModel.Projections.AccountProjects.Model.Account.Create(
+                eventAudit,
                 _accountId);
 
-            _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsReturnedByFacade);
+            _accountProjectsProjectionReturnedByFacade = Core.ReadModel.Projections.AccountProjects.Projection.Create(
+                eventAudit,
+                account);
+
+            _readModelFacade.GetProjects(_accountId).Returns(_accountProjectsProjectionReturnedByFacade);
         }
 
         private void GivenThatAnExceptionIsThrownByHandlerWhenGettingProjects()
@@ -104,11 +110,11 @@
 
         private void GivenTheProjectWeWantDoesExist()
         {
-            _projectReturnedByFacade = _fixture.Create<ProjectDetailsDto>();
-            _idOfProjectToGet = _projectReturnedByFacade.Id;
+            _projectDetailsProjectionReturnedByFacade = _fixture.Create<Core.ReadModel.Projections.ProjectDetails.Projection>();
+            _idOfProjectToGet = _projectDetailsProjectionReturnedByFacade.Project.Id;
             _readModelFacade
                 .GetProjectDetails(_idOfProjectToGet)
-                .Returns(_projectReturnedByFacade);
+                .Returns(_projectDetailsProjectionReturnedByFacade);
         }
 
         private void GivenTheProjectWeWantDoesntExist()
@@ -154,15 +160,14 @@
 
         private void ThenAllProjectsAreReturned()
         {
-            var accountProjectsDto = _result.Value as AccountProjectsDto;
-            accountProjectsDto.Should().Be(_accountProjectsReturnedByFacade);
+            var projection = _result.Value as Core.ReadModel.Projections.AccountProjects.Projection;
+            projection.Should().Be(_accountProjectsProjectionReturnedByFacade);
         }
 
         private void ThenTheExpectedProjectIsReturned()
         {
-            var returnedProject = _result.Value as ProjectDetailsDto;
-
-            returnedProject.Should().Be(_projectReturnedByFacade);
+            var returnedProject = _result.Value as Core.ReadModel.Projections.ProjectDetails.Projection;
+            returnedProject.Should().Be(_projectDetailsProjectionReturnedByFacade);
         }
     }
 }

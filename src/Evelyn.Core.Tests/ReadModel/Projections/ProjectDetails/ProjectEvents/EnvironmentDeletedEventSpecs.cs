@@ -11,7 +11,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentDeletedEventSpecs : ProjectionHarness<EnvironmentDeleted>
+    public class EnvironmentDeletedEventSpecs : ProjectionBuilderHarness<EnvironmentDeleted>
     {
         private string _environmentKey;
 
@@ -29,10 +29,10 @@
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurEnvironmentIsOnTheProjection())
-                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProject())
                 .When(_ => WhenWeHandleAnEnvironmentDeletedEvent())
                 .Then(_ => ThenOurEnvironmentIsDeleted())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
@@ -46,7 +46,7 @@
         {
             _environmentKey = DataFixture.Create<string>();
 
-            OriginalProjection.AddEnvironment(
+            OriginalProjection.Project.AddEnvironment(
                 DataFixture.Create<EventAuditDto>(),
                 _environmentKey,
                 DataFixture.Create<string>());
@@ -64,12 +64,12 @@
 
         private void ThenOurEnvironmentIsDeleted()
         {
-            UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
+            UpdatedProjection.Project.Toggles.Should().BeEquivalentTo(OriginalProjection.Project.Toggles);
 
-            var updatedEnvironments = UpdatedProjection.Environments.ToList();
-            updatedEnvironments.Count.Should().Be(OriginalProjection.Environments.Count() - 1);
+            var updatedEnvironments = UpdatedProjection.Project.Environments.ToList();
+            updatedEnvironments.Count.Should().Be(OriginalProjection.Project.Environments.Count() - 1);
 
-            foreach (var originalEnvironment in OriginalProjection.Environments)
+            foreach (var originalEnvironment in OriginalProjection.Project.Environments)
             {
                 if (originalEnvironment.Key == Event.Key)
                 {

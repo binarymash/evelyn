@@ -2,25 +2,25 @@
 {
     using System;
     using AutoFixture;
-    using Core.ReadModel.Projections.AccountProjects;
+    using Evelyn.Core.ReadModel.Projections.AccountProjects;
     using Evelyn.Core.ReadModel.Projections.Shared;
     using Xunit;
 
-    public class AccountProjectsDtoSpecs : DtoHarness<AccountProjectsDto>
+    public class ProjectionSpecs : ProjectionHarness<Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var accountProjects = AccountProjectsDto.Create(
+            var projection = Projection.Create(
                 DataFixture.Create<EventAuditDto>(),
-                DataFixture.Create<Guid>());
+                DataFixture.Create<Evelyn.Core.ReadModel.Projections.AccountProjects.Model.Account>());
 
-            accountProjects.AddProject(
+            projection.Account.AddProject(
                 DataFixture.Create<EventAuditDto>(),
                 DataFixture.Create<Guid>(),
                 DataFixture.Create<string>());
 
-            AssertSerializationOf(accountProjects);
+            AssertSerializationOf(projection);
         }
     }
 }
