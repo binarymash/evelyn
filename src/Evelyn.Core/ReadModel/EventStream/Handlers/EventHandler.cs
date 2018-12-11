@@ -30,9 +30,9 @@
                 try
                 {
                     state = await _eventHandlerStateStore.Get(storeKey).ConfigureAwait(false);
-                    if (eventEnvelope.StreamVersion <= state.Audit.Version)
+                    if (eventEnvelope.StreamPosition <= state.Audit.StreamPosition)
                     {
-                        _logger.LogInformation("Ignoring event with stream version {@eventStreamVersion} because we have already processed to {@currentStreamVersion}", eventEnvelope.StreamVersion, state.Audit.Version);
+                        _logger.LogInformation("Ignoring event with stream position {@eventStreamPosition} because we have already processed to {@currentStreamPosition}", eventEnvelope.StreamPosition, state.Audit.StreamPosition);
                         return;
                     }
                 }
@@ -47,13 +47,13 @@
                     var tasks = new Task[projectionBuilders.Count];
                     for (var index = 0; index < projectionBuilders.Count; index++)
                     {
-                        tasks[index] = projectionBuilders[index](eventEnvelope.StreamVersion, eventEnvelope.Event, stoppingToken);
+                        tasks[index] = projectionBuilders[index](eventEnvelope.StreamPosition, eventEnvelope.Event, stoppingToken);
                     }
 
                     await Task.WhenAll(tasks);
                 }
 
-                var eventAudit = EventAudit.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion);
+                var eventAudit = EventAudit.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamPosition);
 
                 state = Projections.EventHandlerState.Projection.Create(eventAudit);
                 if (initialEvent)

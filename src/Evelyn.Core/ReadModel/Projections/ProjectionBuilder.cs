@@ -11,9 +11,9 @@
 
         protected IProjectionStore<TDto> Projections { get; }
 
-        protected EventAudit CreateEventAudit(long streamVersion, Event @event)
+        protected EventAudit CreateEventAudit(long streamPosition, Event @event)
         {
-            return EventAudit.Create(@event.OccurredAt, @event.UserId, @event.Version, streamVersion);
+            return EventAudit.Create(@event.OccurredAt, @event.UserId, @event.Version, streamPosition);
         }
     }
 }

@@ -26,7 +26,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(StreamVersion, Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleAddedEvent()

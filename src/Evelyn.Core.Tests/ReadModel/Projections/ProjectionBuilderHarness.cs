@@ -38,7 +38,7 @@
             ProjectionStore.WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<TProjection>()))
                 .Do(ci => UpdatedProjection = ci.ArgAt<TProjection>(1));
 
-            StreamVersion = DataFixture.Create<long>();
+            StreamPosition = DataFixture.Create<long>();
         }
 
         protected Fixture DataFixture { get; }
@@ -53,17 +53,23 @@
 
         protected TEvent Event { get; set; }
 
-        protected long StreamVersion { get; set; }
+        protected long StreamPosition { get; set; }
 
         protected TProjection UpdatedProjection { get; set; }
 
         protected Exception ThrownException { get; set; }
 
+        protected DateTimeOffset TimeBeforeHandled { get; private set; }
+
+        protected DateTimeOffset TimeAfterHandled { get; private set; }
+
         protected async Task WhenTheEventIsHandled()
         {
             try
             {
+                TimeBeforeHandled = DateTimeOffset.UtcNow;
                 await HandleEventImplementation();
+                TimeAfterHandled = DateTimeOffset.UtcNow;
             }
             catch (Exception ex)
             {
@@ -88,9 +94,8 @@
 
         protected void ThenTheProjectionAuditIsSet()
         {
-            UpdatedProjection.Audit.Created.Should().Be(Event.OccurredAt);
-            UpdatedProjection.Audit.CreatedBy.Should().Be(Event.UserId);
-            UpdatedProjection.Audit.Version.Should().Be(StreamVersion);
+            UpdatedProjection.Audit.Generated.Should().BeOnOrAfter(TimeBeforeHandled).And.BeOnOrBefore(TimeAfterHandled);
+            UpdatedProjection.Audit.StreamPosition.Should().Be(StreamPosition);
         }
 
         protected void AssertSerializationOf(TProjection projection)

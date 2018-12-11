@@ -205,7 +205,7 @@
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),
-                _eventEnvelope.StreamVersion - 1);
+                _eventEnvelope.StreamPosition - 1);
 
             _originalEventHandlerState = Core.ReadModel.Projections.EventHandlerState.Projection.Create(eventAudit);
 
@@ -220,7 +220,7 @@
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),
-                _eventEnvelope.StreamVersion + 1);
+                _eventEnvelope.StreamPosition + 1);
 
             _originalEventHandlerState = Core.ReadModel.Projections.EventHandlerState.Projection.Create(eventAudit);
 
@@ -274,13 +274,13 @@
         private void ThenTheStateIsCreated()
         {
             _eventHandlerStateStore.Received().Create(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.StreamPosition.Should().Be(_eventEnvelope.StreamPosition);
         }
 
         private void ThenTheStateIsUpdated()
         {
             _eventHandlerStateStore.Received().Update(Core.ReadModel.Projections.EventHandlerState.Projection.StoreKey(typeof(SomeStream)), _updatedEventHandlerState);
-            _updatedEventHandlerState.Audit.Version.Should().Be(_eventEnvelope.StreamVersion);
+            _updatedEventHandlerState.Audit.StreamPosition.Should().Be(_eventEnvelope.StreamPosition);
         }
 
         private void ThenTheStateIsNotUpdated()
@@ -365,7 +365,7 @@
 
         public class ProjectionBuilder1 : IBuildProjectionsFrom<SomeEvent>
         {
-            public async Task Handle(long streamVersion, SomeEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamPosition, SomeEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -373,7 +373,7 @@
 
         public class ProjectionBuilder2 : IBuildProjectionsFrom<SomeEvent>
         {
-            public async Task Handle(long streamVersion, SomeEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamPosition, SomeEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -381,7 +381,7 @@
 
         public class ProjectionBuilder3 : IBuildProjectionsFrom<SomeOtherEvent>
         {
-            public async Task Handle(long streamVersion, SomeOtherEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamPosition, SomeOtherEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }
@@ -389,7 +389,7 @@
 
         public class ProjectionBuilder4 : IBuildProjectionsFrom<SomeOtherEvent>
         {
-            public async Task Handle(long streamVersion, SomeOtherEvent @event, CancellationToken stoppingToken)
+            public async Task Handle(long streamPosition, SomeOtherEvent @event, CancellationToken stoppingToken)
             {
                 await HandledEventTracker.HandleEvent(this.GetType(), @event, stoppingToken);
             }

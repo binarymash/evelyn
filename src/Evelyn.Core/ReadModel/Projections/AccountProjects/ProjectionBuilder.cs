@@ -16,9 +16,9 @@
         {
         }
 
-        public async Task Handle(long streamVersion, AccountEvents.AccountRegistered @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, AccountEvents.AccountRegistered @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
 
             var account = Model.Account.Create(eventAudit, @event.Id);
@@ -27,9 +27,9 @@
             await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, AccountEvents.ProjectCreated @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, AccountEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var account = (await Projections.Get(storeKey).ConfigureAwait(false)).Account;
 
@@ -39,9 +39,9 @@
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, AccountEvents.ProjectDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, AccountEvents.ProjectDeleted @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var account = (await Projections.Get(storeKey).ConfigureAwait(false)).Account;
 
@@ -51,9 +51,9 @@
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.AccountId);
             var account = (await Projections.Get(storeKey).ConfigureAwait(false)).Account;
 

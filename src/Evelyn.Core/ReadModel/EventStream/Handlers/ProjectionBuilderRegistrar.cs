@@ -90,10 +90,10 @@
 
             var eventHandlerMethodName = GetImplementationNameOfInterfaceMethod(projectionBuilderType, eventHandlerType, "Handle", typeof(long), eventType, typeof(CancellationToken));
 
-            Func<long, object, CancellationToken, Task> eventHandlerMethodInvocation = (streamVersion, @event, token) =>
+            Func<long, object, CancellationToken, Task> eventHandlerMethodInvocation = (streamPositino, @event, token) =>
             {
                 var projectionBuilder = _serviceLocator.GetService(projectionBuilderType) ?? throw new Exception(projectionBuilderType.Name);
-                return (Task)projectionBuilder.Invoke(eventHandlerMethodName, streamVersion, @event, token) ?? throw new Exception(projectionBuilderType.Name);
+                return (Task)projectionBuilder.Invoke(eventHandlerMethodName, streamPositino, @event, token) ?? throw new Exception(projectionBuilderType.Name);
             };
 
             registerExecutorMethod.Invoke(this, new object[] { eventStreamHandlerType, eventHandlerMethodInvocation });
@@ -114,7 +114,7 @@
                 projectionBuildersForEventStreamHandler.Add(typeof(TEvent), projectionBuildersForEvent);
             }
 
-            projectionBuildersForEvent.Add((streamVersion, @event, stoppingToken) => eventHandlerMethodInvocation(streamVersion, (TEvent)@event, stoppingToken));
+            projectionBuildersForEvent.Add((streamPosition, @event, stoppingToken) => eventHandlerMethodInvocation(streamPosition, (TEvent)@event, stoppingToken));
         }
     }
 }

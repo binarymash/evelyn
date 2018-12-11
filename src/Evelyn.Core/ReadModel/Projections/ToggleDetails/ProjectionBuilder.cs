@@ -13,9 +13,9 @@
         {
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id, @event.Key);
 
             var toggle = Model.Toggle.Create(eventAudit, @event.Id, @event.Key, @event.Name);
@@ -24,9 +24,9 @@
             await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id, @event.Key);
 
             await Projections.Delete(storeKey).ConfigureAwait(false);

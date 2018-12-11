@@ -17,9 +17,9 @@
         {
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ProjectCreated @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
 
             var project = Model.Project.Create(eventAudit, @event.Id, @event.Name);
@@ -28,9 +28,9 @@
             await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var project = (await Projections.Get(storeKey).ConfigureAwait(false)).Project;
 
@@ -40,43 +40,43 @@
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var project = (await Projections.Get(storeKey).ConfigureAwait(false)).Project;
 
-            project.DeleteEnvironment(CreateEventAudit(streamVersion, @event), @event.Key);
+            project.DeleteEnvironment(CreateEventAudit(streamPosition, @event), @event.Key);
 
             var projection = Projection.Create(eventAudit, project);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var project = (await Projections.Get(storeKey).ConfigureAwait(false)).Project;
 
-            project.AddToggle(CreateEventAudit(streamVersion, @event), @event.Key, @event.Name);
+            project.AddToggle(CreateEventAudit(streamPosition, @event), @event.Key, @event.Name);
 
             var projection = Projection.Create(eventAudit, project);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id);
             var project = (await Projections.Get(storeKey).ConfigureAwait(false)).Project;
 
-            project.DeleteToggle(CreateEventAudit(streamVersion, @event), @event.Key);
+            project.DeleteToggle(CreateEventAudit(streamPosition, @event), @event.Key);
 
             var projection = Projection.Create(eventAudit, project);
             await Projections.Update(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.ProjectDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ProjectDeleted @event, CancellationToken stoppingToken)
         {
             await Projections.Delete(Projection.StoreKey(@event.Id)).ConfigureAwait(false);
         }

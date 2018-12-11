@@ -13,9 +13,9 @@
         {
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.EnvironmentAdded @event, CancellationToken stoppingToken)
         {
-            var eventAudit = CreateEventAudit(streamVersion, @event);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
             var storeKey = Projection.StoreKey(@event.Id, @event.Key);
 
             var environment = Model.Environment.Create(eventAudit, @event.Id, @event.Key, @event.Name);
@@ -24,7 +24,7 @@
             await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(long streamVersion, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.EnvironmentDeleted @event, CancellationToken stoppingToken)
         {
             var storeKey = Projection.StoreKey(@event.Id, @event.Key);
 

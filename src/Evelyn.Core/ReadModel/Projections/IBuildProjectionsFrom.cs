@@ -7,6 +7,6 @@
     public interface IBuildProjectionsFrom<TEvent>
         where TEvent : IEvent
     {
-        Task Handle(long streamVersion, TEvent @event, CancellationToken stoppingToken);
+        Task Handle(long streamPosition, TEvent @event, CancellationToken stoppingToken);
     }
 }
