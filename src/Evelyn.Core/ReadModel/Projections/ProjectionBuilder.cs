@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections
 {
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
 
     public abstract class ProjectionBuilder<TDto>
@@ -12,9 +11,9 @@
 
         protected IProjectionStore<TDto> Projections { get; }
 
-        protected EventAuditDto CreateEventAudit(long streamVersion, Event @event)
+        protected EventAudit CreateEventAudit(long streamVersion, Event @event)
         {
-            return EventAuditDto.Create(@event.OccurredAt, @event.UserId, @event.Version, streamVersion);
+            return EventAudit.Create(@event.OccurredAt, @event.UserId, @event.Version, streamVersion);
         }
     }
 }

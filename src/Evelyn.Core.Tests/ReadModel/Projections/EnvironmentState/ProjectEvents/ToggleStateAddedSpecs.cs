@@ -1,14 +1,13 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
     public class ToggleStateAddedSpecs : ProjectionBuilderHarness<ToggleStateAdded>
     {
@@ -40,7 +39,7 @@
         private void GivenTheProjectAlreadyHasAToggleState()
         {
             OriginalProjection.EnvironmentState.AddToggleState(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
         }

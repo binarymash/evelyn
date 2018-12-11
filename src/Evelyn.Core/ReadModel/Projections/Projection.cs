@@ -1,14 +1,12 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections
 {
-    using Evelyn.Core.ReadModel.Projections.Shared;
-
     public abstract class Projection
     {
-        protected Projection(ProjectionAuditDto audit)
+        protected Projection(ProjectionAudit audit)
         {
             Audit = audit;
         }
 
-        public ProjectionAuditDto Audit { get; protected set; }
+        public ProjectionAudit Audit { get; protected set; }
     }
 }

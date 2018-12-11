@@ -2,17 +2,16 @@
 {
     using System;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.AccountProjects;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
     using NSubstitute;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projections.AccountProjects.Projection, Projections.AccountProjects.ProjectionBuilder, TEvent>
         where TEvent : Event
     {
         protected ProjectionBuilderHarness()
         {
-            ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
+            ProjectionBuilder = new Projections.AccountProjects.ProjectionBuilder(ProjectionStore);
         }
 
         protected Guid AccountId { get; private set; }
@@ -26,7 +25,7 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<Projection>();
+            OriginalProjection = DataFixture.Create<Core.ReadModel.Projections.AccountProjects.Projection>();
             AccountId = OriginalProjection.Account.AccountId;
         }
 
@@ -39,7 +38,7 @@
         {
             ProjectId = DataFixture.Create<Guid>();
             OriginalProjection.Account.AddProject(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 ProjectId,
                 DataFixture.Create<string>());
         }
@@ -47,14 +46,14 @@
         protected void GivenAnotherProjectIsOnTheAccount()
         {
             OriginalProjection.Account.AddProject(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 DataFixture.Create<Guid>(),
                 DataFixture.Create<string>());
         }
 
         protected void ThenTheProjectionIsCreated()
         {
-            ProjectionStore.Received().Create(Projection.StoreKey(AccountId), UpdatedProjection);
+            ProjectionStore.Received().Create(Core.ReadModel.Projections.AccountProjects.Projection.StoreKey(AccountId), UpdatedProjection);
         }
     }
 }

@@ -2,15 +2,15 @@
 {
     using System;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Core.WriteModel;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projections.ToggleDetails.Projection, Projections.ToggleDetails.ProjectionBuilder, TEvent>
         where TEvent : Event
     {
         public ProjectionBuilderHarness()
         {
-            ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
+            ProjectionBuilder = new Projections.ToggleDetails.ProjectionBuilder(ProjectionStore);
         }
 
         protected Guid ProjectId { get; private set; }
@@ -27,7 +27,7 @@
         {
             ProjectId = DataFixture.Create<Guid>();
 
-            OriginalProjection = DataFixture.Create<Projection>();
+            OriginalProjection = DataFixture.Create<Projections.ToggleDetails.Projection>();
             ToggleKey = OriginalProjection.Toggle.Key;
         }
     }

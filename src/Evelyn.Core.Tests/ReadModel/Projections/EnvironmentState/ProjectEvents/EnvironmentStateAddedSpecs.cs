@@ -1,6 +1,5 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
 {
-    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.EnvironmentState;

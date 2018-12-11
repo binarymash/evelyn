@@ -1,13 +1,12 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.ToggleDetails
 {
     using System;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class Projection : Projections.Projection
     {
         [JsonConstructor]
-        public Projection(ProjectionAuditDto audit, Model.Toggle toggle)
+        public Projection(ProjectionAudit audit, Model.Toggle toggle)
             : base(audit)
         {
             Toggle = toggle;
@@ -15,9 +14,9 @@
 
         public Model.Toggle Toggle { get; private set; }
 
-        public static Projection Create(EventAuditDto eventAudit, Model.Toggle toggle)
+        public static Projection Create(EventAudit eventAudit, Model.Toggle toggle)
         {
-            return new Projection(ProjectionAuditDto.Create(eventAudit), toggle);
+            return new Projection(ProjectionAudit.Create(eventAudit), toggle);
         }
 
         public static string StoreKey(Guid projectId, string toggleKey)

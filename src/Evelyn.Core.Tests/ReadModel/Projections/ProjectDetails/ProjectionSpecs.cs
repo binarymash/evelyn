@@ -1,15 +1,15 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails
 {
     using AutoFixture;
-    using Core.ReadModel.Projections.ProjectDetails;
     using Xunit;
+    using Projections = Core.ReadModel.Projections;
 
-    public class ProjectionSpecs : ProjectionHarness<Projection>
+    public class ProjectionSpecs : ProjectionHarness<Projections.ProjectDetails.Projection>
     {
         [Fact]
         public void Serialization()
         {
-            var projection = DataFixture.Create<Projection>();
+            var projection = DataFixture.Create<Projections.ProjectDetails.Projection>();
             AssertSerializationOf(projection);
         }
     }

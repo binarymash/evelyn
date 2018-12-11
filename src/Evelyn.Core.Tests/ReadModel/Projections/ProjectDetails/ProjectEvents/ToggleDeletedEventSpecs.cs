@@ -1,15 +1,13 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails.ProjectEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
     public class ToggleDeletedEventSpecs : ProjectionBuilderHarness<ToggleDeleted>
     {
@@ -48,7 +46,7 @@
             _toggleKey = DataFixture.Create<string>();
 
             OriginalProjection.Project.AddToggle(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 _toggleKey,
                 DataFixture.Create<string>());
         }

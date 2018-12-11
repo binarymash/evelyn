@@ -1,12 +1,12 @@
-﻿namespace Evelyn.Core.ReadModel.Projections.Shared
+﻿namespace Evelyn.Core.ReadModel.Projections
 {
     using System;
     using Newtonsoft.Json;
 
-    public class EventAuditDto
+    public class EventAudit
     {
         [JsonConstructor]
-        protected EventAuditDto(DateTimeOffset lastModified, string lastModifiedBy, long eventVersion, long streamVersion)
+        protected EventAudit(DateTimeOffset lastModified, string lastModifiedBy, long eventVersion, long streamVersion)
         {
             OccurredAt = lastModified;
             InitiatedBy = lastModifiedBy;
@@ -22,9 +22,9 @@
 
         public long StreamVersion { get; protected set; }
 
-        public static EventAuditDto Create(DateTimeOffset occurredAt, string initiatedBy, long eventVersion, long streamVersion)
+        public static EventAudit Create(DateTimeOffset occurredAt, string initiatedBy, long eventVersion, long streamVersion)
         {
-            return new EventAuditDto(occurredAt, initiatedBy, eventVersion, streamVersion);
+            return new EventAudit(occurredAt, initiatedBy, eventVersion, streamVersion);
         }
     }
 }

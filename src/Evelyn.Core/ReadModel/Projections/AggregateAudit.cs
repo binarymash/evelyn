@@ -1,12 +1,12 @@
-﻿namespace Evelyn.Core.ReadModel.Projections.Shared
+﻿namespace Evelyn.Core.ReadModel.Projections
 {
     using System;
     using Newtonsoft.Json;
 
-    public class AuditDto
+    public class AggregateAudit
     {
         [JsonConstructor]
-        protected AuditDto(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
+        protected AggregateAudit(DateTimeOffset created, string createdBy, DateTimeOffset lastModified, string lastModifiedBy, long version)
         {
             Created = created;
             CreatedBy = createdBy;
@@ -25,12 +25,12 @@
 
         public long Version { get; protected set; }
 
-        public static AuditDto Create(EventAuditDto eventAudit)
+        public static AggregateAudit Create(EventAudit eventAudit)
         {
-            return new AuditDto(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.EventVersion);
+            return new AggregateAudit(eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.OccurredAt, eventAudit.InitiatedBy, eventAudit.EventVersion);
         }
 
-        public void Update(EventAuditDto eventAudit)
+        public void Update(EventAudit eventAudit)
         {
             LastModified = eventAudit.OccurredAt;
             LastModifiedBy = eventAudit.InitiatedBy;

@@ -2,15 +2,15 @@
 {
     using System;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Core.WriteModel;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projections.EnvironmentDetails.Projection, Projections.EnvironmentDetails.ProjectionBuilder, TEvent>
         where TEvent : Event
     {
         protected ProjectionBuilderHarness()
         {
-            ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
+            ProjectionBuilder = new Projections.EnvironmentDetails.ProjectionBuilder(ProjectionStore);
         }
 
         protected Guid ProjectId { get; private set; }
@@ -25,7 +25,7 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<Projection>();
+            OriginalProjection = DataFixture.Create<Projections.EnvironmentDetails.Projection>();
             ProjectId = OriginalProjection.Environment.ProjectId;
             EnvironmentKey = OriginalProjection.Environment.Key;
         }

@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class Project
@@ -12,7 +11,7 @@
         private readonly IList<Toggle> _toggles;
 
         [JsonConstructor]
-        private Project(Guid id, string name, IEnumerable<Environment> environments, IEnumerable<Toggle> toggles, AuditDto audit)
+        private Project(Guid id, string name, IEnumerable<Environment> environments, IEnumerable<Toggle> toggles, AggregateAudit audit)
         {
             Id = id;
             Name = name;
@@ -25,18 +24,18 @@
 
         public string Name { get; private set; }
 
-        public AuditDto Audit { get; private set; }
+        public AggregateAudit Audit { get; private set; }
 
         public IEnumerable<Environment> Environments => _environments;
 
         public IEnumerable<Toggle> Toggles => _toggles;
 
-        public static Project Create(EventAuditDto eventAudit, Guid id, string name)
+        public static Project Create(EventAudit eventAudit, Guid id, string name)
         {
-            return new Project(id, name, new List<Environment>(), new List<Toggle>(), AuditDto.Create(eventAudit));
+            return new Project(id, name, new List<Environment>(), new List<Toggle>(), AggregateAudit.Create(eventAudit));
         }
 
-        public void AddEnvironment(EventAuditDto eventAudit, string environmentKey, string environmentName)
+        public void AddEnvironment(EventAudit eventAudit, string environmentKey, string environmentName)
         {
             Audit.Update(eventAudit);
             Audit.Update(eventAudit);
@@ -45,7 +44,7 @@
             _environments.Add(environment);
         }
 
-        public void DeleteEnvironment(EventAuditDto eventAudit, string environmentKey)
+        public void DeleteEnvironment(EventAudit eventAudit, string environmentKey)
         {
             Audit.Update(eventAudit);
             Audit.Update(eventAudit);
@@ -54,7 +53,7 @@
             _environments.Remove(environment);
         }
 
-        public void AddToggle(EventAuditDto eventAudit, string toggleKey, string toggleName)
+        public void AddToggle(EventAudit eventAudit, string toggleKey, string toggleName)
         {
             Audit.Update(eventAudit);
             Audit.Update(eventAudit);
@@ -63,7 +62,7 @@
             _toggles.Add(toggleToAdd);
         }
 
-        public void DeleteToggle(EventAuditDto eventAudit, string toggleKey)
+        public void DeleteToggle(EventAudit eventAudit, string toggleKey)
         {
             Audit.Update(eventAudit);
             Audit.Update(eventAudit);

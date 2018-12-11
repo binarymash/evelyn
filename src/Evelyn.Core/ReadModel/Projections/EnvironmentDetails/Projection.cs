@@ -1,13 +1,12 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.EnvironmentDetails
 {
     using System;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class Projection : Projections.Projection
     {
         [JsonConstructor]
-        private Projection(ProjectionAuditDto audit, Model.Environment environment)
+        private Projection(ProjectionAudit audit, Model.Environment environment)
             : base(audit)
         {
             Audit = audit;
@@ -16,9 +15,9 @@
 
         public Model.Environment Environment { get; private set; }
 
-        public static Projection Create(EventAuditDto eventAudit, Model.Environment environment)
+        public static Projection Create(EventAudit eventAudit, Model.Environment environment)
         {
-            return new Projection(ProjectionAuditDto.Create(eventAudit), environment);
+            return new Projection(ProjectionAudit.Create(eventAudit), environment);
         }
 
         public static string StoreKey(Guid projectId, string environmentKey)

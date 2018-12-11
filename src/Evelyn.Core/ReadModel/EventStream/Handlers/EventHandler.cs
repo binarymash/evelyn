@@ -4,8 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Evelyn.Core.ReadModel.Projections;
-    using Evelyn.Core.ReadModel.Projections.EventHandlerState;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Microsoft.Extensions.Logging;
 
     public class EventHandler<TEventStream> : IEventHandler<TEventStream>
@@ -55,7 +53,7 @@
                     await Task.WhenAll(tasks);
                 }
 
-                var eventAudit = EventAuditDto.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion);
+                var eventAudit = EventAudit.Create(DateTime.UtcNow, Constants.SystemUser, eventEnvelope.Event.Version, eventEnvelope.StreamVersion);
 
                 state = Projections.EventHandlerState.Projection.Create(eventAudit);
                 if (initialEvent)

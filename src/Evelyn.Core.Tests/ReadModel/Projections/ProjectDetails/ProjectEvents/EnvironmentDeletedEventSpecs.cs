@@ -1,11 +1,10 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails.ProjectEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
@@ -47,7 +46,7 @@
             _environmentKey = DataFixture.Create<string>();
 
             OriginalProjection.Project.AddEnvironment(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<EventAudit>(),
                 _environmentKey,
                 DataFixture.Create<string>());
         }

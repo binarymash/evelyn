@@ -2,17 +2,16 @@
 {
     using System;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel;
     using FluentAssertions;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projection, ProjectionBuilder, TEvent>
+    public abstract class ProjectionBuilderHarness<TEvent> : ProjectionBuilderHarness<Projections.ProjectDetails.Projection, Projections.ProjectDetails.ProjectionBuilder, TEvent>
         where TEvent : Event
     {
         public ProjectionBuilderHarness()
         {
-            ProjectionBuilder = new ProjectionBuilder(ProjectionStore);
+            ProjectionBuilder = new Projections.ProjectDetails.ProjectionBuilder(ProjectionStore);
         }
 
         protected Guid ProjectId { get; private set; }
@@ -24,14 +23,14 @@
 
         protected void GivenTheProjectionExists()
         {
-            OriginalProjection = DataFixture.Create<Projection>();
+            OriginalProjection = DataFixture.Create<Core.ReadModel.Projections.ProjectDetails.Projection>();
             ProjectId = OriginalProjection.Project.Id;
         }
 
         protected void GivenThereAreEnvironmentsOnTheProject()
         {
             OriginalProjection.Project.AddEnvironment(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
         }
@@ -39,7 +38,7 @@
         protected void GivenThereAreTogglesOnTheProject()
         {
             OriginalProjection.Project.AddToggle(
-                DataFixture.Create<EventAuditDto>(),
+                DataFixture.Create<Projections.EventAudit>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
         }

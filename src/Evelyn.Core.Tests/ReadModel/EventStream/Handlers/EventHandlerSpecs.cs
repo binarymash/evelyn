@@ -12,8 +12,6 @@
     using Evelyn.Core.ReadModel.EventStream;
     using Evelyn.Core.ReadModel.EventStream.Handlers;
     using Evelyn.Core.ReadModel.Projections;
-    using Evelyn.Core.ReadModel.Projections.EventHandlerState;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
@@ -203,7 +201,7 @@
 
         private void GivenTheEventHasNotYetBeenHandled()
         {
-            var eventAudit = EventAuditDto.Create(
+            var eventAudit = EventAudit.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),
@@ -218,7 +216,7 @@
 
         private void GivenTheEventHasAlreadyBeenHandled()
         {
-            var eventAudit = EventAuditDto.Create(
+            var eventAudit = EventAudit.Create(
                 _dataFixture.Create<DateTimeOffset>(),
                 _dataFixture.Create<string>(),
                 _dataFixture.Create<long>(),

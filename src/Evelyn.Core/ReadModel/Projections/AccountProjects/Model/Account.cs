@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Newtonsoft.Json;
 
     public class Account
@@ -12,7 +11,7 @@
         private readonly List<Project> _projects;
 
         [JsonConstructor]
-        private Account(Guid accountId, IEnumerable<Project> projects, AuditDto audit)
+        private Account(Guid accountId, IEnumerable<Project> projects, AggregateAudit audit)
         {
             AccountId = accountId;
             Audit = audit;
@@ -21,17 +20,17 @@
 
         public Guid AccountId { get; private set; }
 
-        public AuditDto Audit { get; private set; }
+        public AggregateAudit Audit { get; private set; }
 
         [JsonIgnore]
         public IEnumerable<Project> Projects => _projects.ToList();
 
-        public static Account Create(EventAuditDto eventAudit, Guid accountId)
+        public static Account Create(EventAudit eventAudit, Guid accountId)
         {
-            return new Account(accountId, new List<Project>(), AuditDto.Create(eventAudit));
+            return new Account(accountId, new List<Project>(), AggregateAudit.Create(eventAudit));
         }
 
-        public void AddProject(EventAuditDto eventAudit, Guid projectId, string name)
+        public void AddProject(EventAudit eventAudit, Guid projectId, string name)
         {
             Audit.Update(eventAudit);
 
@@ -39,7 +38,7 @@
             _projects.Add(project);
         }
 
-        public void DeleteProject(EventAuditDto eventAudit, Guid projectId)
+        public void DeleteProject(EventAudit eventAudit, Guid projectId)
         {
             Audit.Update(eventAudit);
 
@@ -47,7 +46,7 @@
             _projects.Remove(project);
         }
 
-        internal void SetProjectName(EventAuditDto eventAudit, Guid projectId, string name)
+        internal void SetProjectName(EventAudit eventAudit, Guid projectId, string name)
         {
             // Don't update audit because the account aggregate hasn't changed
             _projects

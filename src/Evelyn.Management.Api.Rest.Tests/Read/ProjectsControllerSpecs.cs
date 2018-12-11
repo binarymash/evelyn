@@ -4,10 +4,8 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Core;
-    using Core.ReadModel.Projections.ProjectDetails;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections.AccountProjects;
-    using Evelyn.Core.ReadModel.Projections.Shared;
+    using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Management.Api.Rest.Read;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -15,7 +13,6 @@
     using Microsoft.Extensions.Logging;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
-    using Rest.Write;
     using TestStack.BDDfy;
     using Xunit;
 
@@ -88,7 +85,7 @@
 
         private void GivenThatThereAreProjectsOnAnAccount()
         {
-            var eventAudit = _fixture.Create<EventAuditDto>();
+            var eventAudit = _fixture.Create<EventAudit>();
 
             var account = Core.ReadModel.Projections.AccountProjects.Model.Account.Create(
                 eventAudit,
