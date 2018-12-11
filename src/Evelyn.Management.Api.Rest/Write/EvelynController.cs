@@ -25,21 +25,21 @@
 
         protected BadRequestObjectResult HandleValidationException(ValidationException ex)
         {
-            var response = new Response<ValidationError>(ex.Errors.Select(e => new ValidationError(e.ErrorCode, e.PropertyName, e.ErrorMessage)));
+            var response = new ValidationErrorResponse(ex.Errors.Select(e => new ValidationError(e.ErrorCode, e.PropertyName, e.ErrorMessage)));
             return new BadRequestObjectResult(response);
         }
 
         protected ObjectResult HandleConcurrencyException(ConcurrencyException ex)
         {
             _logger.LogInformation("Concurrency exception : {@exception}", ex);
-            var response = new Response<Error>(new[] { new Error(ErrorCodes.ConcurrencyError, "The current version of the aggregate did not match the expected version.") });
+            var response = new ErrorResponse(new[] { new Error(ErrorCodes.ConcurrencyError, "The current version of the aggregate did not match the expected version.") });
             return new ObjectResult(response) { StatusCode = StatusCodes.Status409Conflict };
         }
 
         protected ObjectResult HandleInternalError(Exception ex)
         {
             _logger.LogWarning("Internal error : {@exception}", ex);
-            var response = new Response<Error>(new[] { new Error(ErrorCodes.SystemError, "An error occurred on the server") });
+            var response = new ErrorResponse(new[] { new Error(ErrorCodes.SystemError, "An error occurred on the server") });
             return new ObjectResult(response) { StatusCode = StatusCodes.Status500InternalServerError };
         }
     }
