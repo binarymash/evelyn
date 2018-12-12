@@ -1758,7 +1758,7 @@ namespace Evelyn.Client.Rest.Generated
         public Environment Environment { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ProjectionAuditDto Audit { get; set; }
+        public ProjectionAudit Audit { get; set; }
 
         public string ToJson()
         {
@@ -1785,7 +1785,7 @@ namespace Evelyn.Client.Rest.Generated
         public string Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public AuditDto Audit { get; set; }
+        public AggregateAudit Audit { get; set; }
 
         public string ToJson()
         {
@@ -1800,31 +1800,28 @@ namespace Evelyn.Client.Rest.Generated
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.2.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ProjectionAuditDto
+    public partial class ProjectionAudit
     {
-        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? Created { get; set; }
+        [Newtonsoft.Json.JsonProperty("generated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? Generated { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("createdBy", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string CreatedBy { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long? Version { get; set; }
+        [Newtonsoft.Json.JsonProperty("streamPosition", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? StreamPosition { get; set; }
 
         public string ToJson()
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);
         }
 
-        public static ProjectionAuditDto FromJson(string data)
+        public static ProjectionAudit FromJson(string data)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<ProjectionAuditDto>(data);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ProjectionAudit>(data);
         }
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.2.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class AuditDto
+    public partial class AggregateAudit
     {
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? Created { get; set; }
@@ -1846,9 +1843,9 @@ namespace Evelyn.Client.Rest.Generated
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);
         }
 
-        public static AuditDto FromJson(string data)
+        public static AggregateAudit FromJson(string data)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<AuditDto>(data);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<AggregateAudit>(data);
         }
 
     }
@@ -1860,7 +1857,7 @@ namespace Evelyn.Client.Rest.Generated
         public EnvironmentState EnvironmentState { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ProjectionAuditDto Audit { get; set; }
+        public ProjectionAudit Audit { get; set; }
 
         public string ToJson()
         {
@@ -1923,7 +1920,7 @@ namespace Evelyn.Client.Rest.Generated
         public Project Project { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ProjectionAuditDto Audit { get; set; }
+        public ProjectionAudit Audit { get; set; }
 
         public string ToJson()
         {
@@ -1947,7 +1944,7 @@ namespace Evelyn.Client.Rest.Generated
         public string Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public AuditDto Audit { get; set; }
+        public AggregateAudit Audit { get; set; }
 
         [Newtonsoft.Json.JsonProperty("environments", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Environment2> Environments { get; set; }
@@ -2016,7 +2013,7 @@ namespace Evelyn.Client.Rest.Generated
         public Toggle2 Toggle { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ProjectionAuditDto Audit { get; set; }
+        public ProjectionAudit Audit { get; set; }
 
         public string ToJson()
         {
@@ -2043,7 +2040,7 @@ namespace Evelyn.Client.Rest.Generated
         public string Name { get; set; }
 
         [Newtonsoft.Json.JsonProperty("audit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public AuditDto Audit { get; set; }
+        public AggregateAudit Audit { get; set; }
 
         public string ToJson()
         {

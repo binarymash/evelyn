@@ -37,7 +37,7 @@
                     }
                 }
 
-                return new Domain.EnvironmentState(dto.Audit.Version.Value, toggleStates);
+                return new Domain.EnvironmentState(dto.Audit.StreamPosition.Value, toggleStates);
             }
             catch (SwaggerException ex)
             {
