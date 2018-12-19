@@ -2,11 +2,11 @@
 {
     public class DeleteEnvironment
     {
-        public DeleteEnvironment(int expectedEnvironmentVersion)
+        public DeleteEnvironment(int? expectedEnvironmentVersion)
         {
             ExpectedEnvironmentVersion = expectedEnvironmentVersion;
         }
 
-        public int ExpectedEnvironmentVersion { get; set; }
+        public int? ExpectedEnvironmentVersion { get; set; }
     }
 }

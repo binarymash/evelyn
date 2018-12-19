@@ -44,7 +44,7 @@
 
         public string Name { get; private set; }
 
-        public void AddEnvironment(string userId, string key, string name, int expectedProjectVersion)
+        public void AddEnvironment(string userId, string key, string name, int? expectedProjectVersion)
         {
             AssertNotDeleted();
             AssertVersion(expectedProjectVersion);
@@ -67,7 +67,7 @@
             ApplyChange(new EnvironmentStateAdded(userId, Id, key, now, toggleStates));
         }
 
-        public void AddToggle(string userId, string key, string name, int expectedProjectVersion)
+        public void AddToggle(string userId, string key, string name, int? expectedProjectVersion)
         {
             AssertNotDeleted();
             AssertVersion(expectedProjectVersion);
@@ -92,7 +92,7 @@
             }
         }
 
-        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int expectedToggleStateVersion)
+        public void ChangeToggleState(string userId, string environmentKey, string toggleKey, string value, int? expectedToggleStateVersion)
         {
             AssertNotDeleted();
 
@@ -108,7 +108,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {toggleKey}");
             }
 
-            toggleState.AssertVersion(expectedToggleStateVersion, Id);
+            toggleState.AssertVersion(Id, expectedToggleStateVersion);
 
             if (!bool.TryParse(value, out var parsedValue))
             {
@@ -118,7 +118,7 @@
             ApplyChange(new ToggleStateChanged(userId, Id, environmentKey, toggleKey, value, DateTimeOffset.UtcNow));
         }
 
-        public void DeleteToggle(string userId, string key, int expectedToggleVersion)
+        public void DeleteToggle(string userId, string key, int? expectedToggleVersion)
         {
             AssertNotDeleted();
 
@@ -128,7 +128,7 @@
                 throw new InvalidOperationException($"There is no toggle with the key {key}");
             }
 
-            toggle.AssertVersion(expectedToggleVersion, Id);
+            toggle.AssertVersion(Id, expectedToggleVersion);
 
             ApplyChange(new ToggleDeleted(userId, Id, key, DateTimeOffset.UtcNow));
 
@@ -138,7 +138,7 @@
             }
         }
 
-        public void DeleteEnvironment(string userId, string key, int expectedEnvironmentVersion)
+        public void DeleteEnvironment(string userId, string key, int? expectedEnvironmentVersion)
         {
             AssertNotDeleted();
 
@@ -148,7 +148,7 @@
                 throw new InvalidOperationException($"There is no environment with the key {key}");
             }
 
-            environment.AssertVersion(expectedEnvironmentVersion, Id);
+            environment.AssertVersion(Id, expectedEnvironmentVersion);
 
             ApplyChange(new EnvironmentDeleted(userId, Id, key, DateTimeOffset.UtcNow));
             ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow));
