@@ -37,7 +37,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Project Id' should not be empty.");
+                error.ErrorMessage == "'Project Id' must not be empty.");
         }
 
         [Fact]
@@ -58,7 +58,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Key' should not be empty.");
+                error.ErrorMessage == "'Key' must not be empty.");
         }
 
         [Fact]
@@ -70,7 +70,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Key' should not be empty.");
+                error.ErrorMessage == "'Key' must not be empty.");
         }
 
         [Fact]
@@ -82,7 +82,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Key, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Key' should not be empty.");
+                error.ErrorMessage == "'Key' must not be empty.");
         }
 
         [Fact]
@@ -174,7 +174,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Name' should not be empty.");
+                error.ErrorMessage == "'Name' must not be empty.");
         }
 
         [Fact]
@@ -186,7 +186,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Name' should not be empty.");
+                error.ErrorMessage == "'Name' must not be empty.");
         }
 
         [Fact]
@@ -198,7 +198,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Name, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Name' should not be empty.");
+                error.ErrorMessage == "'Name' must not be empty.");
         }
 
         [Fact]

@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="CqrsLite" Version="0.26.0" />
-    <PackageReference Include="FluentValidation" Version="8.0.101" />
+    <PackageReference Include="FluentValidation" Version="8.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.6" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha">
       <PrivateAssets>all</PrivateAssets>

@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.5.0" />
+    <PackageReference Include="AutoFixture" Version="4.6.0" />
     <PackageReference Include="EventStore.Client.Embedded" Version="4.1.1" />
     <PackageReference Include="EventStore.ClientAPI.NetCore" Version="4.1.0.23" />
     <PackageReference Include="FluentAssertions" Version="5.5.3" />

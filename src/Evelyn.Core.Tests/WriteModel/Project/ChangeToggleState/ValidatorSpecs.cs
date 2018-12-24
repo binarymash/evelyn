@@ -37,7 +37,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Project Id' should not be empty.");
+                error.ErrorMessage == "'Project Id' must not be empty.");
         }
 
         [Fact]
@@ -58,7 +58,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ToggleKey, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Toggle Key' should not be empty.");
+                error.ErrorMessage == "'Toggle Key' must not be empty.");
         }
 
         [Fact]
@@ -70,7 +70,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ToggleKey, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Toggle Key' should not be empty.");
+                error.ErrorMessage == "'Toggle Key' must not be empty.");
         }
 
         [Fact]
@@ -91,7 +91,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.EnvironmentKey, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Environment Key' should not be empty.");
+                error.ErrorMessage == "'Environment Key' must not be empty.");
         }
 
         [Fact]
@@ -103,7 +103,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.EnvironmentKey, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Environment Key' should not be empty.");
+                error.ErrorMessage == "'Environment Key' must not be empty.");
         }
 
         [Fact]
@@ -172,7 +172,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Value, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Value' should not be empty.");
+                error.ErrorMessage == "'Value' must not be empty.");
         }
 
         [Fact]
@@ -184,7 +184,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Value, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Value' should not be empty.");
+                error.ErrorMessage == "'Value' must not be empty.");
         }
 
         [Fact]
@@ -196,7 +196,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.Value, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Value' should not be empty.");
+                error.ErrorMessage == "'Value' must not be empty.");
         }
 
         [Fact]
