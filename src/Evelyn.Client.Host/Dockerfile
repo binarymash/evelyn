@@ -1,7 +1,7 @@
-FROM microsoft/dotnet:2.1-runtime AS base
+FROM microsoft/dotnet:2.2-runtime AS base
 WORKDIR /app
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
 COPY Evelyn.Client.Host/Evelyn.Client.Host.csproj Evelyn.Client.Host/
 COPY Evelyn.Client.Rest/Evelyn.Client.Rest.csproj Evelyn.Client.Rest/
