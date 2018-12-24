@@ -37,7 +37,7 @@
             var errors = _validator.ShouldHaveValidationErrorFor(c => c.ProjectId, command).ToList();
             errors.Should().Contain(error =>
                 error.ErrorCode == ErrorCodes.PropertyNotSet &&
-                error.ErrorMessage == "'Project Id' should not be empty.");
+                error.ErrorMessage == "'Project Id' must not be empty.");
         }
 
         [Fact]
