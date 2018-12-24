@@ -7,7 +7,7 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class EnvironmentDeletedSpecs : ProjectionHarness<ProjectEvents.EnvironmentDeleted>
+    public class EnvironmentDeletedSpecs : ProjectionBuilderHarness<ProjectEvents.EnvironmentDeleted>
     {
         [Fact]
         public void Nominal()
@@ -20,7 +20,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentDeletedEvent()

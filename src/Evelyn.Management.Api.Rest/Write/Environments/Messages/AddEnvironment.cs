@@ -4,7 +4,7 @@
 
     public class AddEnvironment
     {
-        public AddEnvironment(string key, string name, int expectedProjectVersion)
+        public AddEnvironment(string key, string name, int? expectedProjectVersion)
         {
             Key = key;
             Name = name;
@@ -15,6 +15,6 @@
 
         public string Name { get; set; }
 
-        public int ExpectedProjectVersion { get; set; }
+        public int? ExpectedProjectVersion { get; set; }
     }
 }

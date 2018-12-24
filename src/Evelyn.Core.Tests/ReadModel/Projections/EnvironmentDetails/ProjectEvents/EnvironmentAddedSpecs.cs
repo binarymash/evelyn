@@ -7,24 +7,25 @@
     using Xunit;
     using ProjectEvents = Evelyn.Core.WriteModel.Project.Events;
 
-    public class EnvironmentAddedSpecs : ProjectionHarness<ProjectEvents.EnvironmentAdded>
+    public class EnvironmentAddedSpecs : ProjectionBuilderHarness<ProjectEvents.EnvironmentAdded>
     {
         [Fact]
         public void Nominal()
         {
             this.Given(_ => GivenThereIsNoProjection())
-                .When(_ => WhenWeHandleAProjectCreatedEvent())
-                .Then(_ => ThenTheProjectionIsCreated())
-                .And(_ => ThenTheAuditIsCreated())
+                .When(_ => WhenWeHandleAnEnvironmentAddedEvent())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .And(_ => ThenTheProjectionContainsTheEnvironmentDetails())
+                .And(_ => ThenTheEnvironmentAuditIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
-        private async Task WhenWeHandleAProjectCreatedEvent()
+        private async Task WhenWeHandleAnEnvironmentAddedEvent()
         {
             Event = DataFixture.Build<ProjectEvents.EnvironmentAdded>()
                .With(e => e.Id, ProjectId)
@@ -34,12 +35,22 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreated()
+        private void ThenTheProjectionContainsTheEnvironmentDetails()
         {
-            UpdatedProjection.ProjectId.Should().Be(Event.Id);
+            var environment = UpdatedProjection.Environment;
+            environment.ProjectId.Should().Be(Event.Id);
+            environment.Key.Should().Be(Event.Key);
+            environment.Name.Should().Be(Event.Name);
+        }
 
-            UpdatedProjection.Key.Should().Be(Event.Key);
-            UpdatedProjection.Name.Should().Be(Event.Name);
+        private void ThenTheEnvironmentAuditIsCreated()
+        {
+            var audit = UpdatedProjection.Environment.Audit;
+            audit.Created.Should().Be(Event.OccurredAt);
+            audit.CreatedBy.Should().Be(Event.UserId);
+            audit.LastModified.Should().Be(Event.OccurredAt);
+            audit.LastModifiedBy.Should().Be(Event.UserId);
+            audit.Version.Should().Be(Event.Version);
         }
     }
 }

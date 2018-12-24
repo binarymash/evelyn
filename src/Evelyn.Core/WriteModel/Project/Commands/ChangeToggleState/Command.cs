@@ -4,7 +4,7 @@
 
     public class Command : WriteModel.Command
     {
-        public Command(string userId, Guid projectId, string environmentKey, string toggleKey, string value, int expectedToggleStateVersion)
+        public Command(string userId, Guid projectId, string environmentKey, string toggleKey, string value, int? expectedToggleStateVersion)
             : base(userId)
         {
             ProjectId = projectId;
@@ -16,7 +16,7 @@
 
         public Guid ProjectId { get; set; }
 
-        public int ExpectedToggleStateVersion { get; set; }
+        public int? ExpectedToggleStateVersion { get; set; }
 
         public string EnvironmentKey { get; set; }
 

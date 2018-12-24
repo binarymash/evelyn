@@ -88,18 +88,18 @@
                 .Single(mi => mi.GetParameters().Length == 2)
                 .MakeGenericMethod(eventType);
 
-            var eventHandlerMethodName = GetImplementationNameOfInterfaceMethod(projectionBuilderType, eventHandlerType, "Handle", eventType, typeof(CancellationToken));
+            var eventHandlerMethodName = GetImplementationNameOfInterfaceMethod(projectionBuilderType, eventHandlerType, "Handle", typeof(long), eventType, typeof(CancellationToken));
 
-            Func<object, CancellationToken, Task> eventHandlerMethodInvocation = (@event, token) =>
+            Func<long, object, CancellationToken, Task> eventHandlerMethodInvocation = (streamPositino, @event, token) =>
             {
                 var projectionBuilder = _serviceLocator.GetService(projectionBuilderType) ?? throw new Exception(projectionBuilderType.Name);
-                return (Task)projectionBuilder.Invoke(eventHandlerMethodName, @event, token) ?? throw new Exception(projectionBuilderType.Name);
+                return (Task)projectionBuilder.Invoke(eventHandlerMethodName, streamPositino, @event, token) ?? throw new Exception(projectionBuilderType.Name);
             };
 
             registerExecutorMethod.Invoke(this, new object[] { eventStreamHandlerType, eventHandlerMethodInvocation });
         }
 
-        private void Register<TEvent>(Type eventStreamHandlerType, Func<TEvent, CancellationToken, Task> eventHandlerMethodInvocation)
+        private void Register<TEvent>(Type eventStreamHandlerType, Func<long, TEvent, CancellationToken, Task> eventHandlerMethodInvocation)
             where TEvent : class, IEvent
         {
             if (!_projectionBuildersByEventType.TryGetValue(eventStreamHandlerType, out var projectionBuildersForEventStreamHandler))
@@ -110,11 +110,11 @@
 
             if (!projectionBuildersForEventStreamHandler.TryGetValue(typeof(TEvent), out var projectionBuildersForEvent))
             {
-                projectionBuildersForEvent = new List<Func<IEvent, CancellationToken, Task>>();
+                projectionBuildersForEvent = new List<Func<long, IEvent, CancellationToken, Task>>();
                 projectionBuildersForEventStreamHandler.Add(typeof(TEvent), projectionBuildersForEvent);
             }
 
-            projectionBuildersForEvent.Add((@event, stoppingToken) => eventHandlerMethodInvocation((TEvent)@event, stoppingToken));
+            projectionBuildersForEvent.Add((streamPosition, @event, stoppingToken) => eventHandlerMethodInvocation(streamPosition, (TEvent)@event, stoppingToken));
         }
     }
 }

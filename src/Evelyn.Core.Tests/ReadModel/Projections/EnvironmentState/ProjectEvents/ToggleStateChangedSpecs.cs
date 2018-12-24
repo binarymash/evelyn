@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleStateChangedSpecs : ProjectionHarness<ToggleStateChanged>
+    public class ToggleStateChangedSpecs : ProjectionBuilderHarness<ToggleStateChanged>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -27,13 +27,13 @@
                 .And(_ => GivenTheProjectionHasOtherToggleStates())
                 .When(_ => WhenWeHandleAToggleStateChangedEvent())
                 .Then(_ => ThenOurToggleStateIsChanged())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleStateChangedEvent()
@@ -49,10 +49,10 @@
 
         private void ThenOurToggleStateIsChanged()
         {
-            var updatedToggleStates = UpdatedProjection.ToggleStates.ToList();
-            updatedToggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count());
+            var updatedToggleStates = UpdatedProjection.EnvironmentState.ToggleStates.ToList();
+            updatedToggleStates.Count.Should().Be(OriginalProjection.EnvironmentState.ToggleStates.Count());
 
-            foreach (var originalToggleState in OriginalProjection.ToggleStates)
+            foreach (var originalToggleState in OriginalProjection.EnvironmentState.ToggleStates)
             {
                 var expectedToggleStateValue =
                     (originalToggleState.Key == Event.ToggleKey)

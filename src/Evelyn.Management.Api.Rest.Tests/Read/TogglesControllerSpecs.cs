@@ -20,7 +20,7 @@
         private readonly IReadModelFacade _readModelFacade;
         private readonly TogglesController _controller;
         private Guid _projectId;
-        private ToggleDetailsDto _toggleReturnedByFacade;
+        private Projection _projectionReturnedByFacade;
         private string _keyOfToggleToGet;
         private ObjectResult _result;
 
@@ -62,11 +62,11 @@
 
         private void GivenTheToggleWeWantDoesExist()
         {
-            _toggleReturnedByFacade = _fixture.Create<ToggleDetailsDto>();
-            _keyOfToggleToGet = _toggleReturnedByFacade.Key;
+            _projectionReturnedByFacade = _fixture.Create<Projection>();
+            _keyOfToggleToGet = _projectionReturnedByFacade.Toggle.Key;
             _readModelFacade
                 .GetToggleDetails(_projectId, _keyOfToggleToGet)
-                .Returns(_toggleReturnedByFacade);
+                .Returns(_projectionReturnedByFacade);
         }
 
         private void GivenTheToggleWeWantDoesntExist()
@@ -107,8 +107,8 @@
 
         private void ThenTheExpectedToggleIsReturned()
         {
-            var returnedToggle = _result.Value as ToggleDetailsDto;
-            returnedToggle.Should().Be(_toggleReturnedByFacade);
+            var returnedToggle = _result.Value as Projection;
+            returnedToggle.Should().Be(_projectionReturnedByFacade);
         }
     }
 }

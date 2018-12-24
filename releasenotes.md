@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version 0.16.0 (2018-12-24)
+
+ - [#148](https://github.com/binarymash/evelyn/pull/148) - [#147](https://github.com/binarymash/evelyn/issues/147) - fix optimistic concurrency contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: 1cbc773440...af2cba437e
+
+
 ## Version 0.15.0 (2018-11-30)
 
 

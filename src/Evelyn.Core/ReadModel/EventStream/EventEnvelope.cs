@@ -4,13 +4,13 @@
 
     public class EventEnvelope
     {
-        public EventEnvelope(long streamVersion, IEvent @event)
+        public EventEnvelope(long streamPosition, IEvent @event)
         {
-            StreamVersion = streamVersion;
+            StreamPosition = streamPosition;
             Event = @event;
         }
 
-        public long StreamVersion { get; }
+        public long StreamPosition { get; }
 
         public IEvent Event { get; }
     }

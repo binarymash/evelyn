@@ -19,7 +19,7 @@
             _logger = logger;
         }
 
-        public EnvironmentState Invoke(Guid projectId, string environmentKey)
+        public Domain.EnvironmentState Invoke(Guid projectId, string environmentKey)
         {
             try
             {
@@ -27,17 +27,17 @@
                     .ApiStatesAsync(projectId, environmentKey)
                     .GetAwaiter().GetResult();
 
-                var toggleStates = new List<ToggleState>();
+                var toggleStates = new List<Domain.ToggleState>();
 
-                foreach (var toggleState in dto.ToggleStates)
+                foreach (var toggleState in dto.EnvironmentState.ToggleStates)
                 {
                     if (bool.TryParse(toggleState.Value, out var value))
                     {
-                        toggleStates.Add(new ToggleState(toggleState.Key, value));
+                        toggleStates.Add(new Domain.ToggleState(toggleState.Key, value));
                     }
                 }
 
-                return new EnvironmentState(dto.Audit.Version.Value, toggleStates);
+                return new Domain.EnvironmentState(dto.Audit.StreamPosition.Value, toggleStates);
             }
             catch (SwaggerException ex)
             {

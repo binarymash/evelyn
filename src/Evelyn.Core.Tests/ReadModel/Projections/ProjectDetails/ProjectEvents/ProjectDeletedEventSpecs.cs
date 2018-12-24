@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectDeletedEventSpecs : ProjectionHarness<ProjectDeleted>
+    public class ProjectDeletedEventSpecs : ProjectionBuilderHarness<ProjectDeleted>
     {
         [Fact]
         public void Nominal()
@@ -21,7 +21,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAProjectDeletedEvent()
@@ -35,7 +35,7 @@
 
         private void ThenTheProjectionIsDeleted()
         {
-            ProjectionStore.Received().Delete(ProjectDetailsDto.StoreKey(ProjectId));
+            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId));
         }
     }
 }

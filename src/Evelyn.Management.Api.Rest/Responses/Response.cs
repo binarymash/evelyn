@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class Response<T>
+    public abstract class Response<T>
         where T : Error
     {
         private readonly IList<T> _errors;
