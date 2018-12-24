@@ -4,7 +4,7 @@
 
     public class Command : WriteModel.Command
     {
-        public Command(string userId, Guid projectId, string key, int expectedEnvironmentVersion)
+        public Command(string userId, Guid projectId, string key, int? expectedEnvironmentVersion)
             : base(userId)
         {
             Key = key;
@@ -12,7 +12,7 @@
             ExpectedEnvironmentVersion = expectedEnvironmentVersion;
         }
 
-        public int ExpectedEnvironmentVersion { get; set; }
+        public int? ExpectedEnvironmentVersion { get; set; }
 
         public Guid ProjectId { get; set; }
 

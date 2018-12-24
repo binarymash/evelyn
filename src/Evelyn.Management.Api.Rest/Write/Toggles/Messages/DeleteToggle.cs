@@ -2,11 +2,11 @@
 {
     public class DeleteToggle
     {
-        public DeleteToggle(int expectedToggleVersion)
+        public DeleteToggle(int? expectedToggleVersion)
         {
             ExpectedToggleVersion = expectedToggleVersion;
         }
 
-        public int ExpectedToggleVersion { get; set; }
+        public int? ExpectedToggleVersion { get; set; }
     }
 }

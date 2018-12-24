@@ -7,11 +7,14 @@
     {
         public int LastModifiedVersion { get; protected set; }
 
-        public void AssertVersion(int expectedVersion, Guid aggregateId)
+        public void AssertVersion(Guid aggregateId, int? expectedVersion)
         {
-            if (LastModifiedVersion > expectedVersion)
+            if (expectedVersion.HasValue)
             {
-                throw new ConcurrencyException(aggregateId, expectedVersion, LastModifiedVersion);
+                if (LastModifiedVersion > expectedVersion)
+                {
+                    throw new ConcurrencyException(aggregateId, expectedVersion.Value, LastModifiedVersion);
+                }
             }
         }
     }
