@@ -90,7 +90,7 @@
         {
             var policy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(60, retryAttempt => TimeSpan.FromMilliseconds(1));
+                .WaitAndRetryAsync(600, retryAttempt => TimeSpan.FromMilliseconds(100));
 
             await policy.ExecuteAsync(async () =>
             {

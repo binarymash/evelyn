@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.17.0 (2018-12-24)
+
+ - [#153](https://github.com/binarymash/evelyn/pull/153) - [#150](https://github.com/binarymash/evelyn/issues/150) - Upgrade to dotnet core 2.2 contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#152](https://github.com/binarymash/evelyn/pull/152) - [#151](https://github.com/binarymash/evelyn/issues/151) - Package updates contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+
+Commits: e9b59d7a8f...44356cad3f
+
+
 ## Version 0.16.0 (2018-12-24)
 
  - [#148](https://github.com/binarymash/evelyn/pull/148) - [#147](https://github.com/binarymash/evelyn/issues/147) - fix optimistic concurrency contributed by Philip Wood ([binarymash](https://github.com/binarymash))
@@ -14,6 +22,7 @@ Commits: 1cbc773440...af2cba437e
 
 Commits: fd28cb04f3...d00b5ae02d
 
+
 ## Version 0.14.0 (2018-11-26)
 
  - [#142](https://github.com/binarymash/evelyn/pull/142) - [#141](https://github.com/binarymash/evelyn/issues/141) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
@@ -21,6 +30,7 @@ Commits: fd28cb04f3...d00b5ae02d
  - [#137](https://github.com/binarymash/evelyn/pull/137) - [#136](https://github.com/binarymash/evelyn/issues/136) - tweak scoped versioning contributed by Philip Wood ([binarymash](https://github.com/binarymash))
 
 Commits: f9968e6c33...235d2c06c0
+
 
 ## Version 0.13.0 (2018-09-09)
 
