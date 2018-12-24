@@ -4,24 +4,32 @@
     using System.Threading.Tasks;
     using ProjectEvents = WriteModel.Project.Events;
 
-    public class ProjectionBuilder : ProjectionBuilder<ToggleDetailsDto>,
+    public class ProjectionBuilder : ProjectionBuilder<Projection>,
         IBuildProjectionsFrom<ProjectEvents.ToggleAdded>,
         IBuildProjectionsFrom<ProjectEvents.ToggleDeleted>
     {
-        public ProjectionBuilder(IProjectionStore<ToggleDetailsDto> projectionStore)
+        public ProjectionBuilder(IProjectionStore<Projection> projectionStore)
             : base(projectionStore)
         {
         }
 
-        public async Task Handle(ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleAdded @event, CancellationToken stoppingToken)
         {
-            var projection = ToggleDetailsDto.Create(CreateEventAudit(@event), @event.Id, @event.Key, @event.Name);
-            await Projections.Create(ToggleDetailsDto.StoreKey(@event.Id, @event.Key), projection).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.Key);
+
+            var toggle = Model.Toggle.Create(eventAudit, @event.Id, @event.Key, @event.Name);
+
+            var projection = Projection.Create(eventAudit, toggle);
+            await Projections.Create(storeKey, projection).ConfigureAwait(false);
         }
 
-        public async Task Handle(ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
+        public async Task Handle(long streamPosition, ProjectEvents.ToggleDeleted @event, CancellationToken stoppingToken)
         {
-            await Projections.Delete(ToggleDetailsDto.StoreKey(@event.Id, @event.Key)).ConfigureAwait(false);
+            var eventAudit = CreateEventAudit(streamPosition, @event);
+            var storeKey = Projection.StoreKey(@event.Id, @event.Key);
+
+            await Projections.Delete(storeKey).ConfigureAwait(false);
         }
     }
 }

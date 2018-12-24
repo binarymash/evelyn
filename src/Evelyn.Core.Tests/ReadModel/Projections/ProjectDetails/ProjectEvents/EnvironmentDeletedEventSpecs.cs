@@ -1,17 +1,16 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ProjectDetails.ProjectEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentDeletedEventSpecs : ProjectionHarness<EnvironmentDeleted>
+    public class EnvironmentDeletedEventSpecs : ProjectionBuilderHarness<EnvironmentDeleted>
     {
         private string _environmentKey;
 
@@ -29,24 +28,25 @@
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurEnvironmentIsOnTheProjection())
-                .And(_ => GivenThereAreEnvironmentsOnTheProjection())
+                .And(_ => GivenThereAreEnvironmentsOnTheProject())
                 .When(_ => WhenWeHandleAnEnvironmentDeletedEvent())
                 .Then(_ => ThenOurEnvironmentIsDeleted())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
+                .And(_ => ThenTheProjectAuditIsUpdated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private void GivenOurEnvironmentIsOnTheProjection()
         {
             _environmentKey = DataFixture.Create<string>();
 
-            OriginalProjection.AddEnvironment(
-                DataFixture.Create<EventAuditDto>(),
+            OriginalProjection.Project.AddEnvironment(
+                DataFixture.Create<EventAudit>(),
                 _environmentKey,
                 DataFixture.Create<string>());
         }
@@ -63,12 +63,12 @@
 
         private void ThenOurEnvironmentIsDeleted()
         {
-            UpdatedProjection.Toggles.Should().BeEquivalentTo(OriginalProjection.Toggles);
+            UpdatedProjection.Project.Toggles.Should().BeEquivalentTo(OriginalProjection.Project.Toggles);
 
-            var updatedEnvironments = UpdatedProjection.Environments.ToList();
-            updatedEnvironments.Count.Should().Be(OriginalProjection.Environments.Count() - 1);
+            var updatedEnvironments = UpdatedProjection.Project.Environments.ToList();
+            updatedEnvironments.Count.Should().Be(OriginalProjection.Project.Environments.Count() - 1);
 
-            foreach (var originalEnvironment in OriginalProjection.Environments)
+            foreach (var originalEnvironment in OriginalProjection.Project.Environments)
             {
                 if (originalEnvironment.Key == Event.Key)
                 {

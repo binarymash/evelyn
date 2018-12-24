@@ -21,7 +21,7 @@
         private readonly EnvironmentStatesController _controller;
         private readonly Guid _projectId;
 
-        private EnvironmentStateDto _environmentStateReturnedByFacade;
+        private Projection _environmentStateReturnedByFacade;
         private string _keyOfEnvironmentStateToGet;
         private ObjectResult _result;
 
@@ -63,7 +63,7 @@
 
         private void GivenTheEnvironmentStateWeWantDoesExist()
         {
-            _environmentStateReturnedByFacade = _fixture.Create<EnvironmentStateDto>();
+            _environmentStateReturnedByFacade = _fixture.Create<Projection>();
             _keyOfEnvironmentStateToGet = _fixture.Create<string>();
 
             _readModelFacade
@@ -111,7 +111,7 @@
 
         private void ThenTheExpectedEnvironmentStateIsReturned()
         {
-            var returnedEnvironmentState = _result.Value as EnvironmentStateDto;
+            var returnedEnvironmentState = _result.Value as Projection;
             returnedEnvironmentState.Should().Be(_environmentStateReturnedByFacade);
         }
     }

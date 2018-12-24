@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleDeletedEventSpecs : ProjectionHarness<ToggleDeleted>
+    public class ToggleDeletedEventSpecs : ProjectionBuilderHarness<ToggleDeleted>
     {
         [Fact]
         public void Nominal()
@@ -21,7 +21,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleDeletedEvent()
@@ -36,7 +36,7 @@
 
         private void ThenTheProjectionIsDeleted()
         {
-            ProjectionStore.Received().Delete(ToggleDetailsDto.StoreKey(ProjectId, ToggleKey));
+            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId, ToggleKey));
         }
     }
 }

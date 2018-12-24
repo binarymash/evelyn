@@ -20,7 +20,7 @@
         }
 
         [HttpGet("{environmentKey}")]
-        [ProducesResponseType(typeof(EnvironmentDetailsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Projection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
         public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
         {

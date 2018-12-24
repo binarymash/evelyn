@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleDetails.ProjectEvents
 {
+    using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using Evelyn.Core.ReadModel.Projections.ProjectDetails;
@@ -10,21 +11,22 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ToggleAddedEventSpecs : ProjectionHarness<ToggleAdded>
+    public class ToggleAddedEventSpecs : ProjectionBuilderHarness<ToggleAdded>
     {
         [Fact]
         public void Nominal()
         {
             this.Given(_ => GivenThereIsNoProjection())
                 .When(_ => WhenWeHandleAToggleAddedEvent())
-                .Then(_ => ThenTheProjectionIsCreated())
-                .And(_ => ThenTheAuditIsCreated())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .And(_ => ThenTheProjectionContainsTheToggleDetails())
+                .And(_ => ThenTheToggleAuditIsCreated())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAToggleAddedEvent()
@@ -37,12 +39,23 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreated()
+        private void ThenTheProjectionContainsTheToggleDetails()
         {
-            ProjectionStore.Received().Create(ToggleDetailsDto.StoreKey(ProjectId, ToggleKey), UpdatedProjection);
+            // TODO: move
+            ProjectionStore.Received().Create(Core.ReadModel.Projections.ToggleDetails.Projection.StoreKey(ProjectId, ToggleKey), UpdatedProjection);
 
-            UpdatedProjection.Key.Should().Be(Event.Key);
-            UpdatedProjection.Name.Should().Be(Event.Name);
+            UpdatedProjection.Toggle.Key.Should().Be(Event.Key);
+            UpdatedProjection.Toggle.Name.Should().Be(Event.Name);
+        }
+
+        private void ThenTheToggleAuditIsCreated()
+        {
+            var audit = UpdatedProjection.Toggle.Audit;
+            audit.Created.Should().Be(Event.OccurredAt);
+            audit.CreatedBy.Should().Be(Event.UserId);
+            audit.LastModified.Should().Be(Event.OccurredAt);
+            audit.LastModifiedBy.Should().Be(Event.UserId);
+            audit.Version.Should().Be(Event.Version);
         }
     }
 }

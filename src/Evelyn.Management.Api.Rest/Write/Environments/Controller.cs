@@ -12,9 +12,9 @@
 
     [Route("api/projects/{projectId}/environments")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
-    [ProducesResponseType(typeof(Response<ValidationError>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(Response<Error>), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
     public class Controller : EvelynController
     {
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.AddEnvironment.Command> _addHandler;

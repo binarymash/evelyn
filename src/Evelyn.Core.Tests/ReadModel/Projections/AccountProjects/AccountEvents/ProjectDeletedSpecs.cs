@@ -9,7 +9,7 @@
     using Xunit;
     using AccountEvents = Evelyn.Core.WriteModel.Account.Events;
 
-    public class ProjectDeletedSpecs : ProjectionHarness<AccountEvents.ProjectDeleted>
+    public class ProjectDeletedSpecs : ProjectionBuilderHarness<AccountEvents.ProjectDeleted>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -24,17 +24,17 @@
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurProjectIsOnTheProjection())
-                .And(_ => GivenAnotherProjectIsOnTheProjection())
+                .And(_ => GivenOurProjectIsOnTheAccount())
+                .And(_ => GivenAnotherProjectIsOnTheAccount())
                 .When(_ => WhenWeHandleTheProjectDeletedEvent())
-                .Then(_ => ThenOurProjectIsRemoved())
-                .And(_ => ThenTheAuditIsUpdated())
+                .Then(_ => ThenTheProjectionAuditIsSet())
+                .Then(_ => ThenOurProjectIsRemovedFromTheAccount())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleTheProjectDeletedEvent()
@@ -47,12 +47,12 @@
             await WhenTheEventIsHandled();
         }
 
-        private void ThenOurProjectIsRemoved()
+        private void ThenOurProjectIsRemovedFromTheAccount()
         {
-            UpdatedProjection.AccountId.Should().Be(OriginalProjection.AccountId);
+            UpdatedProjection.Account.AccountId.Should().Be(OriginalProjection.Account.AccountId);
 
-            var projects = UpdatedProjection.Projects.ToList();
-            projects.Count.Should().Be(OriginalProjection.Projects.Count() - 1);
+            var projects = UpdatedProjection.Account.Projects.ToList();
+            projects.Count.Should().Be(OriginalProjection.Account.Projects.Count() - 1);
         }
     }
 }

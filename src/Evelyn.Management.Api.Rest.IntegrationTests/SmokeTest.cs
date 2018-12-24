@@ -6,9 +6,9 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.Projections.AccountProjects;
     using Core.ReadModel.Projections.EnvironmentState;
     using Core.ReadModel.Projections.ProjectDetails;
+    using Evelyn.Core.ReadModel;
     using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
@@ -214,51 +214,51 @@
 
         private void ThenTheResponseContentIsACollectionWithOneProject()
         {
-            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count().Should().Be(1);
+            var response = JsonConvert.DeserializeObject<Core.ReadModel.Projections.AccountProjects.Projection>(_responseContent, DeserializeWithPrivateSetters);
+            response.Account.Projects.Count().Should().Be(1);
         }
 
         private void ThenTheResponseContentIsACollectionWithTwoProjects()
         {
-            var response = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            response.Projects.Count().Should().Be(2);
+            var response = JsonConvert.DeserializeObject<Core.ReadModel.Projections.AccountProjects.Projection>(_responseContent, DeserializeWithPrivateSetters);
+            response.Account.Projects.Count().Should().Be(2);
         }
 
         private void ThenTheDefaultSampleProjectWeAddedIsInTheCollection()
         {
-            var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            projectList.Projects.First(p => p.Id == Guid.Parse("{8F73D020-96C4-407E-8602-74FD4E2ED08B}"));
+            var projectList = JsonConvert.DeserializeObject<Core.ReadModel.Projections.AccountProjects.Projection>(_responseContent, DeserializeWithPrivateSetters);
+            projectList.Account.Projects.First(p => p.Id == Guid.Parse("{8F73D020-96C4-407E-8602-74FD4E2ED08B}"));
         }
 
         private void ThenTheProjectWeAddedIsInTheCollection()
         {
-            var projectList = JsonConvert.DeserializeObject<AccountProjectsDto>(_responseContent, DeserializeWithPrivateSetters);
-            var project = projectList.Projects.First(p => p.Id == _createProjectMessage.ProjectId);
+            var projectList = JsonConvert.DeserializeObject<Core.ReadModel.Projections.AccountProjects.Projection>(_responseContent, DeserializeWithPrivateSetters);
+            var project = projectList.Account.Projects.First(p => p.Id == _createProjectMessage.ProjectId);
             project.Name.Should().Be(_createProjectMessage.Name);
         }
 
         private void ThenTheProjectContainsOneEnvironment()
         {
-            var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var projectDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.ProjectDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Project;
             projectDetails.Environments.Count().Should().Be(1);
         }
 
         private void ThenTheEnvironmentWeAddedIsOnTheProject()
         {
-            var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var projectDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.ProjectDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Project;
             projectDetails.Environments.Should().Contain(environment =>
                 environment.Key == _addEnvironmentMessage.Key);
         }
 
         private void ThenTheProjectContainsOneToggle()
         {
-            var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var projectDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.ProjectDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Project;
             projectDetails.Toggles.Count().Should().Be(1);
         }
 
         private void ThenTheToggleWeAddedIsOnTheProject()
         {
-            var projectDetails = JsonConvert.DeserializeObject<ProjectDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var projectDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.ProjectDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Project;
             projectDetails.Toggles.Should().Contain(toggle =>
                 toggle.Key == _addToggleMessage.Key &&
                 toggle.Name == _addToggleMessage.Name);
@@ -266,14 +266,14 @@
 
         private void ThenTheEnvironmentWeAddedIsReturned()
         {
-            var environmentDetails = JsonConvert.DeserializeObject<EnvironmentDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var environmentDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.EnvironmentDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Environment;
             environmentDetails.Key.Should().Be(_addEnvironmentMessage.Key);
             environmentDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
         }
 
         private void ThenTheToggleWeAddedIsReturned()
         {
-            var toggleDetails = JsonConvert.DeserializeObject<ToggleDetailsDto>(_responseContent, DeserializeWithPrivateSetters);
+            var toggleDetails = JsonConvert.DeserializeObject<Core.ReadModel.Projections.ToggleDetails.Projection>(_responseContent, DeserializeWithPrivateSetters).Toggle;
             toggleDetails.Key.Should().Be(_addToggleMessage.Key);
             toggleDetails.Name.Should().Be(_addToggleMessage.Name);
             toggleDetails.ProjectId.Should().Be(_createProjectMessage.ProjectId);
@@ -281,7 +281,7 @@
 
         private void ThenTheEnvironmentStateContainsOurToggleStates()
         {
-            var environmentState = JsonConvert.DeserializeObject<EnvironmentStateDto>(_responseContent, DeserializeWithPrivateSetters);
+            var environmentState = JsonConvert.DeserializeObject<Core.ReadModel.Projections.EnvironmentState.Projection>(_responseContent, DeserializeWithPrivateSetters).EnvironmentState;
             var toggleStates = environmentState.ToggleStates.ToList();
             toggleStates.Count.Should().Be(1);
             toggleStates.Exists(ts => ts.Key == _addToggleMessage.Key && ts.Value == default(bool).ToString()).Should().BeTrue();

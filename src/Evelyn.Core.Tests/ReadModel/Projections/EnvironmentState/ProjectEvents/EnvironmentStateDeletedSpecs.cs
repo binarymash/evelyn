@@ -8,7 +8,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStateDeletedSpecs : ProjectionHarness<EnvironmentStateDeleted>
+    public class EnvironmentStateDeletedSpecs : ProjectionBuilderHarness<EnvironmentStateDeleted>
     {
         [Fact]
         public void Nominal()
@@ -21,7 +21,7 @@
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private async Task WhenWeHandleAnEnvironmentStateDeletedEvent()
@@ -36,7 +36,7 @@
 
         private void ThenTheProjectionIsDeleted()
         {
-            ProjectionStore.Received().Delete(EnvironmentStateDto.StoreKey(ProjectId, EnvironmentKey));
+            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId, EnvironmentKey));
         }
     }
 }

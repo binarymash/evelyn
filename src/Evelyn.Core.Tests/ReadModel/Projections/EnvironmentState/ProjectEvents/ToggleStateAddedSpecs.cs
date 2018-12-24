@@ -1,16 +1,15 @@
 ﻿namespace Evelyn.Core.Tests.ReadModel.Projections.EnvironmentState.ProjectEvents
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Evelyn.Core.ReadModel.Projections.Shared;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
+    using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public class ToggleStateAddedSpecs : ProjectionHarness<ToggleStateAdded>
+    public class ToggleStateAddedSpecs : ProjectionBuilderHarness<ToggleStateAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()
@@ -28,19 +27,19 @@
                 .And(_ => GivenTheProjectAlreadyHasAToggleState())
                 .When(_ => WhenWeHandleAToggleStateAddedEvent())
                 .Then(_ => ThenTheNewToggleStateIsAdded())
-                .And(_ => ThenTheAuditIsUpdated())
+                .And(_ => ThenTheProjectionAuditIsSet())
                 .BDDfy();
         }
 
         protected override async Task HandleEventImplementation()
         {
-            await ProjectionBuilder.Handle(Event, StoppingToken);
+            await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
         private void GivenTheProjectAlreadyHasAToggleState()
         {
-            OriginalProjection.AddToggleState(
-                DataFixture.Create<EventAuditDto>(),
+            OriginalProjection.EnvironmentState.AddToggleState(
+                DataFixture.Create<Projections.EventAudit>(),
                 DataFixture.Create<string>(),
                 DataFixture.Create<string>());
         }
@@ -57,10 +56,10 @@
 
         private void ThenTheNewToggleStateIsAdded()
         {
-            var toggleStates = UpdatedProjection.ToggleStates.ToList();
-            toggleStates.Count.Should().Be(OriginalProjection.ToggleStates.Count() + 1);
+            var toggleStates = UpdatedProjection.EnvironmentState.ToggleStates.ToList();
+            toggleStates.Count.Should().Be(OriginalProjection.EnvironmentState.ToggleStates.Count() + 1);
 
-            foreach (var toggleState in OriginalProjection.ToggleStates)
+            foreach (var toggleState in OriginalProjection.EnvironmentState.ToggleStates)
             {
                 toggleStates.Should().Contain(ts =>
                     ts.Key == toggleState.Key &&

@@ -21,7 +21,7 @@
         private readonly EnvironmentsController _controller;
         private readonly Guid _projectId;
 
-        private EnvironmentDetailsDto _environmentReturnedByFacade;
+        private Projection _environmentProjectionReturnedByFacade;
         private string _keyOfEnvironmentToGet;
         private ObjectResult _result;
 
@@ -63,11 +63,11 @@
 
         private void GivenTheEnvironmentWeWantDoesExist()
         {
-            _environmentReturnedByFacade = _fixture.Create<EnvironmentDetailsDto>();
-            _keyOfEnvironmentToGet = _environmentReturnedByFacade.Key;
+            _environmentProjectionReturnedByFacade = _fixture.Create<Projection>();
+            _keyOfEnvironmentToGet = _environmentProjectionReturnedByFacade.Environment.Key;
             _readModelFacade
                 .GetEnvironmentDetails(_projectId, _keyOfEnvironmentToGet)
-                .Returns(_environmentReturnedByFacade);
+                .Returns(_environmentProjectionReturnedByFacade);
         }
 
         private void GivenTheEnvironmentWeWantDoesntExist()
@@ -108,8 +108,8 @@
 
         private void ThenTheExpectedEnvironmentIsReturned()
         {
-            var returnedEnvironment = _result.Value as EnvironmentDetailsDto;
-            returnedEnvironment.Should().Be(_environmentReturnedByFacade);
+            var returnedEnvironment = _result.Value as Projection;
+            returnedEnvironment.Should().Be(_environmentProjectionReturnedByFacade);
         }
     }
 }

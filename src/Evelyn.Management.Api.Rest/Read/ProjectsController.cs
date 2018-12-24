@@ -23,7 +23,7 @@
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ProjectDetailsDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Projection>), 200)]
         public async Task<ObjectResult> Get()
         {
             try
@@ -42,7 +42,7 @@
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ProjectDetailsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Projection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
         public async Task<ObjectResult> Get(Guid id)
         {
