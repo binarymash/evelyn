@@ -87,7 +87,7 @@
 
         private async Task WhenWeGetTheToggle()
         {
-            _result = await _controller.Get(_projectId, _keyOfToggleToGet);
+            _result = await _controller.GetDefinition(_projectId, _keyOfToggleToGet);
         }
 
         private void ThenStatusCode200IsReturned()

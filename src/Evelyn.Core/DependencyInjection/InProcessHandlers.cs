@@ -31,6 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.EnvironmentState.ProjectionBuilder>();
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ProjectDetails.ProjectionBuilder>();
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ToggleDetails.ProjectionBuilder>();
+            parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ToggleState.ProjectionBuilder>();
             parentOptions.Services.TryAddSingleton<Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.ProjectionBuilder>();
         }
     }

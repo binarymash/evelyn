@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("management-api/projects/{projectId}/environments")]
+    [Route("management-api/projects/{projectId}/environments/{environmentKey}")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
     [ApiExplorerSettings(GroupName = "management-api")]
     public class EnvironmentsController : Controller
@@ -20,7 +20,7 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{environmentKey}")]
+        [HttpGet]
         [ProducesResponseType(typeof(Projection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
         public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
