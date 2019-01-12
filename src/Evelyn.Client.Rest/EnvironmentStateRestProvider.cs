@@ -10,12 +10,12 @@
 
     public class EnvironmentStateRestProvider : IEnvironmentStateProvider
     {
-        private readonly Client _client;
+        private readonly EvelynRestClient _client;
         private readonly ILogger<EnvironmentStateRestProvider> _logger;
 
         public EnvironmentStateRestProvider(IOptions<EnvironmentStateRestProviderOptions> options, ILogger<EnvironmentStateRestProvider> logger)
         {
-            _client = new Client(options.Value.BaseUrl);
+            _client = new EvelynRestClient(options.Value.BaseUrl);
             _logger = logger;
         }
 
@@ -24,7 +24,7 @@
             try
             {
                 var dto = _client
-                    .ApiStatesAsync(projectId, environmentKey)
+                    .GetAsync(projectId, environmentKey)
                     .GetAwaiter().GetResult();
 
                 var toggleStates = new List<Domain.ToggleState>();

@@ -17,16 +17,24 @@ namespace Microsoft.Extensions.DependencyInjection
 #pragma warning restore SA1616 // Element return value documentation must have text
 #pragma warning restore SA1614 // Element parameter documentation must have text
         {
-            var swaggerInfo = new Swashbuckle.AspNetCore.Swagger.Info()
+            var managementApiInfo = new Swashbuckle.AspNetCore.Swagger.Info()
             {
                 Version = "v0.1",
                 Title = "Evelyn Management API",
                 Description = "Management API for Evelyn",
             };
 
+            var clientApiInfo = new Swashbuckle.AspNetCore.Swagger.Info()
+            {
+                Version = "client-api",
+                Title = "Evelyn Client API",
+                Description = "Client API for Evelyn",
+            };
+
             services.AddSwaggerGen(config =>
             {
-                config.SwaggerDoc("v0.1", swaggerInfo);
+                config.SwaggerDoc("management-api", managementApiInfo);
+                config.SwaggerDoc("client-api", clientApiInfo);
                 config.CustomSchemaIds(type => type.FullName);
             });
 

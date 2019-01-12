@@ -3,31 +3,31 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Core.ReadModel.Projections.ClientEnvironmentState;
     using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("management-api/projects/{projectId}/environments")]
+    [Route("client-api/projects/{projectId}/environments/{environmentName}/state")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    [ApiExplorerSettings(GroupName = "management-api")]
-    public class EnvironmentsController : Controller
+    [ApiExplorerSettings(GroupName = "client-api")]
+    public class ClientEnvironmentStatesController : Controller
     {
         private readonly IReadModelFacade _readModelFacade;
 
-        public EnvironmentsController(IReadModelFacade readModelFacade)
+        public ClientEnvironmentStatesController(IReadModelFacade readModelFacade)
         {
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet("{environmentKey}")]
+        [HttpGet]
         [ProducesResponseType(typeof(Projection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
-        public async Task<ObjectResult> Get(Guid projectId, string environmentKey)
+        public async Task<ObjectResult> Get(Guid projectId, string environmentName)
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentDetails(projectId, environmentKey);
+                var result = await _readModelFacade.GetClientEnvironmentState(projectId, environmentName);
                 return Ok(result);
             }
             catch (ProjectionNotFoundException)

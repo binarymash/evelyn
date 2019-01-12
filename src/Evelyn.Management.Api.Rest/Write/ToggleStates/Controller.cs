@@ -10,11 +10,12 @@
     using Microsoft.Extensions.Logging;
     using Responses;
 
-    [Route("api/projects/{projectId}/environments/{environmentKey}/toggles/{toggleKey}")]
+    [Route("management-api/projects/{projectId}/environments/{environmentKey}/toggles/{toggleKey}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ApiExplorerSettings(GroupName = "management-api")]
     public class Controller : EvelynController
     {
         private readonly ICommandHandler<Core.WriteModel.Project.Commands.ChangeToggleState.Command> _handler;

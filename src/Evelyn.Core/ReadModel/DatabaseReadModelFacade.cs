@@ -16,18 +16,22 @@
 
         private readonly IProjectionStore<Projections.EnvironmentState.Projection> _environmentStates;
 
+        private readonly IProjectionStore<Projections.ClientEnvironmentState.Projection> _clientEnvironmentStates;
+
         public DatabaseReadModelFacade(
             IProjectionStore<Projections.AccountProjects.Projection> accountProjects,
             IProjectionStore<Projections.ProjectDetails.Projection> projectDetails,
             IProjectionStore<Projections.EnvironmentDetails.Projection> environmentDetails,
             IProjectionStore<Projections.ToggleDetails.Projection> toggleDetails,
-            IProjectionStore<Projections.EnvironmentState.Projection> environmentStates)
+            IProjectionStore<Projections.EnvironmentState.Projection> environmentStates,
+            IProjectionStore<Projections.ClientEnvironmentState.Projection> clientEnvironmentStates)
         {
             _accountProjects = accountProjects;
             _projectDetails = projectDetails;
             _environmentDetails = environmentDetails;
             _toggleDetails = toggleDetails;
             _environmentStates = environmentStates;
+            _clientEnvironmentStates = clientEnvironmentStates;
         }
 
         public async Task<Projections.AccountProjects.Projection> GetProjects(Guid accountId)
@@ -53,6 +57,11 @@
         public async Task<Projections.EnvironmentState.Projection> GetEnvironmentState(Guid projectId, string environmentName)
         {
             return await _environmentStates.Get(Projections.EnvironmentState.Projection.StoreKey(projectId, environmentName));
+        }
+
+        public async Task<Projections.ClientEnvironmentState.Projection> GetClientEnvironmentState(Guid projectId, string environmentName)
+        {
+            return await _clientEnvironmentStates.Get(Projections.ClientEnvironmentState.Projection.StoreKey(projectId, environmentName));
         }
     }
 }

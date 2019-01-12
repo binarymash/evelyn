@@ -10,8 +10,9 @@
     using Microsoft.Extensions.Logging;
     using Write;
 
-    [Route("api/projects")]
+    [Route("management-api/projects")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ApiExplorerSettings(GroupName = "management-api")]
     public class ProjectsController : EvelynController
     {
         private readonly IReadModelFacade _readModelFacade;

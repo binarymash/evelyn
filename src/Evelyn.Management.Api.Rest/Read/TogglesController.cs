@@ -8,8 +8,9 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/projects/{projectId}/toggles")]
+    [Route("management-api/projects/{projectId}/toggles")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ApiExplorerSettings(GroupName = "management-api")]
     public class TogglesController : Controller
     {
         private readonly IReadModelFacade _readModelFacade;
