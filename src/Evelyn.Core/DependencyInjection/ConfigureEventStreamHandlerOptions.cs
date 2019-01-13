@@ -14,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 typeof(Evelyn.Core.ReadModel.Projections.EnvironmentState.ProjectionBuilder),
                 typeof(Evelyn.Core.ReadModel.Projections.ProjectDetails.ProjectionBuilder),
                 typeof(Evelyn.Core.ReadModel.Projections.ToggleDetails.ProjectionBuilder),
+                typeof(Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.ProjectionBuilder),
             });
         }
     }

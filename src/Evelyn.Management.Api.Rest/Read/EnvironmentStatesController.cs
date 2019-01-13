@@ -8,8 +8,9 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/states/{projectId}/{environmentName}")]
+    [Route("management-api/states/{projectId}/{environmentName}")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
+    [ApiExplorerSettings(GroupName = "management-api")]
     public class EnvironmentStatesController : Controller
     {
         private readonly IReadModelFacade _readModelFacade;
