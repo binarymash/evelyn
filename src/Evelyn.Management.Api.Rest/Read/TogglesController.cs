@@ -19,7 +19,7 @@
             _readModelFacade = readModelFacade;
         }
 
-        [HttpGet]
+        [HttpGet("definition")]
         [ProducesResponseType(typeof(Evelyn.Core.ReadModel.Projections.ToggleDetails.Projection), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status404NotFound)]
         public async Task<ObjectResult> GetDefinition(Guid projectId, string toggleKey)

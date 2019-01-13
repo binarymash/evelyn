@@ -18,7 +18,7 @@
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
-        private readonly EnvironmentStatesController _controller;
+        private readonly EnvironmentsController _controller;
         private readonly Guid _projectId;
 
         private Projection _environmentStateReturnedByFacade;
@@ -29,7 +29,7 @@
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
-            _controller = new EnvironmentStatesController(_readModelFacade);
+            _controller = new EnvironmentsController(_readModelFacade);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -91,7 +91,7 @@
 
         private async Task WhenWeGetTheEnvironmentState()
         {
-            _result = await _controller.Get(_projectId, _keyOfEnvironmentStateToGet);
+            _result = await _controller.GetState(_projectId, _keyOfEnvironmentStateToGet);
         }
 
         private void ThenStatusCode200IsReturned()

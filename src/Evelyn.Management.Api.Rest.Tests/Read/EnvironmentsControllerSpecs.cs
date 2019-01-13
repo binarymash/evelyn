@@ -88,7 +88,7 @@
 
         private async Task WhenWeGetTheEnvironment()
         {
-            _result = await _controller.Get(_projectId, _keyOfEnvironmentToGet);
+            _result = await _controller.GetDefinition(_projectId, _keyOfEnvironmentToGet);
         }
 
         private void ThenStatusCode200IsReturned()
