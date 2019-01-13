@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.TogglesController
 {
     using System;
     using System.Threading.Tasks;
@@ -14,7 +14,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class TogglesControllerSpecs
+    public class GetDefinitionSpecs
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
@@ -24,7 +24,7 @@
         private string _keyOfToggleToGet;
         private ObjectResult _result;
 
-        public TogglesControllerSpecs()
+        public GetDefinitionSpecs()
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();

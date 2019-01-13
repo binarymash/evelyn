@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.EnvironmentsController
 {
     using System;
     using System.Threading.Tasks;
@@ -14,7 +14,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStatesControllerSpecs
+    public class GetStateSpecs
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
@@ -25,7 +25,7 @@
         private string _keyOfEnvironmentStateToGet;
         private ObjectResult _result;
 
-        public EnvironmentStatesControllerSpecs()
+        public GetStateSpecs()
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();

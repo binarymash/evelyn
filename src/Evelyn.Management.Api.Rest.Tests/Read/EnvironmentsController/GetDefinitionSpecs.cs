@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.EnvironmentsController
 {
     using System;
     using System.Threading.Tasks;
@@ -14,7 +14,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentsControllerSpecs
+    public class GetDefinitionSpecs
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
@@ -25,7 +25,7 @@
         private string _keyOfEnvironmentToGet;
         private ObjectResult _result;
 
-        public EnvironmentsControllerSpecs()
+        public GetDefinitionSpecs()
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
@@ -37,7 +37,7 @@
         public void GetsEnvironment()
         {
             this.Given(_ => GivenTheEnvironmentWeWantDoesExist())
-                .When(_ => WhenWeGetTheEnvironment())
+                .When(_ => WhenWeGetTheEnvironmentDefinition())
                 .Then(_ => ThenStatusCode200IsReturned())
                 .And(_ => ThenTheExpectedEnvironmentIsReturned())
                 .BDDfy();
@@ -47,7 +47,7 @@
         public void EnvironmentNotFound()
         {
             this.Given(_ => GivenTheEnvironmentWeWantDoesntExist())
-                .When(_ => WhenWeGetTheEnvironment())
+                .When(_ => WhenWeGetTheEnvironmentDefinition())
                 .Then(_ => ThenStatusCode404IsReturned())
                 .BDDfy();
         }
@@ -56,7 +56,7 @@
         public void ExceptionWhenGettingEnvironment()
         {
             this.Given(_ => GivenThatAnExceptionIsThrownWhenGettingEnvironment())
-                .When(_ => WhenWeGetTheEnvironment())
+                .When(_ => WhenWeGetTheEnvironmentDefinition())
                 .Then(_ => ThenStatusCode500IsReturned())
                 .BDDfy();
         }
@@ -86,7 +86,7 @@
                 .Throws(_fixture.Create<Exception>());
         }
 
-        private async Task WhenWeGetTheEnvironment()
+        private async Task WhenWeGetTheEnvironmentDefinition()
         {
             _result = await _controller.GetDefinition(_projectId, _keyOfEnvironmentToGet);
         }
