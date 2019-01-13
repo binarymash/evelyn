@@ -3,6 +3,13 @@ Building the code
 
 Evelyn can be built on the command line on any environment that supports the .NET Core SDK and, if you're running on Windows, in any version of Visual Studio 2017.
 
+Prerequisites
+-------------
+
+- .NET Core 2.2 SDK
+- if you're running on linux or MacOS the evelyn build scripts require you to have mono 5.12.0 or later installed
+
+
 Building on the command line
 ----------------------------
 
