@@ -6,11 +6,6 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.Projections.EnvironmentState;
-    using Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Evelyn.Management.Api.Rest.Write.Projects.Messages;
     using Evelyn.Management.Api.Rest.Write.Toggles.Messages;
@@ -70,12 +65,12 @@
                 .And(_ => ThenTheToggleWeAddedIsOnTheProject())
                 .BDDfy();
 
-            this.When(_ => WhenWeGetTheDetailsForTheEnvironmentWeAdded())
+            this.When(_ => WhenWeGetTheDefinitionForTheEnvironmentWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheEnvironmentWeAddedIsReturned())
                 .BDDfy();
 
-            this.When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
+            this.When(_ => WhenWeGetTheDefinitionForTheToggleWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheToggleWeAddedIsReturned())
                 .BDDfy();
@@ -165,19 +160,19 @@
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
-        private async Task WhenWeGetTheDetailsForTheEnvironmentWeAdded()
+        private async Task WhenWeGetTheDefinitionForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}/definition")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
-        private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
+        private async Task WhenWeGetTheDefinitionForTheToggleWeAdded()
         {
             _response = await Client
-                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}/definition")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -186,7 +181,7 @@
         private async Task WhenWeGetTheStateForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/management-api/states/{_createProjectMessage.ProjectId}/{_addEnvironmentMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}/state")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();

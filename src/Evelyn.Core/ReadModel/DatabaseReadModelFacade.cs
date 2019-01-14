@@ -7,15 +7,11 @@
     public class DatabaseReadModelFacade : IReadModelFacade
     {
         private readonly IProjectionStore<Projections.AccountProjects.Projection> _accountProjects;
-
         private readonly IProjectionStore<Projections.ProjectDetails.Projection> _projectDetails;
-
         private readonly IProjectionStore<Projections.EnvironmentDetails.Projection> _environmentDetails;
-
         private readonly IProjectionStore<Projections.ToggleDetails.Projection> _toggleDetails;
-
         private readonly IProjectionStore<Projections.EnvironmentState.Projection> _environmentStates;
-
+        private readonly IProjectionStore<Projections.ToggleState.Projection> _toggleStates;
         private readonly IProjectionStore<Projections.ClientEnvironmentState.Projection> _clientEnvironmentStates;
 
         public DatabaseReadModelFacade(
@@ -24,6 +20,7 @@
             IProjectionStore<Projections.EnvironmentDetails.Projection> environmentDetails,
             IProjectionStore<Projections.ToggleDetails.Projection> toggleDetails,
             IProjectionStore<Projections.EnvironmentState.Projection> environmentStates,
+            IProjectionStore<Projections.ToggleState.Projection> toggleStates,
             IProjectionStore<Projections.ClientEnvironmentState.Projection> clientEnvironmentStates)
         {
             _accountProjects = accountProjects;
@@ -31,6 +28,7 @@
             _environmentDetails = environmentDetails;
             _toggleDetails = toggleDetails;
             _environmentStates = environmentStates;
+            _toggleStates = toggleStates;
             _clientEnvironmentStates = clientEnvironmentStates;
         }
 
@@ -57,6 +55,11 @@
         public async Task<Projections.EnvironmentState.Projection> GetEnvironmentState(Guid projectId, string environmentName)
         {
             return await _environmentStates.Get(Projections.EnvironmentState.Projection.StoreKey(projectId, environmentName));
+        }
+
+        public async Task<Projections.ToggleState.Projection> GetToggleState(Guid projectId, string toggleKey)
+        {
+            return await _toggleStates.Get(Projections.ToggleState.Projection.StoreKey(projectId, toggleKey));
         }
 
         public async Task<Projections.ClientEnvironmentState.Projection> GetClientEnvironmentState(Guid projectId, string environmentName)

@@ -30,7 +30,7 @@ var netFrameworkUnitTestAssemblies = new []
 	@"./src/Evelyn.Storage.EventStore.Tests/bin/"+compileConfig+"/net461/Evelyn.Storage.EventStore.Tests.dll",
 };
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage =87d;
+var minCodeCoverage =89d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // integration testing

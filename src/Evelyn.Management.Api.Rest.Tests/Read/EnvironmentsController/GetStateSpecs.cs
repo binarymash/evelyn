@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.EnvironmentsController
 {
     using System;
     using System.Threading.Tasks;
@@ -14,22 +14,22 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStatesControllerSpecs
+    public class GetStateSpecs
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
-        private readonly EnvironmentStatesController _controller;
+        private readonly EnvironmentsController _controller;
         private readonly Guid _projectId;
 
         private Projection _environmentStateReturnedByFacade;
         private string _keyOfEnvironmentStateToGet;
         private ObjectResult _result;
 
-        public EnvironmentStatesControllerSpecs()
+        public GetStateSpecs()
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
-            _controller = new EnvironmentStatesController(_readModelFacade);
+            _controller = new EnvironmentsController(_readModelFacade);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -91,7 +91,7 @@
 
         private async Task WhenWeGetTheEnvironmentState()
         {
-            _result = await _controller.Get(_projectId, _keyOfEnvironmentStateToGet);
+            _result = await _controller.GetState(_projectId, _keyOfEnvironmentStateToGet);
         }
 
         private void ThenStatusCode200IsReturned()
