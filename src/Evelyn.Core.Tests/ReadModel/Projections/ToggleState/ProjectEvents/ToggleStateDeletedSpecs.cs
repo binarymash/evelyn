@@ -3,18 +3,30 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Evelyn.Core.ReadModel.Projections.ToggleState;
     using Evelyn.Core.WriteModel.Project.Events;
     using FluentAssertions;
+    using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
 
     public class ToggleStateDeletedSpecs : ProjectionBuilderHarness<ToggleStateDeleted>
     {
         [Fact]
-        public void Nominal()
+        public void ProjectionDoesNotExist()
+        {
+            this.Given(_ => GivenThereIsNoProjection())
+                .When(_ => WhenWeHandleAToggleStateDeletedEvent())
+                .Then(_ => ThenAnExceptionIsThrown())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void MultipleToggleStatesExist()
         {
             this.Given(_ => GivenTheProjectionExists())
                 .And(_ => GivenOurToggleStateIsOnTheProjection())
+                .And(_ => GivenTheProjectionHasOtherToggleStates())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
                 .Then(_ => ThenOurToggleStateIsRemoved())
                 .And(_ => ThenTheProjectionAuditIsSet())
@@ -22,11 +34,12 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         }
 
         [Fact]
-        public void ProjectionDoesNotExist()
+        public void LastToggleStateIsDeleted()
         {
-            this.Given(_ => GivenThereIsNoProjection())
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenOurToggleStateIsOnTheProjection())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
-                .Then(_ => ThenAnExceptionIsThrown())
+                .Then(_ => ThenTheProjectionIsDeleted())
                 .BDDfy();
         }
 
@@ -60,6 +73,11 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
                         ts.Value == originalEnvironmentState.Value);
                 }
             }
+        }
+
+        private void ThenTheProjectionIsDeleted()
+        {
+            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId, EnvironmentKey));
         }
     }
 }

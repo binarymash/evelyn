@@ -1,5 +1,6 @@
 ﻿namespace Evelyn.Core.ReadModel.Projections.ToggleState
 {
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using ProjectEvents = WriteModel.Project.Events;
@@ -66,9 +67,14 @@
             toggleState.DeleteEnvironmentState(eventAudit, @event.EnvironmentKey);
 
             var projection = Projection.Create(eventAudit, toggleState);
-            await Projections.Update(storeKey, projection).ConfigureAwait(false);
-
-            // TODO: delete if no environmenmts?
+            if (projection.ToggleState.EnvironmentStates.Any())
+            {
+                await Projections.Update(storeKey, projection).ConfigureAwait(false);
+            }
+            else
+            {
+                await Projections.Delete(storeKey).ConfigureAwait(false);
+            }
         }
     }
 }
