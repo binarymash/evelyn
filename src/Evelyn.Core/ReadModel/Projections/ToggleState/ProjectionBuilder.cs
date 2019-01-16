@@ -49,7 +49,7 @@
         public async Task Handle(long streamPosition, ProjectEvents.ToggleStateChanged @event, CancellationToken stoppingToken)
         {
             var eventAudit = CreateEventAudit(streamPosition, @event);
-            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+            var storeKey = Projection.StoreKey(@event.Id, @event.ToggleKey);
             var toggleState = (await Projections.Get(storeKey).ConfigureAwait(false)).ToggleState;
 
             toggleState.ChangeEnvironmentState(eventAudit, @event.EnvironmentKey, @event.Value);
@@ -61,7 +61,7 @@
         public async Task Handle(long streamPosition, ProjectEvents.ToggleStateDeleted @event, CancellationToken stoppingToken)
         {
             var eventAudit = CreateEventAudit(streamPosition, @event);
-            var storeKey = Projection.StoreKey(@event.Id, @event.EnvironmentKey);
+            var storeKey = Projection.StoreKey(@event.Id, @event.ToggleKey);
             var toggleState = (await Projections.Get(storeKey).ConfigureAwait(false)).ToggleState;
 
             toggleState.DeleteEnvironmentState(eventAudit, @event.EnvironmentKey);
