@@ -1,5 +1,7 @@
 namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -9,14 +11,14 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
     using Xunit;
     using Projections = Evelyn.Core.ReadModel.Projections;
 
-    public class ToggleStateAddedSpecs : ProjectionBuilderHarness<ToggleStateAdded>
+    public class EnvironmentStateAddedSpecs : ProjectionBuilderHarness<EnvironmentStateAdded>
     {
         [Fact]
         public void ProjectionDoesNotExist()
         {
             this.Given(_ => GivenThereAreNoProjections())
-                .When(_ => WhenWeHandleAToggleStateAddedEvent())
-                .Then(_ => ThenTheProjectionIsCreatedWithTheNewState())
+                .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
+                .Then(_ => ThenAProjectionIsCreatedWithTheNewEnvironmentState())
                 .Then(_ => ThenTheProjectionAuditIsSet())
                 .BDDfy();
         }
@@ -25,10 +27,21 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenTheProjectionHasStateForAnotherEnvironment())
-                .When(_ => WhenWeHandleAToggleStateAddedEvent())
-                .Then(_ => ThenTheNewStateIsAdded())
+                .And(_ => GivenTheProjectAlreadyHasAToggleState())
+                .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
+                .Then(_ => ThenTheNewToggleStateIsAdded())
                 .And(_ => ThenTheProjectionAuditIsSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ProjectionAlreadyBuilt()
+        {
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectAlreadyHasAToggleState())
+                .And(_ => GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent())
+                .When(_ => WhenWeHandleAnEnvironmentStateAddedEvent())
+                .Then(_ => ThenTheStoredProjectionIsUnchanged())
                 .BDDfy();
         }
 
@@ -37,7 +50,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
             await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
         }
 
-        private void GivenTheProjectionHasStateForAnotherEnvironment()
+        private void GivenTheProjectAlreadyHasAToggleState()
         {
             OriginalProjection.ToggleState.AddEnvironmentState(
                 DataFixture.Create<Projections.EventAudit>(),
@@ -45,27 +58,34 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
                 DataFixture.Create<string>());
         }
 
-        private async Task WhenWeHandleAToggleStateAddedEvent()
+        private void GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent()
         {
-            Event = DataFixture.Build<ToggleStateAdded>()
-                .With(pc => pc.Id, ProjectId)
-                .With(pc => pc.EnvironmentKey, EnvironmentKey)
-                .Create();
+            StreamPosition = OriginalProjection.Audit.StreamPosition;
+        }
+
+        private async Task WhenWeHandleAnEnvironmentStateAddedEvent()
+        {
+            Event = new EnvironmentStateAdded(
+                DataFixture.Create<string>(),
+                ProjectId,
+                EnvironmentKey,
+                DataFixture.Create<DateTimeOffset>(),
+                DataFixture.CreateMany<KeyValuePair<string, string>>(1));
 
             await WhenTheEventIsHandled();
         }
 
-        private void ThenTheProjectionIsCreatedWithTheNewState()
+        private void ThenAProjectionIsCreatedWithTheNewEnvironmentState()
         {
             var environmentStates = UpdatedProjection.ToggleState.EnvironmentStates.ToList();
             environmentStates.Count.Should().Be(1);
 
             environmentStates.Should().Contain(ts =>
                 ts.Key == Event.EnvironmentKey &&
-                ts.Value == Event.Value);
+                ts.Value == Event.ToggleStates.ToList()[0].Value);
         }
 
-        private void ThenTheNewStateIsAdded()
+        private void ThenTheNewToggleStateIsAdded()
         {
             var environmentStates = UpdatedProjection.ToggleState.EnvironmentStates.ToList();
             environmentStates.Count.Should().Be(OriginalProjection.ToggleState.EnvironmentStates.Count() + 1);
@@ -79,7 +99,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
 
             environmentStates.Should().Contain(ts =>
                 ts.Key == Event.EnvironmentKey &&
-                ts.Value == Event.Value);
+                ts.Value == Event.ToggleStates.ToList()[0].Value);
         }
     }
 }
