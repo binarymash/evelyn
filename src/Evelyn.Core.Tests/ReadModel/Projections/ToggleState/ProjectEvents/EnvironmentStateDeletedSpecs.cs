@@ -11,7 +11,6 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
     using NSubstitute;
     using TestStack.BDDfy;
     using Xunit;
-    using Projections = Evelyn.Core.ReadModel.Projections;
 
     public class EnvironmentStateDeletedSpecs : ProjectionBuilderHarness<EnvironmentStateDeleted>
     {

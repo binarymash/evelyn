@@ -58,11 +58,6 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
                 DataFixture.Create<string>());
         }
 
-        private void GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent()
-        {
-            StreamPosition = OriginalProjection.Audit.StreamPosition;
-        }
-
         private async Task WhenWeHandleAnEnvironmentStateAddedEvent()
         {
             Event = new EnvironmentStateAdded(
