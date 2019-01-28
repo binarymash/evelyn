@@ -20,7 +20,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState
 
         protected string EnvironmentKey { get; set; }
 
-        protected void GivenThereIsNoProjection()
+        protected void GivenThereAreNoProjections()
         {
             ProjectId = DataFixture.Create<Guid>();
             ToggleKey = DataFixture.Create<string>();
@@ -36,7 +36,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState
             ToggleKey = DataFixture.Create<string>();
         }
 
-        protected void GivenTheProjectionHasOtherToggleStates()
+        protected void GivenTheProjectionHasStateForAnotherEnvironment()
         {
             OriginalProjection.ToggleState.AddEnvironmentState(
                 DataFixture.Create<Projections.EventAudit>(),
@@ -44,7 +44,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState
                 DataFixture.Create<string>());
         }
 
-        protected void GivenOurToggleStateIsOnTheProjection()
+        protected void GivenTheProjectionHasStateForOurEnvironment()
         {
             EnvironmentKey = DataFixture.Create<string>();
 

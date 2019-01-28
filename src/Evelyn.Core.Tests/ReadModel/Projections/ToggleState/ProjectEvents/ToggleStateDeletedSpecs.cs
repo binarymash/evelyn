@@ -15,7 +15,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => GivenThereIsNoProjection())
+            this.Given(_ => GivenThereAreNoProjections())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
@@ -25,8 +25,8 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         public void MultipleToggleStatesExist()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurToggleStateIsOnTheProjection())
-                .And(_ => GivenTheProjectionHasOtherToggleStates())
+                .And(_ => GivenTheProjectionHasStateForOurEnvironment())
+                .And(_ => GivenTheProjectionHasStateForAnotherEnvironment())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
                 .Then(_ => ThenOurToggleStateIsRemoved())
                 .And(_ => ThenTheProjectionAuditIsSet())
@@ -37,7 +37,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         public void LastToggleStateIsDeleted()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurToggleStateIsOnTheProjection())
+                .And(_ => GivenTheProjectionHasStateForOurEnvironment())
                 .When(_ => WhenWeHandleAToggleStateDeletedEvent())
                 .Then(_ => ThenTheProjectionIsDeleted())
                 .BDDfy();
@@ -51,9 +51,9 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         private async Task WhenWeHandleAToggleStateDeletedEvent()
         {
             Event = DataFixture.Build<ToggleStateDeleted>()
-                .With(pc => pc.Id, ProjectId)
-                .With(pc => pc.EnvironmentKey, EnvironmentKey)
-                .With(pc => pc.ToggleKey, ToggleKey)
+                .With(e => e.Id, ProjectId)
+                .With(e => e.EnvironmentKey, EnvironmentKey)
+                .With(e => e.ToggleKey, ToggleKey)
                 .Create();
 
             await WhenTheEventIsHandled();
@@ -77,7 +77,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
 
         private void ThenTheProjectionIsDeleted()
         {
-            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId, EnvironmentKey));
+            ProjectionStore.Received().Delete(Projection.StoreKey(ProjectId, ToggleKey));
         }
     }
 }

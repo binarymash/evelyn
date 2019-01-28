@@ -38,7 +38,7 @@
             ProjectionStore.WhenForAnyArgs(ps => ps.Update(Arg.Any<string>(), Arg.Any<TProjection>()))
                 .Do(ci => UpdatedProjection = ci.ArgAt<TProjection>(1));
 
-            StreamPosition = DataFixture.Create<long>();
+            StreamPosition = long.MinValue;
         }
 
         protected Fixture DataFixture { get; }
@@ -67,6 +67,11 @@
         {
             try
             {
+                if (StreamPosition == long.MinValue)
+                {
+                    StreamPosition = OriginalProjection?.Audit?.StreamPosition + 1 ?? 1;
+                }
+
                 TimeBeforeHandled = DateTimeOffset.UtcNow;
                 await HandleEventImplementation();
                 TimeAfterHandled = DateTimeOffset.UtcNow;
@@ -82,9 +87,11 @@
             ThrownException.Should().NotBeNull();
         }
 
-        protected void ThenTheStoredProjectionIsUnchanged()
+        protected async Task ThenTheStoredProjectionIsUnchanged()
         {
-            UpdatedProjection.Should().BeEquivalentTo(OriginalProjection);
+            await ProjectionStore.DidNotReceiveWithAnyArgs().Create(Arg.Any<string>(), Arg.Any<TProjection>());
+            await ProjectionStore.DidNotReceiveWithAnyArgs().Update(Arg.Any<string>(), Arg.Any<TProjection>());
+            await ProjectionStore.DidNotReceiveWithAnyArgs().Delete(Arg.Any<string>());
         }
 
         protected void ThenNoProjectionIsCreated()

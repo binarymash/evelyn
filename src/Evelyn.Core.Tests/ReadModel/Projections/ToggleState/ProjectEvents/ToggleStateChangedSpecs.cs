@@ -13,7 +13,7 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         [Fact]
         public void ProjectionDoesNotExist()
         {
-            this.Given(_ => GivenThereIsNoProjection())
+            this.Given(_ => GivenThereAreNoProjections())
                 .When(_ => WhenWeHandleAToggleStateChangedEvent())
                 .Then(_ => ThenAnExceptionIsThrown())
                 .BDDfy();
@@ -23,8 +23,8 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         public void Nominal()
         {
             this.Given(_ => GivenTheProjectionExists())
-                .And(_ => GivenOurToggleStateIsOnTheProjection())
-                .And(_ => GivenTheProjectionHasOtherToggleStates())
+                .And(_ => GivenTheProjectionHasStateForOurEnvironment())
+                .And(_ => GivenTheProjectionHasStateForAnotherEnvironment())
                 .When(_ => WhenWeHandleAToggleStateChangedEvent())
                 .Then(_ => ThenOurToggleStateIsChanged())
                 .And(_ => ThenTheProjectionAuditIsSet())
