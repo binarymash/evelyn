@@ -53,5 +53,10 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState
                 EnvironmentKey,
                 DataFixture.Create<string>());
         }
+
+        protected void GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent()
+        {
+            StreamPosition = OriginalProjection.Audit.StreamPosition;
+        }
     }
 }

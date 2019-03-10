@@ -22,6 +22,16 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         }
 
         [Fact]
+        public void ProjectionAlreadyBuilt()
+        {
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent())
+                .When(_ => WhenWeHandleAToggleStateDeletedEvent())
+                .Then(_ => ThenTheStoredProjectionIsUnchanged())
+                .BDDfy();
+        }
+
+        [Fact]
         public void MultipleToggleStatesExist()
         {
             this.Given(_ => GivenTheProjectionExists())

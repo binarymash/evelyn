@@ -7,7 +7,6 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
-    using Projections = Evelyn.Core.ReadModel.Projections;
 
     public class ToggleStateAddedSpecs : ProjectionBuilderHarness<ToggleStateAdded>
     {
@@ -18,6 +17,16 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
                 .When(_ => WhenWeHandleAToggleStateAddedEvent())
                 .Then(_ => ThenTheProjectionIsCreatedWithTheNewState())
                 .Then(_ => ThenTheProjectionAuditIsSet())
+                .BDDfy();
+        }
+
+        [Fact]
+        public void ProjectionAlreadyBuilt()
+        {
+            this.Given(_ => GivenTheProjectionExists())
+                .And(_ => GivenTheProjectionStreamVersionIsTheSameAsTheNextEvent())
+                .When(_ => WhenWeHandleAToggleStateAddedEvent())
+                .Then(_ => ThenTheStoredProjectionIsUnchanged())
                 .BDDfy();
         }
 
@@ -35,14 +44,6 @@ namespace Evelyn.Core.Tests.ReadModel.Projections.ToggleState.ProjectEvents
         protected override async Task HandleEventImplementation()
         {
             await ProjectionBuilder.Handle(StreamPosition, Event, StoppingToken);
-        }
-
-        private void GivenTheProjectionHasStateForAnotherEnvironment()
-        {
-            OriginalProjection.ToggleState.AddEnvironmentState(
-                DataFixture.Create<Projections.EventAudit>(),
-                DataFixture.Create<string>(),
-                DataFixture.Create<string>());
         }
 
         private async Task WhenWeHandleAToggleStateAddedEvent()
