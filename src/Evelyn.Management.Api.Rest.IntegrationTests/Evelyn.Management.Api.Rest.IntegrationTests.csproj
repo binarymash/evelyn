@@ -25,8 +25,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.6.0" />
-    <PackageReference Include="FluentAssertions" Version="5.5.3" />
+    <PackageReference Include="AutoFixture" Version="4.8.0" />
+    <PackageReference Include="FluentAssertions" Version="5.6.0" />
     <PackageReference Include="Flurl.Http" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
