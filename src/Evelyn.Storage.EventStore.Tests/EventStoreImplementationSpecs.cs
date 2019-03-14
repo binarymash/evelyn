@@ -1,8 +1,5 @@
 namespace Evelyn.Storage.EventStore.Tests
 {
-    extern alias EmbeddedES;
-    extern alias NetCoreES;
-
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -14,7 +11,6 @@ namespace Evelyn.Storage.EventStore.Tests
     using FluentAssertions;
     using TestStack.BDDfy;
     using Xunit;
-    using RecordedEvent = EmbeddedES::EventStore.ClientAPI.RecordedEvent;
 
     public class EventStoreImplementationSpecs : EventStoreSpecs
     {
@@ -225,7 +221,7 @@ namespace Evelyn.Storage.EventStore.Tests
             result.Events.Should().HaveCount(EventsAddedToStore.Count);
         }
 
-        private async Task<EmbeddedES::EventStore.ClientAPI.StreamEventsSlice> GetProjectAggregateRootStream(Guid id)
+        private async Task<global::EventStore.ClientAPI.StreamEventsSlice> GetProjectAggregateRootStream(Guid id)
         {
             var expectedStreamName = $"evelyn-{_aggregateId}";
             return await ManagementConnection.ReadStreamEventsForwardAsync(expectedStreamName, 0, 2000, false);
@@ -240,7 +236,7 @@ namespace Evelyn.Storage.EventStore.Tests
             }
         }
 
-        private void ThenTheStoredEventTypeIsTheFullNameOfTheEvent(RecordedEvent @event, Type type)
+        private void ThenTheStoredEventTypeIsTheFullNameOfTheEvent(global::EventStore.ClientAPI.RecordedEvent @event, Type type)
         {
             @event.EventType.Should().Be(type.FullName);
         }

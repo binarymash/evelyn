@@ -36,7 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="CqrsLite" Version="0.27.0" />
-    <PackageReference Include="EventStore.ClientAPI.NetCore" Version="4.1.0.23" />
+    <PackageReference Include="EventStore.Client" Version="5.0.1" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
