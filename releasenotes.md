@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 0.28.0 (2019-03-15)
+
+ - [#162](https://github.com/binarymash/evelyn/pull/162)  - [#159](https://github.com/binarymash/evelyn/issues/159) - package update contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#161](https://github.com/binarymash/evelyn/pull/161) - Increase test coverage contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#158](https://github.com/binarymash/evelyn/pull/158) - [#89](https://github.com/binarymash/evelyn/issues/89) - add toggle states projection contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#157](https://github.com/binarymash/evelyn/pull/157) - [#89](https://github.com/binarymash/evelyn/issues/89) - add toggle states projection contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#155](https://github.com/binarymash/evelyn/pull/155) - Update to latest build.sh. Fix runSample.sh. Update docs. contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#154](https://github.com/binarymash/evelyn/pull/154)  - [#39](https://github.com/binarymash/evelyn/issues/39) - Implement client endpoint contributed by Philip Wood ([binarymash](https://github.com/binarymash))
+ - [#50](https://github.com/binarymash/evelyn/issues/50) - Fix MacOS build
+
+
+Commits: 837bb34aef...da2eb61a83
+
 ## Version 0.17.0 (2018-12-24)
 
  - [#153](https://github.com/binarymash/evelyn/pull/153) - [#150](https://github.com/binarymash/evelyn/issues/150) - Upgrade to dotnet core 2.2 contributed by Philip Wood ([binarymash](https://github.com/binarymash))
