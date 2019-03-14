@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <IsPackable>false</IsPackable>
     <CodeAnalysisRuleSet>..\codeanalysis.ruleset</CodeAnalysisRuleSet>
     <Version>0.0.0-dev</Version>
@@ -25,14 +25,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.6.0" />
-    <PackageReference Include="EventStore.Client.Embedded" Version="4.1.1" />
-    <PackageReference Include="EventStore.ClientAPI.NetCore" Version="4.1.0.23" />
-    <PackageReference Include="FluentAssertions" Version="5.5.3" />
+    <PackageReference Include="AutoFixture" Version="4.8.0" />
+    <PackageReference Include="EventStore.Client" Version="5.0.1" />
+    <PackageReference Include="EventStore.Client.Embedded" Version="5.0.0" />
+    <PackageReference Include="FluentAssertions" Version="5.6.0" />
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.1.2-alpha" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="NSubstitute" Version="4.0.0" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.6" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" />
     <PackageReference Include="TestStack.BDDfy" Version="4.3.2" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -53,20 +54,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
-  <Target Name="ChangeAssemblyAliases" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
-    <ItemGroup>
-      <!--  -->
-      <ReferencePath Condition="'%(FileName)' == 'EventStore.ClientAPI.Embedded'">
-        <Aliases>EmbeddedES</Aliases>
-      </ReferencePath>
-      <ReferencePath Condition="'%(FileName)' == 'EventStore.ClientAPI'">
-        <Aliases>EmbeddedES</Aliases>
-      </ReferencePath>
-      <ReferencePath Condition="'%(FileName)' == 'EventStore.ClientAPI.NetCore'">
-        <Aliases>NetCoreES</Aliases>
-      </ReferencePath>
-      </ItemGroup>
-  </Target>
 
 </Project>
