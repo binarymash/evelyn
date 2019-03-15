@@ -6,11 +6,6 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoFixture;
-    using Core.ReadModel.Projections.EnvironmentState;
-    using Core.ReadModel.Projections.ProjectDetails;
-    using Evelyn.Core.ReadModel;
-    using Evelyn.Core.ReadModel.Projections.EnvironmentDetails;
-    using Evelyn.Core.ReadModel.Projections.ToggleDetails;
     using Evelyn.Management.Api.Rest.Write.Environments.Messages;
     using Evelyn.Management.Api.Rest.Write.Projects.Messages;
     using Evelyn.Management.Api.Rest.Write.Toggles.Messages;
@@ -70,12 +65,12 @@
                 .And(_ => ThenTheToggleWeAddedIsOnTheProject())
                 .BDDfy();
 
-            this.When(_ => WhenWeGetTheDetailsForTheEnvironmentWeAdded())
+            this.When(_ => WhenWeGetTheDefinitionForTheEnvironmentWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheEnvironmentWeAddedIsReturned())
                 .BDDfy();
 
-            this.When(_ => WhenWeGetTheDetailsForTheToggleWeAdded())
+            this.When(_ => WhenWeGetTheDefinitionForTheToggleWeAdded())
                 .Then(_ => ThenTheResponseHasStatusCode200Ok())
                 .And(_ => ThenTheToggleWeAddedIsReturned())
                 .BDDfy();
@@ -95,7 +90,7 @@
             await policy.ExecuteAsync(async () =>
             {
                 var response = await Client
-                    .Request("/api/projects")
+                    .Request("/management-api/projects")
                     .GetAsync().ConfigureAwait(false);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -111,7 +106,7 @@
         private async Task WhenGetProjects()
         {
             _response = await Client
-                .Request("/api/projects")
+                .Request("/management-api/projects")
                 .GetAsync().ConfigureAwait(false);
 
             _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -122,7 +117,7 @@
             _createProjectMessage = DataFixture.Create<CreateProject>();
 
             _response = await Client
-                .Request("/api/projects/create")
+                .Request("/management-api/projects/create")
                 .PostJsonAsync(_createProjectMessage).ConfigureAwait(false);
 
             _responseContent = await _response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -136,7 +131,7 @@
                 .Create();
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments/add")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/add")
                 .PostJsonAsync(_addEnvironmentMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -150,7 +145,7 @@
                 .Create();
 
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/add")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/toggles/add")
                 .PostJsonAsync(_addToggleMessage);
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -159,25 +154,25 @@
         private async Task WhenWeGetTheDetailsForTheProjectWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
-        private async Task WhenWeGetTheDetailsForTheEnvironmentWeAdded()
+        private async Task WhenWeGetTheDefinitionForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}/definition")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
         }
 
-        private async Task WhenWeGetTheDetailsForTheToggleWeAdded()
+        private async Task WhenWeGetTheDefinitionForTheToggleWeAdded()
         {
             _response = await Client
-                .Request($"/api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/toggles/{_addToggleMessage.Key}/definition")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();
@@ -186,7 +181,7 @@
         private async Task WhenWeGetTheStateForTheEnvironmentWeAdded()
         {
             _response = await Client
-                .Request($"/api/states/{_createProjectMessage.ProjectId}/{_addEnvironmentMessage.Key}")
+                .Request($"/management-api/projects/{_createProjectMessage.ProjectId}/environments/{_addEnvironmentMessage.Key}/state")
                 .GetAsync();
 
             _responseContent = await _response.Content.ReadAsStringAsync();

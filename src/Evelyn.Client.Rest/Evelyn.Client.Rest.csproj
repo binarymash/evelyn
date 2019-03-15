@@ -48,8 +48,4 @@
     <ProjectReference Include="..\Evelyn.Client\Evelyn.Client.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Generated\" />
-  </ItemGroup>
-
 </Project>

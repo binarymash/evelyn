@@ -14,5 +14,9 @@
         Task<Projections.ToggleDetails.Projection> GetToggleDetails(Guid projectId, string toggleKey);
 
         Task<Projections.EnvironmentState.Projection> GetEnvironmentState(Guid projectId, string environmentName);
+
+        Task<Projections.ToggleState.Projection> GetToggleState(Guid projectId, string toggleKey);
+
+        Task<Projections.ClientEnvironmentState.Projection> GetClientEnvironmentState(Guid projectId, string environmentName);
     }
 }

@@ -1,10 +1,10 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.ClientEnvironmentStatesController
 {
     using System;
     using System.Threading.Tasks;
     using AutoFixture;
     using Core.ReadModel;
-    using Core.ReadModel.Projections.EnvironmentState;
+    using Core.ReadModel.Projections.ClientEnvironmentState;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -14,22 +14,22 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class EnvironmentStatesControllerSpecs
+    public class GetSpecs
     {
         private readonly Fixture _fixture;
         private readonly IReadModelFacade _readModelFacade;
-        private readonly EnvironmentStatesController _controller;
+        private readonly ClientEnvironmentStatesController _controller;
         private readonly Guid _projectId;
 
-        private Projection _environmentStateReturnedByFacade;
+        private Projection _clientEnvironmentStateReturnedByFacade;
         private string _keyOfEnvironmentStateToGet;
         private ObjectResult _result;
 
-        public EnvironmentStatesControllerSpecs()
+        public GetSpecs()
         {
             _fixture = new Fixture();
             _readModelFacade = Substitute.For<IReadModelFacade>();
-            _controller = new EnvironmentStatesController(_readModelFacade);
+            _controller = new ClientEnvironmentStatesController(_readModelFacade);
             _projectId = _fixture.Create<Guid>();
         }
 
@@ -63,12 +63,12 @@
 
         private void GivenTheEnvironmentStateWeWantDoesExist()
         {
-            _environmentStateReturnedByFacade = _fixture.Create<Projection>();
+            _clientEnvironmentStateReturnedByFacade = _fixture.Create<Projection>();
             _keyOfEnvironmentStateToGet = _fixture.Create<string>();
 
             _readModelFacade
-                .GetEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
-                .Returns(_environmentStateReturnedByFacade);
+                .GetClientEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
+                .Returns(_clientEnvironmentStateReturnedByFacade);
         }
 
         private void GivenTheEnvironmentStateWeWantDoesntExist()
@@ -76,7 +76,7 @@
             _keyOfEnvironmentStateToGet = _fixture.Create<string>();
 
             _readModelFacade
-                .GetEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
+                .GetClientEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
                 .Throws(_fixture.Create<ProjectionNotFoundException>());
         }
 
@@ -85,7 +85,7 @@
             _keyOfEnvironmentStateToGet = _fixture.Create<string>();
 
             _readModelFacade
-                .GetEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
+                .GetClientEnvironmentState(_projectId, _keyOfEnvironmentStateToGet)
                 .Throws(_fixture.Create<Exception>());
         }
 
@@ -112,7 +112,7 @@
         private void ThenTheExpectedEnvironmentStateIsReturned()
         {
             var returnedEnvironmentState = _result.Value as Projection;
-            returnedEnvironmentState.Should().Be(_environmentStateReturnedByFacade);
+            returnedEnvironmentState.Should().Be(_clientEnvironmentStateReturnedByFacade);
         }
     }
 }

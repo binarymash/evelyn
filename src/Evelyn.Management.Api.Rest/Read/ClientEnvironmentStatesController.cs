@@ -3,18 +3,19 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Core.ReadModel.Projections.EnvironmentState;
+    using Core.ReadModel.Projections.ClientEnvironmentState;
     using Evelyn.Core.ReadModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/states/{projectId}/{environmentName}")]
+    [Route("client-api/projects/{projectId}/environments/{environmentName}/state")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status500InternalServerError)]
-    public class EnvironmentStatesController : Controller
+    [ApiExplorerSettings(GroupName = "client-api")]
+    public class ClientEnvironmentStatesController : Controller
     {
         private readonly IReadModelFacade _readModelFacade;
 
-        public EnvironmentStatesController(IReadModelFacade readModelFacade)
+        public ClientEnvironmentStatesController(IReadModelFacade readModelFacade)
         {
             _readModelFacade = readModelFacade;
         }
@@ -26,7 +27,7 @@
         {
             try
             {
-                var result = await _readModelFacade.GetEnvironmentState(projectId, environmentName);
+                var result = await _readModelFacade.GetClientEnvironmentState(projectId, environmentName);
                 return Ok(result);
             }
             catch (ProjectionNotFoundException)

@@ -3,7 +3,8 @@
   "defaultVariables": null,
   "swaggerGenerator": {
     "fromSwagger": {
-      "url": "http://localhost:2316/swagger/v0.1/swagger.json",
+      "json": "{\r\n  \"swagger\": \"2.0\",\r\n  \"info\": {\r\n    \"version\": \"client-api\",\r\n    \"title\": \"Evelyn Client API\",\r\n    \"description\": \"Client API for Evelyn\"\r\n  },\r\n  \"paths\": {\r\n    \"/client-api/projects/{projectId}/environments/{environmentName}/state\": {\r\n      \"get\": {\r\n        \"tags\": [\r\n          \"ClientEnvironmentStates\"\r\n        ],\r\n        \"operationId\": \"Get\",\r\n        \"consumes\": [],\r\n        \"produces\": [\r\n          \"text/plain\",\r\n          \"application/json\",\r\n          \"text/json\"\r\n        ],\r\n        \"parameters\": [\r\n          {\r\n            \"name\": \"projectId\",\r\n            \"in\": \"path\",\r\n            \"required\": true,\r\n            \"type\": \"string\",\r\n            \"format\": \"uuid\"\r\n          },\r\n          {\r\n            \"name\": \"environmentName\",\r\n            \"in\": \"path\",\r\n            \"required\": true,\r\n            \"type\": \"string\"\r\n          }\r\n        ],\r\n        \"responses\": {\r\n          \"500\": {\r\n            \"description\": \"Server Error\",\r\n            \"schema\": {\r\n              \"type\": \"object\",\r\n              \"additionalProperties\": {\r\n                \"type\": \"string\"\r\n              }\r\n            }\r\n          },\r\n          \"200\": {\r\n            \"description\": \"Success\",\r\n            \"schema\": {\r\n              \"$ref\": \"#/definitions/Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Projection\"\r\n            }\r\n          },\r\n          \"404\": {\r\n            \"description\": \"Not Found\",\r\n            \"schema\": {\r\n              \"type\": \"object\",\r\n              \"additionalProperties\": {\r\n                \"type\": \"string\"\r\n              }\r\n            }\r\n          }\r\n        }\r\n      }\r\n    },\r\n    \"/status/health\": {\r\n      \"get\": {\r\n        \"tags\": [\r\n          \"Status\"\r\n        ],\r\n        \"operationId\": \"GetHealth\",\r\n        \"consumes\": [],\r\n        \"produces\": [],\r\n        \"parameters\": [],\r\n        \"responses\": {\r\n          \"200\": {\r\n            \"description\": \"Success\"\r\n          }\r\n        }\r\n      }\r\n    }\r\n  },\r\n  \"definitions\": {\r\n    \"Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Projection\": {\r\n      \"type\": \"object\",\r\n      \"properties\": {\r\n        \"environmentState\": {\r\n          \"$ref\": \"#/definitions/Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Model.EnvironmentState\"\r\n        },\r\n        \"audit\": {\r\n          \"$ref\": \"#/definitions/Evelyn.Core.ReadModel.Projections.ProjectionAudit\",\r\n          \"readOnly\": true\r\n        }\r\n      }\r\n    },\r\n    \"Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Model.EnvironmentState\": {\r\n      \"type\": \"object\",\r\n      \"properties\": {\r\n        \"toggleStates\": {\r\n          \"uniqueItems\": false,\r\n          \"type\": \"array\",\r\n          \"items\": {\r\n            \"$ref\": \"#/definitions/Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Model.ToggleState\"\r\n          },\r\n          \"readOnly\": true\r\n        }\r\n      }\r\n    },\r\n    \"Evelyn.Core.ReadModel.Projections.ProjectionAudit\": {\r\n      \"type\": \"object\",\r\n      \"properties\": {\r\n        \"generated\": {\r\n          \"format\": \"date-time\",\r\n          \"type\": \"string\",\r\n          \"readOnly\": true\r\n        },\r\n        \"streamPosition\": {\r\n          \"format\": \"int64\",\r\n          \"type\": \"integer\",\r\n          \"readOnly\": true\r\n        }\r\n      }\r\n    },\r\n    \"Evelyn.Core.ReadModel.Projections.ClientEnvironmentState.Model.ToggleState\": {\r\n      \"type\": \"object\",\r\n      \"properties\": {\r\n        \"key\": {\r\n          \"type\": \"string\",\r\n          \"readOnly\": true\r\n        },\r\n        \"value\": {\r\n          \"type\": \"string\",\r\n          \"readOnly\": true\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+      "url": "http://localhost:2316/swagger/client-api/swagger.json",
       "output": null
     }
   },
@@ -36,8 +37,8 @@
       "generateUpdateJsonSerializerSettingsMethod": true,
       "serializeTypeInformation": false,
       "queryNullValue": "",
-      "className": "{controller}Client",
-      "operationGenerationMode": "SingleClientFromPathSegments",
+      "className": "EvelynRestClient",
+      "operationGenerationMode": "SingleClientFromOperationId",
       "additionalNamespaceUsages": [],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,
@@ -72,13 +73,15 @@
       "generateImmutableArrayProperties": false,
       "generateImmutableDictionaryProperties": false,
       "jsonSerializerSettingsTransformationMethod": null,
+      "inlineNamedDictionaries": false,
+      "inlineNamedTuples": true,
       "templateDirectory": null,
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": null
+      "output": "EvelynRestClient.cs"
     }
   }
 }

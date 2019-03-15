@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./build.sh -target RunSample
+./build.sh --target "RunSample"

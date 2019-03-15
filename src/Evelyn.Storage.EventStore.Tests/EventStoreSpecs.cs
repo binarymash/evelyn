@@ -1,18 +1,11 @@
 ﻿namespace Evelyn.Storage.EventStore.Tests
 {
-    extern alias EmbeddedES;
-    extern alias NetCoreES;
-
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using AutoFixture;
     using Core.WriteModel;
     using CQRSlite.Events;
-    using EmbeddedES::EventStore.Common.Options;
-    using EmbeddedES::EventStore.Core.Bus;
-    using EmbeddedES::EventStore.Core.Messages;
-    using NetCoreES::EventStore.ClientAPI.SystemData;
 
     public abstract class EventStoreSpecs : IDisposable
     {
@@ -26,9 +19,9 @@
 
         protected Fixture DataFixture { get; }
 
-        protected EmbeddedES::EventStore.Core.ClusterVNode Server { get; private set; }
+        protected global::EventStore.Core.ClusterVNode Server { get; private set; }
 
-        protected EmbeddedES::EventStore.ClientAPI.IEventStoreConnection ManagementConnection { get; private set; }
+        protected global::EventStore.ClientAPI.IEventStoreConnection ManagementConnection { get; private set; }
 
         protected List<IEvent> EventsAddedToStore { get; }
 
@@ -44,10 +37,10 @@
 
         private void BootstrapEmbeddedEventStore()
         {
-            Server = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedVNodeBuilder
+            Server = global::EventStore.ClientAPI.Embedded.EmbeddedVNodeBuilder
                 .AsSingleNode()
                 .RunInMemory()
-                .RunProjections(ProjectionType.All)
+                .RunProjections(global::EventStore.Common.Options.ProjectionType.All)
                 .OnDefaultEndpoints()
                 .StartStandardProjections()
                 .AddExternalHttpPrefix("http://*:2113/")
@@ -55,7 +48,7 @@
 
             var startedEvent = new ManualResetEventSlim(false);
             Server.MainBus.Subscribe(
-                new AdHocHandler<UserManagementMessage.UserManagementServiceInitialized>(m => startedEvent.Set()));
+                new global::EventStore.Core.Bus.AdHocHandler<global::EventStore.Core.Messages.UserManagementMessage.UserManagementServiceInitialized>(m => startedEvent.Set()));
 
             Server.Start();
 
@@ -64,12 +57,12 @@
                 throw new TimeoutException("Embedded Event Store has not started in 60 seconds.");
             }
 
-            var connectionSettings = EmbeddedES::EventStore.ClientAPI.ConnectionSettings
+            var connectionSettings = global::EventStore.ClientAPI.ConnectionSettings
                 .Create()
-                .SetDefaultUserCredentials(new EmbeddedES::EventStore.ClientAPI.SystemData.UserCredentials("admin", "changeit"))
+                .SetDefaultUserCredentials(new global::EventStore.ClientAPI.SystemData.UserCredentials("admin", "changeit"))
                 .Build();
 
-            ManagementConnection = EmbeddedES::EventStore.ClientAPI.Embedded.EmbeddedEventStoreConnection.Create(Server, connectionSettings);
+            ManagementConnection = global::EventStore.ClientAPI.Embedded.EmbeddedEventStoreConnection.Create(Server, connectionSettings);
             ManagementConnection.ConnectAsync().GetAwaiter().GetResult();
         }
 
@@ -85,16 +78,16 @@
 
         protected class EventStoreConnectionFactory : IEventStoreConnectionFactory
         {
-            public NetCoreES::EventStore.ClientAPI.IEventStoreConnection Invoke()
+            public global::EventStore.ClientAPI.IEventStoreConnection Invoke()
             {
-                var connectionSettings = NetCoreES::EventStore.ClientAPI.ConnectionSettings
+                var connectionSettings = global::EventStore.ClientAPI.ConnectionSettings
                     .Create()
-                    .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"))
+                    .SetDefaultUserCredentials(new global::EventStore.ClientAPI.SystemData.UserCredentials("admin", "changeit"))
                     .Build();
 
                 var uri = new Uri("tcp://127.0.0.1:1113");
 
-                return NetCoreES::EventStore.ClientAPI.EventStoreConnection.Create(connectionSettings, uri);
+                return global::EventStore.ClientAPI.EventStoreConnection.Create(connectionSettings, uri);
             }
         }
     }

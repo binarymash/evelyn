@@ -1,5 +1,5 @@
 ﻿#tool "nuget:?package=GitVersion.CommandLine"
-#tool "nuget:?package=OpenCover&version=4.6.832"
+#tool "nuget:?package=OpenCover&version=4.7.922"
 #tool "nuget:?package=ReportGenerator"
 #tool "nuget:?package=GitReleaseNotes"
 #addin "nuget:?package=Cake.DoInDirectory"
@@ -30,7 +30,7 @@ var netFrameworkUnitTestAssemblies = new []
 	@"./src/Evelyn.Storage.EventStore.Tests/bin/"+compileConfig+"/net461/Evelyn.Storage.EventStore.Tests.dll",
 };
 var openCoverSettings = new OpenCoverSettings();
-var minCodeCoverage =87d;
+var minCodeCoverage =89d;
 var coverallsRepoToken = "coveralls-repo-token-evelyn";
 
 // integration testing

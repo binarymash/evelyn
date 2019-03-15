@@ -70,7 +70,11 @@
             app.UseEvelynApi(startUpCommands);
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v0.1/swagger.json", "Evelyn Management API"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/management-api/swagger.json", "Evelyn Management API");
+                c.SwaggerEndpoint("/swagger/client-api/swagger.json", "Evelyn Client API");
+            });
         }
     }
 }

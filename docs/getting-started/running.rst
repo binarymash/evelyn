@@ -7,12 +7,14 @@ Prerequisites
 -------------
 
 - `Docker <https://www.docker.com/>`_ is installed on your computer. Note that if you're already running in a virtualised environment - for example, Windows running in Parallels on a Mac, then you probably can't use the docker files as Docker doesn't play nicely with nested virtualisation.
+- .NET Core 2.2 SDK
+- if you're running on linux or macOS the evelyn build scripts require you to have mono 5.12.0 or later installed
 
 Running in Docker using the command line
 ----------------------------------------
 
-Run the ``./runSample.ps1`` script. This will kick off Cake scripts which will build and then run the Docker containers.
+Run the ``./runSample.ps1`` script (Windows) or ``./runSample.sh`` (Linux/macOS). This will kick off Cake scripts which will build and then run the Docker containers.
 
-Running in Docker using Visual Studio
--------------------------------------
+Running in Docker using Visual Studio (Windows)
+-----------------------------------------------
 Ensure that the startup project is ``docker-compose``, then run the solution.

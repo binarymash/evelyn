@@ -1,4 +1,4 @@
-﻿namespace Evelyn.Management.Api.Rest.Tests.Read
+namespace Evelyn.Management.Api.Rest.Tests.Read.ProjectsController
 {
     using System;
     using System.Threading.Tasks;
@@ -16,7 +16,7 @@
     using TestStack.BDDfy;
     using Xunit;
 
-    public class ProjectsControllerSpecs
+    public class GetSpecs
     {
         private readonly Fixture _fixture;
         private readonly ILogger<ProjectsController> _logger;
@@ -28,7 +28,7 @@
         private Core.ReadModel.Projections.ProjectDetails.Projection _projectDetailsProjectionReturnedByFacade;
         private ObjectResult _result;
 
-        public ProjectsControllerSpecs()
+        public GetSpecs()
         {
             _fixture = new Fixture();
             _logger = Substitute.For<ILogger<ProjectsController>>();

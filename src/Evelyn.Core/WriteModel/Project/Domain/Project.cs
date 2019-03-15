@@ -151,7 +151,7 @@
             environment.AssertVersion(Id, expectedEnvironmentVersion);
 
             ApplyChange(new EnvironmentDeleted(userId, Id, key, DateTimeOffset.UtcNow));
-            ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow));
+            ApplyChange(new EnvironmentStateDeleted(userId, Id, key, DateTimeOffset.UtcNow, this.Toggles.Select(t => t.Key)));
         }
 
         public void DeleteProject(string userId, int? expectedProjectVersion)
@@ -175,7 +175,7 @@
 
             foreach (var environmentState in EnvironmentStates)
             {
-                ApplyChange(new EnvironmentStateDeleted(userId, Id, environmentState.EnvironmentKey, now));
+                ApplyChange(new EnvironmentStateDeleted(userId, Id, environmentState.EnvironmentKey, now, this.Toggles.Select(t => t.Key)));
             }
         }
 
